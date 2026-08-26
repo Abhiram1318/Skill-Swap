@@ -2,1154 +2,340 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="description" content="SkillSwap India — Learn. Teach. Connect.">
 <title>SkillSwap India — Learn. Teach. Connect.</title>
 
 <style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-:root {
-  --green: #176b57;
-  --green-dark: #0d4d3e;
-  --green-light: #e7f5ef;
-  --green-soft: #f0faf6;
-  --coral: #ff8066;
-  --coral-dark: #e96950;
-  --yellow: #ffd166;
-  --blue: #5b8def;
-  --purple: #8b6fe8;
-  --saffron: #ff9933;
-  --cream: #f8faf8;
-  --white: #ffffff;
-  --text: #17221f;
-  --muted: #6d7b76;
-  --border: #e1e9e5;
-  --shadow: 0 15px 45px rgba(23,54,45,.08);
-  --shadow-lg: 0 25px 80px rgba(23,54,45,.15);
-  --radius: 20px;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system,
-    BlinkMacSystemFont, "Segoe UI", sans-serif;
-
-  background:
-    radial-gradient(circle at 10% 10%, rgba(231,245,239,.9), transparent 28%),
-    radial-gradient(circle at 90% 20%, rgba(255,209,102,.15), transparent 25%),
-    radial-gradient(circle at 80% 80%, rgba(255,128,102,.08), transparent 25%),
-    var(--cream);
-
-  color: var(--text);
-  line-height: 1.5;
-  min-height: 100vh;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -2;
-
-  background-image:
-    linear-gradient(rgba(23,107,87,.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(23,107,87,.025) 1px, transparent 1px);
-
-  background-size: 40px 40px;
-}
-
-button,
-input,
-textarea,
-select {
-  font: inherit;
-}
-
-button {
-  cursor: pointer;
-}
-
-.hidden {
-  display: none !important;
-}
-
-/* NAV */
-
-nav {
-  height: 76px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 6%;
-  background: rgba(248,250,248,.9);
-  border-bottom: 1px solid rgba(225,233,229,.8);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  backdrop-filter: blur(18px);
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--green);
-  font-size: 1.35rem;
-  font-weight: 850;
-}
-
-.logo-mark {
-  width: 40px;
-  height: 40px;
-  border-radius: 13px;
-  display: grid;
-  place-items: center;
-  color: white;
-  background: linear-gradient(135deg,var(--green),#229477);
-  box-shadow: 0 8px 20px rgba(23,107,87,.2);
-  font-size: 21px;
-}
-
-.india-badge {
-  font-size: .7rem;
-  background: linear-gradient(90deg,#ff9933,#fff,#138808);
-  color: #17221f;
-  padding: 3px 7px;
-  border-radius: 8px;
-  font-weight: 900;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 25px;
-}
-
-.nav-links a {
-  text-decoration: none;
-  color: #52615c;
-  font-size: .88rem;
-  font-weight: 650;
-}
-
-.nav-links a:hover {
-  color: var(--green);
-}
-
-.nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.signin {
-  border: 0;
-  background: transparent;
-  color: var(--green);
-  font-weight: 750;
-  padding: 10px 14px;
-}
-
-.join {
-  border: 0;
-  background: var(--green);
-  color: white;
-  padding: 11px 19px;
-  border-radius: 11px;
-  font-weight: 750;
-}
-
-.user-nav {
-  display: none;
-  align-items: center;
-  gap: 9px;
-}
-
-.user-nav.show {
-  display: flex;
-}
-
-.nav-avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  background: var(--green-light);
-  font-size: 20px;
-}
-
-.profile-nav-btn,
-.logout-btn {
-  border: 0;
-  background: transparent;
-  color: var(--text);
-  font-weight: 750;
-}
-
-.logout-btn {
-  border: 1px solid var(--border);
-  background: white;
-  color: var(--green);
-  padding: 9px 13px;
-  border-radius: 10px;
-}
-
-/* HERO */
-
-.hero {
-  padding: 75px 6% 70px;
-  position: relative;
-  overflow: hidden;
-}
-
-.hero-content {
-  max-width: 980px;
-  margin: auto;
-  text-align: center;
-}
-
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 8px 14px;
-  border-radius: 100px;
-  background: var(--green-light);
-  color: var(--green);
-  font-size: .82rem;
-  font-weight: 800;
-  margin-bottom: 22px;
-}
-
-h1 {
-  font-size: clamp(3rem,7vw,6rem);
-  line-height: .96;
-  letter-spacing: -5px;
-  max-width: 950px;
-  margin: auto;
-}
-
-h1 span {
-  color: var(--green);
-  background: linear-gradient(135deg,var(--green),#32a783);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.hero-subtitle {
-  max-width: 700px;
-  margin: 25px auto 30px;
-  color: var(--muted);
-  font-size: 1.08rem;
-}
-
-.india-strip {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  margin: 0 auto 25px;
-}
-
-.india-strip span {
-  padding: 7px 11px;
-  border-radius: 100px;
-  background: white;
-  border: 1px solid var(--border);
-  font-size: .75rem;
-  font-weight: 750;
-}
-
-.search-box {
-  max-width: 720px;
-  margin: auto;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 17px;
-  box-shadow: var(--shadow);
-}
-
-.search-icon {
-  padding-left: 15px;
-  font-size: 20px;
-}
-
-.search-box input {
-  flex: 1;
-  min-width: 0;
-  border: 0;
-  outline: 0;
-  padding: 14px 5px;
-  background: transparent;
-}
-
-.search-btn,
-.match-btn {
-  border: 0;
-  color: white;
-  border-radius: 11px;
-  padding: 13px 23px;
-  font-weight: 800;
-}
-
-.search-btn {
-  background: var(--green);
-}
-
-.match-btn {
-  margin-top: 18px;
-  background: linear-gradient(135deg,var(--coral),#ff977f);
-  box-shadow: 0 10px 25px rgba(255,128,102,.22);
-}
-
-/* MAIN */
-
-main {
-  max-width: 1280px;
-  margin: auto;
-  padding: 10px 6% 90px;
-}
-
-.section {
-  margin-top: 50px;
-}
-
-.section-header {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 22px;
-}
-
-.section-header h2 {
-  font-size: 1.65rem;
-  letter-spacing: -.7px;
-}
-
-.section-header p {
-  color: var(--muted);
-  font-size: .92rem;
-  margin-top: 4px;
-}
-
-/* TEEN BANNER */
-
-.teen-banner {
-  background:
-    radial-gradient(circle at 90% 10%,rgba(255,255,255,.15),transparent 25%),
-    linear-gradient(135deg,#173f72,#2875a8);
-  color: white;
-  border-radius: 24px;
-  padding: 28px;
-  margin-top: 45px;
-  box-shadow: 0 20px 60px rgba(40,117,168,.15);
-}
-
-.teen-banner h2 {
-  margin-bottom: 7px;
-}
-
-.teen-banner p {
-  max-width: 780px;
-  color: rgba(255,255,255,.78);
-}
-
-.safety-note {
-  margin-top: 14px;
-  display: inline-block;
-  background: rgba(255,255,255,.1);
-  border: 1px solid rgba(255,255,255,.18);
-  padding: 9px 12px;
-  border-radius: 10px;
-  font-size: .78rem;
-}
-
-/* CATEGORIES */
-
-.categories {
-  display: grid;
-  grid-template-columns: repeat(6,1fr);
-  gap: 12px;
-}
-
-.category {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 18px 12px;
-  text-align: center;
-  transition: .2s;
-}
-
-.category:hover,
-.category.active {
-  border-color: var(--green);
-  transform: translateY(-3px);
-  box-shadow: var(--shadow);
-}
-
-.category-icon {
-  font-size: 27px;
-  margin-bottom: 7px;
-}
-
-.category strong {
-  display: block;
-  font-size: .82rem;
-}
-
-/* FILTERS */
-
-.filter-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin: 20px 0;
-}
-
-.filter-chip {
-  border: 1px solid var(--border);
-  background: white;
-  color: var(--muted);
-  border-radius: 100px;
-  padding: 8px 13px;
-  font-size: .78rem;
-  font-weight: 700;
-}
-
-/* MATCHES */
-
-.matches {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 18px;
-}
-
-.person-card {
-  position: relative;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 22px;
-  overflow: hidden;
-  transition: .25s;
-}
-
-.person-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow);
-}
-
-.match-score {
-  position: absolute;
-  top: 17px;
-  right: 17px;
-  background: #e7f7ef;
-  color: var(--green);
-  padding: 6px 9px;
-  border-radius: 8px;
-  font-size: .72rem;
-  font-weight: 850;
-}
-
-.student-badge {
-  display: inline-block;
-  margin-bottom: 12px;
-  padding: 5px 8px;
-  background: #fff4dd;
-  color: #9a6800;
-  border-radius: 7px;
-  font-size: .65rem;
-  font-weight: 850;
-}
-
-.profile {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  margin-bottom: 18px;
-}
-
-.avatar {
-  width: 54px;
-  height: 54px;
-  border-radius: 16px;
-  display: grid;
-  place-items: center;
-  background: #f1ece7;
-  font-size: 25px;
-}
-
-.profile h3 {
-  font-size: 1rem;
-}
-
-.profile p {
-  color: var(--muted);
-  font-size: .78rem;
-}
-
-.rating {
-  color: #e29b18;
-  font-size: .75rem;
-  font-weight: 750;
-}
-
-.skill-row {
-  display: grid;
-  grid-template-columns: 1fr 30px 1fr;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 13px;
-}
-
-.skill {
-  padding: 12px;
-  border-radius: 12px;
-  background: #f6f8f7;
-  min-height: 72px;
-}
-
-.skill small {
-  display: block;
-  color: var(--muted);
-  font-size: .65rem;
-  margin-bottom: 3px;
-  text-transform: uppercase;
-  letter-spacing: .5px;
-}
-
-.skill strong {
-  font-size: .8rem;
-}
-
-.swap {
-  color: var(--coral);
-  font-size: 18px;
-  text-align: center;
-}
-
-.availability {
-  color: var(--muted);
-  font-size: .72rem;
-  margin: 12px 0;
-}
-
-.connect {
-  width: 100%;
-  padding: 11px;
-  border: 1px solid var(--green);
-  border-radius: 10px;
-  color: var(--green);
-  background: white;
-  font-weight: 750;
-}
-
-.connect.pending {
-  border-color: #e3a43b;
-  color: #a96a00;
-  background: #fff8e9;
-}
-
-.connect.connected {
-  background: var(--green-light);
-}
-
-/* HOW */
-
-.how {
-  color: white;
-  border-radius: 30px;
-  padding: 48px;
-  margin-top: 80px;
-  background:
-    radial-gradient(circle at 90% 10%,rgba(255,255,255,.13),transparent 30%),
-    linear-gradient(135deg,#0d4d3e,#176b57 55%,#22896f);
-  box-shadow: 0 25px 70px rgba(23,107,87,.18);
-}
-
-.how-intro {
-  max-width: 700px;
-  color: rgba(255,255,255,.72);
-  margin: 7px 0 30px;
-}
-
-.how h2 {
-  font-size: 2.2rem;
-}
-
-.steps {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 18px;
-}
-
-.step {
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.12);
-  padding: 25px;
-  border-radius: 20px;
-}
-
-.step-number {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  background: var(--yellow);
-  color: var(--text);
-  font-weight: 900;
-  margin-bottom: 18px;
-}
-
-.step-icon {
-  font-size: 28px;
-  margin-bottom: 10px;
-}
-
-.step h3 {
-  margin-bottom: 7px;
-}
-
-.step p {
-  color: rgba(255,255,255,.72);
-  font-size: .88rem;
-}
-
-/* DASHBOARD */
-
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 18px;
-}
-
-.dashboard-card {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 20px;
-}
-
-.dashboard-card > p {
-  color: var(--muted);
-  font-size: .8rem;
-  margin-bottom: 16px;
-}
-
-.request-list,
-.connection-list,
-.review-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.request-item,
-.connection-item,
-.review-item {
-  padding: 13px;
-  background: #f7f9f8;
-  border-radius: 13px;
-  border: 1px solid var(--border);
-}
-
-.request-top,
-.connection-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.request-person {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-}
-
-.mini-avatar {
-  width: 38px;
-  height: 38px;
-  display: grid;
-  place-items: center;
-  border-radius: 11px;
-  background: var(--green-light);
-}
-
-.request-item small,
-.connection-item small {
-  display: block;
-  color: var(--muted);
-  margin-top: 3px;
-  font-size: .72rem;
-}
-
-.request-actions {
-  display: flex;
-  gap: 6px;
-  margin-top: 10px;
-}
-
-.small-btn {
-  border: 0;
-  border-radius: 8px;
-  padding: 7px 10px;
-  font-size: .72rem;
-  font-weight: 750;
-}
-
-.small-btn.primary {
-  background: var(--green);
-  color: white;
-}
-
-.small-btn.danger {
-  background: #ffeceb;
-  color: #bd4b42;
-}
-
-.small-btn.secondary {
-  background: white;
-  border: 1px solid var(--border);
-  color: var(--green);
-}
-
-.status {
-  display: inline-block;
-  padding: 4px 7px;
-  border-radius: 7px;
-  font-size: .65rem;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.status.pending {
-  background: #fff3d7;
-  color: #9a6800;
-}
-
-.status.accepted {
-  background: #e5f7ed;
-  color: var(--green);
-}
-
-.status.completed {
-  background: #e8eefc;
-  color: #4968a8;
-}
-
-.empty-state {
-  padding: 25px 10px;
-  text-align: center;
-  color: var(--muted);
-  font-size: .82rem;
-}
-
-/* CTA */
-
-.cta {
-  text-align: center;
-  padding: 85px 20px 40px;
-}
-
-.cta h2 {
-  font-size: clamp(2.2rem,4vw,3.2rem);
-  margin-bottom: 10px;
-}
-
-.cta p {
-  color: var(--muted);
-  margin-bottom: 24px;
-}
-
-.cta button {
-  border: 0;
-  background: var(--green);
-  color: white;
-  padding: 14px 26px;
-  border-radius: 12px;
-  font-weight: 800;
-}
-
-/* FOOTER */
-
-footer {
-  border-top: 1px solid var(--border);
-  padding: 30px 6%;
-  display: flex;
-  justify-content: space-between;
-  color: var(--muted);
-  font-size: .82rem;
-}
-
-/* TOAST */
-
-.toast {
-  position: fixed;
-  bottom: 25px;
-  right: 25px;
-  max-width: 350px;
-  background: var(--text);
-  color: white;
-  padding: 14px 19px;
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  transform: translateY(100px);
-  opacity: 0;
-  transition: .3s;
-  z-index: 500;
-}
-
-.toast.show {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-/* MODALS */
-
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15,30,26,.58);
-  backdrop-filter: blur(7px);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  z-index: 400;
-}
-
-.modal-overlay.show {
-  display: flex;
-}
-
-.modal {
-  width: 100%;
-  max-width: 520px;
-  max-height: 92vh;
-  overflow-y: auto;
-  background: white;
-  border-radius: 24px;
-  padding: 30px;
-  position: relative;
-  box-shadow: var(--shadow-lg);
-}
-
-.modal-close {
-  position: absolute;
-  right: 18px;
-  top: 18px;
-  border: 0;
-  background: #f4f6f5;
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  font-size: 18px;
-}
-
-.modal h2 {
-  color: var(--green);
-  margin-bottom: 6px;
-}
-
-.modal-subtitle {
-  color: var(--muted);
-  font-size: .9rem;
-  margin-bottom: 22px;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  font-size: .82rem;
-  font-weight: 750;
-  margin-bottom: 6px;
-}
-
-.form-group input,
-.form-group textarea,
-.form-group select {
-  width: 100%;
-  border: 1px solid var(--border);
-  border-radius: 11px;
-  padding: 12px 13px;
-  outline: none;
-  background: #fbfcfb;
-}
-
-.form-group textarea {
-  resize: vertical;
-  min-height: 90px;
-}
-
-.checkbox-grid {
-  display: grid;
-  grid-template-columns: repeat(2,1fr);
-  gap: 8px;
-}
-
-.check-option {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 10px;
-  background: #f6f8f7;
-  border-radius: 10px;
-  font-size: .78rem;
-}
-
-.modal-submit {
-  width: 100%;
-  border: 0;
-  border-radius: 11px;
-  padding: 13px;
-  background: var(--green);
-  color: white;
-  font-weight: 800;
-  margin-top: 5px;
-}
-
-.profile-large {
-  text-align: center;
-}
-
-.profile-large-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 24px;
-  background: var(--green-light);
-  display: grid;
-  place-items: center;
-  font-size: 40px;
-  margin: 0 auto 15px;
-}
-
-.profile-location,
-.profile-bio {
-  color: var(--muted);
-  font-size: .85rem;
-}
-
-.profile-bio {
-  margin-top: 8px;
-}
-
-.profile-info {
-  background: #f6f8f7;
-  padding: 16px;
-  border-radius: 15px;
-  margin-top: 20px;
-}
-
-.profile-info strong {
-  color: var(--green);
-}
-
-.profile-skills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  margin-top: 9px;
-}
-
-.skill-tag {
-  background: white;
-  border: 1px solid var(--border);
-  padding: 6px 9px;
-  border-radius: 8px;
-  font-size: .72rem;
-}
-
-/* CHAT */
-
-.chat-modal {
-  max-width: 650px;
-  padding: 0;
-  overflow: hidden;
-}
-
-.chat-header {
-  background: var(--green);
-  color: white;
-  padding: 20px 22px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.chat-person {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.chat-avatar {
-  width: 45px;
-  height: 45px;
-  border-radius: 13px;
-  background: rgba(255,255,255,.15);
-  display: grid;
-  place-items: center;
-  font-size: 23px;
-}
-
-.chat-close {
-  border: 0;
-  background: rgba(255,255,255,.12);
-  color: white;
-  width: 34px;
-  height: 34px;
-  border-radius: 9px;
-}
-
-.chat-messages {
-  height: 350px;
-  overflow-y: auto;
-  padding: 20px;
-  background: #f7f9f8;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.message {
-  max-width: 75%;
-  padding: 10px 13px;
-  border-radius: 14px;
-  font-size: .88rem;
-}
-
-.message.them {
-  background: white;
-  border: 1px solid var(--border);
-  align-self: flex-start;
-}
-
-.message.me {
-  background: var(--green);
-  color: white;
-  align-self: flex-end;
-}
-
-.chat-input {
-  display: flex;
-  gap: 8px;
-  padding: 15px;
-  border-top: 1px solid var(--border);
-  background: white;
-}
-
-.chat-input input {
-  flex: 1;
-  border: 1px solid var(--border);
-  border-radius: 11px;
-  padding: 11px 13px;
-  outline: none;
-}
-
-.chat-input button {
-  border: 0;
-  background: var(--green);
-  color: white;
-  border-radius: 11px;
-  padding: 0 18px;
-  font-weight: 800;
-}
-
-/* RESPONSIVE */
-
-@media(max-width:1000px) {
-  .nav-links { display:none; }
-
-  .categories {
-    grid-template-columns: repeat(3,1fr);
-  }
-
-  .matches {
-    grid-template-columns: repeat(2,1fr);
-  }
-
-  .dashboard-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .steps {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media(max-width:650px) {
-  nav {
-    padding: 0 20px;
-  }
-
-  .signin {
-    display:none;
-  }
-
-  .hero {
-    padding: 55px 20px;
-  }
-
-  h1 {
-    letter-spacing:-3px;
-  }
-
-  .search-box {
-    flex-wrap:wrap;
-  }
-
-  .search-btn {
-    width:100%;
-  }
-
-  main {
-    padding-left:20px;
-    padding-right:20px;
-  }
-
-  .categories,
-  .matches,
-  .dashboard-grid {
-    grid-template-columns:1fr;
-  }
-
-  .how {
-    padding:30px 22px;
-  }
-
-  .how h2 {
-    font-size:1.8rem;
-  }
-
-  footer {
-    flex-direction:column;
-    gap:8px;
-  }
-
-  .checkbox-grid {
-    grid-template-columns:1fr;
-  }
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--green:#176b57;--green-dark:#0d4d3e;--green-light:#e7f5ef;
+--coral:#ff8066;--yellow:#ffd166;--cream:#f8faf8;
+--white:#fff;--text:#17221f;--muted:#6d7b76;--border:#e1e9e5;
+--shadow:0 15px 45px rgba(23,54,45,.08);
+--shadow-lg:0 25px 80px rgba(23,54,45,.15);
+}
+html{scroll-behavior:smooth}
+body{
+font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+background:
+radial-gradient(circle at 10% 10%,#e7f5ef,transparent 28%),
+radial-gradient(circle at 90% 20%,rgba(255,209,102,.15),transparent 25%),
+var(--cream);
+color:var(--text);line-height:1.5;min-height:100vh
+}
+body:before{
+content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+background-image:linear-gradient(rgba(23,107,87,.025) 1px,transparent 1px),
+linear-gradient(90deg,rgba(23,107,87,.025) 1px,transparent 1px);
+background-size:40px 40px
+}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+
+nav{
+height:76px;display:flex;align-items:center;justify-content:space-between;
+padding:0 6%;background:rgba(248,250,248,.92);border-bottom:1px solid var(--border);
+position:sticky;top:0;z-index:100;backdrop-filter:blur(18px)
+}
+.logo{display:flex;align-items:center;gap:10px;color:var(--green);font-size:1.35rem;font-weight:850}
+.logo-mark{
+width:40px;height:40px;border-radius:13px;display:grid;place-items:center;
+color:#fff;background:linear-gradient(135deg,var(--green),#229477);
+font-size:21px
+}
+.india-badge{
+font-size:.7rem;background:linear-gradient(90deg,#ff9933,#fff,#138808);
+padding:3px 7px;border-radius:8px;font-weight:900
+}
+.nav-links{display:flex;gap:25px}
+.nav-links a{text-decoration:none;color:#52615c;font-size:.88rem;font-weight:650}
+.nav-links a:hover{color:var(--green)}
+.nav-actions,.user-nav{display:flex;align-items:center;gap:8px}
+.signin,.profile-nav-btn{border:0;background:transparent;color:var(--green);font-weight:750;padding:10px 14px}
+.join{
+border:0;background:var(--green);color:#fff;padding:11px 19px;
+border-radius:11px;font-weight:750
+}
+.user-nav{display:none}
+.user-nav.show{display:flex}
+.nav-avatar{
+width:38px;height:38px;border-radius:12px;display:grid;place-items:center;
+background:var(--green-light);font-size:20px
+}
+.logout-btn{
+border:1px solid var(--border);background:#fff;color:var(--green);
+padding:9px 13px;border-radius:10px;font-weight:750
+}
+
+.hero{padding:75px 6% 70px;text-align:center}
+.hero-content{max-width:980px;margin:auto}
+.eyebrow{
+display:inline-flex;padding:8px 14px;border-radius:100px;
+background:var(--green-light);color:var(--green);font-size:.82rem;
+font-weight:800;margin-bottom:22px
+}
+h1{font-size:clamp(3rem,7vw,6rem);line-height:.96;letter-spacing:-5px}
+h1 span{
+color:var(--green);background:linear-gradient(135deg,var(--green),#32a783);
+-webkit-background-clip:text;-webkit-text-fill-color:transparent
+}
+.hero-subtitle{max-width:700px;margin:25px auto 30px;color:var(--muted);font-size:1.08rem}
+.india-strip{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:25px}
+.india-strip span{
+padding:7px 11px;border-radius:100px;background:#fff;border:1px solid var(--border);
+font-size:.75rem;font-weight:750
+}
+.search-box{
+max-width:720px;margin:auto;display:flex;align-items:center;gap:8px;
+padding:8px;background:#fff;border:1px solid var(--border);
+border-radius:17px;box-shadow:var(--shadow)
+}
+.search-icon{padding-left:15px;font-size:20px}
+.search-box input{flex:1;min-width:0;border:0;outline:0;padding:14px 5px}
+.search-btn,.match-btn{
+border:0;color:#fff;border-radius:11px;padding:13px 23px;font-weight:800
+}
+.search-btn{background:var(--green)}
+.match-btn{
+margin-top:18px;background:linear-gradient(135deg,var(--coral),#ff977f);
+box-shadow:0 10px 25px rgba(255,128,102,.22)
+}
+
+main{max-width:1280px;margin:auto;padding:10px 6% 90px}
+.section{margin-top:50px}
+.section-header{
+display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:22px
+}
+.section-header h2{font-size:1.65rem}
+.section-header p{color:var(--muted);font-size:.92rem;margin-top:4px}
+
+.teen-banner{
+background:linear-gradient(135deg,#173f72,#2875a8);color:#fff;
+border-radius:24px;padding:28px;margin-top:45px
+}
+.teen-banner p{max-width:780px;color:rgba(255,255,255,.78)}
+.safety-note{
+margin-top:14px;display:inline-block;background:rgba(255,255,255,.1);
+border:1px solid rgba(255,255,255,.18);padding:9px 12px;
+border-radius:10px;font-size:.78rem
+}
+
+.categories{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.category{
+background:#fff;border:1px solid var(--border);border-radius:16px;padding:18px 12px;
+text-align:center;transition:.2s
+}
+.category:hover,.category.active{border-color:var(--green);transform:translateY(-3px);box-shadow:var(--shadow)}
+.category-icon{font-size:27px;margin-bottom:7px}
+.category strong{display:block;font-size:.82rem}
+
+.matches{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+.person-card{
+position:relative;background:#fff;border:1px solid var(--border);
+border-radius:20px;padding:22px;transition:.25s
+}
+.person-card:hover{transform:translateY(-5px);box-shadow:var(--shadow)}
+.match-score{
+position:absolute;top:17px;right:17px;background:#e7f7ef;color:var(--green);
+padding:6px 9px;border-radius:8px;font-size:.72rem;font-weight:850
+}
+.member-badge{
+display:inline-block;margin-bottom:12px;padding:5px 8px;
+background:#eef5ff;color:#37649a;border-radius:7px;font-size:.65rem;font-weight:850
+}
+.profile{display:flex;align-items:center;gap:13px;margin-bottom:18px}
+.avatar{
+width:54px;height:54px;border-radius:16px;display:grid;place-items:center;
+background:#f1ece7;font-size:25px
+}
+.profile h3{font-size:1rem}
+.profile p{color:var(--muted);font-size:.78rem}
+.rating{color:#e29b18;font-size:.75rem;font-weight:750}
+.skill-row{display:grid;grid-template-columns:1fr 30px 1fr;align-items:center;gap:8px}
+.skill{padding:12px;border-radius:12px;background:#f6f8f7;min-height:72px}
+.skill small{display:block;color:var(--muted);font-size:.65rem;margin-bottom:3px;text-transform:uppercase}
+.skill strong{font-size:.8rem}
+.swap{color:var(--coral);font-size:18px;text-align:center}
+.availability{color:var(--muted);font-size:.72rem;margin:12px 0}
+.match-reason{
+font-size:.72rem;color:var(--green);background:var(--green-light);
+padding:8px 10px;border-radius:9px;margin-bottom:10px
+}
+.connect{
+width:100%;padding:11px;border:1px solid var(--green);border-radius:10px;
+color:var(--green);background:#fff;font-weight:750
+}
+.connect.pending{border-color:#e3a43b;color:#a96a00;background:#fff8e9}
+.connect.connected{background:var(--green-light)}
+
+.filter-bar{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0}
+.filter-chip{
+border:1px solid var(--border);background:#fff;color:var(--muted);
+border-radius:100px;padding:8px 13px;font-size:.78rem;font-weight:700
+}
+.filter-chip:hover{border-color:var(--green);color:var(--green)}
+
+.how{
+color:#fff;border-radius:30px;padding:48px;margin-top:80px;
+background:linear-gradient(135deg,#0d4d3e,#176b57 55%,#22896f)
+}
+.how-intro{max-width:700px;color:rgba(255,255,255,.72);margin:7px 0 30px}
+.how h2{font-size:2.2rem}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.step{
+background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+padding:25px;border-radius:20px
+}
+.step-number{
+width:40px;height:40px;border-radius:12px;display:grid;place-items:center;
+background:var(--yellow);color:var(--text);font-weight:900;margin-bottom:18px
+}
+.step-icon{font-size:28px;margin-bottom:10px}
+.step p{color:rgba(255,255,255,.72);font-size:.88rem}
+
+.dashboard-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.dashboard-card{
+background:#fff;border:1px solid var(--border);border-radius:20px;padding:20px
+}
+.dashboard-card>p{color:var(--muted);font-size:.8rem;margin-bottom:16px}
+.request-list,.connection-list,.review-list{display:flex;flex-direction:column;gap:10px}
+.request-item,.connection-item,.review-item{
+padding:13px;background:#f7f9f8;border-radius:13px;border:1px solid var(--border)
+}
+.request-top,.connection-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.request-person{display:flex;align-items:center;gap:9px}
+.mini-avatar{
+width:38px;height:38px;display:grid;place-items:center;border-radius:11px;
+background:var(--green-light)
+}
+.request-item small,.connection-item small{display:block;color:var(--muted);margin-top:3px;font-size:.72rem}
+.request-actions{display:flex;gap:6px;margin-top:10px}
+.small-btn{
+border:0;border-radius:8px;padding:7px 10px;font-size:.72rem;font-weight:750
+}
+.small-btn.primary{background:var(--green);color:#fff}
+.status{
+display:inline-block;padding:4px 7px;border-radius:7px;font-size:.65rem;
+font-weight:800;text-transform:uppercase
+}
+.status.pending{background:#fff3d7;color:#9a6800}
+.status.accepted{background:#e5f7ed;color:var(--green)}
+.empty-state{padding:25px 10px;text-align:center;color:var(--muted);font-size:.82rem}
+
+.cta{text-align:center;padding:85px 20px 40px}
+.cta h2{font-size:clamp(2.2rem,4vw,3.2rem);margin-bottom:10px}
+.cta p{color:var(--muted);margin-bottom:24px}
+.cta button{
+border:0;background:var(--green);color:#fff;padding:14px 26px;
+border-radius:12px;font-weight:800
+}
+footer{
+border-top:1px solid var(--border);padding:30px 6%;display:flex;
+justify-content:space-between;color:var(--muted);font-size:.82rem
+}
+.toast{
+position:fixed;bottom:25px;right:25px;max-width:350px;background:var(--text);
+color:#fff;padding:14px 19px;border-radius:12px;box-shadow:var(--shadow);
+transform:translateY(100px);opacity:0;transition:.3s;z-index:500
+}
+.toast.show{transform:translateY(0);opacity:1}
+
+.modal-overlay{
+position:fixed;inset:0;background:rgba(15,30,26,.58);backdrop-filter:blur(7px);
+display:none;align-items:center;justify-content:center;padding:20px;z-index:400
+}
+.modal-overlay.show{display:flex}
+.modal{
+width:100%;max-width:520px;max-height:92vh;overflow-y:auto;background:#fff;
+border-radius:24px;padding:30px;position:relative;box-shadow:var(--shadow-lg)
+}
+.modal-close{
+position:absolute;right:18px;top:18px;border:0;background:#f4f6f5;
+width:34px;height:34px;border-radius:10px;font-size:18px
+}
+.modal h2{color:var(--green);margin-bottom:6px}
+.modal-subtitle{color:var(--muted);font-size:.9rem;margin-bottom:22px}
+.form-group{margin-bottom:15px}
+.form-group label{display:block;font-size:.82rem;font-weight:750;margin-bottom:6px}
+.form-group input,.form-group textarea,.form-group select{
+width:100%;border:1px solid var(--border);border-radius:11px;
+padding:12px 13px;outline:none;background:#fbfcfb
+}
+.form-group textarea{resize:vertical;min-height:90px}
+.checkbox-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.check-option{
+display:flex;align-items:center;gap:7px;padding:10px;background:#f6f8f7;
+border-radius:10px;font-size:.78rem
+}
+.modal-submit{
+width:100%;border:0;border-radius:11px;padding:13px;
+background:var(--green);color:#fff;font-weight:800;margin-top:5px
+}
+.profile-large{text-align:center}
+.profile-large-avatar{
+width:80px;height:80px;border-radius:24px;background:var(--green-light);
+display:grid;place-items:center;font-size:40px;margin:0 auto 15px
+}
+.profile-location,.profile-bio{color:var(--muted);font-size:.85rem}
+.profile-bio{margin-top:8px}
+.profile-info{background:#f6f8f7;padding:16px;border-radius:15px;margin-top:20px}
+.profile-info strong{color:var(--green)}
+.profile-skills{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.skill-tag{
+background:#fff;border:1px solid var(--border);padding:6px 9px;
+border-radius:8px;font-size:.72rem
+}
+
+.chat-modal{max-width:650px;padding:0;overflow:hidden}
+.chat-header{
+background:var(--green);color:#fff;padding:20px 22px;
+display:flex;align-items:center;justify-content:space-between
+}
+.chat-person{display:flex;align-items:center;gap:12px}
+.chat-avatar{
+width:45px;height:45px;border-radius:13px;background:rgba(255,255,255,.15);
+display:grid;place-items:center;font-size:23px
+}
+.chat-close{
+border:0;background:rgba(255,255,255,.12);color:#fff;
+width:34px;height:34px;border-radius:9px
+}
+.chat-messages{
+height:350px;overflow-y:auto;padding:20px;background:#f7f9f8;
+display:flex;flex-direction:column;gap:10px
+}
+.message{
+max-width:75%;padding:10px 13px;border-radius:14px;font-size:.88rem
+}
+.message.them{background:#fff;border:1px solid var(--border);align-self:flex-start}
+.message.me{background:var(--green);color:#fff;align-self:flex-end}
+.chat-input{display:flex;gap:8px;padding:15px;border-top:1px solid var(--border)}
+.chat-input input{
+flex:1;border:1px solid var(--border);border-radius:11px;padding:11px 13px;outline:none
+}
+.chat-input button{
+border:0;background:var(--green);color:#fff;border-radius:11px;
+padding:0 18px;font-weight:800
+}
+
+@media(max-width:1000px){
+.nav-links{display:none}
+.categories{grid-template-columns:repeat(3,1fr)}
+.matches{grid-template-columns:repeat(2,1fr)}
+.dashboard-grid{grid-template-columns:1fr 1fr}
+.steps{grid-template-columns:1fr}
+}
+@media(max-width:650px){
+nav{padding:0 20px}.signin{display:none}
+.hero{padding:55px 20px}h1{letter-spacing:-3px}
+.search-box{flex-wrap:wrap}.search-btn{width:100%}
+main{padding-left:20px;padding-right:20px}
+.categories,.matches,.dashboard-grid{grid-template-columns:1fr}
+.how{padding:30px 22px}.how h2{font-size:1.8rem}
+footer{flex-direction:column;gap:8px}
+.checkbox-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -1157,1999 +343,1156 @@ footer {
 <body>
 
 <nav>
+<div class="logo">
+<div class="logo-mark">↔</div>
+SkillSwap <span class="india-badge">🇮🇳 INDIA</span>
+</div>
 
-  <div class="logo">
-    <div class="logo-mark">↔</div>
-    SkillSwap
-    <span class="india-badge">🇮🇳 INDIA</span>
-  </div>
+<div class="nav-links">
+<a href="#discover">Discover</a>
+<a href="#studentSkills">Student Skills</a>
+<a href="#requestsSection">Requests</a>
+<a href="#howItWorks">How it works</a>
+</div>
 
-  <div class="nav-links">
-    <a href="#discover">Discover</a>
-    <a href="#studentSkills">Student Skills</a>
-    <a href="#requestsSection">Requests</a>
-    <a href="#howItWorks">How it works</a>
-  </div>
+<div class="nav-actions" id="loggedOutNav">
+<button class="signin" onclick="openAuth('signin')">Sign in</button>
+<button class="join" onclick="openAuth('signup')">Join free</button>
+</div>
 
-  <div class="nav-actions" id="loggedOutNav">
-    <button class="signin" onclick="openAuth('signin')">Sign in</button>
-    <button class="join" onclick="openAuth('signup')">Join free</button>
-  </div>
-
-  <div class="user-nav" id="loggedInNav">
-    <div class="nav-avatar" id="navAvatar">👤</div>
-    <button class="profile-nav-btn" id="navProfileName"
-      onclick="openProfile()">Profile</button>
-    <button class="logout-btn" onclick="logout()">Log out</button>
-  </div>
-
+<div class="user-nav" id="loggedInNav">
+<div class="nav-avatar" id="navAvatar">👤</div>
+<button class="profile-nav-btn" id="navProfileName" onclick="openProfile()">Profile</button>
+<button class="logout-btn" onclick="logout()">Log out</button>
+</div>
 </nav>
 
 <section class="hero">
+<div class="hero-content">
+<div class="eyebrow">🇮🇳 Built for India's next generation of learners</div>
 
-  <div class="hero-content">
+<h1>Learn together.<br><span>Grow together.</span></h1>
 
-    <div class="eyebrow">
-      🇮🇳 Built for India's next generation of learners
-    </div>
+<p class="hero-subtitle">
+A student-friendly place to exchange skills, languages, school subjects,
+technology, Indian culture, creativity and more.
+Teach what you know. Learn what you love.
+</p>
 
-    <h1>
-      Learn together.<br>
-      <span>Grow together.</span>
-    </h1>
+<div class="india-strip">
+<span>📚 School Subjects</span>
+<span>💻 Coding & AI</span>
+<span>🗣️ Indian Languages</span>
+<span>🎵 Indian Music</span>
+<span>🏏 Sports</span>
+<span>🎨 Indian Arts</span>
+<span>🍛 Indian Cooking</span>
+</div>
 
-    <p class="hero-subtitle">
-      A student-friendly place to exchange skills, languages,
-      school subjects, technology, Indian culture, creativity and more.
-      Teach what you know. Learn what you love.
-    </p>
+<div class="search-box">
+<span class="search-icon">🔎</span>
+<input id="searchInput" placeholder="Try Python, Telugu, cricket, maths, guitar..." oninput="searchSkills()">
+<button class="search-btn" onclick="searchSkills()">Search</button>
+</div>
 
-    <div class="india-strip">
-      <span>📚 School Subjects</span>
-      <span>💻 Coding & AI</span>
-      <span>🗣️ Indian Languages</span>
-      <span>🎵 Indian Music</span>
-      <span>🏏 Sports</span>
-      <span>🎨 Indian Arts</span>
-      <span>🍛 Indian Cooking</span>
-    </div>
-
-    <div class="search-box">
-      <span class="search-icon">🔎</span>
-
-      <input
-        id="searchInput"
-        type="text"
-        placeholder="Try Python, Telugu, cricket, maths, guitar..."
-        oninput="searchSkills()"
-      >
-
-      <button class="search-btn" onclick="searchSkills()">
-        Search
-      </button>
-    </div>
-
-    <button class="match-btn" onclick="findMatch()">
-      ✨ Find my perfect skill match
-    </button>
-
-  </div>
-
+<button class="match-btn" onclick="findMatch()">✨ Find my best skill match</button>
+</div>
 </section>
 
 <main>
 
 <section class="teen-banner">
-
-  <h2>🧑‍🎓 A space for student-to-student learning</h2>
-
-  <p>
-    Whether you're in school, junior college or university,
-    you can share skills with other young learners. Learn
-    coding from someone who loves Python, practise Telugu
-    with a language learner, exchange study tips, or teach
-    someone your favourite creative skill.
-  </p>
-
-  <div class="safety-note">
-    🛡️ Safety first: keep personal contact details private and
-    use SkillSwap's built-in communication for learning.
-  </div>
-
+<h2>🧑‍🎓 A space for student-to-student learning</h2>
+<p>
+Whether you're in school, junior college or university, share skills with
+other young learners. Learn coding, practise languages, exchange study tips,
+or teach someone your favourite creative skill.
+</p>
+<div class="safety-note">
+🛡️ Safety first: keep personal contact details private and use SkillSwap's
+built-in communication for learning.
+</div>
 </section>
 
 <section class="section" id="discover">
+<div class="section-header">
+<div>
+<h2 id="matchTitle">Popular Indian skill matches</h2>
+<p>Find learners with complementary skills.</p>
+</div>
+<button style="border:0;background:transparent;color:var(--green);font-weight:750"
+onclick="resetMatches()">View all →</button>
+</div>
 
-  <div class="section-header">
-    <div>
-      <h2 id="matchTitle">Popular Indian skill matches</h2>
-      <p>
-        Find students and learners with complementary skills.
-      </p>
-    </div>
+<div class="categories">
+<button class="category" onclick="filterCategory('Technology',this)">💻<br><strong>Technology</strong></button>
+<button class="category" onclick="filterCategory('Languages',this)">🗣️<br><strong>Languages</strong></button>
+<button class="category" onclick="filterCategory('Academics',this)">📚<br><strong>Academics</strong></button>
+<button class="category" onclick="filterCategory('Indian Arts',this)">🎨<br><strong>Indian Arts</strong></button>
+<button class="category" onclick="filterCategory('Music & Dance',this)">🎵<br><strong>Music & Dance</strong></button>
+<button class="category" onclick="filterCategory('Sports',this)">🏏<br><strong>Sports</strong></button>
+</div>
 
-    <button
-      style="border:0;background:transparent;color:var(--green);font-weight:750"
-      onclick="resetMatches()">
-      View all →
-    </button>
-  </div>
-
-  <div class="categories">
-
-    <button class="category"
-      onclick="filterCategory('Technology',this)">
-      <div class="category-icon">💻</div>
-      <strong>Technology</strong>
-    </button>
-
-    <button class="category"
-      onclick="filterCategory('Languages',this)">
-      <div class="category-icon">🗣️</div>
-      <strong>Languages</strong>
-    </button>
-
-    <button class="category"
-      onclick="filterCategory('Academics',this)">
-      <div class="category-icon">📚</div>
-      <strong>Academics</strong>
-    </button>
-
-    <button class="category"
-      onclick="filterCategory('Indian Arts',this)">
-      <div class="category-icon">🎨</div>
-      <strong>Indian Arts</strong>
-    </button>
-
-    <button class="category"
-      onclick="filterCategory('Music & Dance',this)">
-      <div class="category-icon">🎵</div>
-      <strong>Music & Dance</strong>
-    </button>
-
-    <button class="category"
-      onclick="filterCategory('Sports',this)">
-      <div class="category-icon">🏏</div>
-      <strong>Sports</strong>
-    </button>
-
-  </div>
-
-  <div class="matches" id="matches"></div>
-
+<div class="matches" id="matches"></div>
 </section>
 
 <section class="section" id="studentSkills">
+<div class="section-header">
+<div>
+<h2>🇮🇳 Skills students can exchange</h2>
+<p>From everyday Indian skills to future-ready technology.</p>
+</div>
+</div>
 
-  <div class="section-header">
-    <div>
-      <h2>🇮🇳 Skills students can exchange</h2>
-      <p>From everyday Indian skills to future-ready technology.</p>
-    </div>
-  </div>
-
-  <div class="filter-bar">
-    <button class="filter-chip">Hindi</button>
-    <button class="filter-chip">Telugu</button>
-    <button class="filter-chip">Tamil</button>
-    <button class="filter-chip">Kannada</button>
-    <button class="filter-chip">Malayalam</button>
-    <button class="filter-chip">Bengali</button>
-    <button class="filter-chip">Sanskrit</button>
-    <button class="filter-chip">Python</button>
-    <button class="filter-chip">JavaScript</button>
-    <button class="filter-chip">AI</button>
-    <button class="filter-chip">Robotics</button>
-    <button class="filter-chip">Maths</button>
-    <button class="filter-chip">Physics</button>
-    <button class="filter-chip">Public Speaking</button>
-    <button class="filter-chip">Cricket</button>
-    <button class="filter-chip">Chess</button>
-    <button class="filter-chip">Guitar</button>
-    <button class="filter-chip">Tabla</button>
-    <button class="filter-chip">Bharatanatyam</button>
-    <button class="filter-chip">Drawing</button>
-    <button class="filter-chip">Rangoli</button>
-    <button class="filter-chip">Mehendi</button>
-    <button class="filter-chip">Indian Cooking</button>
-  </div>
-
+<div class="filter-bar" id="skillFilters">
+</div>
 </section>
 
 <section class="section" id="requestsSection">
+<div class="section-header">
+<div>
+<h2>Your SkillSwap dashboard</h2>
+<p>Manage requests, connections and completed exchanges.</p>
+</div>
+</div>
 
-  <div class="section-header">
-    <div>
-      <h2>Your SkillSwap dashboard</h2>
-      <p>
-        Manage requests, connections and completed exchanges.
-      </p>
-    </div>
-  </div>
+<div class="dashboard-grid">
+<div class="dashboard-card">
+<h3>🤝 Swap requests</h3>
+<p>Your outgoing skill-swap requests.</p>
+<div class="request-list" id="requestList"></div>
+</div>
 
-  <div class="dashboard-grid">
+<div class="dashboard-card">
+<h3>💬 Connections</h3>
+<p>People you've connected with.</p>
+<div class="connection-list" id="connectionList"></div>
+</div>
 
-    <div class="dashboard-card">
-      <h3>🤝 Swap requests</h3>
-      <p>Requests you've received.</p>
-      <div class="request-list" id="requestList"></div>
-    </div>
-
-    <div class="dashboard-card">
-      <h3>💬 Connections</h3>
-      <p>People you've connected with.</p>
-      <div class="connection-list" id="connectionList"></div>
-    </div>
-
-    <div class="dashboard-card">
-      <h3>⭐ Your reviews</h3>
-      <p>Feedback from your skill exchanges.</p>
-      <div class="review-list" id="reviewList"></div>
-    </div>
-
-  </div>
-
+<div class="dashboard-card">
+<h3>⭐ Your reviews</h3>
+<p>Feedback from your skill exchanges.</p>
+<div class="review-list" id="reviewList"></div>
+</div>
+</div>
 </section>
 
 <section class="how" id="howItWorks">
+<h2>How SkillSwap works</h2>
+<p class="how-intro">
+SkillSwap makes learning social. Meet people who know something you want
+to learn and teach them something you know.
+</p>
 
-  <h2>How SkillSwap works</h2>
+<div class="steps">
+<div class="step"><div class="step-number">1</div><div class="step-icon">🧑‍🎓</div>
+<h3>Create your profile</h3><p>Tell the community your age group, location, skills, interests and availability.</p></div>
 
-  <p class="how-intro">
-    SkillSwap makes learning social. Instead of only watching
-    tutorials, meet people who know something you want to learn
-    and teach them something you know.
-  </p>
+<div class="step"><div class="step-number">2</div><div class="step-icon">🔎</div>
+<h3>Discover people</h3><p>Find learners interested in coding, languages, academics, sports, arts and music.</p></div>
 
-  <div class="steps">
+<div class="step"><div class="step-number">3</div><div class="step-icon">✨</div>
+<h3>Find a smart match</h3><p>Our matching system compares your learning goals with other members' skills.</p></div>
 
-    <div class="step">
-      <div class="step-number">1</div>
-      <div class="step-icon">🧑‍🎓</div>
-      <h3>Create your student profile</h3>
-      <p>
-        Tell the community your age group, location,
-        skills, interests and availability.
-      </p>
-    </div>
+<div class="step"><div class="step-number">4</div><div class="step-icon">🤝</div>
+<h3>Request a swap</h3><p>Offer your own skill in return and explain what you'd like to learn.</p></div>
 
-    <div class="step">
-      <div class="step-number">2</div>
-      <div class="step-icon">🔎</div>
-      <h3>Discover people</h3>
-      <p>
-        Find learners interested in coding, languages,
-        academics, sports, arts, music and more.
-      </p>
-    </div>
+<div class="step"><div class="step-number">5</div><div class="step-icon">💬</div>
+<h3>Chat safely</h3><p>Discuss your learning goals and arrange an appropriate learning session.</p></div>
 
-    <div class="step">
-      <div class="step-number">3</div>
-      <div class="step-icon">✨</div>
-      <h3>Find a smart match</h3>
-      <p>
-        SkillSwap compares what you want to learn
-        with what another person can teach.
-      </p>
-    </div>
-
-    <div class="step">
-      <div class="step-number">4</div>
-      <div class="step-icon">🤝</div>
-      <h3>Request a swap</h3>
-      <p>
-        Offer your own skill in return and explain
-        what you'd like to learn.
-      </p>
-    </div>
-
-    <div class="step">
-      <div class="step-number">5</div>
-      <div class="step-icon">💬</div>
-      <h3>Chat safely</h3>
-      <p>
-        Use the platform to discuss your learning goals
-        and arrange an appropriate learning session.
-      </p>
-    </div>
-
-    <div class="step">
-      <div class="step-number">6</div>
-      <div class="step-icon">⭐</div>
-      <h3>Learn and grow</h3>
-      <p>
-        Complete the exchange, leave feedback and
-        help build a friendly learning community.
-      </p>
-    </div>
-
-  </div>
-
+<div class="step"><div class="step-number">6</div><div class="step-icon">⭐</div>
+<h3>Learn and grow</h3><p>Complete the exchange, leave feedback and build a friendly community.</p></div>
+</div>
 </section>
 
 <section class="cta">
-
-  <h2>Everyone knows something.</h2>
-
-  <p>
-    Your Telugu, your guitar skills, your Python knowledge,
-    your cricket tips, your art — someone may want to learn it.
-  </p>
-
-  <button onclick="openAuth('signup')">
-    Create your free student profile →
-  </button>
-
+<h2>Everyone knows something.</h2>
+<p>Your Telugu, guitar skills, Python knowledge, cricket tips or art — someone may want to learn it.</p>
+<button onclick="openAuth('signup')">Create your free student profile →</button>
 </section>
-
 </main>
 
 <footer>
-  <div>© 2026 SkillSwap India</div>
-  <div>🇮🇳 Learn · Teach · Connect</div>
+<div>© 2026 SkillSwap India</div>
+<div>🇮🇳 Learn · Teach · Connect</div>
 </footer>
 
 <div class="toast" id="toast"></div>
 
-<!-- AUTH MODAL -->
-
+<!-- AUTH -->
 <div class="modal-overlay" id="authModal">
+<div class="modal">
+<button class="modal-close" onclick="closeModal('authModal')">×</button>
 
-  <div class="modal">
+<div id="signinForm">
+<h2>Welcome back 👋</h2>
+<p class="modal-subtitle">Sign in to continue learning.</p>
 
-    <button class="modal-close"
-      onclick="closeModal('authModal')">×</button>
+<div class="form-group">
+<label>Email</label>
+<input id="signinEmail" type="email" placeholder="you@example.com">
+</div>
 
-    <div id="signinForm">
+<div class="form-group">
+<label>Password</label>
+<input id="signinPassword" type="password" placeholder="••••••••">
+</div>
 
-      <h2>Welcome back 👋</h2>
+<button class="modal-submit" onclick="signIn()">Sign in</button>
 
-      <p class="modal-subtitle">
-        Sign in to continue learning.
-      </p>
+<p style="text-align:center;margin-top:15px;color:var(--muted)">
+Don't have an account?
+<button style="border:0;background:none;color:var(--green);font-weight:800"
+onclick="switchAuth('signup')">Create one</button>
+</p>
+</div>
 
-      <div class="form-group">
-        <label>Email</label>
-        <input id="signinEmail"
-          type="email"
-          placeholder="you@example.com">
-      </div>
+<div id="signupForm" style="display:none">
+<h2>Join SkillSwap India 🇮🇳</h2>
+<p class="modal-subtitle">Create a profile and exchange skills with other learners.</p>
 
-      <div class="form-group">
-        <label>Password</label>
-        <input id="signinPassword"
-          type="password"
-          placeholder="••••••••">
-      </div>
+<div class="form-group"><label>Your name</label><input id="signupName" placeholder="Your first name or nickname"></div>
+<div class="form-group"><label>Email</label><input id="signupEmail" type="email" placeholder="you@example.com"></div>
+<div class="form-group"><label>Password</label><input id="signupPassword" type="password" placeholder="Create a password"></div>
 
-      <button class="modal-submit" onclick="signIn()">
-        Sign in
-      </button>
+<div class="form-group">
+<label>I'm a...</label>
+<select id="signupType">
+<option>Teen Student</option>
+<option>School Student</option>
+<option>College Student</option>
+<option>Young Learner</option>
+<option>Other Learner</option>
+</select>
+</div>
 
-      <p style="text-align:center;margin-top:15px;color:var(--muted)">
-        Don't have an account?
-        <button
-          style="border:0;background:none;color:var(--green);font-weight:800"
-          onclick="switchAuth('signup')">
-          Create one
-        </button>
-      </p>
+<div class="form-group"><label>City / State</label><input id="signupLocation" placeholder="Hyderabad, Telangana"></div>
+<div class="form-group"><label>Languages you speak</label><input id="signupLanguages" placeholder="Telugu, Hindi, English"></div>
+<div class="form-group"><label>Bio</label><textarea id="signupBio" placeholder="Tell people about your interests..."></textarea></div>
+<div class="form-group"><label>What can you teach?</label><input id="signupSkill" placeholder="Python, Telugu, Guitar, Cricket..."></div>
+<div class="form-group"><label>What do you want to learn?</label><input id="signupWanted" placeholder="Maths, Coding, Hindi, Drawing..."></div>
 
-    </div>
+<div class="form-group">
+<label>Availability</label>
+<div class="checkbox-grid">
+<label class="check-option"><input type="checkbox" name="availability" value="After school">After school</label>
+<label class="check-option"><input type="checkbox" name="availability" value="Weekday evenings">Weekday evenings</label>
+<label class="check-option"><input type="checkbox" name="availability" value="Weekends">Weekends</label>
+<label class="check-option"><input type="checkbox" name="availability" value="Flexible">Flexible</label>
+</div>
+</div>
 
-    <div id="signupForm" style="display:none">
+<div class="safety-note" style="background:#eef7ff;color:#275b80;margin-bottom:15px">
+🛡️ Don't include your phone number, home address or other private information.
+</div>
 
-      <h2>Join SkillSwap India 🇮🇳</h2>
+<button class="modal-submit" onclick="signUp()">Create my profile</button>
 
-      <p class="modal-subtitle">
-        Create a profile and exchange skills with other learners.
-      </p>
-
-      <div class="form-group">
-        <label>Your name</label>
-        <input id="signupName"
-          type="text"
-          placeholder="Your first name or nickname">
-      </div>
-
-      <div class="form-group">
-        <label>Email</label>
-        <input id="signupEmail"
-          type="email"
-          placeholder="you@example.com">
-      </div>
-
-      <div class="form-group">
-        <label>Password</label>
-        <input id="signupPassword"
-          type="password"
-          placeholder="Create a password">
-      </div>
-
-      <div class="form-group">
-        <label>I'm a...</label>
-
-        <select id="signupType">
-          <option value="Teen Student">Teen Student</option>
-          <option value="School Student">School Student</option>
-          <option value="College Student">College Student</option>
-          <option value="Young Learner">Young Learner</option>
-          <option value="Other Learner">Other Learner</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>City / State</label>
-        <input id="signupLocation"
-          type="text"
-          placeholder="Hyderabad, Telangana">
-      </div>
-
-      <div class="form-group">
-        <label>Languages you speak</label>
-        <input id="signupLanguages"
-          type="text"
-          placeholder="Telugu, Hindi, English">
-      </div>
-
-      <div class="form-group">
-        <label>Bio</label>
-        <textarea id="signupBio"
-          placeholder="Tell people about your interests..."></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>What can you teach?</label>
-        <input id="signupSkill"
-          type="text"
-          placeholder="Python, Telugu, Guitar, Cricket...">
-      </div>
-
-      <div class="form-group">
-        <label>What do you want to learn?</label>
-        <input id="signupWanted"
-          type="text"
-          placeholder="Maths, Coding, Hindi, Drawing...">
-      </div>
-
-      <div class="form-group">
-
-        <label>Availability</label>
-
-        <div class="checkbox-grid">
-
-          <label class="check-option">
-            <input type="checkbox"
-              name="availability"
-              value="After school">
-            After school
-          </label>
-
-          <label class="check-option">
-            <input type="checkbox"
-              name="availability"
-              value="Weekday evenings">
-            Weekday evenings
-          </label>
-
-          <label class="check-option">
-            <input type="checkbox"
-              name="availability"
-              value="Weekends">
-            Weekends
-          </label>
-
-          <label class="check-option">
-            <input type="checkbox"
-              name="availability"
-              value="Flexible">
-            Flexible
-          </label>
-
-        </div>
-
-      </div>
-
-      <div class="safety-note"
-        style="background:#eef7ff;color:#275b80;margin-bottom:15px">
-        🛡️ For your safety, don't include your phone number,
-        home address or other private information in your profile.
-      </div>
-
-      <button class="modal-submit" onclick="signUp()">
-        Create my profile
-      </button>
-
-      <p style="text-align:center;margin-top:15px;color:var(--muted)">
-        Already have an account?
-        <button
-          style="border:0;background:none;color:var(--green);font-weight:800"
-          onclick="switchAuth('signin')">
-          Sign in
-        </button>
-      </p>
-
-    </div>
-
-  </div>
-
+<p style="text-align:center;margin-top:15px;color:var(--muted)">
+Already have an account?
+<button style="border:0;background:none;color:var(--green);font-weight:800"
+onclick="switchAuth('signin')">Sign in</button>
+</p>
+</div>
+</div>
 </div>
 
 <!-- PROFILE -->
-
 <div class="modal-overlay" id="profileModal">
+<div class="modal">
+<button class="modal-close" onclick="closeModal('profileModal')">×</button>
 
-  <div class="modal">
+<div class="profile-large">
+<div class="profile-large-avatar" id="profileAvatar">👤</div>
+<h2 id="profileName">Your Name</h2>
+<p class="profile-location" id="profileType"></p>
+<p class="profile-location" id="profileLocation"></p>
+<p class="profile-bio" id="profileBio"></p>
+</div>
 
-    <button class="modal-close"
-      onclick="closeModal('profileModal')">×</button>
-
-    <div class="profile-large">
-
-      <div class="profile-large-avatar"
-        id="profileAvatar">👤</div>
-
-      <h2 id="profileName">Your Name</h2>
-
-      <p class="profile-location"
-        id="profileType"></p>
-
-      <p class="profile-location"
-        id="profileLocation"></p>
-
-      <p class="profile-bio"
-        id="profileBio"></p>
-
-    </div>
-
-    <div class="profile-info">
-
-      <p><strong>📚 Can teach</strong></p>
-      <div class="profile-skills" id="profileTeach"></div>
-
-      <br>
-
-      <p><strong>✨ Wants to learn</strong></p>
-      <div class="profile-skills" id="profileLearn"></div>
-
-      <br>
-
-      <p><strong>🗣️ Languages</strong></p>
-      <p id="profileLanguages"
-        style="color:var(--muted);margin-top:6px"></p>
-
-      <br>
-
-      <p><strong>🕐 Availability</strong></p>
-      <p id="profileAvailability"
-        style="color:var(--muted);margin-top:6px"></p>
-
-    </div>
-
-  </div>
-
+<div class="profile-info">
+<p><strong>📚 Can teach</strong></p>
+<div class="profile-skills" id="profileTeach"></div>
+<br>
+<p><strong>✨ Wants to learn</strong></p>
+<div class="profile-skills" id="profileLearn"></div>
+<br>
+<p><strong>🗣️ Languages</strong></p>
+<p id="profileLanguages" style="color:var(--muted);margin-top:6px"></p>
+<br>
+<p><strong>🕐 Availability</strong></p>
+<p id="profileAvailability" style="color:var(--muted);margin-top:6px"></p>
+</div>
+</div>
 </div>
 
 <!-- REQUEST -->
-
 <div class="modal-overlay" id="requestModal">
+<div class="modal">
+<button class="modal-close" onclick="closeModal('requestModal')">×</button>
+<h2>Request a skill swap 🤝</h2>
+<p class="modal-subtitle" id="requestSubtitle"></p>
 
-  <div class="modal">
+<div class="form-group">
+<label>What would you like to learn?</label>
+<input id="requestWanted">
+</div>
 
-    <button class="modal-close"
-      onclick="closeModal('requestModal')">×</button>
+<div class="form-group">
+<label>What will you teach in return?</label>
+<input id="requestOffered">
+</div>
 
-    <h2>Request a skill swap 🤝</h2>
+<div class="form-group">
+<label>Message</label>
+<textarea id="requestMessage" placeholder="Introduce yourself and explain your learning goal..."></textarea>
+</div>
 
-    <p class="modal-subtitle" id="requestSubtitle">
-      Send a request to this person.
-    </p>
-
-    <div class="form-group">
-      <label>What would you like to learn?</label>
-      <input id="requestWanted" type="text">
-    </div>
-
-    <div class="form-group">
-      <label>What will you teach in return?</label>
-      <input id="requestOffered" type="text">
-    </div>
-
-    <div class="form-group">
-      <label>Message</label>
-      <textarea id="requestMessage"
-        placeholder="Introduce yourself and explain your learning goal..."></textarea>
-    </div>
-
-    <button class="modal-submit"
-      onclick="submitSwapRequest()">
-      Send swap request
-    </button>
-
-  </div>
-
+<button class="modal-submit" onclick="submitSwapRequest()">Send swap request</button>
+</div>
 </div>
 
 <!-- CHAT -->
-
 <div class="modal-overlay" id="chatModal">
+<div class="modal chat-modal">
 
-  <div class="modal chat-modal">
+<div class="chat-header">
+<div class="chat-person">
+<div class="chat-avatar" id="chatAvatar">👤</div>
+<div>
+<h3 id="chatName">Chat</h3>
+<p>SkillSwap member</p>
+</div>
+</div>
+<button class="chat-close" onclick="closeModal('chatModal')">×</button>
+</div>
 
-    <div class="chat-header">
+<div class="chat-messages" id="chatMessages"></div>
 
-      <div class="chat-person">
-
-        <div class="chat-avatar"
-          id="chatAvatar">👤</div>
-
-        <div>
-          <h3 id="chatName">Chat</h3>
-          <p>SkillSwap learning connection</p>
-        </div>
-
-      </div>
-
-      <button class="chat-close"
-        onclick="closeModal('chatModal')">×</button>
-
-    </div>
-
-    <div class="chat-messages"
-      id="chatMessages"></div>
-
-    <div class="chat-input">
-
-      <input id="chatInput"
-        type="text"
-        placeholder="Talk about your learning goals..."
-        onkeydown="handleChatKey(event)">
-
-      <button onclick="sendMessage()">Send</button>
-
-    </div>
-
-  </div>
-
+<div class="chat-input">
+<input id="chatInput" placeholder="Talk about your learning goals..." onkeydown="handleChatKey(event)">
+<button onclick="sendMessage()">Send</button>
+</div>
+</div>
 </div>
 
 <script>
-
-/* =========================================================
-   INDIAN DEMO COMMUNITY
-========================================================= */
-
-const demoPeople = [
-
-  {
-    id:"ananya",
-    name:"Ananya Reddy",
-    avatar:"👩🏽",
-    location:"Hyderabad, Telangana",
-    category:"Languages",
-    type:"Teen Student",
-    languages:["Telugu","Hindi","English"],
-    teach:["Telugu","Hindi"],
-    want:["Python","AI"],
-    availability:["After school","Weekends"],
-    rating:4.9,
-    reviews:32,
-    bio:"School student who loves languages, technology and helping other students."
-  },
-
-  {
-    id:"aarav",
-    name:"Aarav Sharma",
-    avatar:"👨🏽",
-    location:"Bengaluru, Karnataka",
-    category:"Technology",
-    type:"School Student",
-    languages:["Hindi","English","Kannada"],
-    teach:["Python","Robotics"],
-    want:["Guitar","Public Speaking"],
-    availability:["Weekday evenings","Weekends"],
-    rating:4.8,
-    reviews:27,
-    bio:"Young coding enthusiast building small robotics projects."
-  },
-
-  {
-    id:"meera",
-    name:"Meera Krishnan",
-    avatar:"👩🏽",
-    location:"Chennai, Tamil Nadu",
-    category:"Music & Dance",
-    type:"Teen Student",
-    languages:["Tamil","English"],
-    teach:["Bharatanatyam","Carnatic Music"],
-    want:["Graphic Design","Photography"],
-    availability:["Weekends"],
-    rating:5,
-    reviews:41,
-    bio:"Learns classical Indian arts and enjoys creative projects."
-  },
-
-  {
-    id:"rohan",
-    name:"Rohan Patel",
-    avatar:"👨🏽",
-    location:"Pune, Maharashtra",
-    category:"Technology",
-    type:"College Student",
-    languages:["Hindi","Marathi","English"],
-    teach:["Python","AI","Machine Learning"],
-    want:["Web Design","Video Editing"],
-    availability:["Weekday evenings","Flexible"],
-    rating:5,
-    reviews:46,
-    bio:"AI learner who enjoys explaining technology in simple language."
-  },
-
-  {
-    id:"saanvi",
-    name:"Saanvi Gupta",
-    avatar:"👩🏼",
-    location:"Delhi, India",
-    category:"Academics",
-    type:"Teen Student",
-    languages:["Hindi","English"],
-    teach:["Mathematics","Study Planning"],
-    want:["Spanish","Guitar"],
-    availability:["After school","Weekends"],
-    rating:4.9,
-    reviews:29,
-    bio:"Student who enjoys maths, study techniques and music."
-  },
-
-  {
-    id:"vikram",
-    name:"Vikram Rao",
-    avatar:"👨🏽",
-    location:"Vijayawada, Andhra Pradesh",
-    category:"Sports",
-    type:"Teen Student",
-    languages:["Telugu","English"],
-    teach:["Cricket","Chess"],
-    want:["Python","Photography"],
-    availability:["Weekends","Flexible"],
-    rating:4.8,
-    reviews:21,
-    bio:"Cricket and chess fan who wants to explore technology."
-  },
-
-  {
-    id:"ishita",
-    name:"Ishita Singh",
-    avatar:"👩🏽",
-    location:"Jaipur, Rajasthan",
-    category:"Indian Arts",
-    type:"Teen Student",
-    languages:["Hindi","English"],
-    teach:["Rangoli","Mehendi","Drawing"],
-    want:["Coding","Photography"],
-    availability:["Weekends"],
-    rating:4.9,
-    reviews:36,
-    bio:"Creative student interested in Indian art and digital design."
-  },
-
-  {
-    id:"aditya",
-    name:"Aditya Nair",
-    avatar:"👨🏽",
-    location:"Kochi, Kerala",
-    category:"Academics",
-    type:"College Student",
-    languages:["Malayalam","Hindi","English"],
-    teach:["Physics","Science Projects"],
-    want:["Video Editing","Guitar"],
-    availability:["Weekday evenings","Flexible"],
-    rating:4.7,
-    reviews:18,
-    bio:"Science student who loves practical experiments."
-  },
-
-  {
-    id:"kavya",
-    name:"Kavya Das",
-    avatar:"👩🏽",
-    location:"Kolkata, West Bengal",
-    category:"Languages",
-    type:"Teen Student",
-    languages:["Bengali","Hindi","English"],
-    teach:["Bengali","Creative Writing"],
-    want:["Python","Public Speaking"],
-    availability:["Weekends"],
-    rating:4.8,
-    reviews:25,
-    bio:"Language lover and young writer."
-  },
-
-  {
-    id:"dev",
-    name:"Dev Malhotra",
-    avatar:"👨🏻",
-    location:"Mumbai, Maharashtra",
-    category:"Indian Arts",
-    type:"Teen Student",
-    languages:["Hindi","English"],
-    teach:["Guitar","Video Editing"],
-    want:["Tabla","Cricket"],
-    availability:["Weekday evenings","Weekends"],
-    rating:4.8,
-    reviews:30,
-    bio:"Music and video creator who loves learning new skills."
-  },
-
-  {
-    id:"priya",
-    name:"Priya Sharma",
-    avatar:"👩🏾",
-    location:"Hyderabad, Telangana",
-    category:"Indian Arts",
-    type:"College Student",
-    languages:["Telugu","Hindi","English"],
-    teach:["Indian Cooking","Biryani"],
-    want:["Baking","Photography"],
-    availability:["Weekends","Flexible"],
-    rating:5,
-    reviews:52,
-    bio:"Home cook who enjoys sharing Indian recipes."
-  },
-
-  {
-    id:"arjun",
-    name:"Arjun Mehta",
-    avatar:"👨🏽",
-    location:"Ahmedabad, Gujarat",
-    category:"Sports",
-    type:"Teen Student",
-    languages:["Hindi","Gujarati","English"],
-    teach:["Cricket","Football"],
-    want:["Coding","Guitar"],
-    availability:["Weekends"],
-    rating:4.8,
-    reviews:27,
-    bio:"Sports enthusiast who wants to learn technology and music."
-  }
-
+const demoPeople=[
+{
+id:"ananya",name:"Ananya Reddy",avatar:"👩🏽",location:"Hyderabad, Telangana",
+category:"Languages",type:"Teen Student",
+languages:["Telugu","Hindi","English"],teach:["Telugu","Hindi"],want:["Python","AI"],
+availability:["After school","Weekends"],rating:4.9,reviews:32,
+bio:"School student who loves languages, technology and helping other students."
+},
+{
+id:"aarav",name:"Aarav Sharma",avatar:"👨🏽",location:"Bengaluru, Karnataka",
+category:"Technology",type:"School Student",
+languages:["Hindi","English","Kannada"],teach:["Python","Robotics"],
+want:["Guitar","Public Speaking"],availability:["Weekday evenings","Weekends"],
+rating:4.8,reviews:27,bio:"Young coding enthusiast building small robotics projects."
+},
+{
+id:"meera",name:"Meera Krishnan",avatar:"👩🏽",location:"Chennai, Tamil Nadu",
+category:"Music & Dance",type:"Teen Student",
+languages:["Tamil","English"],teach:["Bharatanatyam","Carnatic Music"],
+want:["Graphic Design","Photography"],availability:["Weekends"],
+rating:5,reviews:41,bio:"Learns classical Indian arts and enjoys creative projects."
+},
+{
+id:"rohan",name:"Rohan Patel",avatar:"👨🏽",location:"Pune, Maharashtra",
+category:"Technology",type:"College Student",
+languages:["Hindi","Marathi","English"],teach:["Python","AI","Machine Learning"],
+want:["Web Design","Video Editing"],availability:["Weekday evenings","Flexible"],
+rating:5,reviews:46,bio:"Technology learner who enjoys explaining difficult ideas simply."
+},
+{
+id:"saanvi",name:"Saanvi Gupta",avatar:"👩🏼",location:"Delhi, India",
+category:"Academics",type:"Teen Student",
+languages:["Hindi","English"],teach:["Mathematics","Study Planning"],
+want:["Spanish","Guitar"],availability:["After school","Weekends"],
+rating:4.9,reviews:29,bio:"Student who enjoys maths, study techniques and music."
+},
+{
+id:"vikram",name:"Vikram Rao",avatar:"👨🏽",location:"Vijayawada, Andhra Pradesh",
+category:"Sports",type:"Teen Student",
+languages:["Telugu","English"],teach:["Cricket","Chess"],
+want:["Python","Photography"],availability:["Weekends","Flexible"],
+rating:4.8,reviews:21,bio:"Cricket and chess fan who wants to explore technology."
+},
+{
+id:"ishita",name:"Ishita Singh",avatar:"👩🏽",location:"Jaipur, Rajasthan",
+category:"Indian Arts",type:"Teen Student",
+languages:["Hindi","English"],teach:["Rangoli","Mehendi","Drawing"],
+want:["Coding","Photography"],availability:["Weekends"],
+rating:4.9,reviews:36,bio:"Creative student interested in Indian art and digital design."
+},
+{
+id:"aditya",name:"Aditya Nair",avatar:"👨🏽",location:"Kochi, Kerala",
+category:"Academics",type:"College Student",
+languages:["Malayalam","Hindi","English"],teach:["Physics","Science Projects"],
+want:["Video Editing","Guitar"],availability:["Weekday evenings","Flexible"],
+rating:4.7,reviews:18,bio:"Science student who loves practical experiments."
+},
+{
+id:"kavya",name:"Kavya Das",avatar:"👩🏽",location:"Kolkata, West Bengal",
+category:"Languages",type:"Teen Student",
+languages:["Bengali","Hindi","English"],teach:["Bengali","Creative Writing"],
+want:["Python","Public Speaking"],availability:["Weekends"],
+rating:4.8,reviews:25,bio:"Language lover and young writer."
+},
+{
+id:"dev",name:"Dev Malhotra",avatar:"👨🏻",location:"Mumbai, Maharashtra",
+category:"Indian Arts",type:"Teen Student",
+languages:["Hindi","English"],teach:["Guitar","Video Editing"],
+want:["Tabla","Cricket"],availability:["Weekday evenings","Weekends"],
+rating:4.8,reviews:30,bio:"Music and video creator who loves learning new skills."
+},
+{
+id:"priya",name:"Priya Sharma",avatar:"👩🏾",location:"Hyderabad, Telangana",
+category:"Indian Arts",type:"College Student",
+languages:["Telugu","Hindi","English"],teach:["Indian Cooking","Biryani"],
+want:["Baking","Photography"],availability:["Weekends","Flexible"],
+rating:5,reviews:52,bio:"Home cook who enjoys sharing Indian recipes."
+},
+{
+id:"arjun",name:"Arjun Mehta",avatar:"👨🏽",location:"Ahmedabad, Gujarat",
+category:"Sports",type:"Teen Student",
+languages:["Hindi","Gujarati","English"],teach:["Cricket","Football"],
+want:["Coding","Guitar"],availability:["Weekends"],
+rating:4.8,reviews:27,bio:"Sports enthusiast who wants to learn technology and music."
+}
 ];
 
-/* STATE */
+let currentRequestPerson=null;
+let currentChatPerson=null;
 
-let currentChatPerson = null;
-let currentRequestPerson = null;
-
-/* STORAGE */
+const skills=[
+"Hindi","Telugu","Tamil","Kannada","Malayalam","Bengali","Sanskrit",
+"Python","JavaScript","AI","Robotics","Maths","Physics","Public Speaking",
+"Cricket","Chess","Guitar","Tabla","Bharatanatyam","Drawing","Rangoli",
+"Mehendi","Indian Cooking"
+];
 
 function getCurrentUser(){
-  return JSON.parse(localStorage.getItem("skillswapUser"));
+return JSON.parse(localStorage.getItem("skillswapUser")||"null");
 }
-
 function getUsers(){
-  return JSON.parse(localStorage.getItem("skillswapUsers")) || {};
+return JSON.parse(localStorage.getItem("skillswapUsers")||"{}");
 }
-
-function saveUsers(users){
-  localStorage.setItem("skillswapUsers",JSON.stringify(users));
+function saveUsers(x){
+localStorage.setItem("skillswapUsers",JSON.stringify(x));
 }
-
 function getRequests(){
-  return JSON.parse(localStorage.getItem("skillswapRequests")) || [];
+return JSON.parse(localStorage.getItem("skillswapRequests")||"[]");
 }
-
-function saveRequests(requests){
-  localStorage.setItem("skillswapRequests",JSON.stringify(requests));
+function saveRequests(x){
+localStorage.setItem("skillswapRequests",JSON.stringify(x));
 }
-
+function getMessages(){
+return JSON.parse(localStorage.getItem("skillswapMessages")||"{}");
+}
+function saveMessages(x){
+localStorage.setItem("skillswapMessages",JSON.stringify(x));
+}
 function showToast(message){
-  const toast=document.getElementById("toast");
-  toast.textContent=message;
-  toast.classList.add("show");
-
-  setTimeout(()=>{
-    toast.classList.remove("show");
-  },2800);
+const t=document.getElementById("toast");
+t.textContent=message;t.classList.add("show");
+setTimeout(()=>t.classList.remove("show"),2800);
 }
-
-/* MODALS */
-
-function openAuth(type){
-  document.getElementById("authModal").classList.add("show");
-  switchAuth(type);
-}
-
-function switchAuth(type){
-
-  document.getElementById("signinForm").style.display =
-    type==="signin" ? "block":"none";
-
-  document.getElementById("signupForm").style.display =
-    type==="signup" ? "block":"none";
-}
-
 function closeModal(id){
-  document.getElementById(id).classList.remove("show");
+document.getElementById(id).classList.remove("show");
+}
+function openAuth(type){
+document.getElementById("authModal").classList.add("show");
+switchAuth(type);
+}
+function switchAuth(type){
+document.getElementById("signinForm").style.display=type==="signin"?"block":"none";
+document.getElementById("signupForm").style.display=type==="signup"?"block":"none";
 }
 
-/* SIGN UP */
-
-function signUp(){
-
-  const name=document.getElementById("signupName").value.trim();
-  const email=document.getElementById("signupEmail").value.trim().toLowerCase();
-  const password=document.getElementById("signupPassword").value;
-  const type=document.getElementById("signupType").value;
-  const location=document.getElementById("signupLocation").value.trim();
-  const languages=document.getElementById("signupLanguages").value.trim();
-  const bio=document.getElementById("signupBio").value.trim();
-  const teach=document.getElementById("signupSkill").value.trim();
-  const want=document.getElementById("signupWanted").value.trim();
-
-  const availability=[
-    ...document.querySelectorAll(
-      'input[name="availability"]:checked'
-    )
-  ].map(x=>x.value);
-
-  if(!name || !email || !password){
-    showToast("Please fill in your name, email and password.");
-    return;
-  }
-
-  const users=getUsers();
-
-  if(users[email]){
-    showToast("An account with this email already exists.");
-    return;
-  }
-
-  const user={
-    id:"user_"+Date.now(),
-    name,
-    email,
-    password,
-    type,
-    location:location || "Online",
-    languages:languages
-      ? languages.split(",").map(x=>x.trim())
-      : ["English"],
-    bio:bio || "Learning and sharing skills.",
-    teach:teach
-      ? teach.split(",").map(x=>x.trim()).filter(Boolean)
-      : ["Knowledge Sharing"],
-    want:want
-      ? want.split(",").map(x=>x.trim()).filter(Boolean)
-      : ["Something New"],
-    availability:availability.length
-      ? availability
-      : ["Flexible"],
-    avatar:"🧑🏻",
-    rating:0,
-    reviews:0
-  };
-
-  users[email]=user;
-  saveUsers(users);
-
-  localStorage.setItem(
-    "skillswapUser",
-    JSON.stringify(user)
-  );
-
-  closeModal("authModal");
-  updateUserUI();
-  renderEverything();
-
-  showToast("🎉 Welcome to SkillSwap India, "+name+"!");
+function escapeHTML(v){
+return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;")
+.replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
 }
 
-/* SIGN IN */
-
-function signIn(){
-
-  const email=document.getElementById("signinEmail")
-    .value.trim().toLowerCase();
-
-  const password=document.getElementById("signinPassword")
-    .value;
-
-  const users=getUsers();
-  const user=users[email];
-
-  if(!email || !password){
-    showToast("Please enter your email and password.");
-    return;
-  }
-
-  if(!user){
-    showToast("Account not found.");
-    return;
-  }
-
-  if(user.password!==password){
-    showToast("Incorrect email or password.");
-    return;
-  }
-
-  localStorage.setItem(
-    "skillswapUser",
-    JSON.stringify(user)
-  );
-
-  closeModal("authModal");
-  updateUserUI();
-  renderEverything();
-
-  showToast("👋 Welcome back, "+user.name+"!");
+function normalizeSkill(v){
+return String(v||"").toLowerCase()
+.replace(/[^a-z0-9+# ]/g,"").trim();
 }
 
-/* USER UI */
-
-function updateUserUI(){
-
-  const user=getCurrentUser();
-
-  const loggedOut=document.getElementById("loggedOutNav");
-  const loggedIn=document.getElementById("loggedInNav");
-
-  if(user){
-
-    loggedOut.style.display="none";
-    loggedIn.classList.add("show");
-
-    document.getElementById("navProfileName").textContent=
-      user.name;
-
-    document.getElementById("navAvatar").textContent=
-      user.avatar || "👤";
-
-    updateProfileModal();
-
-  }else{
-
-    loggedOut.style.display="flex";
-    loggedIn.classList.remove("show");
-
-  }
-}
-
-/* PROFILE */
-
-function updateProfileModal(){
-
-  const user=getCurrentUser();
-
-  if(!user)return;
-
-  document.getElementById("profileAvatar").textContent=
-    user.avatar || "👤";
-
-  document.getElementById("profileName").textContent=
-    user.name;
-
-  document.getElementById("profileType").textContent=
-    "🧑‍🎓 "+(user.type || "Learner");
-
-  document.getElementById("profileLocation").textContent=
-    "📍 "+(user.location || "Online");
-
-  document.getElementById("profileBio").textContent=
-    user.bio || "";
-
-  document.getElementById("profileTeach").innerHTML=
-    (user.teach||[])
-      .map(x=>`<span class="skill-tag">${escapeHTML(x)}</span>`)
-      .join("");
-
-  document.getElementById("profileLearn").innerHTML=
-    (user.want||[])
-      .map(x=>`<span class="skill-tag">${escapeHTML(x)}</span>`)
-      .join("");
-
-  document.getElementById("profileLanguages").textContent=
-    (user.languages||["English"]).join(" · ");
-
-  document.getElementById("profileAvailability").textContent=
-    (user.availability||["Flexible"]).join(" · ");
-}
-
-function openProfile(){
-
-  if(!getCurrentUser()){
-    openAuth("signin");
-    return;
-  }
-
-  updateProfileModal();
-  document.getElementById("profileModal").classList.add("show");
-}
-
-/* LOGOUT */
-
-function logout(){
-
-  localStorage.removeItem("skillswapUser");
-  window.location.reload();
-}
-
-/* MATCHING */
-
-function normalizeSkill(skill){
-  return String(skill)
-    .toLowerCase()
-    .replace(/[^a-z0-9+# ]/g,"")
-    .trim();
-}
-
+/* Improved matching */
 function skillMatches(a,b){
+const x=normalizeSkill(a),y=normalizeSkill(b);
+if(!x||!y)return false;
+if(x===y)return true;
 
-  const x=normalizeSkill(a);
-  const y=normalizeSkill(b);
+const aliases={
+javascript:["js","javascript"],
+python:["python","py"],
+ai:["artificial intelligence","ai","machine learning","ml"],
+maths:["math","maths","mathematics"],
+telugu:["telugu"],
+guitar:["guitar"],
+drawing:["drawing","art"],
+cricket:["cricket"]
+};
 
-  return x && y && (
-    x===y ||
-    x.includes(y) ||
-    y.includes(x)
-  );
+for(const group of Object.values(aliases)){
+if(group.includes(x)&&group.includes(y))return true;
+}
+
+return x.includes(y)||y.includes(x);
+}
+
+function overlap(listA,listB){
+let count=0;
+(listA||[]).forEach(a=>{
+(listB||[]).forEach(b=>{
+if(skillMatches(a,b))count++;
+});
+});
+return count;
 }
 
 function calculateMatch(user,person){
-
-  if(!user){
-    return Math.floor(82+Math.random()*15);
-  }
-
-  let score=45;
-
-  const userWant=user.want||[];
-  const userTeach=user.teach||[];
-
-  const personTeach=person.teach||[];
-  const personWant=person.want||[];
-
-  let learnMatches=0;
-  let teachMatches=0;
-
-  userWant.forEach(w=>{
-    personTeach.forEach(t=>{
-      if(skillMatches(w,t)) learnMatches++;
-    });
-  });
-
-  personWant.forEach(w=>{
-    userTeach.forEach(t=>{
-      if(skillMatches(w,t)) teachMatches++;
-    });
-  });
-
-  score+=Math.min(25,learnMatches*15);
-  score+=Math.min(20,teachMatches*10);
-
-  const ua=user.availability||[];
-  const pa=person.availability||[];
-
-  if(
-    ua.some(a=>
-      pa.includes(a) ||
-      a==="Flexible" ||
-      pa.includes("Flexible")
-    )
-  ){
-    score+=7;
-  }
-
-  if(
-    user.location &&
-    person.location &&
-    normalizeSkill(user.location)
-      .split(",")[0] ===
-    normalizeSkill(person.location)
-      .split(",")[0]
-  ){
-    score+=5;
-  }
-
-  return Math.min(99,Math.max(50,Math.round(score)));
+if(!user){
+return {
+score:Math.floor(78+Math.random()*17),
+reasons:["Complementary skills","Active member"]
+};
 }
 
-/* RENDER */
+let score=35;
+let reasons=[];
+
+const learn=overlap(user.want,person.teach);
+const teach=overlap(user.teach,person.want);
+const language=overlap(user.languages,person.languages);
+const availability=overlap(user.availability,person.availability);
+
+if(learn){
+score+=Math.min(28,learn*14);
+reasons.push("They teach what you want");
+}
+if(teach){
+score+=Math.min(22,teach*11);
+reasons.push("They want what you teach");
+}
+if(language){
+score+=Math.min(8,language*4);
+reasons.push("Shared language");
+}
+if(availability){
+score+=Math.min(7,availability*4);
+reasons.push("Matching availability");
+}
+
+const cityA=normalizeSkill(user.location).split(",")[0];
+const cityB=normalizeSkill(person.location).split(",")[0];
+
+if(cityA&&cityB&&cityA===cityB){
+score+=8;
+reasons.push("Same city");
+}
+
+if(user.type&&person.type){
+if(user.type.includes("Student")&&person.type.includes("Student")){
+score+=4;
+}
+}
+
+if(!reasons.length)reasons.push("Good general compatibility");
+
+return {
+score:Math.min(99,Math.max(50,Math.round(score))),
+reasons:reasons.slice(0,2)
+};
+}
+
+function getExistingRequest(user,person){
+if(!user)return null;
+return getRequests().find(r=>
+(r.senderId===user.id&&r.receiverId===person.id)||
+(r.senderId===person.id&&r.receiverId===user.id)
+)||null;
+}
 
 function renderMatches(people=demoPeople){
+const user=getCurrentUser();
+const container=document.getElementById("matches");
 
-  const container=document.getElementById("matches");
-  const user=getCurrentUser();
+let list=people.map(p=>{
+const result=calculateMatch(user,p);
+return {...p,match:result.score,reasons:result.reasons};
+});
 
-  let list=[...people];
+if(user){
+list=list.filter(p=>p.id!==user.id&&p.name!==user.name);
+}
 
-  list=list
-    .map(person=>({
-      ...person,
-      match:calculateMatch(user,person)
-    }))
-    .sort((a,b)=>b.match-a.match);
+list.sort((a,b)=>b.match-a.match);
+container.innerHTML="";
 
-  if(user){
-    list=list.filter(
-      p=>normalizeSkill(p.name)!==
-      normalizeSkill(user.name)
-    );
-  }
+list.forEach(person=>{
+const request=getExistingRequest(user,person);
 
-  container.innerHTML="";
+let buttonText="Request Skill Swap";
+let buttonClass="connect";
+let action=`openRequest('${person.id}')`;
 
-  list.forEach(person=>{
+if(request?.status==="pending"){
+buttonText="Request Pending";
+buttonClass="connect pending";
+action="void(0)";
+}
+if(request?.status==="accepted"){
+buttonText="💬 Open Chat";
+buttonClass="connect connected";
+action=`openChat('${person.id}')`;
+}
 
-    const card=document.createElement("article");
+const card=document.createElement("article");
+card.className="person-card";
+card.dataset.category=person.category;
+card.dataset.search=[
+person.name,person.location,person.category,person.type,
+...person.languages,...person.teach,...person.want
+].join(" ").toLowerCase();
 
-    card.className="person-card";
+card.innerHTML=`
+<div class="match-score">${person.match}% match</div>
+<div class="member-badge">🧑‍🎓 SkillSwap Member</div>
 
-    card.dataset.category=person.category;
+<div class="profile">
+<div class="avatar">${person.avatar}</div>
+<div>
+<h3>${escapeHTML(person.name)}</h3>
+<p>📍 ${escapeHTML(person.location)}</p>
+<div class="rating">⭐ ${person.rating} · ${person.reviews} reviews</div>
+</div>
+</div>
 
-    card.dataset.search=[
-      person.name,
-      person.location,
-      person.category,
-      person.type,
-      ...(person.languages||[]),
-      ...(person.teach||[]),
-      ...(person.want||[])
-    ].join(" ").toLowerCase();
+<div class="skill-row">
+<div class="skill">
+<small>Can teach</small>
+<strong>${person.teach.slice(0,2).map(x=>"📚 "+escapeHTML(x)).join("<br>")}</strong>
+</div>
+<div class="swap">↔</div>
+<div class="skill">
+<small>Wants to learn</small>
+<strong>${person.want.slice(0,2).map(x=>"✨ "+escapeHTML(x)).join("<br>")}</strong>
+</div>
+</div>
 
-    const userRequest=getExistingRequest(user,person);
+<div class="match-reason">✨ ${person.reasons.join(" · ")}</div>
+<div class="availability">🕐 ${person.availability.join(" · ")}</div>
 
-    let buttonText="Request Skill Swap";
-    let buttonClass="connect";
-    let action=`openRequest('${person.id}')`;
+<button class="${buttonClass}" onclick="${action}">${buttonText}</button>
+`;
 
-    if(userRequest){
+container.appendChild(card);
+});
+}
 
-      if(userRequest.status==="pending"){
-        buttonText="Request Pending";
-        buttonClass="connect pending";
-        action=`cancelRequest('${userRequest.id}')`;
-      }
+/* SIGN UP */
+function signUp(){
+const name=document.getElementById("signupName").value.trim();
+const email=document.getElementById("signupEmail").value.trim().toLowerCase();
+const password=document.getElementById("signupPassword").value;
+const type=document.getElementById("signupType").value;
+const location=document.getElementById("signupLocation").value.trim();
+const languages=document.getElementById("signupLanguages").value.trim();
+const bio=document.getElementById("signupBio").value.trim();
+const teach=document.getElementById("signupSkill").value.trim();
+const want=document.getElementById("signupWanted").value.trim();
 
-      if(userRequest.status==="accepted"){
-        buttonText="💬 Open Chat";
-        buttonClass="connect connected";
-        action=`openChat('${person.id}')`;
-      }
-    }
+const availability=[...document.querySelectorAll('input[name="availability"]:checked')]
+.map(x=>x.value);
 
-    card.innerHTML=`
+if(!name||!email||!password){
+showToast("Please fill in your name, email and password.");
+return;
+}
 
-      <div class="match-score">
-        ${person.match}% match
-      </div>
+const users=getUsers();
+if(users[email]){
+showToast("An account with this email already exists.");
+return;
+}
 
-      <div class="student-badge">
-        🧑‍🎓 ${escapeHTML(person.type)}
-      </div>
+const user={
+id:"user_"+Date.now(),
+name,email,password,type,
+location:location||"Online",
+languages:languages?languages.split(",").map(x=>x.trim()):["English"],
+bio:bio||"Learning and sharing skills.",
+teach:teach?teach.split(",").map(x=>x.trim()).filter(Boolean):["Knowledge Sharing"],
+want:want?want.split(",").map(x=>x.trim()).filter(Boolean):["Something New"],
+availability:availability.length?availability:["Flexible"],
+avatar:"🧑🏻",rating:0,reviews:0
+};
 
-      <div class="profile">
+users[email]=user;
+saveUsers(users);
+localStorage.setItem("skillswapUser",JSON.stringify(user));
 
-        <div class="avatar">
-          ${person.avatar}
-        </div>
+closeModal("authModal");
+updateUserUI();
+renderEverything();
+showToast("🎉 Welcome to SkillSwap India, "+name+"!");
+}
 
-        <div>
+/* SIGN IN */
+function signIn(){
+const email=document.getElementById("signinEmail").value.trim().toLowerCase();
+const password=document.getElementById("signinPassword").value;
+const user=getUsers()[email];
 
-          <h3>${escapeHTML(person.name)}</h3>
+if(!email||!password){
+showToast("Please enter your email and password.");
+return;
+}
+if(!user){
+showToast("Account not found.");
+return;
+}
+if(user.password!==password){
+showToast("Incorrect email or password.");
+return;
+}
 
-          <p>📍 ${escapeHTML(person.location)}</p>
+localStorage.setItem("skillswapUser",JSON.stringify(user));
+closeModal("authModal");
+updateUserUI();
+renderEverything();
+showToast("👋 Welcome back, "+user.name+"!");
+}
 
-          <div class="rating">
-            ⭐ ${person.rating}
-            · ${person.reviews} reviews
-          </div>
+function updateUserUI(){
+const user=getCurrentUser();
+const out=document.getElementById("loggedOutNav");
+const inside=document.getElementById("loggedInNav");
 
-        </div>
+if(user){
+out.style.display="none";
+inside.classList.add("show");
+document.getElementById("navProfileName").textContent=user.name;
+document.getElementById("navAvatar").textContent=user.avatar||"👤";
+updateProfileModal();
+}else{
+out.style.display="flex";
+inside.classList.remove("show");
+}
+}
 
-      </div>
+function updateProfileModal(){
+const user=getCurrentUser();
+if(!user)return;
 
-      <div class="skill-row">
+document.getElementById("profileAvatar").textContent=user.avatar||"👤";
+document.getElementById("profileName").textContent=user.name;
+document.getElementById("profileType").textContent="🧑‍🎓 "+user.type;
+document.getElementById("profileLocation").textContent="📍 "+user.location;
+document.getElementById("profileBio").textContent=user.bio;
 
-        <div class="skill">
+document.getElementById("profileTeach").innerHTML=(user.teach||[])
+.map(x=>`<span class="skill-tag">${escapeHTML(x)}</span>`).join("");
 
-          <small>Can teach</small>
+document.getElementById("profileLearn").innerHTML=(user.want||[])
+.map(x=>`<span class="skill-tag">${escapeHTML(x)}</span>`).join("");
 
-          <strong>
-            ${person.teach.slice(0,2)
-              .map(x=>"📚 "+escapeHTML(x))
-              .join("<br>")}
-          </strong>
+document.getElementById("profileLanguages").textContent=user.languages.join(" · ");
+document.getElementById("profileAvailability").textContent=user.availability.join(" · ");
+}
 
-        </div>
+function openProfile(){
+if(!getCurrentUser()){openAuth("signin");return}
+updateProfileModal();
+document.getElementById("profileModal").classList.add("show");
+}
 
-        <div class="swap">↔</div>
-
-        <div class="skill">
-
-          <small>Wants to learn</small>
-
-          <strong>
-            ${person.want.slice(0,2)
-              .map(x=>"✨ "+escapeHTML(x))
-              .join("<br>")}
-          </strong>
-
-        </div>
-
-      </div>
-
-      <div class="availability">
-        🕐 ${person.availability.join(" · ")}
-      </div>
-
-      <button
-        class="${buttonClass}"
-        onclick="${action}">
-        ${buttonText}
-      </button>
-
-    `;
-
-    container.appendChild(card);
-  });
+function logout(){
+localStorage.removeItem("skillswapUser");
+location.reload();
 }
 
 /* REQUESTS */
+function openRequest(id){
+const user=getCurrentUser();
 
-function getExistingRequest(user,person){
-
-  if(!user)return null;
-
-  return getRequests().find(r=>
-    (
-      r.senderId===user.id &&
-      r.receiverId===person.id
-    ) ||
-    (
-      r.senderId===person.id &&
-      r.receiverId===user.id
-    )
-  ) || null;
+if(!user){
+showToast("Please sign in first.");
+openAuth("signin");
+return;
 }
 
-function openRequest(personId){
+const person=demoPeople.find(p=>p.id===id);
+if(!person)return;
 
-  const user=getCurrentUser();
+currentRequestPerson=person;
 
-  if(!user){
-    showToast("Please sign in first.");
-    openAuth("signin");
-    return;
-  }
+document.getElementById("requestSubtitle").textContent=
+`Send a skill exchange request to ${person.name}.`;
 
-  const person=demoPeople.find(p=>p.id===personId);
+document.getElementById("requestWanted").value=person.teach[0]||"";
+document.getElementById("requestOffered").value=user.teach?.[0]||"";
+document.getElementById("requestMessage").value="";
 
-  if(!person)return;
-
-  const existing=getExistingRequest(user,person);
-
-  if(existing){
-    showToast("You already have a request with this person.");
-    return;
-  }
-
-  currentRequestPerson=person;
-
-  document.getElementById("requestSubtitle").textContent=
-    `Send a skill exchange request to ${person.name}.`;
-
-  document.getElementById("requestWanted").value=
-    person.teach[0]||"";
-
-  document.getElementById("requestOffered").value=
-    user.teach?.[0]||"";
-
-  document.getElementById("requestMessage").value="";
-
-  document.getElementById("requestModal").classList.add("show");
+document.getElementById("requestModal").classList.add("show");
 }
 
 function submitSwapRequest(){
+const user=getCurrentUser();
+if(!user||!currentRequestPerson)return;
 
-  const user=getCurrentUser();
+const wanted=document.getElementById("requestWanted").value.trim();
+const offered=document.getElementById("requestOffered").value.trim();
+const message=document.getElementById("requestMessage").value.trim();
 
-  if(!user || !currentRequestPerson)return;
-
-  const wanted=document.getElementById("requestWanted")
-    .value.trim();
-
-  const offered=document.getElementById("requestOffered")
-    .value.trim();
-
-  const message=document.getElementById("requestMessage")
-    .value.trim();
-
-  if(!wanted || !offered){
-    showToast("Please enter both skills.");
-    return;
-  }
-
-  const requests=getRequests();
-
-  requests.push({
-
-    id:"request_"+Date.now(),
-
-    senderId:user.id,
-    senderName:user.name,
-    senderAvatar:user.avatar,
-
-    receiverId:currentRequestPerson.id,
-    receiverName:currentRequestPerson.name,
-    receiverAvatar:currentRequestPerson.avatar,
-
-    skillWanted:wanted,
-    skillOffered:offered,
-
-    message:
-      message ||
-      "I'd love to exchange skills with you!",
-
-    status:"pending",
-
-    createdAt:new Date().toISOString()
-  });
-
-  saveRequests(requests);
-
-  closeModal("requestModal");
-  renderEverything();
-
-  showToast("🤝 Skill swap request sent!");
+if(!wanted||!offered){
+showToast("Please enter both skills.");
+return;
 }
 
-function updateRequest(id,status){
+const requests=getRequests();
 
-  const requests=getRequests();
-
-  const request=requests.find(r=>r.id===id);
-
-  if(!request)return;
-
-  request.status=status;
-
-  saveRequests(requests);
-  renderEverything();
-
-  showToast(
-    status==="accepted"
-      ? "🎉 Swap request accepted!"
-      : "Request rejected."
-  );
+if(getExistingRequest(user,currentRequestPerson)){
+showToast("You already have a request with this member.");
+return;
 }
 
-function cancelRequest(id){
+const id="request_"+Date.now();
 
-  saveRequests(
-    getRequests().filter(r=>r.id!==id)
-  );
+requests.push({
+id,
+senderId:user.id,
+senderName:user.name,
+senderAvatar:user.avatar,
+receiverId:currentRequestPerson.id,
+receiverName:currentRequestPerson.name,
+receiverAvatar:currentRequestPerson.avatar,
+skillWanted:wanted,
+skillOffered:offered,
+message:message||"I'd love to exchange skills with you!",
+status:"pending",
+createdAt:new Date().toISOString()
+});
 
-  renderEverything();
+saveRequests(requests);
+closeModal("requestModal");
+renderEverything();
 
-  showToast("Swap request cancelled.");
+showToast("⏳ Your request is being reviewed...");
+
+/* Demo response delay */
+setTimeout(()=>{
+const current=getRequests();
+const request=current.find(r=>r.id===id);
+
+if(!request||request.status!=="pending")return;
+
+request.status="accepted";
+request.acceptedAt=new Date().toISOString();
+saveRequests(current);
+renderEverything();
+
+showToast("🎉 Your skill-swap request was accepted!");
+},10000);
 }
 
 /* DASHBOARD */
-
 function renderDashboard(){
-
-  const user=getCurrentUser();
-
-  const requestList=document.getElementById("requestList");
-  const connectionList=document.getElementById("connectionList");
-  const reviewList=document.getElementById("reviewList");
-
-  if(!user){
-
-    requestList.innerHTML=
-      `<div class="empty-state">Sign in to manage requests.</div>`;
-
-    connectionList.innerHTML=
-      `<div class="empty-state">Sign in to see connections.</div>`;
-
-    reviewList.innerHTML=
-      `<div class="empty-state">Sign in to see reviews.</div>`;
-
-    return;
-  }
-
-  const requests=getRequests().filter(
-    r=>r.receiverId===user.id
-  );
-
-  requestList.innerHTML="";
-
-  if(!requests.length){
-
-    requestList.innerHTML=
-      `<div class="empty-state">No incoming requests yet.</div>`;
-
-  }else{
-
-    requests.slice().reverse().forEach(request=>{
-
-      const div=document.createElement("div");
-      div.className="request-item";
-
-      let actions="";
-
-      if(request.status==="pending"){
-
-        actions=`
-
-          <div class="request-actions">
-
-            <button class="small-btn primary"
-              onclick="updateRequest('${request.id}','accepted')">
-              Accept
-            </button>
-
-            <button class="small-btn danger"
-              onclick="updateRequest('${request.id}','rejected')">
-              Reject
-            </button>
-
-          </div>
-        `;
-      }
-
-      if(request.status==="accepted"){
-
-        actions=`
-
-          <div class="request-actions">
-
-            <button class="small-btn primary"
-              onclick="openChatByRequest('${request.id}')">
-              💬 Chat
-            </button>
-
-          </div>
-        `;
-      }
-
-      div.innerHTML=`
-
-        <div class="request-top">
-
-          <div class="request-person">
-
-            <div class="mini-avatar">
-              ${request.senderAvatar}
-            </div>
-
-            <div>
-
-              <strong>
-                ${escapeHTML(request.senderName)}
-              </strong>
-
-              <small>
-                Wants to learn ${escapeHTML(request.skillWanted)}
-              </small>
-
-            </div>
-
-          </div>
-
-          <span class="status ${request.status}">
-            ${request.status}
-          </span>
-
-        </div>
-
-        <small>
-          Offers: ${escapeHTML(request.skillOffered)}
-        </small>
-
-        <small>
-          “${escapeHTML(request.message)}”
-        </small>
-
-        ${actions}
-
-      `;
-
-      requestList.appendChild(div);
-    });
-  }
-
-  const accepted=getRequests().filter(r=>
-    r.status==="accepted" &&
-    (r.senderId===user.id || r.receiverId===user.id)
-  );
-
-  connectionList.innerHTML="";
-
-  if(!accepted.length){
-
-    connectionList.innerHTML=
-      `<div class="empty-state">No active connections yet.</div>`;
-
-  }else{
-
-    accepted.forEach(request=>{
-
-      const other=
-        request.senderId===user.id
-        ? {
-            id:request.receiverId,
-            name:request.receiverName,
-            avatar:request.receiverAvatar
-          }
-        : {
-            id:request.senderId,
-            name:request.senderName,
-            avatar:request.senderAvatar
-          };
-
-      const div=document.createElement("div");
-
-      div.className="connection-item";
-
-      div.innerHTML=`
-
-        <div class="connection-top">
-
-          <div class="request-person">
-
-            <div class="mini-avatar">
-              ${other.avatar}
-            </div>
-
-            <div>
-
-              <strong>${escapeHTML(other.name)}</strong>
-
-              <small>Learning partner</small>
-
-            </div>
-
-          </div>
-
-          <button
-            class="small-btn primary"
-            onclick="openChat('${other.id}')">
-            Chat
-          </button>
-
-        </div>
-
-      `;
-
-      connectionList.appendChild(div);
-    });
-  }
-
-  reviewList.innerHTML=
-    `<div class="empty-state">
-      Complete a skill exchange to build your reputation.
-    </div>`;
+const user=getCurrentUser();
+
+const requestList=document.getElementById("requestList");
+const connectionList=document.getElementById("connectionList");
+const reviewList=document.getElementById("reviewList");
+
+if(!user){
+requestList.innerHTML='<div class="empty-state">Sign in to manage requests.</div>';
+connectionList.innerHTML='<div class="empty-state">Sign in to see connections.</div>';
+reviewList.innerHTML='<div class="empty-state">Sign in to see reviews.</div>';
+return;
+}
+
+const requests=getRequests().filter(r=>r.senderId===user.id);
+
+requestList.innerHTML="";
+
+if(!requests.length){
+requestList.innerHTML='<div class="empty-state">No skill-swap requests yet.</div>';
+}else{
+requests.slice().reverse().forEach(r=>{
+const div=document.createElement("div");
+div.className="request-item";
+
+div.innerHTML=`
+<div class="request-top">
+<div class="request-person">
+<div class="mini-avatar">${escapeHTML(r.receiverAvatar||"🧑")}</div>
+<div>
+<strong>${escapeHTML(r.receiverName)}</strong>
+<small>SkillSwap member</small>
+</div>
+</div>
+<span class="status ${r.status}">${r.status}</span>
+</div>
+
+<small>You want to learn: ${escapeHTML(r.skillWanted)}</small>
+<small>You offer: ${escapeHTML(r.skillOffered)}</small>
+<small>“${escapeHTML(r.message)}”</small>
+
+${r.status==="pending"
+?'<div class="request-actions"><span style="color:var(--muted);font-size:.72rem">⏳ Waiting for a response...</span></div>'
+:`<div class="request-actions">
+<button class="small-btn primary" onclick="openChat('${r.receiverId}')">💬 Open Chat</button>
+</div>`}
+`;
+
+requestList.appendChild(div);
+});
+}
+
+const accepted=requests.filter(r=>r.status==="accepted");
+
+connectionList.innerHTML="";
+
+if(!accepted.length){
+connectionList.innerHTML='<div class="empty-state">No active connections yet.</div>';
+}else{
+accepted.forEach(r=>{
+const div=document.createElement("div");
+div.className="connection-item";
+div.innerHTML=`
+<div class="connection-top">
+<div class="request-person">
+<div class="mini-avatar">${escapeHTML(r.receiverAvatar||"🧑")}</div>
+<div>
+<strong>${escapeHTML(r.receiverName)}</strong>
+<small>SkillSwap member</small>
+</div>
+</div>
+<button class="small-btn primary" onclick="openChat('${r.receiverId}')">Chat</button>
+</div>`;
+connectionList.appendChild(div);
+});
+}
+
+reviewList.innerHTML=
+'<div class="empty-state">Complete a skill exchange to build your reputation.</div>';
 }
 
 /* CHAT */
-
-function openChatByRequest(requestId){
-
-  const user=getCurrentUser();
-
-  const request=getRequests()
-    .find(r=>r.id===requestId);
-
-  if(!user || !request)return;
-
-  const otherId=
-    request.senderId===user.id
-      ? request.receiverId
-      : request.senderId;
-
-  openChat(otherId);
+function chatKey(a,b){
+return [a,b].sort().join("_");
 }
 
 function openChat(personId){
+const user=getCurrentUser();
 
-  const user=getCurrentUser();
-
-  if(!user){
-    openAuth("signin");
-    return;
-  }
-
-  let person=demoPeople.find(p=>p.id===personId);
-
-  if(!person){
-
-    person=Object.values(getUsers())
-      .find(u=>u.id===personId);
-
-  }
-
-  if(!person)return;
-
-  currentChatPerson={
-    id:person.id,
-    name:person.name,
-    avatar:person.avatar||"👤"
-  };
-
-  document.getElementById("chatName").textContent=
-    person.name;
-
-  document.getElementById("chatAvatar").textContent=
-    person.avatar||"👤";
-
-  document.getElementById("chatModal")
-    .classList.add("show");
-
-  loadMessages();
+if(!user){
+openAuth("signin");
+return;
 }
 
-function getMessages(){
+let person=demoPeople.find(p=>p.id===personId);
 
-  return JSON.parse(
-    localStorage.getItem("skillswapMessages")
-  ) || {};
+if(!person){
+person=Object.values(getUsers()).find(u=>u.id===personId);
 }
 
-function saveMessages(messages){
+if(!person)return;
 
-  localStorage.setItem(
-    "skillswapMessages",
-    JSON.stringify(messages)
-  );
+const connection=getRequests().find(r=>
+r.status==="accepted" &&
+((r.senderId===user.id&&r.receiverId===person.id)||
+(r.senderId===person.id&&r.receiverId===user.id))
+);
+
+if(!connection){
+showToast("Your request has not been accepted yet.");
+return;
 }
 
-function getChatKey(a,b){
+currentChatPerson={
+id:person.id,
+name:person.name,
+avatar:person.avatar||"🧑"
+};
 
-  return [a,b].sort().join("_");
+document.getElementById("chatName").textContent=person.name;
+document.getElementById("chatAvatar").textContent=person.avatar||"🧑";
+document.getElementById("chatModal").classList.add("show");
+
+loadMessages();
 }
 
 function loadMessages(){
+const user=getCurrentUser();
+if(!user||!currentChatPerson)return;
 
-  const user=getCurrentUser();
+const messages=getMessages();
+const key=chatKey(user.id,currentChatPerson.id);
 
-  if(!user || !currentChatPerson)return;
+if(!messages[key]){
+messages[key]=[
+{type:"them",text:"Hi! 👋 Thanks for connecting on SkillSwap!"},
+{type:"them",text:"What would you like to learn together?"}
+];
+}
 
-  const messages=getMessages();
+const container=document.getElementById("chatMessages");
+container.innerHTML="";
 
-  const key=getChatKey(
-    user.id,
-    currentChatPerson.id
-  );
+messages[key].forEach(m=>{
+const div=document.createElement("div");
+div.className="message "+m.type;
+div.textContent=m.text;
+container.appendChild(div);
+});
 
-  if(!messages[key]){
+container.scrollTop=container.scrollHeight;
+saveMessages(messages);
+}
 
-    messages[key]=[
-      {
-        type:"them",
-        text:"Hi! 👋 Thanks for connecting on SkillSwap."
-      },
-      {
-        type:"them",
-        text:"What would you like to learn together?"
-      }
-    ];
-  }
+/* Context-aware demo chat replies */
+function generateReply(text){
+const t=text.toLowerCase();
 
-  const container=document.getElementById("chatMessages");
+if(t.includes("python")||t.includes("coding")||t.includes("program")){
+return "I'd be happy to practise that with you! We could start with the basics and then try a small project together. 😊";
+}
+if(t.includes("telugu")||t.includes("hindi")||t.includes("tamil")||t.includes("language")){
+return "That sounds great! We can practise useful phrases first and then have a short conversation together. 🗣️";
+}
+if(t.includes("guitar")||t.includes("music")||t.includes("tabla")){
+return "Nice! We can start with the fundamentals and build up gradually. What level are you at right now? 🎵";
+}
+if(t.includes("math")||t.includes("physics")||t.includes("study")){
+return "Sure! Tell me which topic you're working on and we can break it into smaller steps. 📚";
+}
+if(t.includes("cricket")||t.includes("chess")||t.includes("sport")){
+return "Sounds fun! We can compare what we already know and then practise a few techniques together. 🏏";
+}
 
-  container.innerHTML="";
-
-  messages[key].forEach(message=>{
-
-    const div=document.createElement("div");
-
-    div.className="message "+message.type;
-    div.textContent=message.text;
-
-    container.appendChild(div);
-  });
-
-  container.scrollTop=container.scrollHeight;
-
-  saveMessages(messages);
+return "Sounds good! 😊 Tell me a little more about your learning goal and we can plan a session together.";
 }
 
 function sendMessage(){
+const user=getCurrentUser();
+const input=document.getElementById("chatInput");
+const text=input.value.trim();
 
-  const user=getCurrentUser();
+if(!text||!user||!currentChatPerson)return;
 
-  const input=document.getElementById("chatInput");
+const messages=getMessages();
+const key=chatKey(user.id,currentChatPerson.id);
 
-  const text=input.value.trim();
+if(!messages[key])messages[key]=[];
 
-  if(!text || !user || !currentChatPerson)return;
+messages[key].push({type:"me",text});
+saveMessages(messages);
+input.value="";
+loadMessages();
 
-  const messages=getMessages();
+setTimeout(()=>{
+const current=getMessages();
+if(!current[key])return;
 
-  const key=getChatKey(
-    user.id,
-    currentChatPerson.id
-  );
+current[key].push({
+type:"them",
+text:generateReply(text)
+});
 
-  if(!messages[key])messages[key]=[];
-
-  messages[key].push({
-    type:"me",
-    text
-  });
-
-  saveMessages(messages);
-
-  input.value="";
-
-  loadMessages();
-
-  setTimeout(()=>{
-
-    const current=getMessages();
-
-    if(!current[key])return;
-
-    current[key].push({
-      type:"them",
-      text:"Sounds great! 😊 Let's plan a learning session."
-    });
-
-    saveMessages(current);
-    loadMessages();
-
-  },900);
+saveMessages(current);
+loadMessages();
+},900);
 }
 
-function handleChatKey(event){
-
-  if(event.key==="Enter"){
-    sendMessage();
-  }
+function handleChatKey(e){
+if(e.key==="Enter")sendMessage();
 }
 
 /* SEARCH */
-
 function searchSkills(){
+const input=document.getElementById("searchInput").value.toLowerCase().trim();
+const cards=document.querySelectorAll(".person-card");
+let found=0;
 
-  const input=document.getElementById("searchInput")
-    .value.toLowerCase().trim();
+cards.forEach(card=>{
+const match=!input||card.dataset.search.includes(input);
+card.style.display=match?"block":"none";
+if(match)found++;
+});
 
-  const cards=document.querySelectorAll(".person-card");
-
-  let found=0;
-
-  cards.forEach(card=>{
-
-    const text=card.dataset.search||"";
-
-    const match=!input || text.includes(input);
-
-    card.style.display=match?"block":"none";
-
-    if(match)found++;
-  });
-
-  document.getElementById("matchTitle").textContent=
-    input
-      ? found
-        ? `Matches for "${input}"`
-        : `No matches for "${input}"`
-      : "Popular Indian skill matches";
+document.getElementById("matchTitle").textContent=
+input
+?found?`Matches for "${input}"`:`No matches for "${input}"`
+:"Popular Indian skill matches";
 }
-
-/* CATEGORY */
 
 function filterCategory(category,element){
+document.querySelectorAll(".category").forEach(x=>x.classList.remove("active"));
+element.classList.add("active");
 
-  document.querySelectorAll(".category")
-    .forEach(x=>x.classList.remove("active"));
+document.querySelectorAll(".person-card").forEach(card=>{
+card.style.display=card.dataset.category===category?"block":"none";
+});
 
-  element.classList.add("active");
-
-  document.querySelectorAll(".person-card")
-    .forEach(card=>{
-
-      card.style.display=
-        card.dataset.category===category
-          ? "block"
-          : "none";
-    });
-
-  document.getElementById("matchTitle").textContent=
-    category+" skill matches";
+document.getElementById("matchTitle").textContent=category+" skill matches";
 }
-
-/* RESET */
 
 function resetMatches(){
-
-  document.querySelectorAll(".person-card")
-    .forEach(card=>card.style.display="block");
-
-  document.querySelectorAll(".category")
-    .forEach(x=>x.classList.remove("active"));
-
-  document.getElementById("searchInput").value="";
-
-  document.getElementById("matchTitle").textContent=
-    "Popular Indian skill matches";
+document.querySelectorAll(".person-card").forEach(x=>x.style.display="block");
+document.querySelectorAll(".category").forEach(x=>x.classList.remove("active"));
+document.getElementById("searchInput").value="";
+document.getElementById("matchTitle").textContent="Popular Indian skill matches";
 }
-
-/* FIND MATCH */
 
 function findMatch(){
+const user=getCurrentUser();
 
-  const user=getCurrentUser();
-
-  if(!user){
-
-    showToast("Sign in to find your perfect skill match!");
-
-    openAuth("signin");
-
-    return;
-  }
-
-  showToast("✨ Finding your best Indian skill matches...");
-
-  setTimeout(()=>{
-
-    renderMatches();
-
-    document.getElementById("discover")
-      .scrollIntoView({
-        behavior:"smooth"
-      });
-
-  },500);
+if(!user){
+showToast("Sign in to find your best skill matches!");
+openAuth("signin");
+return;
 }
 
-/* EVERYTHING */
+showToast("✨ Finding your best skill matches...");
+
+setTimeout(()=>{
+renderMatches();
+document.getElementById("discover").scrollIntoView({behavior:"smooth"});
+},500);
+}
 
 function renderEverything(){
-
-  renderMatches();
-  renderDashboard();
+renderMatches();
+renderDashboard();
 }
 
-/* ESCAPE */
-
-function escapeHTML(value){
-
-  return String(value)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-}
-
-/* MODAL OUTSIDE CLICK */
-
-document.querySelectorAll(".modal-overlay")
-.forEach(overlay=>{
-
-  overlay.addEventListener("click",event=>{
-
-    if(event.target===overlay){
-      overlay.classList.remove("show");
-    }
-
-  });
-
+document.querySelectorAll(".modal-overlay").forEach(overlay=>{
+overlay.addEventListener("click",e=>{
+if(e.target===overlay)overlay.classList.remove("show");
+});
 });
 
-/* INITIALIZE */
+document.getElementById("skillFilters").innerHTML=skills.map(skill=>
+`<button class="filter-chip" onclick="quickSkill('${skill}')">${skill}</button>`
+).join("");
+
+function quickSkill(skill){
+document.getElementById("searchInput").value=skill;
+searchSkills();
+document.getElementById("discover").scrollIntoView({behavior:"smooth"});
+}
 
 document.addEventListener("DOMContentLoaded",()=>{
-
-  updateUserUI();
-  renderEverything();
-
+updateUserUI();
+renderEverything();
 });
-
 </script>
 
 </body>
