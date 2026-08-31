@@ -2558,10 +2558,78 @@ container.appendChild(card);
 
 
 /* =========================================================
+   AUTH RATE-LIMIT PROTECTION
+   ========================================================= */
+
+const SIGNUP_COOLDOWN_MS = 60 * 1000;
+const SIGNUP_COOLDOWN_KEY = "skillswap_signup_cooldown";
+
+function getSignupCooldownRemaining(){
+const until=Number(localStorage.getItem(SIGNUP_COOLDOWN_KEY)||0);
+return Math.max(0,until-Date.now());
+}
+
+function setSignupCooldown(ms=SIGNUP_COOLDOWN_MS){
+localStorage.setItem(
+SIGNUP_COOLDOWN_KEY,
+String(Date.now()+ms)
+);
+}
+
+function clearSignupCooldown(){
+localStorage.removeItem(SIGNUP_COOLDOWN_KEY);
+}
+
+function friendlyAuthError(error){
+const message=String(error?.message||error||"").toLowerCase();
+
+if(
+message.includes("rate limit")||
+message.includes("rate exceeded")||
+message.includes("email rate")||
+message.includes("too many requests")||
+message.includes("over_email_send_rate_limit")
+){
+return "Too many email requests were sent. Please wait a few minutes before trying again. Do not repeatedly click Sign up.";
+}
+
+if(message.includes("user already registered")||message.includes("already been registered")){
+return "An account with this email already exists. Please sign in instead.";
+}
+
+if(message.includes("invalid login credentials")){
+return "Email or password is incorrect.";
+}
+
+if(message.includes("email not confirmed")){
+return "Please confirm your email address before signing in.";
+}
+
+if(message.includes("password should be at least")){
+return "Password must be at least 6 characters.";
+}
+
+return error?.message||"Something went wrong. Please try again.";
+}
+
+
+/* =========================================================
    SIGN UP WITH SUPABASE AUTH
    ========================================================= */
 
 async function signUp(){
+
+const button=document.querySelector('#signupForm .modal-submit');
+
+const remaining=getSignupCooldownRemaining();
+
+if(remaining>0){
+const seconds=Math.ceil(remaining/1000);
+showToast(
+`Please wait ${seconds} seconds before trying another signup.`
+);
+return;
+}
 
 const name=
 document
@@ -2616,117 +2684,113 @@ const availability=[
 ].map(x=>x.value);
 
 if(!name||!email||!password){
-
-showToast(
-"Please fill in your name, email and password."
-);
-
+showToast("Please fill in your name, email and password.");
 return;
+}
 
+if(!/^\S+@\S+\.\S+$/.test(email)){
+showToast("Please enter a valid email address.");
+return;
 }
 
 if(password.length<6){
-
-showToast(
-"Password must be at least 6 characters."
-);
-
+showToast("Password must be at least 6 characters.");
 return;
-
 }
 
 try{
+
+if(button){
+button.disabled=true;
+button.dataset.originalText=button.textContent;
+button.textContent="Creating account...";
+}
 
 const{
 data,
 error
 }=
 await supabaseClient.auth.signUp({
-
 email,
 password,
-
 options:{
 data:{
 name,
 type
 }
 }
-
 });
 
 if(error){
 
-showToast(
-error.message
-);
+/*
+  Supabase may return an email rate-limit error here.
+  Only start our local cooldown when Supabase actually
+  reports a rate-limit condition; normal validation errors
+  should not lock the user out.
+*/
 
-return;
+const errorText=String(error.message||error).toLowerCase();
 
+if(
+errorText.includes("rate limit")||
+errorText.includes("rate exceeded")||
+errorText.includes("email rate")||
+errorText.includes("too many requests")||
+errorText.includes("over_email_send_rate_limit")
+){
+setSignupCooldown(5*60*1000);
 }
 
-if(!data.user){
-
-showToast(
-"Account creation failed."
-);
-
+showToast(friendlyAuthError(error));
 return;
-
 }
 
+if(!data?.user){
+showToast("Account creation failed. Please try again.");
+return;
+}
+
+/*
+  If email confirmation is enabled, Supabase can create the user
+  without returning an active session. The profile insert is then
+  blocked by RLS. Store the profile temporarily so it can be
+  completed after the user confirms the email and signs in.
+*/
 const profile={
-
 id:data.user.id,
-
 name,
-
 email,
-
 type,
-
-location:
-location||"Online",
-
-languages:
-languages
-?languages
-.split(",")
-.map(x=>x.trim())
-.filter(Boolean)
+location:location||"Online",
+languages:languages
+?languages.split(",").map(x=>x.trim()).filter(Boolean)
 :["English"],
-
-bio:
-bio||
-"Learning and sharing skills.",
-
-teach:
-teach
-?teach
-.split(",")
-.map(x=>x.trim())
-.filter(Boolean)
+bio:bio||"Learning and sharing skills.",
+teach:teach
+?teach.split(",").map(x=>x.trim()).filter(Boolean)
 :["Knowledge Sharing"],
-
-want:
-want
-?want
-.split(",")
-.map(x=>x.trim())
-.filter(Boolean)
+want:want
+?want.split(",").map(x=>x.trim()).filter(Boolean)
 :["Something New"],
-
-availability:
-availability.length
-?availability
-:["Flexible"],
-
+availability:availability.length?availability:["Flexible"],
 avatar:"🧑🏻",
-
-category:
-"Technology"
-
+category:"Technology"
 };
+
+if(!data.session){
+localStorage.setItem(
+"skillswap_pending_profile",
+JSON.stringify(profile)
+);
+
+showToast(
+"Account created! Check your email to confirm your account, then sign in."
+);
+
+closeModal("authModal");
+return;
+}
 
 const{
 error:profileError
@@ -2736,37 +2800,30 @@ await supabaseClient
 .insert(profile);
 
 if(profileError){
-
 console.error(profileError);
-
 showToast(
-"Account created, but profile setup needs attention."
+"Account created, but profile setup needs attention. Please sign in again."
 );
-
 return;
-
 }
 
+clearSignupCooldown();
+localStorage.removeItem("skillswap_pending_profile");
 saveCurrentUser(profile);
-
 closeModal("authModal");
-
 updateUserUI();
-
 await renderEverything();
-
-showToast(
-"🎉 Welcome to SkillSwap India, "+name+"!"
-);
+showToast("🎉 Welcome to SkillSwap India, "+name+"!");
 
 }catch(error){
-
 console.error(error);
+showToast(friendlyAuthError(error));
 
-showToast(
-"Something went wrong while creating your account."
-);
-
+}finally{
+if(button){
+button.disabled=false;
+button.textContent=button.dataset.originalText||"Create account";
+}
 }
 
 }
@@ -2815,7 +2872,7 @@ password
 if(error){
 
 showToast(
-error.message
+friendlyAuthError(error)
 );
 
 return;
