@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1052,6 +1050,51 @@ bottom:10px;
 }
 }
 </style>
+<script>
+const SUPABASE_URL = "https://nqlojrsilxhmytwkdjec.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_uW-DOrhaI0DsaZgDs37bKQ_z2GyqQ_j";
+const { createClient } = window.supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</script>
+
+<script>
+async function signInUser(email, password) {
+  const cleanEmail = String(email || "").trim();
+
+  if (!cleanEmail || !password) {
+    throw new Error("Please enter your email and password.");
+  }
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email: cleanEmail,
+    password
+  });
+
+  if (error) {
+    const msg = String(error.message || "").toLowerCase();
+
+    if (msg.includes("email not confirmed")) {
+      throw new Error(
+        "Your email has not been confirmed yet. Confirm your email in Supabase, then try signing in again."
+      );
+    }
+
+    if (msg.includes("invalid login credentials")) {
+      throw new Error("Incorrect email or password.");
+    }
+
+    throw new Error(error.message || "Sign in failed.");
+  }
+
+  if (!data || !data.session) {
+    throw new Error(
+      "Sign in did not create a session. If email confirmation is enabled, confirm your email first."
+    );
+  }
+
+  return data;
+}
+</script>
 </head>
 
 <body>
@@ -4659,7 +4702,11 @@ await renderEverything();
 
 </script>
 
+
+<script>
+window.SkillSwapAuth = {
+  signIn: signInUser
+};
+</script>
 </body>
 </html>
-
-HTML
