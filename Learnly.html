@@ -12,7 +12,23 @@
 const SUPABASE_URL = "https://nqlojrsilxhmytwkdjec.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_uW-DOrhaI0DsaZgDs37bKQ_z2GyqQ_j";
 const { createClient } = window.supabase;
-const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const supabaseClient = createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY,
+  {
+    auth: {
+      flowType: "pkce",
+      detectSessionInUrl: true,
+      persistSession: true,
+      autoRefreshToken: true
+    }
+  }
+);
+</script>
+
+<script>
+
 </script>
 
 <script>
@@ -1527,7 +1543,7 @@ style="background:#eef7ff;color:#275b80;margin-bottom:15px">
 
 </div>
 
-<button class="modal-submit" onclick="signUp()">
+<button id="createProfileBtn" type="button" class="modal-submit" onclick="signUp()">
 Create my profile
 </button>
 
@@ -2639,6 +2655,7 @@ try{
     email,
     password,
     options:{
+      emailRedirectTo: window.location.origin + window.location.pathname,
       data:{
         name,
         type,
@@ -2916,6 +2933,59 @@ return null;
 }
 
 }
+
+/* =========================================================
+   EMAIL VERIFICATION / CONFIRMATION
+   ========================================================= */
+
+async function handleEmailVerification(){
+
+  try{
+
+    const url = new URL(window.location.href);
+    const code = url.searchParams.get("code");
+
+    if(!code){
+      return false;
+    }
+
+    const { data, error } =
+      await supabaseClient.auth.exchangeCodeForSession(code);
+
+    if(error){
+      console.error("Email verification error:", error);
+      showToast("Email verification failed. Please request a new verification email.");
+      return false;
+    }
+
+    url.searchParams.delete("code");
+    url.searchParams.delete("type");
+    url.searchParams.delete("error");
+    url.searchParams.delete("error_code");
+    url.searchParams.delete("error_description");
+
+    window.history.replaceState(
+      {},
+      document.title,
+      url.pathname + (url.search ? url.search : "") + url.hash
+    );
+
+    if(data?.session?.user){
+      await loadLoggedInProfile(data.session.user);
+      updateUserUI();
+      await renderEverything();
+      showToast("✅ Email verified! You are now signed in.");
+      return true;
+    }
+
+  }catch(error){
+    console.error("Email verification handling failed:", error);
+    showToast("Could not complete email verification.");
+  }
+
+  return false;
+}
+
 
 /* =========================================================
    AUTH SESSION
@@ -4577,6 +4647,8 @@ document.addEventListener(
 "DOMContentLoaded",
 async()=>{
 
+await handleEmailVerification();
+
 await restoreSession();
 
 updateUserUI();
@@ -4589,6 +4661,9 @@ await renderEverything();
 );
 
 </script>
+
+
+
 
 
 
