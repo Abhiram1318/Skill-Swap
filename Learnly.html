@@ -1,21 +1,13 @@
-```html
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<meta name="description"
-content="SkillSwap India — Learn. Teach. Connect.">
-
+<meta name="description" content="SkillSwap India — Learn. Teach. Connect.">
 <title>SkillSwap India — Learn. Teach. Connect.</title>
 
 <style>
-/* =========================================================
-   SKILLSWAP INDIA
-   CSS
-========================================================= */
-
 *{
     box-sizing:border-box;
     margin:0;
@@ -29,12 +21,11 @@ content="SkillSwap India — Learn. Teach. Connect.">
     --coral:#ff8066;
     --yellow:#ffd166;
     --cream:#f8faf8;
-    --white:#ffffff;
+    --white:#fff;
     --text:#17221f;
     --muted:#6d7b76;
     --border:#e1e9e5;
-    --danger:#d94a4a;
-    --success:#22845f;
+    --danger:#d9534f;
     --shadow:0 15px 45px rgba(23,54,45,.08);
     --shadow-lg:0 25px 80px rgba(23,54,45,.15);
 }
@@ -66,10 +57,7 @@ body:before{
     background-size:40px 40px;
 }
 
-button,
-input,
-textarea,
-select{
+button,input,textarea,select{
     font:inherit;
 }
 
@@ -81,9 +69,9 @@ button{
     display:none!important;
 }
 
-/* =========================================================
+/* =========================
    NAVIGATION
-========================================================= */
+========================= */
 
 nav{
     height:76px;
@@ -121,10 +109,16 @@ nav{
 
 .india-badge{
     font-size:.7rem;
-    background:linear-gradient(90deg,#ff9933,#fff,#138808);
+    background:linear-gradient(
+        90deg,
+        #ff9933 0 33%,
+        #fff 33% 66%,
+        #138808 66%
+    );
     padding:3px 7px;
     border-radius:8px;
     font-weight:900;
+    color:#222;
 }
 
 .nav-links{
@@ -195,9 +189,9 @@ nav{
     font-weight:750;
 }
 
-/* =========================================================
+/* =========================
    HERO
-========================================================= */
+========================= */
 
 .hero{
     padding:75px 6% 70px;
@@ -302,9 +296,9 @@ h1 span{
     box-shadow:0 10px 25px rgba(255,128,102,.22);
 }
 
-/* =========================================================
+/* =========================
    MAIN
-========================================================= */
+========================= */
 
 main{
     max-width:1280px;
@@ -334,9 +328,9 @@ main{
     margin-top:4px;
 }
 
-/* =========================================================
-   SAFETY
-========================================================= */
+/* =========================
+   STUDENT BANNER
+========================= */
 
 .teen-banner{
     background:linear-gradient(135deg,#173f72,#2875a8);
@@ -361,9 +355,9 @@ main{
     font-size:.78rem;
 }
 
-/* =========================================================
+/* =========================
    CATEGORIES
-========================================================= */
+========================= */
 
 .categories{
     display:grid;
@@ -397,9 +391,9 @@ main{
     font-size:.82rem;
 }
 
-/* =========================================================
-   MATCHES
-========================================================= */
+/* =========================
+   MATCH CARDS
+========================= */
 
 .matches{
     display:grid;
@@ -534,6 +528,10 @@ main{
     font-weight:750;
 }
 
+.connect:hover{
+    background:var(--green-light);
+}
+
 .connect.pending{
     border-color:#e3a43b;
     color:#a96a00;
@@ -544,9 +542,9 @@ main{
     background:var(--green-light);
 }
 
-/* =========================================================
+/* =========================
    FILTERS
-========================================================= */
+========================= */
 
 .filter-bar{
     display:flex;
@@ -570,16 +568,21 @@ main{
     color:var(--green);
 }
 
-/* =========================================================
+/* =========================
    HOW IT WORKS
-========================================================= */
+========================= */
 
 .how{
     color:#fff;
     border-radius:30px;
     padding:48px;
     margin-top:80px;
-    background:linear-gradient(135deg,#0d4d3e,#176b57 55%,#22896f);
+    background:linear-gradient(
+        135deg,
+        #0d4d3e,
+        #176b57 55%,
+        #22896f
+    );
 }
 
 .how-intro{
@@ -627,9 +630,9 @@ main{
     font-size:.88rem;
 }
 
-/* =========================================================
+/* =========================
    DASHBOARD
-========================================================= */
+========================= */
 
 .dashboard-grid{
     display:grid;
@@ -736,11 +739,6 @@ main{
     color:var(--green);
 }
 
-.status.rejected{
-    background:#fdeaea;
-    color:var(--danger);
-}
-
 .empty-state{
     padding:25px 10px;
     text-align:center;
@@ -748,9 +746,9 @@ main{
     font-size:.82rem;
 }
 
-/* =========================================================
-   CTA / FOOTER
-========================================================= */
+/* =========================
+   CTA
+========================= */
 
 .cta{
     text-align:center;
@@ -776,6 +774,10 @@ main{
     font-weight:800;
 }
 
+/* =========================
+   FOOTER
+========================= */
+
 footer{
     border-top:1px solid var(--border);
     padding:30px 6%;
@@ -785,9 +787,9 @@ footer{
     font-size:.82rem;
 }
 
-/* =========================================================
+/* =========================
    TOAST
-========================================================= */
+========================= */
 
 .toast{
     position:fixed;
@@ -810,9 +812,9 @@ footer{
     opacity:1;
 }
 
-/* =========================================================
+/* =========================
    MODALS
-========================================================= */
+========================= */
 
 .modal-overlay{
     position:fixed;
@@ -891,7 +893,6 @@ footer{
 .form-group textarea:focus,
 .form-group select:focus{
     border-color:var(--green);
-    box-shadow:0 0 0 3px rgba(23,107,87,.08);
 }
 
 .form-group textarea{
@@ -926,14 +927,31 @@ footer{
     margin-top:5px;
 }
 
-.modal-submit:disabled{
-    opacity:.6;
-    cursor:not-allowed;
+.modal-submit:hover{
+    background:var(--green-dark);
 }
 
-/* =========================================================
+.password-wrap{
+    position:relative;
+}
+
+.password-wrap input{
+    padding-right:45px;
+}
+
+.password-toggle{
+    position:absolute;
+    right:8px;
+    top:50%;
+    transform:translateY(-50%);
+    border:0;
+    background:transparent;
+    padding:6px;
+}
+
+/* =========================
    PROFILE
-========================================================= */
+========================= */
 
 .profile-large{
     text-align:center;
@@ -986,9 +1004,9 @@ footer{
     font-size:.72rem;
 }
 
-/* =========================================================
+/* =========================
    CHAT
-========================================================= */
+========================= */
 
 .chat-modal{
     max-width:650px;
@@ -1083,24 +1101,24 @@ footer{
     font-weight:800;
 }
 
-/* =========================================================
+/* =========================
    LOADING
-========================================================= */
+========================= */
 
 .loading{
     text-align:center;
-    padding:25px;
+    padding:35px;
     color:var(--muted);
 }
 
 .spinner{
-    width:28px;
-    height:28px;
+    width:32px;
+    height:32px;
     border:3px solid var(--border);
     border-top-color:var(--green);
     border-radius:50%;
-    animation:spin .7s linear infinite;
-    margin:0 auto 10px;
+    animation:spin .8s linear infinite;
+    margin:0 auto 12px;
 }
 
 @keyframes spin{
@@ -1109,9 +1127,9 @@ footer{
     }
 }
 
-/* =========================================================
+/* =========================
    RESPONSIVE
-========================================================= */
+========================= */
 
 @media(max-width:1000px){
 
@@ -1190,927 +1208,548 @@ footer{
         grid-template-columns:1fr;
     }
 
-    .user-nav{
-        gap:3px;
+    .user-nav .profile-nav-btn{
+        display:none;
     }
 
-    .profile-nav-btn{
-        max-width:110px;
-        overflow:hidden;
-        text-overflow:ellipsis;
-        white-space:nowrap;
+    .logo{
+        font-size:1.05rem;
+    }
+
+    .india-badge{
+        display:none;
     }
 }
 </style>
+
 </head>
 
 <body>
 
-<!-- =========================================================
+<!-- =========================
      NAVIGATION
-========================================================= -->
+========================= -->
 
 <nav>
 
-    <div class="logo">
-        <div class="logo-mark">↔</div>
-        SkillSwap
-        <span class="india-badge">🇮🇳 INDIA</span>
+```
+<div class="logo">
+    <div class="logo-mark">↔</div>
+    SkillSwap
+    <span class="india-badge">🇮🇳 INDIA</span>
+</div>
+
+<div class="nav-links">
+    <a href="#discover">Discover</a>
+    <a href="#studentSkills">Student Skills</a>
+    <a href="#requestsSection">Requests</a>
+    <a href="#howItWorks">How it works</a>
+</div>
+
+<div class="nav-actions" id="loggedOutNav">
+    <button class="signin" onclick="openAuth('signin')">
+        Sign in
+    </button>
+
+    <button class="join" onclick="openAuth('signup')">
+        Join free
+    </button>
+</div>
+
+<div class="user-nav" id="loggedInNav">
+
+    <div class="nav-avatar" id="navAvatar">
+        👤
     </div>
 
-    <div class="nav-links">
-        <a href="#discover">Discover</a>
-        <a href="#studentSkills">Student Skills</a>
-        <a href="#requestsSection">Requests</a>
-        <a href="#howItWorks">How it works</a>
-    </div>
+    <button
+        class="profile-nav-btn"
+        id="navProfileName"
+        onclick="openProfile()">
+        Profile
+    </button>
 
-    <div class="nav-actions" id="loggedOutNav">
-        <button class="signin" onclick="openAuth('signin')">
-            Sign in
-        </button>
+    <button
+        class="logout-btn"
+        onclick="logout()">
+        Log out
+    </button>
 
-        <button class="join" onclick="openAuth('signup')">
-            Join free
-        </button>
-    </div>
-
-    <div class="user-nav" id="loggedInNav">
-
-        <div class="nav-avatar" id="navAvatar">
-            👤
-        </div>
-
-        <button
-            class="profile-nav-btn"
-            id="navProfileName"
-            onclick="openProfile()">
-            Profile
-        </button>
-
-        <button
-            class="logout-btn"
-            onclick="logout()">
-            Log out
-        </button>
-
-    </div>
+</div>
+```
 
 </nav>
 
-
-<!-- =========================================================
+<!-- =========================
      HERO
-========================================================= -->
+========================= -->
 
 <section class="hero">
 
-    <div class="hero-content">
+```
+<div class="hero-content">
 
-        <div class="eyebrow">
-            🇮🇳 Built for India's next generation of learners
-        </div>
+    <div class="eyebrow">
+        🇮🇳 Built for India's next generation of learners
+    </div>
 
-        <h1>
-            Learn together.<br>
-            <span>Grow together.</span>
-        </h1>
+    <h1>
+        Learn together.<br>
+        <span>Grow together.</span>
+    </h1>
 
-        <p class="hero-subtitle">
-            A student-friendly place to exchange skills, languages,
-            school subjects, technology, Indian culture, creativity
-            and more.
-            Teach what you know. Learn what you love.
-        </p>
+    <p class="hero-subtitle">
+        A student-friendly place to exchange skills, languages,
+        school subjects, technology, Indian culture, creativity
+        and more. Teach what you know. Learn what you love.
+    </p>
 
-        <div class="india-strip">
+    <div class="india-strip">
+        <span>📚 School Subjects</span>
+        <span>💻 Coding & AI</span>
+        <span>🗣️ Indian Languages</span>
+        <span>🎵 Indian Music</span>
+        <span>🏏 Sports</span>
+        <span>🎨 Indian Arts</span>
+        <span>🍛 Indian Cooking</span>
+    </div>
 
-            <span>📚 School Subjects</span>
-            <span>💻 Coding & AI</span>
-            <span>🗣️ Indian Languages</span>
-            <span>🎵 Indian Music</span>
-            <span>🏏 Sports</span>
-            <span>🎨 Indian Arts</span>
-            <span>🍛 Indian Cooking</span>
+    <div class="search-box">
 
-        </div>
+        <span class="search-icon">
+            🔎
+        </span>
 
-        <div class="search-box">
-
-            <span class="search-icon">
-                🔎
-            </span>
-
-            <input
-                id="searchInput"
-                placeholder="Try Python, Telugu, cricket, maths, guitar..."
-                oninput="searchSkills()">
-
-            <button
-                class="search-btn"
-                onclick="searchSkills()">
-                Search
-            </button>
-
-        </div>
+        <input
+            id="searchInput"
+            placeholder="Try Python, Telugu, cricket, maths, guitar..."
+            oninput="searchSkills()">
 
         <button
-            class="match-btn"
-            onclick="findMatch()">
-            ✨ Find my best skill match
+            class="search-btn"
+            onclick="searchSkills()">
+            Search
         </button>
 
     </div>
 
-</section>
+    <button
+        class="match-btn"
+        onclick="findMatch()">
+        ✨ Find my best skill match
+    </button>
 
+</div>
+```
+
+</section>
 
 <main>
 
-<!-- =========================================================
-     SAFETY
-========================================================= -->
+<!-- =========================
+     STUDENT BANNER
+========================= -->
 
 <section class="teen-banner">
 
-    <h2>
-        🧑‍🎓 A space for student-to-student learning
-    </h2>
+```
+<h2>
+    🧑‍🎓 A space for student-to-student learning
+</h2>
 
-    <p>
-        Whether you're in school, junior college or university,
-        share skills with other young learners. Learn coding,
-        practise languages, exchange study tips, or teach someone
-        your favourite creative skill.
-    </p>
+<p>
+    Whether you're in school, junior college or university,
+    share skills with other young learners. Learn coding,
+    practise languages, exchange study tips, or teach someone
+    your favourite creative skill.
+</p>
 
-    <div class="safety-note">
-        🛡️ Safety first: keep personal contact details private
-        and use SkillSwap's built-in communication for learning.
-    </div>
+<div class="safety-note">
+    🛡️ Safety first: keep personal contact details private
+    and use SkillSwap's built-in communication for learning.
+</div>
+```
 
 </section>
 
-
-<!-- =========================================================
+<!-- =========================
      DISCOVER
-========================================================= -->
+========================= -->
 
 <section class="section" id="discover">
 
-    <div class="section-header">
+```
+<div class="section-header">
 
-        <div>
+    <div>
+        <h2 id="matchTitle">
+            Popular Indian skill matches
+        </h2>
 
-            <h2 id="matchTitle">
-                Popular Indian skill matches
-            </h2>
-
-            <p>
-                Find learners with complementary skills.
-            </p>
-
-        </div>
-
-        <button
-            style="border:0;background:transparent;color:var(--green);font-weight:750"
-            onclick="resetMatches()">
-            View all →
-        </button>
-
+        <p>
+            Find learners with complementary skills.
+        </p>
     </div>
 
+    <button
+        style="border:0;background:transparent;color:var(--green);font-weight:750"
+        onclick="resetMatches()">
+        View all →
+    </button>
 
-    <div class="categories">
-
-        <button
-            class="category"
-            onclick="filterCategory('Technology',this)">
-            💻
-            <br>
-            <strong>Technology</strong>
-        </button>
-
-        <button
-            class="category"
-            onclick="filterCategory('Languages',this)">
-            🗣️
-            <br>
-            <strong>Languages</strong>
-        </button>
-
-        <button
-            class="category"
-            onclick="filterCategory('Academics',this)">
-            📚
-            <br>
-            <strong>Academics</strong>
-        </button>
-
-        <button
-            class="category"
-            onclick="filterCategory('Indian Arts',this)">
-            🎨
-            <br>
-            <strong>Indian Arts</strong>
-        </button>
-
-        <button
-            class="category"
-            onclick="filterCategory('Music & Dance',this)">
-            🎵
-            <br>
-            <strong>Music & Dance</strong>
-        </button>
-
-        <button
-            class="category"
-            onclick="filterCategory('Sports',this)">
-            🏏
-            <br>
-            <strong>Sports</strong>
-        </button>
-
-    </div>
+</div>
 
 
-    <div
-        class="matches"
-        id="matches">
-    </div>
+<div class="categories">
+
+    <button
+        class="category"
+        onclick="filterCategory('Technology',this)">
+        💻
+        <br>
+        <strong>Technology</strong>
+    </button>
+
+    <button
+        class="category"
+        onclick="filterCategory('Languages',this)">
+        🗣️
+        <br>
+        <strong>Languages</strong>
+    </button>
+
+    <button
+        class="category"
+        onclick="filterCategory('Academics',this)">
+        📚
+        <br>
+        <strong>Academics</strong>
+    </button>
+
+    <button
+        class="category"
+        onclick="filterCategory('Indian Arts',this)">
+        🎨
+        <br>
+        <strong>Indian Arts</strong>
+    </button>
+
+    <button
+        class="category"
+        onclick="filterCategory('Music & Dance',this)">
+        🎵
+        <br>
+        <strong>Music & Dance</strong>
+    </button>
+
+    <button
+        class="category"
+        onclick="filterCategory('Sports',this)">
+        🏏
+        <br>
+        <strong>Sports</strong>
+    </button>
+
+</div>
+
+<div
+    class="matches"
+    id="matches">
+</div>
+```
 
 </section>
 
-
-<!-- =========================================================
+<!-- =========================
      SKILLS
-========================================================= -->
+========================= -->
 
 <section
     class="section"
     id="studentSkills">
 
-    <div class="section-header">
+```
+<div class="section-header">
 
-        <div>
+    <div>
+        <h2>
+            🇮🇳 Skills students can exchange
+        </h2>
 
-            <h2>
-                🇮🇳 Skills students can exchange
-            </h2>
-
-            <p>
-                From everyday Indian skills to future-ready technology.
-            </p>
-
-        </div>
-
+        <p>
+            From everyday Indian skills to future-ready technology.
+        </p>
     </div>
 
-    <div
-        class="filter-bar"
-        id="skillFilters">
-    </div>
+</div>
+
+<div
+    class="filter-bar"
+    id="skillFilters">
+</div>
+```
 
 </section>
 
-
-<!-- =========================================================
+<!-- =========================
      DASHBOARD
-========================================================= -->
+========================= -->
 
 <section
     class="section"
     id="requestsSection">
 
-    <div class="section-header">
+```
+<div class="section-header">
 
-        <div>
+    <div>
+        <h2>
+            Your SkillSwap dashboard
+        </h2>
 
-            <h2>
-                Your SkillSwap dashboard
-            </h2>
+        <p>
+            Manage requests, connections and completed exchanges.
+        </p>
+    </div>
 
-            <p>
-                Manage requests, connections and completed exchanges.
-            </p>
+</div>
 
+
+<div class="dashboard-grid">
+
+    <div class="dashboard-card">
+
+        <h3>
+            🤝 Swap requests
+        </h3>
+
+        <p>
+            Your outgoing skill-swap requests.
+        </p>
+
+        <div
+            class="request-list"
+            id="requestList">
         </div>
 
     </div>
 
 
-    <div class="dashboard-grid">
+    <div class="dashboard-card">
 
-        <div class="dashboard-card">
+        <h3>
+            💬 Connections
+        </h3>
 
-            <h3>
-                🤝 Swap requests
-            </h3>
+        <p>
+            People you've connected with.
+        </p>
 
-            <p>
-                Your outgoing skill-swap requests.
-            </p>
-
-            <div
-                class="request-list"
-                id="requestList">
-            </div>
-
-        </div>
-
-
-        <div class="dashboard-card">
-
-            <h3>
-                💬 Connections
-            </h3>
-
-            <p>
-                People you've connected with.
-            </p>
-
-            <div
-                class="connection-list"
-                id="connectionList">
-            </div>
-
-        </div>
-
-
-        <div class="dashboard-card">
-
-            <h3>
-                ⭐ Your reviews
-            </h3>
-
-            <p>
-                Feedback from your skill exchanges.
-            </p>
-
-            <div
-                class="review-list"
-                id="reviewList">
-            </div>
-
+        <div
+            class="connection-list"
+            id="connectionList">
         </div>
 
     </div>
+
+
+    <div class="dashboard-card">
+
+        <h3>
+            ⭐ Your reviews
+        </h3>
+
+        <p>
+            Feedback from your skill exchanges.
+        </p>
+
+        <div
+            class="review-list"
+            id="reviewList">
+        </div>
+
+    </div>
+
+</div>
+```
 
 </section>
 
-
-<!-- =========================================================
+<!-- =========================
      HOW IT WORKS
-========================================================= -->
+========================= -->
 
 <section
     class="how"
     id="howItWorks">
 
-    <h2>
-        How SkillSwap works
-    </h2>
+```
+<h2>
+    How SkillSwap works
+</h2>
 
-    <p class="how-intro">
-        SkillSwap makes learning social. Meet people who know
-        something you want to learn and teach them something
-        you know.
-    </p>
+<p class="how-intro">
+    SkillSwap makes learning social. Meet people who know
+    something you want to learn and teach them something you know.
+</p>
 
 
-    <div class="steps">
+<div class="steps">
 
-        <div class="step">
-            <div class="step-number">1</div>
-            <div class="step-icon">🧑‍🎓</div>
-            <h3>Create your profile</h3>
-            <p>
-                Tell the community your age group, location,
-                skills, interests and availability.
-            </p>
-        </div>
-
-        <div class="step">
-            <div class="step-number">2</div>
-            <div class="step-icon">🔎</div>
-            <h3>Discover people</h3>
-            <p>
-                Find learners interested in coding, languages,
-                academics, sports, arts and music.
-            </p>
-        </div>
-
-        <div class="step">
-            <div class="step-number">3</div>
-            <div class="step-icon">✨</div>
-            <h3>Find a smart match</h3>
-            <p>
-                Our matching system compares your learning goals
-                with other members' skills.
-            </p>
-        </div>
-
-        <div class="step">
-            <div class="step-number">4</div>
-            <div class="step-icon">🤝</div>
-            <h3>Request a swap</h3>
-            <p>
-                Offer your own skill in return and explain what
-                you'd like to learn.
-            </p>
-        </div>
-
-        <div class="step">
-            <div class="step-number">5</div>
-            <div class="step-icon">💬</div>
-            <h3>Chat safely</h3>
-            <p>
-                Discuss your learning goals and arrange an
-                appropriate learning session.
-            </p>
-        </div>
-
-        <div class="step">
-            <div class="step-number">6</div>
-            <div class="step-icon">⭐</div>
-            <h3>Learn and grow</h3>
-            <p>
-                Complete the exchange, leave feedback and build
-                a friendly community.
-            </p>
-        </div>
-
+    <div class="step">
+        <div class="step-number">1</div>
+        <div class="step-icon">🧑‍🎓</div>
+        <h3>Create your profile</h3>
+        <p>
+            Tell the community your age group, location,
+            skills, interests and availability.
+        </p>
     </div>
+
+    <div class="step">
+        <div class="step-number">2</div>
+        <div class="step-icon">🔎</div>
+        <h3>Discover people</h3>
+        <p>
+            Find learners interested in coding, languages,
+            academics, sports, arts and music.
+        </p>
+    </div>
+
+    <div class="step">
+        <div class="step-number">3</div>
+        <div class="step-icon">✨</div>
+        <h3>Find a smart match</h3>
+        <p>
+            Our matching system compares your learning goals
+            with other members' skills.
+        </p>
+    </div>
+
+    <div class="step">
+        <div class="step-number">4</div>
+        <div class="step-icon">🤝</div>
+        <h3>Request a swap</h3>
+        <p>
+            Offer your own skill in return and explain
+            what you'd like to learn.
+        </p>
+    </div>
+
+    <div class="step">
+        <div class="step-number">5</div>
+        <div class="step-icon">💬</div>
+        <h3>Chat safely</h3>
+        <p>
+            Discuss your learning goals and arrange
+            an appropriate learning session.
+        </p>
+    </div>
+
+    <div class="step">
+        <div class="step-number">6</div>
+        <div class="step-icon">⭐</div>
+        <h3>Learn and grow</h3>
+        <p>
+            Complete the exchange, leave feedback and
+            build a friendly community.
+        </p>
+    </div>
+
+</div>
+```
 
 </section>
 
-
-<!-- =========================================================
+<!-- =========================
      CTA
-========================================================= -->
+========================= -->
 
 <section class="cta">
 
-    <h2>
-        Everyone knows something.
-    </h2>
+```
+<h2>
+    Everyone knows something.
+</h2>
 
-    <p>
-        Your Telugu, guitar skills, Python knowledge, cricket tips
-        or art — someone may want to learn it.
-    </p>
+<p>
+    Your Telugu, guitar skills, Python knowledge,
+    cricket tips or art — someone may want to learn it.
+</p>
 
-    <button onclick="openAuth('signup')">
-        Create your free student profile →
-    </button>
+<button onclick="openAuth('signup')">
+    Create your free student profile →
+</button>
+```
 
 </section>
 
 </main>
 
-
 <footer>
 
-    <div>
-        © 2026 SkillSwap India
-    </div>
+```
+<div>
+    © 2026 SkillSwap India
+</div>
 
-    <div>
-        🇮🇳 Learn · Teach · Connect
-    </div>
+<div>
+    🇮🇳 Learn · Teach · Connect
+</div>
+```
 
 </footer>
 
-
-<!-- =========================================================
+<!-- =========================
      TOAST
-========================================================= -->
+========================= -->
 
 <div
     class="toast"
     id="toast">
 </div>
 
-
-<!-- =========================================================
+<!-- =========================
      AUTH MODAL
-========================================================= -->
+========================= -->
 
 <div
     class="modal-overlay"
     id="authModal">
 
-    <div class="modal">
+```
+<div class="modal">
 
-        <button
-            class="modal-close"
-            onclick="closeModal('authModal')">
-            ×
-        </button>
+    <button
+        class="modal-close"
+        onclick="closeModal('authModal')">
+        ×
+    </button>
 
 
-        <!-- SIGN IN -->
+    <!-- SIGN IN -->
 
-        <div id="signinForm">
-
-            <h2>
-                Welcome back 👋
-            </h2>
-
-            <p class="modal-subtitle">
-                Sign in to continue learning.
-            </p>
-
-            <div class="form-group">
-
-                <label>Email</label>
-
-                <input
-                    id="signinEmail"
-                    type="email"
-                    placeholder="you@example.com">
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>Password</label>
-
-                <input
-                    id="signinPassword"
-                    type="password"
-                    placeholder="••••••••">
-
-            </div>
-
-
-            <button
-                class="modal-submit"
-                onclick="signIn()">
-
-                Sign in
-
-            </button>
-
-
-            <p
-                style="text-align:center;margin-top:15px;color:var(--muted)">
-
-                Don't have an account?
-
-                <button
-                    style="border:0;background:none;color:var(--green);font-weight:800"
-                    onclick="switchAuth('signup')">
-
-                    Create one
-
-                </button>
-
-            </p>
-
-        </div>
-
-
-        <!-- SIGN UP -->
-
-        <div
-            id="signupForm"
-            style="display:none">
-
-            <h2>
-                Join SkillSwap India 🇮🇳
-            </h2>
-
-            <p class="modal-subtitle">
-                Create a profile and exchange skills with other learners.
-            </p>
-
-
-            <div class="form-group">
-
-                <label>Your name</label>
-
-                <input
-                    id="signupName"
-                    placeholder="Your first name or nickname">
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>Email</label>
-
-                <input
-                    id="signupEmail"
-                    type="email"
-                    placeholder="you@example.com">
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>Password</label>
-
-                <input
-                    id="signupPassword"
-                    type="password"
-                    placeholder="Create a password">
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>I'm a...</label>
-
-                <select id="signupType">
-
-                    <option>Teen Student</option>
-                    <option>School Student</option>
-                    <option>College Student</option>
-                    <option>Young Learner</option>
-                    <option>Other Learner</option>
-
-                </select>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>City / State</label>
-
-                <input
-                    id="signupLocation"
-                    placeholder="Hyderabad, Telangana">
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>Languages you speak</label>
-
-                <input
-                    id="signupLanguages"
-                    placeholder="Telugu, Hindi, English">
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>Bio</label>
-
-                <textarea
-                    id="signupBio"
-                    placeholder="Tell people about your interests...">
-                </textarea>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>What can you teach?</label>
-
-                <input
-                    id="signupSkill"
-                    placeholder="Python, Telugu, Guitar, Cricket...">
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>What do you want to learn?</label>
-
-                <input
-                    id="signupWanted"
-                    placeholder="Maths, Coding, Hindi, Drawing...">
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>Availability</label>
-
-                <div class="checkbox-grid">
-
-                    <label class="check-option">
-                        <input
-                            type="checkbox"
-                            name="availability"
-                            value="After school">
-                        After school
-                    </label>
-
-                    <label class="check-option">
-                        <input
-                            type="checkbox"
-                            name="availability"
-                            value="Weekday evenings">
-                        Weekday evenings
-                    </label>
-
-                    <label class="check-option">
-                        <input
-                            type="checkbox"
-                            name="availability"
-                            value="Weekends">
-                        Weekends
-                    </label>
-
-                    <label class="check-option">
-                        <input
-                            type="checkbox"
-                            name="availability"
-                            value="Flexible">
-                        Flexible
-                    </label>
-
-                </div>
-
-            </div>
-
-
-            <div
-                class="safety-note"
-                style="background:#eef7ff;color:#275b80;margin-bottom:15px">
-
-                🛡️ Don't include your phone number, home address
-                or other private information.
-
-            </div>
-
-
-            <button
-                class="modal-submit"
-                id="signupButton"
-                onclick="signUp()">
-
-                Create my profile
-
-            </button>
-
-
-            <p
-                style="text-align:center;margin-top:15px;color:var(--muted)">
-
-                Already have an account?
-
-                <button
-                    style="border:0;background:none;color:var(--green);font-weight:800"
-                    onclick="switchAuth('signin')">
-
-                    Sign in
-
-                </button>
-
-            </p>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     PROFILE MODAL
-========================================================= -->
-
-<div
-    class="modal-overlay"
-    id="profileModal">
-
-    <div class="modal">
-
-        <button
-            class="modal-close"
-            onclick="closeModal('profileModal')">
-            ×
-        </button>
-
-
-        <div class="profile-large">
-
-            <div
-                class="profile-large-avatar"
-                id="profileAvatar">
-                👤
-            </div>
-
-            <h2 id="profileName">
-                Your Name
-            </h2>
-
-            <p
-                class="profile-location"
-                id="profileType">
-            </p>
-
-            <p
-                class="profile-location"
-                id="profileLocation">
-            </p>
-
-            <p
-                class="profile-bio"
-                id="profileBio">
-            </p>
-
-        </div>
-
-
-        <div class="profile-info">
-
-            <p>
-                <strong>📚 Can teach</strong>
-            </p>
-
-            <div
-                class="profile-skills"
-                id="profileTeach">
-            </div>
-
-            <br>
-
-            <p>
-                <strong>✨ Wants to learn</strong>
-            </p>
-
-            <div
-                class="profile-skills"
-                id="profileLearn">
-            </div>
-
-            <br>
-
-            <p>
-                <strong>🗣️ Languages</strong>
-            </p>
-
-            <p
-                id="profileLanguages"
-                style="color:var(--muted);margin-top:6px">
-            </p>
-
-            <br>
-
-            <p>
-                <strong>🕐 Availability</strong>
-            </p>
-
-            <p
-                id="profileAvailability"
-                style="color:var(--muted);margin-top:6px">
-            </p>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     REQUEST MODAL
-========================================================= -->
-
-<div
-    class="modal-overlay"
-    id="requestModal">
-
-    <div class="modal">
-
-        <button
-            class="modal-close"
-            onclick="closeModal('requestModal')">
-            ×
-        </button>
+    <div id="signinForm">
 
         <h2>
-            Request a skill swap 🤝
+            Welcome back 👋
         </h2>
 
-        <p
-            class="modal-subtitle"
-            id="requestSubtitle">
+        <p class="modal-subtitle">
+            Sign in to continue learning.
         </p>
 
 
         <div class="form-group">
 
             <label>
-                What would you like to learn?
+                Email
             </label>
 
-            <input id="requestWanted">
+            <input
+                id="signinEmail"
+                type="email"
+                placeholder="you@example.com">
 
         </div>
 
@@ -2118,444 +1757,838 @@ footer{
         <div class="form-group">
 
             <label>
-                What will you teach in return?
+                Password
             </label>
 
-            <input id="requestOffered">
+            <div class="password-wrap">
 
-        </div>
+                <input
+                    id="signinPassword"
+                    type="password"
+                    placeholder="••••••••">
 
+                <button
+                    type="button"
+                    class="password-toggle"
+                    onclick="togglePassword('signinPassword',this)">
+                    👁️
+                </button>
 
-        <div class="form-group">
-
-            <label>
-                Message
-            </label>
-
-            <textarea
-                id="requestMessage"
-                placeholder="Introduce yourself and explain your learning goal...">
-            </textarea>
+            </div>
 
         </div>
 
 
         <button
             class="modal-submit"
-            onclick="submitSwapRequest()">
-
-            Send swap request
-
+            onclick="signIn()">
+            Sign in
         </button>
+
+
+        <p
+            style="text-align:center;margin-top:15px;color:var(--muted)">
+
+            Don't have an account?
+
+            <button
+                style="border:0;background:none;color:var(--green);font-weight:800"
+                onclick="switchAuth('signup')">
+                Create one
+            </button>
+
+        </p>
 
     </div>
 
-</div>
+
+    <!-- SIGN UP -->
+
+    <div
+        id="signupForm"
+        style="display:none">
+
+        <h2>
+            Join SkillSwap India 🇮🇳
+        </h2>
+
+        <p class="modal-subtitle">
+            Create a profile and exchange skills with other learners.
+        </p>
 
 
-<!-- =========================================================
-     CHAT MODAL
-========================================================= -->
+        <div class="form-group">
 
-<div
-    class="modal-overlay"
-    id="chatModal">
+            <label>
+                Your name
+            </label>
 
-    <div class="modal chat-modal">
+            <input
+                id="signupName"
+                placeholder="Your first name or nickname">
 
-        <div class="chat-header">
+        </div>
 
-            <div class="chat-person">
 
-                <div
-                    class="chat-avatar"
-                    id="chatAvatar">
-                    👤
-                </div>
+        <div class="form-group">
 
-                <div>
+            <label>
+                Email
+            </label>
 
-                    <h3 id="chatName">
-                        Chat
-                    </h3>
+            <input
+                id="signupEmail"
+                type="email"
+                placeholder="you@example.com">
 
-                    <p>
-                        SkillSwap member
-                    </p>
+        </div>
 
-                </div>
+
+        <div class="form-group">
+
+            <label>
+                Password
+            </label>
+
+            <div class="password-wrap">
+
+                <input
+                    id="signupPassword"
+                    type="password"
+                    placeholder="Create a password">
+
+                <button
+                    type="button"
+                    class="password-toggle"
+                    onclick="togglePassword('signupPassword',this)">
+                    👁️
+                </button>
 
             </div>
 
+        </div>
 
-            <button
-                class="chat-close"
-                onclick="closeModal('chatModal')">
-                ×
-            </button>
+
+        <div class="form-group">
+
+            <label>
+                I'm a...
+            </label>
+
+            <select id="signupType">
+
+                <option>Teen Student</option>
+                <option>School Student</option>
+                <option>College Student</option>
+                <option>Young Learner</option>
+                <option>Other Learner</option>
+
+            </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                City / State
+            </label>
+
+            <input
+                id="signupLocation"
+                placeholder="Hyderabad, Telangana">
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Languages you speak
+            </label>
+
+            <input
+                id="signupLanguages"
+                placeholder="Telugu, Hindi, English">
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Bio
+            </label>
+
+            <textarea
+                id="signupBio"
+                placeholder="Tell people about your interests...">
+            </textarea>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                What can you teach?
+            </label>
+
+            <input
+                id="signupSkill"
+                placeholder="Python, Telugu, Guitar, Cricket...">
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                What do you want to learn?
+            </label>
+
+            <input
+                id="signupWanted"
+                placeholder="Maths, Coding, Hindi, Drawing...">
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Availability
+            </label>
+
+            <div class="checkbox-grid">
+
+                <label class="check-option">
+                    <input
+                        type="checkbox"
+                        name="availability"
+                        value="After school">
+                    After school
+                </label>
+
+                <label class="check-option">
+                    <input
+                        type="checkbox"
+                        name="availability"
+                        value="Weekday evenings">
+                    Weekday evenings
+                </label>
+
+                <label class="check-option">
+                    <input
+                        type="checkbox"
+                        name="availability"
+                        value="Weekends">
+                    Weekends
+                </label>
+
+                <label class="check-option">
+                    <input
+                        type="checkbox"
+                        name="availability"
+                        value="Flexible">
+                    Flexible
+                </label>
+
+            </div>
 
         </div>
 
 
         <div
-            class="chat-messages"
-            id="chatMessages">
+            class="safety-note"
+            style="background:#eef7ff;color:#275b80;margin-bottom:15px">
+
+            🛡️ Don't include your phone number, home address
+            or other private information.
+
         </div>
 
 
-        <div class="chat-input">
+        <button
+            class="modal-submit"
+            onclick="signUp()">
+            Create my profile
+        </button>
 
-            <input
-                id="chatInput"
-                placeholder="Talk about your learning goals..."
-                onkeydown="handleChatKey(event)">
 
-            <button onclick="sendMessage()">
-                Send
+        <p
+            style="text-align:center;margin-top:15px;color:var(--muted)">
+
+            Already have an account?
+
+            <button
+                style="border:0;background:none;color:var(--green);font-weight:800"
+                onclick="switchAuth('signin')">
+                Sign in
             </button>
 
-        </div>
+        </p>
 
     </div>
 
 </div>
+```
 
+</div>
+
+<!-- =========================
+     PROFILE MODAL
+========================= -->
+
+<div
+    class="modal-overlay"
+    id="profileModal">
+
+```
+<div class="modal">
+
+    <button
+        class="modal-close"
+        onclick="closeModal('profileModal')">
+        ×
+    </button>
+
+
+    <div class="profile-large">
+
+        <div
+            class="profile-large-avatar"
+            id="profileAvatar">
+            👤
+        </div>
+
+        <h2 id="profileName">
+            Your Name
+        </h2>
+
+        <p
+            class="profile-location"
+            id="profileType">
+        </p>
+
+        <p
+            class="profile-location"
+            id="profileLocation">
+        </p>
+
+        <p
+            class="profile-bio"
+            id="profileBio">
+        </p>
+
+    </div>
+
+
+    <div class="profile-info">
+
+        <p>
+            <strong>
+                📚 Can teach
+            </strong>
+        </p>
+
+        <div
+            class="profile-skills"
+            id="profileTeach">
+        </div>
+
+        <br>
+
+        <p>
+            <strong>
+                ✨ Wants to learn
+            </strong>
+        </p>
+
+        <div
+            class="profile-skills"
+            id="profileLearn">
+        </div>
+
+        <br>
+
+        <p>
+            <strong>
+                🗣️ Languages
+            </strong>
+        </p>
+
+        <p
+            id="profileLanguages"
+            style="color:var(--muted);margin-top:6px">
+        </p>
+
+        <br>
+
+        <p>
+            <strong>
+                🕐 Availability
+            </strong>
+        </p>
+
+        <p
+            id="profileAvailability"
+            style="color:var(--muted);margin-top:6px">
+        </p>
+
+    </div>
+
+</div>
+```
+
+</div>
+
+<!-- =========================
+     REQUEST MODAL
+========================= -->
+
+<div
+    class="modal-overlay"
+    id="requestModal">
+
+```
+<div class="modal">
+
+    <button
+        class="modal-close"
+        onclick="closeModal('requestModal')">
+        ×
+    </button>
+
+    <h2>
+        Request a skill swap 🤝
+    </h2>
+
+    <p
+        class="modal-subtitle"
+        id="requestSubtitle">
+    </p>
+
+
+    <div class="form-group">
+
+        <label>
+            What would you like to learn?
+        </label>
+
+        <input id="requestWanted">
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label>
+            What will you teach in return?
+        </label>
+
+        <input id="requestOffered">
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label>
+            Message
+        </label>
+
+        <textarea
+            id="requestMessage"
+            placeholder="Introduce yourself and explain your learning goal...">
+        </textarea>
+
+    </div>
+
+
+    <button
+        class="modal-submit"
+        onclick="submitSwapRequest()">
+        Send swap request
+    </button>
+
+</div>
+```
+
+</div>
+
+<!-- =========================
+     CHAT MODAL
+========================= -->
+
+<div
+    class="modal-overlay"
+    id="chatModal">
+
+```
+<div class="modal chat-modal">
+
+    <div class="chat-header">
+
+        <div class="chat-person">
+
+            <div
+                class="chat-avatar"
+                id="chatAvatar">
+                👤
+            </div>
+
+            <div>
+
+                <h3 id="chatName">
+                    Chat
+                </h3>
+
+                <p>
+                    SkillSwap member
+                </p>
+
+            </div>
+
+        </div>
+
+        <button
+            class="chat-close"
+            onclick="closeModal('chatModal')">
+            ×
+        </button>
+
+    </div>
+
+
+    <div
+        class="chat-messages"
+        id="chatMessages">
+    </div>
+
+
+    <div class="chat-input">
+
+        <input
+            id="chatInput"
+            placeholder="Talk about your learning goals..."
+            onkeydown="handleChatKey(event)">
+
+        <button onclick="sendMessage()">
+            Send
+        </button>
+
+    </div>
+
+</div>
+```
+
+</div>
 
 <script>
 
 /* =========================================================
-   SKILLSWAP INDIA
-   JAVASCRIPT
-   Flask API ready
+   SKILLSWAP FRONTEND JAVASCRIPT
+   Flask-ready architecture
 ========================================================= */
+
+
+/* =========================
+   DEMO PEOPLE
+========================= */
+
+const demoPeople = [
+
+{
+    id:"ananya",
+    name:"Ananya Reddy",
+    avatar:"👩🏽",
+    location:"Hyderabad, Telangana",
+    category:"Languages",
+    type:"Teen Student",
+    languages:["Telugu","Hindi","English"],
+    teach:["Telugu","Hindi"],
+    want:["Python","AI"],
+    availability:["After school","Weekends"],
+    rating:4.9,
+    reviews:32,
+    bio:"School student who loves languages, technology and helping other students."
+},
+
+{
+    id:"aarav",
+    name:"Aarav Sharma",
+    avatar:"👨🏽",
+    location:"Bengaluru, Karnataka",
+    category:"Technology",
+    type:"School Student",
+    languages:["Hindi","English","Kannada"],
+    teach:["Python","Robotics"],
+    want:["Guitar","Public Speaking"],
+    availability:["Weekday evenings","Weekends"],
+    rating:4.8,
+    reviews:27,
+    bio:"Young coding enthusiast building small robotics projects."
+},
+
+{
+    id:"meera",
+    name:"Meera Krishnan",
+    avatar:"👩🏽",
+    location:"Chennai, Tamil Nadu",
+    category:"Music & Dance",
+    type:"Teen Student",
+    languages:["Tamil","English"],
+    teach:["Bharatanatyam","Carnatic Music"],
+    want:["Graphic Design","Photography"],
+    availability:["Weekends"],
+    rating:5,
+    reviews:41,
+    bio:"Learns classical Indian arts and enjoys creative projects."
+},
+
+{
+    id:"rohan",
+    name:"Rohan Patel",
+    avatar:"👨🏽",
+    location:"Pune, Maharashtra",
+    category:"Technology",
+    type:"College Student",
+    languages:["Hindi","Marathi","English"],
+    teach:["Python","AI","Machine Learning"],
+    want:["Web Design","Video Editing"],
+    availability:["Weekday evenings","Flexible"],
+    rating:5,
+    reviews:46,
+    bio:"Technology learner who enjoys explaining difficult ideas simply."
+},
+
+{
+    id:"saanvi",
+    name:"Saanvi Gupta",
+    avatar:"👩🏼",
+    location:"Delhi, India",
+    category:"Academics",
+    type:"Teen Student",
+    languages:["Hindi","English"],
+    teach:["Mathematics","Study Planning"],
+    want:["Spanish","Guitar"],
+    availability:["After school","Weekends"],
+    rating:4.9,
+    reviews:29,
+    bio:"Student who enjoys maths, study techniques and music."
+},
+
+{
+    id:"vikram",
+    name:"Vikram Rao",
+    avatar:"👨🏽",
+    location:"Vijayawada, Andhra Pradesh",
+    category:"Sports",
+    type:"Teen Student",
+    languages:["Telugu","English"],
+    teach:["Cricket","Chess"],
+    want:["Python","Photography"],
+    availability:["Weekends","Flexible"],
+    rating:4.8,
+    reviews:21,
+    bio:"Cricket and chess fan who wants to explore technology."
+},
+
+{
+    id:"ishita",
+    name:"Ishita Singh",
+    avatar:"👩🏽",
+    location:"Jaipur, Rajasthan",
+    category:"Indian Arts",
+    type:"Teen Student",
+    languages:["Hindi","English"],
+    teach:["Rangoli","Mehendi","Drawing"],
+    want:["Coding","Photography"],
+    availability:["Weekends"],
+    rating:4.9,
+    reviews:36,
+    bio:"Creative student interested in Indian art and digital design."
+},
+
+{
+    id:"aditya",
+    name:"Aditya Nair",
+    avatar:"👨🏽",
+    location:"Kochi, Kerala",
+    category:"Academics",
+    type:"College Student",
+    languages:["Malayalam","Hindi","English"],
+    teach:["Physics","Science Projects"],
+    want:["Video Editing","Guitar"],
+    availability:["Weekday evenings","Flexible"],
+    rating:4.7,
+    reviews:18,
+    bio:"Science student who loves practical experiments."
+},
+
+{
+    id:"kavya",
+    name:"Kavya Das",
+    avatar:"👩🏽",
+    location:"Kolkata, West Bengal",
+    category:"Languages",
+    type:"Teen Student",
+    languages:["Bengali","Hindi","English"],
+    teach:["Bengali","Creative Writing"],
+    want:["Python","Public Speaking"],
+    availability:["Weekends"],
+    rating:4.8,
+    reviews:25,
+    bio:"Language lover and young writer."
+},
+
+{
+    id:"dev",
+    name:"Dev Malhotra",
+    avatar:"👨🏻",
+    location:"Mumbai, Maharashtra",
+    category:"Indian Arts",
+    type:"Teen Student",
+    languages:["Hindi","English"],
+    teach:["Guitar","Video Editing"],
+    want:["Tabla","Cricket"],
+    availability:["Weekday evenings","Weekends"],
+    rating:4.8,
+    reviews:30,
+    bio:"Music and video creator who loves learning new skills."
+},
+
+{
+    id:"priya",
+    name:"Priya Sharma",
+    avatar:"👩🏾",
+    location:"Hyderabad, Telangana",
+    category:"Indian Arts",
+    type:"College Student",
+    languages:["Telugu","Hindi","English"],
+    teach:["Indian Cooking","Biryani"],
+    want:["Baking","Photography"],
+    availability:["Weekends","Flexible"],
+    rating:5,
+    reviews:52,
+    bio:"Home cook who enjoys sharing Indian recipes."
+},
+
+{
+    id:"arjun",
+    name:"Arjun Mehta",
+    avatar:"👨🏽",
+    location:"Ahmedabad, Gujarat",
+    category:"Sports",
+    type:"Teen Student",
+    languages:["Hindi","Gujarati","English"],
+    teach:["Cricket","Football"],
+    want:["Coding","Guitar"],
+    availability:["Weekends"],
+    rating:4.8,
+    reviews:27,
+    bio:"Sports enthusiast who wants to learn technology and music."
+}
+
+];
+
+
+/* =========================
+   STATE
+========================= */
+
+let currentRequestPerson = null;
+let currentChatPerson = null;
+
+
+/* =========================
+   SKILLS
+========================= */
+
+const skills = [
+    "Hindi",
+    "Telugu",
+    "Tamil",
+    "Kannada",
+    "Malayalam",
+    "Bengali",
+    "Sanskrit",
+    "Python",
+    "JavaScript",
+    "AI",
+    "Robotics",
+    "Maths",
+    "Physics",
+    "Public Speaking",
+    "Cricket",
+    "Chess",
+    "Guitar",
+    "Tabla",
+    "Bharatanatyam",
+    "Drawing",
+    "Rangoli",
+    "Mehendi",
+    "Indian Cooking"
+];
 
 
 /* =========================================================
-   API CONFIGURATION
-========================================================= */
+   API HELPER
+   ========================================================= */
 
-const API = "/api";
-
-
-async function apiRequest(
-    endpoint,
-    options={}
-){
+async function api(url, options={}){
 
     try{
 
-        const response = await fetch(
-            API + endpoint,
-            {
-                credentials:"include",
-                headers:{
-                    "Content-Type":"application/json",
-                    ...(options.headers || {})
-                },
-                ...options
-            }
-        );
+        const response = await fetch(url,{
+            headers:{
+                "Content-Type":"application/json",
+                ...(options.headers || {})
+            },
+            ...options
+        });
 
-
-        let data={};
-
-        try{
-            data=await response.json();
-        }catch{
-            data={};
-        }
-
+        const data = await response.json().catch(()=>({}));
 
         if(!response.ok){
-
-            throw new Error(
-                data.message ||
-                data.error ||
-                "Something went wrong."
-            );
-
+            throw new Error(data.message || "Something went wrong.");
         }
-
 
         return data;
 
     }catch(error){
 
-        console.error(error);
+        console.error("API error:",error);
 
         throw error;
-
     }
-
 }
 
 
-/* =========================================================
-   DEMO PEOPLE
-========================================================= */
-
-const demoPeople=[
-
-{
-id:"ananya",
-name:"Ananya Reddy",
-avatar:"👩🏽",
-location:"Hyderabad, Telangana",
-category:"Languages",
-type:"Teen Student",
-languages:["Telugu","Hindi","English"],
-teach:["Telugu","Hindi"],
-want:["Python","AI"],
-availability:["After school","Weekends"],
-rating:4.9,
-reviews:32,
-bio:"School student who loves languages, technology and helping other students."
-},
-
-{
-id:"aarav",
-name:"Aarav Sharma",
-avatar:"👨🏽",
-location:"Bengaluru, Karnataka",
-category:"Technology",
-type:"School Student",
-languages:["Hindi","English","Kannada"],
-teach:["Python","Robotics"],
-want:["Guitar","Public Speaking"],
-availability:["Weekday evenings","Weekends"],
-rating:4.8,
-reviews:27,
-bio:"Young coding enthusiast building small robotics projects."
-},
-
-{
-id:"meera",
-name:"Meera Krishnan",
-avatar:"👩🏽",
-location:"Chennai, Tamil Nadu",
-category:"Music & Dance",
-type:"Teen Student",
-languages:["Tamil","English"],
-teach:["Bharatanatyam","Carnatic Music"],
-want:["Graphic Design","Photography"],
-availability:["Weekends"],
-rating:5,
-reviews:41,
-bio:"Learns classical Indian arts and enjoys creative projects."
-},
-
-{
-id:"rohan",
-name:"Rohan Patel",
-avatar:"👨🏽",
-location:"Pune, Maharashtra",
-category:"Technology",
-type:"College Student",
-languages:["Hindi","Marathi","English"],
-teach:["Python","AI","Machine Learning"],
-want:["Web Design","Video Editing"],
-availability:["Weekday evenings","Flexible"],
-rating:5,
-reviews:46,
-bio:"Technology learner who enjoys explaining difficult ideas simply."
-},
-
-{
-id:"saanvi",
-name:"Saanvi Gupta",
-avatar:"👩🏼",
-location:"Delhi, India",
-category:"Academics",
-type:"Teen Student",
-languages:["Hindi","English"],
-teach:["Mathematics","Study Planning"],
-want:["Spanish","Guitar"],
-availability:["After school","Weekends"],
-rating:4.9,
-reviews:29,
-bio:"Student who enjoys maths, study techniques and music."
-},
-
-{
-id:"vikram",
-name:"Vikram Rao",
-avatar:"👨🏽",
-location:"Vijayawada, Andhra Pradesh",
-category:"Sports",
-type:"Teen Student",
-languages:["Telugu","English"],
-teach:["Cricket","Chess"],
-want:["Python","Photography"],
-availability:["Weekends","Flexible"],
-rating:4.8,
-reviews:21,
-bio:"Cricket and chess fan who wants to explore technology."
-},
-
-{
-id:"ishita",
-name:"Ishita Singh",
-avatar:"👩🏽",
-location:"Jaipur, Rajasthan",
-category:"Indian Arts",
-type:"Teen Student",
-languages:["Hindi","English"],
-teach:["Rangoli","Mehendi","Drawing"],
-want:["Coding","Photography"],
-availability:["Weekends"],
-rating:4.9,
-reviews:36,
-bio:"Creative student interested in Indian art and digital design."
-},
-
-{
-id:"aditya",
-name:"Aditya Nair",
-avatar:"👨🏽",
-location:"Kochi, Kerala",
-category:"Academics",
-type:"College Student",
-languages:["Malayalam","Hindi","English"],
-teach:["Physics","Science Projects"],
-want:["Video Editing","Guitar"],
-availability:["Weekday evenings","Flexible"],
-rating:4.7,
-reviews:18,
-bio:"Science student who loves practical experiments."
-},
-
-{
-id:"kavya",
-name:"Kavya Das",
-avatar:"👩🏽",
-location:"Kolkata, West Bengal",
-category:"Languages",
-type:"Teen Student",
-languages:["Bengali","Hindi","English"],
-teach:["Bengali","Creative Writing"],
-want:["Python","Public Speaking"],
-availability:["Weekends"],
-rating:4.8,
-reviews:25,
-bio:"Language lover and young writer."
-},
-
-{
-id:"dev",
-name:"Dev Malhotra",
-avatar:"👨🏻",
-location:"Mumbai, Maharashtra",
-category:"Indian Arts",
-type:"Teen Student",
-languages:["Hindi","English"],
-teach:["Guitar","Video Editing"],
-want:["Tabla","Cricket"],
-availability:["Weekday evenings","Weekends"],
-rating:4.8,
-reviews:30,
-bio:"Music and video creator who loves learning new skills."
-},
-
-{
-id:"priya",
-name:"Priya Sharma",
-avatar:"👩🏾",
-location:"Hyderabad, Telangana",
-category:"Indian Arts",
-type:"College Student",
-languages:["Telugu","Hindi","English"],
-teach:["Indian Cooking","Biryani"],
-want:["Baking","Photography"],
-availability:["Weekends","Flexible"],
-rating:5,
-reviews:52,
-bio:"Home cook who enjoys sharing Indian recipes."
-},
-
-{
-id:"arjun",
-name:"Arjun Mehta",
-avatar:"👨🏽",
-location:"Ahmedabad, Gujarat",
-category:"Sports",
-type:"Teen Student",
-languages:["Hindi","Gujarati","English"],
-teach:["Cricket","Football"],
-want:["Coding","Guitar"],
-availability:["Weekends"],
-rating:4.8,
-reviews:27,
-bio:"Sports enthusiast who wants to learn technology and music."
-}
-
-];
-
-
-let currentRequestPerson=null;
-let currentChatPerson=null;
-
-
-/* =========================================================
-   SKILL LIST
-========================================================= */
-
-const skills=[
-
-"Hindi",
-"Telugu",
-"Tamil",
-"Kannada",
-"Malayalam",
-"Bengali",
-"Sanskrit",
-
-"Python",
-"JavaScript",
-"AI",
-"Robotics",
-
-"Maths",
-"Physics",
-"Public Speaking",
-
-"Cricket",
-"Chess",
-
-"Guitar",
-"Tabla",
-
-"Bharatanatyam",
-"Drawing",
-"Rangoli",
-"Mehendi",
-
-"Indian Cooking"
-
-];
-
-
-/* =========================================================
-   HELPERS
-========================================================= */
+/* =========================
+   TOAST
+========================= */
 
 function showToast(message){
 
-    const toast=document.getElementById("toast");
+    const t=document.getElementById("toast");
 
-    toast.textContent=message;
+    t.textContent=message;
 
-    toast.classList.add("show");
+    t.classList.add("show");
 
     clearTimeout(window.toastTimer);
 
-    window.toastTimer=setTimeout(
-        ()=>{
-            toast.classList.remove("show");
-        },
-        2800
-    );
+    window.toastTimer=setTimeout(()=>{
+        t.classList.remove("show");
+    },2800);
 }
 
+
+/* =========================
+   MODALS
+========================= */
 
 function closeModal(id){
 
@@ -2564,7 +2597,6 @@ function closeModal(id){
     if(modal){
         modal.classList.remove("show");
     }
-
 }
 
 
@@ -2575,7 +2607,6 @@ function openAuth(type){
         .classList.add("show");
 
     switchAuth(type);
-
 }
 
 
@@ -2586,9 +2617,34 @@ function switchAuth(type){
 
     document.getElementById("signupForm").style.display =
         type==="signup" ? "block" : "none";
-
 }
 
+
+/* =========================
+   PASSWORD VISIBILITY
+========================= */
+
+function togglePassword(id,button){
+
+    const input=document.getElementById(id);
+
+    if(input.type==="password"){
+
+        input.type="text";
+        button.textContent="🙈";
+
+    }else{
+
+        input.type="password";
+        button.textContent="👁️";
+
+    }
+}
+
+
+/* =========================
+   HTML ESCAPING
+========================= */
 
 function escapeHTML(value){
 
@@ -2598,9 +2654,12 @@ function escapeHTML(value){
         .replace(/>/g,"&gt;")
         .replace(/"/g,"&quot;")
         .replace(/'/g,"&#039;");
-
 }
 
+
+/* =========================
+   NORMALIZE SKILLS
+========================= */
 
 function normalizeSkill(value){
 
@@ -2608,66 +2667,8 @@ function normalizeSkill(value){
         .toLowerCase()
         .replace(/[^a-z0-9+# ]/g,"")
         .trim();
-
 }
 
-
-/* =========================================================
-   LOCAL FALLBACK USER
-   Used only if Flask API is unavailable.
-========================================================= */
-
-function getLocalUser(){
-
-    return JSON.parse(
-        localStorage.getItem("skillswapUser") || "null"
-    );
-
-}
-
-
-function saveLocalUser(user){
-
-    localStorage.setItem(
-        "skillswapUser",
-        JSON.stringify(user)
-    );
-
-}
-
-
-/* =========================================================
-   CURRENT USER
-========================================================= */
-
-let currentUser=null;
-
-
-async function loadCurrentUser(){
-
-    try{
-
-        const data=await apiRequest("/me");
-
-        currentUser=data.user || data;
-
-    }catch{
-
-        currentUser=getLocalUser();
-
-    }
-
-
-    updateUserUI();
-
-    renderEverything();
-
-}
-
-
-/* =========================================================
-   SKILL MATCHING
-========================================================= */
 
 function skillMatches(a,b){
 
@@ -2681,7 +2682,6 @@ function skillMatches(a,b){
     if(x===y){
         return true;
     }
-
 
     const aliases={
 
@@ -2703,12 +2703,17 @@ function skillMatches(a,b){
         ],
 
         telugu:["telugu"],
+
         guitar:["guitar"],
-        drawing:["drawing","art"],
+
+        drawing:[
+            "drawing",
+            "art"
+        ],
+
         cricket:["cricket"]
 
     };
-
 
     for(const group of Object.values(aliases)){
 
@@ -2718,9 +2723,7 @@ function skillMatches(a,b){
 
     }
 
-
     return x.includes(y) || y.includes(x);
-
 }
 
 
@@ -2741,9 +2744,12 @@ function overlap(listA,listB){
     });
 
     return count;
-
 }
 
+
+/* =========================
+   MATCHING
+========================= */
 
 function calculateMatch(user,person){
 
@@ -2759,11 +2765,9 @@ function calculateMatch(user,person){
 
     }
 
-
     let score=35;
 
-    let reasons=[];
-
+    const reasons=[];
 
     const learn=overlap(
         user.want,
@@ -2859,7 +2863,9 @@ function calculateMatch(user,person){
 
         score+=8;
 
-        reasons.push("Same city");
+        reasons.push(
+            "Same city"
+        );
 
     }
 
@@ -2887,17 +2893,15 @@ function calculateMatch(user,person){
 
     return {
 
-        score:
-            Math.min(
-                99,
-                Math.max(
-                    50,
-                    Math.round(score)
-                )
-            ),
+        score:Math.min(
+            99,
+            Math.max(
+                50,
+                Math.round(score)
+            )
+        ),
 
-        reasons:
-            reasons.slice(0,2)
+        reasons:reasons.slice(0,2)
 
     };
 
@@ -2905,63 +2909,112 @@ function calculateMatch(user,person){
 
 
 /* =========================================================
-   LOAD PEOPLE FROM FLASK
+   LOCAL DEMO FALLBACK
+   Used until app.py API is connected.
 ========================================================= */
 
-async function getPeople(){
+function getCurrentUser(){
 
     try{
-
-        const data=await apiRequest("/users");
-
-        if(Array.isArray(data.users)){
-            return data.users;
-        }
-
-        if(Array.isArray(data)){
-            return data;
-        }
-
-    }catch(error){
-
-        console.warn(
-            "Using demo users:",
-            error.message
+        return JSON.parse(
+            localStorage.getItem("skillswapUser") || "null"
         );
-
+    }catch{
+        return null;
     }
-
-    return demoPeople;
 
 }
 
 
-/* =========================================================
-   RENDER MATCHES
-========================================================= */
+function getRequests(){
 
-async function renderMatches(){
+    try{
+        return JSON.parse(
+            localStorage.getItem("skillswapRequests") || "[]"
+        );
+    }catch{
+        return [];
+    }
+
+}
+
+
+function saveRequests(requests){
+
+    localStorage.setItem(
+        "skillswapRequests",
+        JSON.stringify(requests)
+    );
+
+}
+
+
+function getMessages(){
+
+    try{
+        return JSON.parse(
+            localStorage.getItem("skillswapMessages") || "{}"
+        );
+    }catch{
+        return {};
+    }
+
+}
+
+
+function saveMessages(messages){
+
+    localStorage.setItem(
+        "skillswapMessages",
+        JSON.stringify(messages)
+    );
+
+}
+
+
+/* =========================
+   EXISTING REQUEST
+========================= */
+
+function getExistingRequest(user,person){
+
+    if(!user){
+        return null;
+    }
+
+    return getRequests().find(r=>
+
+        (
+            r.senderId===user.id &&
+            r.receiverId===person.id
+        )
+
+        ||
+
+        (
+            r.senderId===person.id &&
+            r.receiverId===user.id
+        )
+
+    ) || null;
+}
+
+
+/* =========================
+   RENDER MATCHES
+========================= */
+
+function renderMatches(people=demoPeople){
+
+    const user=getCurrentUser();
 
     const container=
         document.getElementById("matches");
 
-    container.innerHTML=`
-        <div class="loading">
-            <div class="spinner"></div>
-            Loading skill matches...
-        </div>
-    `;
-
-
-    const people=await getPeople();
-
     let list=people.map(person=>{
 
         const result=
-            calculateMatch(
-                currentUser,
-                person
-            );
+            calculateMatch(user,person);
 
         return {
             ...person,
@@ -2972,12 +3025,11 @@ async function renderMatches(){
     });
 
 
-    if(currentUser){
+    if(user){
 
-        list=list.filter(
-            p=>
-                p.id!==currentUser.id &&
-                p.name!==currentUser.name
+        list=list.filter(person=>
+            person.id!==user.id &&
+            person.name!==user.name
         );
 
     }
@@ -2995,24 +3047,72 @@ async function renderMatches(){
 
         container.innerHTML=`
             <div class="empty-state">
-                No members found.
+                No matching members found.
             </div>
         `;
 
         return;
-
     }
 
 
     list.forEach(person=>{
 
+        const request=
+            getExistingRequest(
+                user,
+                person
+            );
+
+
+        let buttonText=
+            "Request Skill Swap";
+
+        let buttonClass=
+            "connect";
+
+        let action=
+            `openRequest('${person.id}')`;
+
+
+        if(request?.status==="pending"){
+
+            buttonText=
+                "Request Pending";
+
+            buttonClass=
+                "connect pending";
+
+            action=
+                "void(0)";
+
+        }
+
+
+        if(request?.status==="accepted"){
+
+            buttonText=
+                "💬 Open Chat";
+
+            buttonClass=
+                "connect connected";
+
+            action=
+                `openChat('${person.id}')`;
+
+        }
+
+
         const card=
             document.createElement("article");
 
-        card.className="person-card";
+
+        card.className=
+            "person-card";
+
 
         card.dataset.category=
-            person.category || "";
+            person.category;
+
 
         card.dataset.search=[
 
@@ -3020,10 +3120,9 @@ async function renderMatches(){
             person.location,
             person.category,
             person.type,
-
-            ...(person.languages || []),
-            ...(person.teach || []),
-            ...(person.want || [])
+            ...person.languages,
+            ...person.teach,
+            ...person.want
 
         ]
         .join(" ")
@@ -3040,11 +3139,10 @@ async function renderMatches(){
                 🧑‍🎓 SkillSwap Member
             </div>
 
-
             <div class="profile">
 
                 <div class="avatar">
-                    ${escapeHTML(person.avatar || "👤")}
+                    ${escapeHTML(person.avatar)}
                 </div>
 
                 <div>
@@ -3054,12 +3152,12 @@ async function renderMatches(){
                     </h3>
 
                     <p>
-                        📍 ${escapeHTML(person.location || "Online")}
+                        📍 ${escapeHTML(person.location)}
                     </p>
 
                     <div class="rating">
-                        ⭐ ${person.rating || 0}
-                        · ${person.reviews || 0} reviews
+                        ⭐ ${person.rating}
+                        · ${person.reviews} reviews
                     </div>
 
                 </div>
@@ -3076,16 +3174,11 @@ async function renderMatches(){
                     </small>
 
                     <strong>
-
-                        ${(person.teach || [])
+                        ${person.teach
                             .slice(0,2)
-                            .map(
-                                x=>
-                                    "📚 "+
-                                    escapeHTML(x)
-                            )
-                            .join("<br>")}
-
+                            .map(x=>"📚 "+escapeHTML(x))
+                            .join("<br>")
+                        }
                     </strong>
 
                 </div>
@@ -3103,16 +3196,11 @@ async function renderMatches(){
                     </small>
 
                     <strong>
-
-                        ${(person.want || [])
+                        ${person.want
                             .slice(0,2)
-                            .map(
-                                x=>
-                                    "✨ "+
-                                    escapeHTML(x)
-                            )
-                            .join("<br>")}
-
+                            .map(x=>"✨ "+escapeHTML(x))
+                            .join("<br>")
+                        }
                     </strong>
 
                 </div>
@@ -3121,30 +3209,25 @@ async function renderMatches(){
 
 
             <div class="match-reason">
-
-                ✨ ${escapeHTML(
-                    person.reasons.join(" · ")
-                )}
-
+                ✨ ${person.reasons
+                    .map(escapeHTML)
+                    .join(" · ")
+                }
             </div>
 
 
             <div class="availability">
-
-                🕐 ${escapeHTML(
-                    (person.availability || [])
+                🕐 ${person.availability
+                    .map(escapeHTML)
                     .join(" · ")
-                )}
-
+                }
             </div>
 
 
             <button
-                class="connect"
-                onclick="openRequest('${escapeHTML(person.id)}')">
-
-                Request Skill Swap
-
+                class="${buttonClass}"
+                onclick="${action}">
+                ${buttonText}
             </button>
 
         `;
@@ -3153,7 +3236,6 @@ async function renderMatches(){
         container.appendChild(card);
 
     });
-
 
 }
 
@@ -3165,50 +3247,64 @@ async function renderMatches(){
 async function signUp(){
 
     const name=
-        document.getElementById("signupName")
-        .value.trim();
+        document
+        .getElementById("signupName")
+        .value
+        .trim();
 
     const email=
-        document.getElementById("signupEmail")
-        .value.trim()
+        document
+        .getElementById("signupEmail")
+        .value
+        .trim()
         .toLowerCase();
 
     const password=
-        document.getElementById("signupPassword")
+        document
+        .getElementById("signupPassword")
         .value;
 
     const type=
-        document.getElementById("signupType")
+        document
+        .getElementById("signupType")
         .value;
 
     const location=
-        document.getElementById("signupLocation")
-        .value.trim();
+        document
+        .getElementById("signupLocation")
+        .value
+        .trim();
 
     const languages=
-        document.getElementById("signupLanguages")
-        .value.trim();
+        document
+        .getElementById("signupLanguages")
+        .value
+        .trim();
 
     const bio=
-        document.getElementById("signupBio")
-        .value.trim();
+        document
+        .getElementById("signupBio")
+        .value
+        .trim();
 
     const teach=
-        document.getElementById("signupSkill")
-        .value.trim();
+        document
+        .getElementById("signupSkill")
+        .value
+        .trim();
 
     const want=
-        document.getElementById("signupWanted")
-        .value.trim();
+        document
+        .getElementById("signupWanted")
+        .value
+        .trim();
 
 
     const availability=[
         ...document.querySelectorAll(
             'input[name="availability"]:checked'
         )
-    ].map(
-        x=>x.value
-    );
+    ].map(x=>x.value);
 
 
     if(!name || !email || !password){
@@ -3218,22 +3314,104 @@ async function signUp(){
         );
 
         return;
-
     }
 
 
-    if(password.length < 6){
+    if(password.length<6){
 
         showToast(
             "Password must be at least 6 characters."
         );
 
         return;
+    }
+
+
+    /* Try Flask backend first */
+
+    try{
+
+        const data=await api(
+            "/api/signup",
+            {
+                method:"POST",
+                body:JSON.stringify({
+
+                    name,
+                    email,
+                    password,
+                    type,
+                    location,
+                    languages,
+                    bio,
+                    teach,
+                    want,
+                    availability
+
+                })
+            }
+        );
+
+
+        if(data.success){
+
+            closeModal("authModal");
+
+            updateUserUI();
+
+            renderEverything();
+
+            showToast(
+                "🎉 Welcome to SkillSwap India, "+name+"!"
+            );
+
+            return;
+
+        }
+
+    }catch(error){
+
+        console.warn(
+            "Backend signup unavailable. Using local fallback.",
+            error
+        );
 
     }
 
 
-    const userData={
+    /* Local fallback */
+
+    let users={};
+
+    try{
+
+        users=
+            JSON.parse(
+                localStorage.getItem(
+                    "skillswapUsers"
+                ) || "{}"
+            );
+
+    }catch{
+
+        users={};
+
+    }
+
+
+    if(users[email]){
+
+        showToast(
+            "An account with this email already exists."
+        );
+
+        return;
+    }
+
+
+    const user={
+
+        id:"user_"+Date.now(),
 
         name,
         email,
@@ -3245,11 +3423,10 @@ async function signUp(){
 
         languages:
             languages
-            ? languages
-                .split(",")
-                .map(x=>x.trim())
-                .filter(Boolean)
-            : ["English"],
+                ? languages
+                    .split(",")
+                    .map(x=>x.trim())
+                : ["English"],
 
         bio:
             bio ||
@@ -3257,106 +3434,58 @@ async function signUp(){
 
         teach:
             teach
-            ? teach
-                .split(",")
-                .map(x=>x.trim())
-                .filter(Boolean)
-            : ["Knowledge Sharing"],
+                ? teach
+                    .split(",")
+                    .map(x=>x.trim())
+                    .filter(Boolean)
+                : ["Knowledge Sharing"],
 
         want:
             want
-            ? want
-                .split(",")
-                .map(x=>x.trim())
-                .filter(Boolean)
-            : ["Something New"],
+                ? want
+                    .split(",")
+                    .map(x=>x.trim())
+                    .filter(Boolean)
+                : ["Something New"],
 
         availability:
             availability.length
-            ? availability
-            : ["Flexible"],
+                ? availability
+                : ["Flexible"],
 
-        avatar:"🧑🏻"
+        avatar:"🧑🏻",
+
+        rating:0,
+
+        reviews:0
 
     };
 
 
-    const button=
-        document.getElementById("signupButton");
-
-    button.disabled=true;
-
-    button.textContent=
-        "Creating profile...";
+    users[email]=user;
 
 
-    try{
-
-        const data=
-            await apiRequest(
-                "/signup",
-                {
-                    method:"POST",
-                    body:JSON.stringify(userData)
-                }
-            );
+    localStorage.setItem(
+        "skillswapUsers",
+        JSON.stringify(users)
+    );
 
 
-        currentUser=
-            data.user || data;
+    localStorage.setItem(
+        "skillswapUser",
+        JSON.stringify(user)
+    );
 
 
-        saveLocalUser(currentUser);
+    closeModal("authModal");
 
+    updateUserUI();
 
-        closeModal("authModal");
+    renderEverything();
 
-        updateUserUI();
-
-        await renderEverything();
-
-
-        showToast(
-            "🎉 Welcome to SkillSwap India, "+
-            name+
-            "!"
-        );
-
-
-    }catch(error){
-
-        /*
-         Fallback for frontend testing.
-         Remove this fallback when Flask backend
-         becomes mandatory.
-        */
-
-        currentUser={
-            id:"local_"+Date.now(),
-            ...userData
-        };
-
-
-        saveLocalUser(currentUser);
-
-        closeModal("authModal");
-
-        updateUserUI();
-
-        await renderEverything();
-
-        showToast(
-            "🎉 Profile created locally."
-        );
-
-    }finally{
-
-        button.disabled=false;
-
-        button.textContent=
-            "Create my profile";
-
-    }
+    showToast(
+        "🎉 Welcome to SkillSwap India, "+name+"!"
+    );
 
 }
 
@@ -3368,12 +3497,15 @@ async function signUp(){
 async function signIn(){
 
     const email=
-        document.getElementById("signinEmail")
-        .value.trim()
+        document
+        .getElementById("signinEmail")
+        .value
+        .trim()
         .toLowerCase();
 
     const password=
-        document.getElementById("signinPassword")
+        document
+        .getElementById("signinPassword")
         .value;
 
 
@@ -3384,96 +3516,120 @@ async function signIn(){
         );
 
         return;
-
     }
 
 
+    /* Try Flask */
+
     try{
 
-        const data=
-            await apiRequest(
-                "/login",
-                {
-                    method:"POST",
-                    body:JSON.stringify({
-                        email,
-                        password
-                    })
-                }
-            );
-
-
-        currentUser=
-            data.user || data;
-
-
-        saveLocalUser(currentUser);
-
-
-        closeModal("authModal");
-
-        updateUserUI();
-
-        await renderEverything();
-
-
-        showToast(
-            "👋 Welcome back, "+
-            currentUser.name+
-            "!"
+        const data=await api(
+            "/api/login",
+            {
+                method:"POST",
+                body:JSON.stringify({
+                    email,
+                    password
+                })
+            }
         );
 
 
-    }catch(error){
-
-        /*
-         Local fallback for development.
-        */
-
-        const localUser=
-            getLocalUser();
-
-
-        if(
-            localUser &&
-            localUser.email===email &&
-            localUser.password===password
-        ){
-
-            currentUser=localUser;
+        if(data.success){
 
             closeModal("authModal");
 
             updateUserUI();
 
-            await renderEverything();
+            renderEverything();
 
             showToast(
-                "👋 Welcome back, "+
-                localUser.name+
-                "!"
+                "👋 Welcome back!"
             );
 
             return;
-
         }
 
+    }catch(error){
 
-        showToast(
-            error.message ||
-            "Unable to sign in."
+        console.warn(
+            "Backend login unavailable. Using local fallback.",
+            error
         );
 
     }
 
+
+    /* Local fallback */
+
+    let users={};
+
+    try{
+
+        users=
+            JSON.parse(
+                localStorage.getItem(
+                    "skillswapUsers"
+                ) || "{}"
+            );
+
+    }catch{
+
+        users={};
+
+    }
+
+
+    const user=users[email];
+
+
+    if(!user){
+
+        showToast(
+            "Account not found."
+        );
+
+        return;
+    }
+
+
+    if(user.password!==password){
+
+        showToast(
+            "Incorrect email or password."
+        );
+
+        return;
+    }
+
+
+    localStorage.setItem(
+        "skillswapUser",
+        JSON.stringify(user)
+    );
+
+
+    closeModal("authModal");
+
+    updateUserUI();
+
+    renderEverything();
+
+    showToast(
+        "👋 Welcome back, "+user.name+"!"
+    );
+
 }
 
 
-/* =========================================================
+/* =========================
    USER UI
-========================================================= */
+========================= */
 
 function updateUserUI(){
+
+    const user=
+        getCurrentUser();
 
     const out=
         document.getElementById(
@@ -3486,26 +3642,20 @@ function updateUserUI(){
         );
 
 
-    if(currentUser){
+    if(user){
 
         out.style.display="none";
 
         inside.classList.add("show");
 
-
         document.getElementById(
             "navProfileName"
-        ).textContent=
-            currentUser.name ||
-            "Profile";
-
+        ).textContent=user.name;
 
         document.getElementById(
             "navAvatar"
         ).textContent=
-            currentUser.avatar ||
-            "👤";
-
+            user.avatar || "👤";
 
         updateProfileModal();
 
@@ -3520,13 +3670,16 @@ function updateUserUI(){
 }
 
 
-/* =========================================================
+/* =========================
    PROFILE
-========================================================= */
+========================= */
 
 function updateProfileModal(){
 
-    if(!currentUser){
+    const user=
+        getCurrentUser();
+
+    if(!user){
         return;
     }
 
@@ -3534,44 +3687,41 @@ function updateProfileModal(){
     document.getElementById(
         "profileAvatar"
     ).textContent=
-        currentUser.avatar || "👤";
+        user.avatar || "👤";
 
 
     document.getElementById(
         "profileName"
     ).textContent=
-        currentUser.name || "Your Name";
+        user.name;
 
 
     document.getElementById(
         "profileType"
     ).textContent=
-        "🧑‍🎓 "+
-        (currentUser.type || "Learner");
+        "🧑‍🎓 "+user.type;
 
 
     document.getElementById(
         "profileLocation"
     ).textContent=
-        "📍 "+
-        (currentUser.location || "Online");
+        "📍 "+user.location;
 
 
     document.getElementById(
         "profileBio"
     ).textContent=
-        currentUser.bio || "";
+        user.bio;
 
 
     document.getElementById(
         "profileTeach"
     ).innerHTML=
-        (currentUser.teach || [])
-        .map(
-            x=>
-                `<span class="skill-tag">
-                    ${escapeHTML(x)}
-                </span>`
+        (user.teach || [])
+        .map(x=>
+            `<span class="skill-tag">
+                ${escapeHTML(x)}
+            </span>`
         )
         .join("");
 
@@ -3579,12 +3729,11 @@ function updateProfileModal(){
     document.getElementById(
         "profileLearn"
     ).innerHTML=
-        (currentUser.want || [])
-        .map(
-            x=>
-                `<span class="skill-tag">
-                    ${escapeHTML(x)}
-                </span>`
+        (user.want || [])
+        .map(x=>
+            `<span class="skill-tag">
+                ${escapeHTML(x)}
+            </span>`
         )
         .join("");
 
@@ -3592,14 +3741,14 @@ function updateProfileModal(){
     document.getElementById(
         "profileLanguages"
     ).textContent=
-        (currentUser.languages || [])
+        (user.languages || [])
         .join(" · ");
 
 
     document.getElementById(
         "profileAvailability"
     ).textContent=
-        (currentUser.availability || [])
+        (user.availability || [])
         .join(" · ");
 
 }
@@ -3607,14 +3756,12 @@ function updateProfileModal(){
 
 function openProfile(){
 
-    if(!currentUser){
+    if(!getCurrentUser()){
 
         openAuth("signin");
 
         return;
-
     }
-
 
     updateProfileModal();
 
@@ -3625,16 +3772,16 @@ function openProfile(){
 }
 
 
-/* =========================================================
+/* =========================
    LOGOUT
-========================================================= */
+========================= */
 
 async function logout(){
 
     try{
 
-        await apiRequest(
-            "/logout",
+        await api(
+            "/api/logout",
             {
                 method:"POST"
             }
@@ -3643,26 +3790,18 @@ async function logout(){
     }catch(error){
 
         console.warn(
-            "Backend logout unavailable."
+            "Backend logout unavailable.",
+            error
         );
 
     }
 
 
-    currentUser=null;
-
     localStorage.removeItem(
         "skillswapUser"
     );
 
-
-    updateUserUI();
-
-    renderEverything();
-
-    showToast(
-        "You have been logged out."
-    );
+    location.reload();
 
 }
 
@@ -3671,9 +3810,13 @@ async function logout(){
    REQUEST
 ========================================================= */
 
-async function openRequest(id){
+function openRequest(id){
 
-    if(!currentUser){
+    const user=
+        getCurrentUser();
+
+
+    if(!user){
 
         showToast(
             "Please sign in first."
@@ -3682,32 +3825,22 @@ async function openRequest(id){
         openAuth("signin");
 
         return;
-
     }
 
 
-    const people=
-        await getPeople();
-
-
     const person=
-        people.find(
-            p=>String(p.id)===String(id)
+        demoPeople.find(
+            p=>p.id===id
         );
 
 
     if(!person){
-
-        showToast(
-            "Member not found."
-        );
-
         return;
-
     }
 
 
-    currentRequestPerson=person;
+    currentRequestPerson=
+        person;
 
 
     document.getElementById(
@@ -3719,13 +3852,13 @@ async function openRequest(id){
     document.getElementById(
         "requestWanted"
     ).value=
-        (person.teach || [])[0] || "";
+        person.teach[0] || "";
 
 
     document.getElementById(
         "requestOffered"
     ).value=
-        (currentUser.teach || [])[0] || "";
+        user.teach?.[0] || "";
 
 
     document.getElementById(
@@ -3746,30 +3879,34 @@ async function openRequest(id){
 
 async function submitSwapRequest(){
 
-    if(
-        !currentUser ||
-        !currentRequestPerson
-    ){
+    const user=
+        getCurrentUser();
+
+
+    if(!user || !currentRequestPerson){
         return;
     }
 
 
     const wanted=
-        document.getElementById(
-            "requestWanted"
-        ).value.trim();
+        document
+        .getElementById("requestWanted")
+        .value
+        .trim();
 
 
     const offered=
-        document.getElementById(
-            "requestOffered"
-        ).value.trim();
+        document
+        .getElementById("requestOffered")
+        .value
+        .trim();
 
 
     const message=
-        document.getElementById(
-            "requestMessage"
-        ).value.trim();
+        document
+        .getElementById("requestMessage")
+        .value
+        .trim();
 
 
     if(!wanted || !offered){
@@ -3779,14 +3916,106 @@ async function submitSwapRequest(){
         );
 
         return;
+    }
+
+
+    if(
+        getExistingRequest(
+            user,
+            currentRequestPerson
+        )
+    ){
+
+        showToast(
+            "You already have a request with this member."
+        );
+
+        return;
+    }
+
+
+    /* Try backend */
+
+    try{
+
+        const data=await api(
+            "/api/requests",
+            {
+                method:"POST",
+                body:JSON.stringify({
+
+                    receiver_id:
+                        currentRequestPerson.id,
+
+                    skill_wanted:
+                        wanted,
+
+                    skill_offered:
+                        offered,
+
+                    message:
+                        message ||
+                        "I'd love to exchange skills with you!"
+
+                })
+            }
+        );
+
+
+        if(data.success){
+
+            closeModal("requestModal");
+
+            renderEverything();
+
+            showToast(
+                "⏳ Your request was sent!"
+            );
+
+            return;
+        }
+
+    }catch(error){
+
+        console.warn(
+            "Backend request unavailable. Using local fallback.",
+            error
+        );
 
     }
 
 
-    const requestData={
+    /* Local fallback */
+
+    const requests=
+        getRequests();
+
+
+    const id=
+        "request_"+Date.now();
+
+
+    requests.push({
+
+        id,
+
+        senderId:
+            user.id,
+
+        senderName:
+            user.name,
+
+        senderAvatar:
+            user.avatar,
 
         receiverId:
             currentRequestPerson.id,
+
+        receiverName:
+            currentRequestPerson.name,
+
+        receiverAvatar:
+            currentRequestPerson.avatar,
 
         skillWanted:
             wanted,
@@ -3796,94 +4025,70 @@ async function submitSwapRequest(){
 
         message:
             message ||
-            "I'd love to exchange skills with you!"
+            "I'd love to exchange skills with you!",
 
-    };
+        status:
+            "pending",
 
+        createdAt:
+            new Date().toISOString()
 
-    try{
-
-        await apiRequest(
-            "/requests",
-            {
-                method:"POST",
-                body:JSON.stringify(
-                    requestData
-                )
-            }
-        );
+    });
 
 
-        closeModal("requestModal");
-
-        await renderDashboard();
-
-        showToast(
-            "🤝 Skill-swap request sent!"
-        );
+    saveRequests(requests);
 
 
-    }catch(error){
+    closeModal("requestModal");
 
-        /*
-         Temporary local development fallback.
-        */
+    renderEverything();
 
-        const requests=
-            JSON.parse(
-                localStorage.getItem(
-                    "skillswapRequests"
-                ) || "[]"
+
+    showToast(
+        "⏳ Your request is being reviewed..."
+    );
+
+
+    /* Demo acceptance */
+
+    setTimeout(()=>{
+
+        const current=
+            getRequests();
+
+
+        const request=
+            current.find(
+                r=>r.id===id
             );
 
 
-        requests.push({
-
-            id:"request_"+Date.now(),
-
-            senderId:
-                currentUser.id,
-
-            senderName:
-                currentUser.name,
-
-            receiverId:
-                currentRequestPerson.id,
-
-            receiverName:
-                currentRequestPerson.name,
-
-            skillWanted:wanted,
-
-            skillOffered:offered,
-
-            message:
-                message ||
-                "I'd love to exchange skills with you!",
-
-            status:"pending",
-
-            createdAt:
-                new Date().toISOString()
-
-        });
+        if(
+            !request ||
+            request.status!=="pending"
+        ){
+            return;
+        }
 
 
-        localStorage.setItem(
-            "skillswapRequests",
-            JSON.stringify(requests)
-        );
+        request.status=
+            "accepted";
 
 
-        closeModal("requestModal");
+        request.acceptedAt=
+            new Date().toISOString();
 
-        await renderDashboard();
+
+        saveRequests(current);
+
+        renderEverything();
+
 
         showToast(
-            "🤝 Skill-swap request saved."
+            "🎉 Your skill-swap request was accepted!"
         );
 
-    }
+    },10000);
 
 }
 
@@ -3892,7 +4097,11 @@ async function submitSwapRequest(){
    DASHBOARD
 ========================================================= */
 
-async function renderDashboard(){
+function renderDashboard(){
+
+    const user=
+        getCurrentUser();
+
 
     const requestList=
         document.getElementById(
@@ -3910,61 +4119,26 @@ async function renderDashboard(){
         );
 
 
-    if(!currentUser){
+    if(!user){
 
         requestList.innerHTML=
-            `<div class="empty-state">
-                Sign in to manage requests.
-            </div>`;
+            '<div class="empty-state">Sign in to manage requests.</div>';
 
         connectionList.innerHTML=
-            `<div class="empty-state">
-                Sign in to see connections.
-            </div>`;
+            '<div class="empty-state">Sign in to see connections.</div>';
 
         reviewList.innerHTML=
-            `<div class="empty-state">
-                Sign in to see reviews.
-            </div>`;
+            '<div class="empty-state">Sign in to see reviews.</div>';
 
         return;
-
     }
 
 
-    let requests=[];
-
-
-    try{
-
-        const data=
-            await apiRequest(
-                "/requests"
-            );
-
-        requests=
-            data.requests ||
-            data ||
-            [];
-
-    }catch{
-
-        const all=
-            JSON.parse(
-                localStorage.getItem(
-                    "skillswapRequests"
-                ) || "[]"
-            );
-
-
-        requests=
-            all.filter(
-                r=>
-                    r.senderId===
-                    currentUser.id
-            );
-
-    }
+    const requests=
+        getRequests()
+        .filter(
+            r=>r.senderId===user.id
+        );
 
 
     requestList.innerHTML="";
@@ -3973,131 +4147,103 @@ async function renderDashboard(){
     if(!requests.length){
 
         requestList.innerHTML=
-            `<div class="empty-state">
-                No skill-swap requests yet.
-            </div>`;
+            '<div class="empty-state">No skill-swap requests yet.</div>';
 
     }else{
 
         requests
-            .slice()
-            .reverse()
-            .forEach(r=>{
+        .slice()
+        .reverse()
+        .forEach(r=>{
 
-                const div=
-                    document.createElement("div");
-
-                div.className=
-                    "request-item";
+            const div=
+                document.createElement("div");
 
 
-                div.innerHTML=`
+            div.className=
+                "request-item";
 
-                    <div class="request-top">
 
-                        <div class="request-person">
+            div.innerHTML=`
 
-                            <div class="mini-avatar">
-                                👤
-                            </div>
+                <div class="request-top">
 
-                            <div>
+                    <div class="request-person">
 
-                                <strong>
-                                    ${escapeHTML(
-                                        r.receiverName ||
-                                        "Member"
-                                    )}
-                                </strong>
+                        <div class="mini-avatar">
+                            ${escapeHTML(
+                                r.receiverAvatar || "🧑"
+                            )}
+                        </div>
 
-                                <small>
-                                    SkillSwap member
-                                </small>
+                        <div>
 
-                            </div>
+                            <strong>
+                                ${escapeHTML(
+                                    r.receiverName
+                                )}
+                            </strong>
+
+                            <small>
+                                SkillSwap member
+                            </small>
 
                         </div>
 
-
-                        <span
-                            class="status ${
-                                r.status || "pending"
-                            }">
-
-                            ${escapeHTML(
-                                r.status ||
-                                "pending"
-                            )}
-
-                        </span>
-
                     </div>
 
+                    <span
+                        class="status ${r.status}">
+                        ${escapeHTML(r.status)}
+                    </span>
 
-                    <small>
-                        You want to learn:
-                        ${escapeHTML(
-                            r.skillWanted || ""
-                        )}
-                    </small>
-
-
-                    <small>
-                        You offer:
-                        ${escapeHTML(
-                            r.skillOffered || ""
-                        )}
-                    </small>
+                </div>
 
 
-                    <small>
-                        “${escapeHTML(
-                            r.message || ""
-                        )}”
-                    </small>
+                <small>
+                    You want to learn:
+                    ${escapeHTML(r.skillWanted)}
+                </small>
+
+                <small>
+                    You offer:
+                    ${escapeHTML(r.skillOffered)}
+                </small>
+
+                <small>
+                    “${escapeHTML(r.message)}”
+                </small>
 
 
-                    ${
-                        r.status==="accepted"
+                ${
+                    r.status==="pending"
 
-                        ?
+                    ?
 
-                        `<div class="request-actions">
+                    `<div class="request-actions">
+                        <span
+                            style="color:var(--muted);font-size:.72rem">
+                            ⏳ Waiting for a response...
+                        </span>
+                    </div>`
 
-                            <button
-                                class="small-btn primary"
-                                onclick="openChat('${escapeHTML(
-                                    r.receiverId
-                                )}')">
+                    :
 
-                                💬 Open Chat
+                    `<div class="request-actions">
+                        <button
+                            class="small-btn primary"
+                            onclick="openChat('${r.receiverId}')">
+                            💬 Open Chat
+                        </button>
+                    </div>`
+                }
 
-                            </button>
-
-                        </div>`
-
-                        :
-
-                        `<div class="request-actions">
-
-                            <span
-                                style="color:var(--muted);font-size:.72rem">
-
-                                ⏳ Waiting for a response...
-
-                            </span>
-
-                        </div>`
-                    }
-
-                `;
+            `;
 
 
-                requestList.appendChild(
-                    div
-                );
+            requestList.appendChild(div);
 
-            });
+        });
 
     }
 
@@ -4114,9 +4260,7 @@ async function renderDashboard(){
     if(!accepted.length){
 
         connectionList.innerHTML=
-            `<div class="empty-state">
-                No active connections yet.
-            </div>`;
+            '<div class="empty-state">No active connections yet.</div>';
 
     }else{
 
@@ -4124,6 +4268,7 @@ async function renderDashboard(){
 
             const div=
                 document.createElement("div");
+
 
             div.className=
                 "connection-item";
@@ -4136,15 +4281,16 @@ async function renderDashboard(){
                     <div class="request-person">
 
                         <div class="mini-avatar">
-                            👤
+                            ${escapeHTML(
+                                r.receiverAvatar || "🧑"
+                            )}
                         </div>
 
                         <div>
 
                             <strong>
                                 ${escapeHTML(
-                                    r.receiverName ||
-                                    "Member"
+                                    r.receiverName
                                 )}
                             </strong>
 
@@ -4159,12 +4305,8 @@ async function renderDashboard(){
 
                     <button
                         class="small-btn primary"
-                        onclick="openChat('${escapeHTML(
-                            r.receiverId
-                        )}')">
-
+                        onclick="openChat('${r.receiverId}')">
                         Chat
-
                     </button>
 
                 </div>
@@ -4172,9 +4314,7 @@ async function renderDashboard(){
             `;
 
 
-            connectionList.appendChild(
-                div
-            );
+            connectionList.appendChild(div);
 
         });
 
@@ -4182,9 +4322,7 @@ async function renderDashboard(){
 
 
     reviewList.innerHTML=
-        `<div class="empty-state">
-            Complete a skill exchange to build your reputation.
-        </div>`;
+        '<div class="empty-state">Complete a skill exchange to build your reputation.</div>';
 
 }
 
@@ -4195,54 +4333,106 @@ async function renderDashboard(){
 
 function chatKey(a,b){
 
-    return [
-        a,
-        b
-    ]
-    .sort()
-    .join("_");
+    return [a,b]
+        .sort()
+        .join("_");
 
 }
 
 
-async function openChat(personId){
+function openChat(personId){
 
-    if(!currentUser){
+    const user=
+        getCurrentUser();
+
+
+    if(!user){
 
         openAuth("signin");
 
         return;
-
     }
 
 
-    const people=
-        await getPeople();
-
-
     let person=
-        people.find(
-            p=>
-                String(p.id)===
-                String(personId)
+        demoPeople.find(
+            p=>p.id===personId
         );
 
 
     if(!person){
 
-        showToast(
-            "Member not found."
-        );
+        try{
 
-        return;
+            const users=
+                JSON.parse(
+                    localStorage.getItem(
+                        "skillswapUsers"
+                    ) || "{}"
+                );
+
+
+            person=
+                Object.values(users)
+                .find(
+                    u=>u.id===personId
+                );
+
+        }catch{
+
+            person=null;
+
+        }
 
     }
 
 
+    if(!person){
+        return;
+    }
+
+
+    const connection=
+        getRequests().find(r=>
+
+            r.status==="accepted" &&
+
+            (
+                (
+                    r.senderId===user.id &&
+                    r.receiverId===person.id
+                )
+
+                ||
+
+                (
+                    r.senderId===person.id &&
+                    r.receiverId===user.id
+                )
+            )
+
+        );
+
+
+    if(!connection){
+
+        showToast(
+            "Your request has not been accepted yet."
+        );
+
+        return;
+    }
+
+
     currentChatPerson={
+
         id:person.id,
+
         name:person.name,
-        avatar:person.avatar || "👤"
+
+        avatar:
+            person.avatar || "🧑"
+
     };
 
 
@@ -4255,7 +4445,7 @@ async function openChat(personId){
     document.getElementById(
         "chatAvatar"
     ).textContent=
-        person.avatar || "👤";
+        person.avatar || "🧑";
 
 
     document
@@ -4263,65 +4453,36 @@ async function openChat(personId){
         .classList.add("show");
 
 
-    await loadMessages();
+    loadMessages();
 
 }
 
 
-/* =========================================================
+/* =========================
    LOAD MESSAGES
-========================================================= */
+========================= */
 
-async function loadMessages(){
+function loadMessages(){
+
+    const user=
+        getCurrentUser();
+
 
     if(
-        !currentUser ||
+        !user ||
         !currentChatPerson
     ){
         return;
     }
 
 
-    try{
-
-        const data=
-            await apiRequest(
-                "/messages?user_id="+
-                encodeURIComponent(
-                    currentChatPerson.id
-                )
-            );
-
-
-        renderMessages(
-            data.messages ||
-            data ||
-            []
-        );
-
-
-        return;
-
-    }catch{
-
-        console.warn(
-            "Using local chat."
-        );
-
-    }
-
-
     const messages=
-        JSON.parse(
-            localStorage.getItem(
-                "skillswapMessages"
-            ) || "{}"
-        );
+        getMessages();
 
 
     const key=
         chatKey(
-            currentUser.id,
+            user.id,
             currentChatPerson.id
         );
 
@@ -4347,25 +4508,6 @@ async function loadMessages(){
     }
 
 
-    localStorage.setItem(
-        "skillswapMessages",
-        JSON.stringify(messages)
-    );
-
-
-    renderMessages(
-        messages[key]
-    );
-
-}
-
-
-/* =========================================================
-   RENDER MESSAGES
-========================================================= */
-
-function renderMessages(messages){
-
     const container=
         document.getElementById(
             "chatMessages"
@@ -4375,29 +4517,21 @@ function renderMessages(messages){
     container.innerHTML="";
 
 
-    messages.forEach(message=>{
+    messages[key].forEach(m=>{
 
         const div=
             document.createElement("div");
 
+
         div.className=
-            "message "+
-            (
-                message.type ||
-                message.sender_type ||
-                "them"
-            );
+            "message "+m.type;
 
 
         div.textContent=
-            message.text ||
-            message.content ||
-            "";
+            m.text;
 
 
-        container.appendChild(
-            div
-        );
+        container.appendChild(div);
 
     });
 
@@ -4405,162 +4539,15 @@ function renderMessages(messages){
     container.scrollTop=
         container.scrollHeight;
 
-}
 
-
-/* =========================================================
-   SEND MESSAGE
-========================================================= */
-
-async function sendMessage(){
-
-    if(
-        !currentUser ||
-        !currentChatPerson
-    ){
-        return;
-    }
-
-
-    const input=
-        document.getElementById(
-            "chatInput"
-        );
-
-
-    const text=
-        input.value.trim();
-
-
-    if(!text){
-        return;
-    }
-
-
-    try{
-
-        await apiRequest(
-            "/messages",
-            {
-                method:"POST",
-                body:JSON.stringify({
-
-                    receiverId:
-                        currentChatPerson.id,
-
-                    text
-
-                })
-            }
-        );
-
-
-        input.value="";
-
-        await loadMessages();
-
-        return;
-
-    }catch{
-
-        console.warn(
-            "Using local chat."
-        );
-
-    }
-
-
-    const messages=
-        JSON.parse(
-            localStorage.getItem(
-                "skillswapMessages"
-            ) || "{}"
-        );
-
-
-    const key=
-        chatKey(
-            currentUser.id,
-            currentChatPerson.id
-        );
-
-
-    if(!messages[key]){
-        messages[key]=[];
-    }
-
-
-    messages[key].push({
-
-        type:"me",
-
-        text
-
-    });
-
-
-    localStorage.setItem(
-        "skillswapMessages",
-        JSON.stringify(messages)
-    );
-
-
-    input.value="";
-
-    renderMessages(
-        messages[key]
-    );
-
-
-    /*
-       Demo automatic reply.
-       Delete this section when real
-       Flask messaging is enabled.
-    */
-
-    setTimeout(()=>{
-
-        const latest=
-            JSON.parse(
-                localStorage.getItem(
-                    "skillswapMessages"
-                ) || "{}"
-            );
-
-
-        if(!latest[key]){
-            return;
-        }
-
-
-        latest[key].push({
-
-            type:"them",
-
-            text:
-                generateReply(text)
-
-        });
-
-
-        localStorage.setItem(
-            "skillswapMessages",
-            JSON.stringify(latest)
-        );
-
-
-        renderMessages(
-            latest[key]
-        );
-
-    },900);
+    saveMessages(messages);
 
 }
 
 
-/* =========================================================
+/* =========================
    DEMO CHAT REPLY
-========================================================= */
+========================= */
 
 function generateReply(text){
 
@@ -4629,10 +4616,107 @@ function generateReply(text){
 }
 
 
-function handleChatKey(event){
+/* =========================
+   SEND MESSAGE
+========================= */
 
-    if(event.key==="Enter"){
+function sendMessage(){
+
+    const user=
+        getCurrentUser();
+
+
+    const input=
+        document.getElementById(
+            "chatInput"
+        );
+
+
+    const text=
+        input.value.trim();
+
+
+    if(
+        !text ||
+        !user ||
+        !currentChatPerson
+    ){
+        return;
+    }
+
+
+    const messages=
+        getMessages();
+
+
+    const key=
+        chatKey(
+            user.id,
+            currentChatPerson.id
+        );
+
+
+    if(!messages[key]){
+        messages[key]=[];
+    }
+
+
+    messages[key].push({
+
+        type:"me",
+
+        text
+
+    });
+
+
+    saveMessages(messages);
+
+
+    input.value="";
+
+
+    loadMessages();
+
+
+    setTimeout(()=>{
+
+        const current=
+            getMessages();
+
+
+        if(!current[key]){
+            return;
+        }
+
+
+        current[key].push({
+
+            type:"them",
+
+            text:
+                generateReply(text)
+
+        });
+
+
+        saveMessages(current);
+
+        loadMessages();
+
+    },900);
+
+}
+
+
+function handleChatKey(e){
+
+    if(e.key==="Enter"){
+
+        e.preventDefault();
+
         sendMessage();
+
     }
 
 }
@@ -4645,9 +4729,8 @@ function handleChatKey(event){
 function searchSkills(){
 
     const input=
-        document.getElementById(
-            "searchInput"
-        )
+        document
+        .getElementById("searchInput")
         .value
         .toLowerCase()
         .trim();
@@ -4673,8 +4756,8 @@ function searchSkills(){
 
         card.style.display=
             match
-            ? "block"
-            : "none";
+                ? "block"
+                : "none";
 
 
         if(match){
@@ -4692,13 +4775,9 @@ function searchSkills(){
 
         ?
 
-        (
-            found
-            ?
-            `Matches for "${input}"`
-            :
-            `No matches for "${input}"`
-        )
+        found
+            ? `Matches for "${input}"`
+            : `No matches for "${input}"`
 
         :
 
@@ -4719,14 +4798,11 @@ function filterCategory(
     document
         .querySelectorAll(".category")
         .forEach(
-            x=>
-                x.classList.remove("active")
+            x=>x.classList.remove("active")
         );
 
 
-    element.classList.add(
-        "active"
-    );
+    element.classList.add("active");
 
 
     document
@@ -4734,12 +4810,9 @@ function filterCategory(
         .forEach(card=>{
 
             card.style.display=
-                card.dataset.category===
-                category
-
-                ? "block"
-
-                : "none";
+                card.dataset.category===category
+                    ? "block"
+                    : "none";
 
         });
 
@@ -4747,31 +4820,28 @@ function filterCategory(
     document.getElementById(
         "matchTitle"
     ).textContent=
-        category+
-        " skill matches";
+        category+" skill matches";
 
 }
 
 
-/* =========================================================
+/* =========================
    RESET
-========================================================= */
+========================= */
 
 function resetMatches(){
 
     document
         .querySelectorAll(".person-card")
         .forEach(
-            x=>
-                x.style.display="block"
+            x=>x.style.display="block"
         );
 
 
     document
         .querySelectorAll(".category")
         .forEach(
-            x=>
-                x.classList.remove("active")
+            x=>x.classList.remove("active")
         );
 
 
@@ -4789,12 +4859,16 @@ function resetMatches(){
 
 
 /* =========================================================
-   SMART MATCH
+   FIND MATCH
 ========================================================= */
 
-async function findMatch(){
+function findMatch(){
 
-    if(!currentUser){
+    const user=
+        getCurrentUser();
+
+
+    if(!user){
 
         showToast(
             "Sign in to find your best skill matches!"
@@ -4803,7 +4877,6 @@ async function findMatch(){
         openAuth("signin");
 
         return;
-
     }
 
 
@@ -4827,39 +4900,15 @@ async function findMatch(){
 }
 
 
-/* =========================================================
-   SKILL FILTER BUTTONS
-========================================================= */
-
-function createSkillFilters(){
-
-    document.getElementById(
-        "skillFilters"
-    ).innerHTML=
-
-        skills.map(
-            skill=>
-                `
-                <button
-                    class="filter-chip"
-                    onclick="quickSkill('${escapeHTML(skill)}')">
-
-                    ${escapeHTML(skill)}
-
-                </button>
-                `
-        )
-        .join("");
-
-}
-
+/* =========================
+   QUICK SKILL
+========================= */
 
 function quickSkill(skill){
 
     document.getElementById(
         "searchInput"
-    ).value=
-        skill;
+    ).value=skill;
 
 
     searchSkills();
@@ -4874,92 +4923,91 @@ function quickSkill(skill){
 }
 
 
-/* =========================================================
+/* =========================
    RENDER EVERYTHING
-========================================================= */
+========================= */
 
-async function renderEverything(){
+function renderEverything(){
 
-    await renderMatches();
+    renderMatches();
 
-    await renderDashboard();
+    renderDashboard();
 
 }
-
-
-/* =========================================================
-   MODAL CLICK OUTSIDE
-========================================================= */
-
-document
-    .querySelectorAll(".modal-overlay")
-    .forEach(overlay=>{
-
-        overlay.addEventListener(
-            "click",
-            event=>{
-
-                if(
-                    event.target===
-                    overlay
-                ){
-
-                    overlay.classList.remove(
-                        "show"
-                    );
-
-                }
-
-            }
-        );
-
-    });
-
-
-/* =========================================================
-   ESC KEY
-========================================================= */
-
-document.addEventListener(
-    "keydown",
-    event=>{
-
-        if(event.key==="Escape"){
-
-            document
-                .querySelectorAll(
-                    ".modal-overlay.show"
-                )
-                .forEach(
-                    modal=>
-                        modal.classList.remove(
-                            "show"
-                        )
-                );
-
-        }
-
-    }
-);
 
 
 /* =========================================================
    INITIALIZATION
 ========================================================= */
 
+function initializeSkills(){
+
+    document.getElementById(
+        "skillFilters"
+    ).innerHTML=
+
+        skills.map(skill=>`
+
+            <button
+                class="filter-chip"
+                onclick="quickSkill('${escapeHTML(skill)}')">
+                ${escapeHTML(skill)}
+            </button>
+
+        `).join("");
+
+}
+
+
+function initializeModals(){
+
+    document
+        .querySelectorAll(".modal-overlay")
+        .forEach(overlay=>{
+
+            overlay.addEventListener(
+                "click",
+                e=>{
+
+                    if(e.target===overlay){
+
+                        overlay.classList.remove(
+                            "show"
+                        );
+
+                    }
+
+                }
+            );
+
+        });
+
+}
+
+
+async function initialize(){
+
+    initializeSkills();
+
+    initializeModals();
+
+    updateUserUI();
+
+    renderEverything();
+
+}
+
+
+/* =========================
+   START APP
+========================= */
+
 document.addEventListener(
     "DOMContentLoaded",
-    async ()=>{
-
-        createSkillFilters();
-
-        await loadCurrentUser();
-
-    }
+    initialize
 );
 
 </script>
 
 </body>
 </html>
-```
