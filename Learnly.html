@@ -8,6 +8,21 @@
 
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://nqlojrsilxhmytwkdjec.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_uW-DOrhaI0DsaZgDs37bKQ_z2GyqQ_j";
+const { createClient } = window.supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</script>
+
+<script>
+
+</script>
+
+<script>
+
+</script>
+
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -1051,50 +1066,11 @@ bottom:10px;
 }
 </style>
 <script>
-const SUPABASE_URL = "https://nqlojrsilxhmytwkdjec.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_uW-DOrhaI0DsaZgDs37bKQ_z2GyqQ_j";
-const { createClient } = window.supabase;
-const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+
 </script>
 
-<script>
-async function signInUser(email, password) {
-  const cleanEmail = String(email || "").trim();
 
-  if (!cleanEmail || !password) {
-    throw new Error("Please enter your email and password.");
-  }
-
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email: cleanEmail,
-    password
-  });
-
-  if (error) {
-    const msg = String(error.message || "").toLowerCase();
-
-    if (msg.includes("email not confirmed")) {
-      throw new Error(
-        "Your email has not been confirmed yet. Confirm your email in Supabase, then try signing in again."
-      );
-    }
-
-    if (msg.includes("invalid login credentials")) {
-      throw new Error("Incorrect email or password.");
-    }
-
-    throw new Error(error.message || "Sign in failed.");
-  }
-
-  if (!data || !data.session) {
-    throw new Error(
-      "Sign in did not create a session. If email confirmation is enabled, confirm your email first."
-    );
-  }
-
-  return data;
-}
-</script>
 </head>
 
 <body>
@@ -1729,16 +1705,7 @@ Send
 /* =========================================================
    SUPABASE CONFIGURATION
    ========================================================= */
-const SUPABASE_URL = "https://nqlojrsilxhmytwkdjec.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_uW-DOrhaI0DsaZgDs37bKQ_z2GyqQ_j";
 
-const { createClient } = window.supabase;
-
-const supabaseClient =
-createClient(
-SUPABASE_URL,
-SUPABASE_ANON_KEY
-);
 
 
 /* =========================================================
@@ -2599,57 +2566,28 @@ container.appendChild(card);
 
 
 /* =========================================================
-   AUTH RATE-LIMIT PROTECTION
+   AUTH HELPERS
    ========================================================= */
 
-
-
-function getSignupCooldownRemaining(){
-const until=Number(localStorage.getItem(SIGNUP_COOLDOWN_KEY)||0);
-return Math.max(0,until-Date.now());
-}
-
-function setSignupCooldown(ms=SIGNUP_COOLDOWN_MS){
-localStorage.setItem(
-SIGNUP_COOLDOWN_KEY,
-String(Date.now()+ms)
-);
-}
-
-function clearSignupCooldown(){
-
-}
-
 function friendlyAuthError(error){
-const message=String(error?.message||error||"").toLowerCase();
+  const message=String(error?.message||error||"").toLowerCase();
 
-if(
-message.includes("rate limit")||
-message.includes("rate exceeded")||
-message.includes("email rate")||
-message.includes("too many requests")||
-message.includes("over_email_send_rate_limit")
-){
-return "Too many email requests were sent. Please wait a few minutes before trying again. Do not repeatedly click Sign up.";
-}
-
-if(message.includes("user already registered")||message.includes("already been registered")){
-return "An account with this email already exists. Please sign in instead.";
-}
-
-if(message.includes("invalid login credentials")){
-return "Email or password is incorrect.";
-}
-
-if(message.includes("email not confirmed")){
-return "Please confirm your email address before signing in.";
-}
-
-if(message.includes("password should be at least")){
-return "Password must be at least 6 characters.";
-}
-
-return error?.message||"Something went wrong. Please try again.";
+  if(message.includes("user already registered") || message.includes("already been registered")){
+    return "An account with this email already exists. Please sign in instead.";
+  }
+  if(message.includes("invalid login credentials")){
+    return "Email or password is incorrect.";
+  }
+  if(message.includes("email not confirmed")){
+    return "Please confirm your email address before signing in.";
+  }
+  if(message.includes("password should be at least")){
+    return "Password must be at least 6 characters.";
+  }
+  if(message.includes("rate limit") || message.includes("rate exceeded") || message.includes("too many requests") || message.includes("over_email_send_rate_limit")){
+    return "Supabase has temporarily limited email sending. Please try again later.";
+  }
+  return error?.message || "Something went wrong. Please try again.";
 }
 
 
@@ -2657,217 +2595,172 @@ return error?.message||"Something went wrong. Please try again.";
    SIGN UP WITH SUPABASE AUTH
    ========================================================= */
 
+/* =========================================================
+   SIGN UP WITH SUPABASE AUTH
+   ========================================================= */
+
 async function signUp(){
 
-const button=document.querySelector('#signupForm .modal-submit');
-
-const remaining=getSignupCooldownRemaining();
-
-if(remaining>0){
-const seconds=Math.ceil(remaining/1000);
-showToast(
-`Please wait ${seconds} seconds before trying another signup.`
-);
-return;
-}
-
-const name=
-document
-.getElementById("signupName")
-.value.trim();
-
-const email=
-document
-.getElementById("signupEmail")
-.value.trim()
-.toLowerCase();
-
-const password=
-document
-.getElementById("signupPassword")
-.value;
-
-const type=
-document
-.getElementById("signupType")
-.value;
-
-const location=
-document
-.getElementById("signupLocation")
-.value.trim();
-
-const languages=
-document
-.getElementById("signupLanguages")
-.value.trim();
-
-const bio=
-document
-.getElementById("signupBio")
-.value.trim();
-
-const teach=
-document
-.getElementById("signupSkill")
-.value.trim();
-
-const want=
-document
-.getElementById("signupWanted")
-.value.trim();
+const name=document.getElementById("signupName").value.trim();
+const email=document.getElementById("signupEmail").value.trim().toLowerCase();
+const password=document.getElementById("signupPassword").value;
+const type=document.getElementById("signupType").value;
+const location=document.getElementById("signupLocation").value.trim();
+const languages=document.getElementById("signupLanguages").value.trim();
+const bio=document.getElementById("signupBio").value.trim();
+const teach=document.getElementById("signupSkill").value.trim();
+const want=document.getElementById("signupWanted").value.trim();
 
 const availability=[
-...document.querySelectorAll(
-'input[name="availability"]:checked'
-)
+  ...document.querySelectorAll('input[name="availability"]:checked')
 ].map(x=>x.value);
 
 if(!name||!email||!password){
-showToast("Please fill in your name, email and password.");
-return;
-}
-
-if(!/^\S+@\S+\.\S+$/.test(email)){
-showToast("Please enter a valid email address.");
-return;
+  showToast("Please fill in your name, email and password.");
+  return;
 }
 
 if(password.length<6){
-showToast("Password must be at least 6 characters.");
-return;
+  showToast("Password must be at least 6 characters.");
+  return;
+}
+
+const button=document.querySelector('#signupForm .modal-submit');
+
+if(button){
+  button.disabled=true;
+  button.dataset.originalText=button.textContent;
+  button.textContent="Creating profile...";
 }
 
 try{
 
-if(button){
-button.disabled=true;
-button.dataset.originalText=button.textContent;
-button.textContent="Creating account...";
-}
+  const {data,error}=await supabaseClient.auth.signUp({
+    email,
+    password,
+    options:{
+      data:{
+        name,
+        type,
+        location:location||"Online",
+        languages:languages
+          ? languages.split(",").map(x=>x.trim()).filter(Boolean)
+          : ["English"],
+        bio:bio||"Learning and sharing skills.",
+        teach:teach
+          ? teach.split(",").map(x=>x.trim()).filter(Boolean)
+          : ["Knowledge Sharing"],
+        want:want
+          ? want.split(",").map(x=>x.trim()).filter(Boolean)
+          : ["Something New"],
+        availability:availability.length
+          ? availability
+          : ["Flexible"],
+        avatar:"🧑🏻",
+        category:"Technology"
+      }
+    }
+  });
 
-const{
-data,
-error
-}=
-await supabaseClient.auth.signUp({
-email,
-password,
-options:{
-data:{
-name,
-type
-}
-}
-});
+  if(error){
+    console.error("Supabase signup error:",error);
 
-if(error){
+    const msg=String(error.message||"");
 
-/*
-  Supabase may return an email rate-limit error here.
-  Only start our local cooldown when Supabase actually
-  reports a rate-limit condition; normal validation errors
-  should not lock the user out.
-*/
+    if(/already registered|already been registered/i.test(msg)){
+      showToast("This email is already registered. Please sign in.");
+    }else if(/rate.?limit|too many requests|over_email_send_rate_limit/i.test(msg)){
+      showToast("Supabase email sending is temporarily limited. Please try again later.");
+    }else{
+      showToast(msg||"Account creation failed.");
+    }
 
-const errorText=String(error.message||error).toLowerCase();
+    return;
+  }
 
-if(
-errorText.includes("rate limit")||
-errorText.includes("rate exceeded")||
-errorText.includes("email rate")||
-errorText.includes("too many requests")||
-errorText.includes("over_email_send_rate_limit")
-){
-setSignupCooldown(5*60*1000);
-}
+  if(!data?.user){
+    showToast("Supabase did not create the account. Please try again.");
+    return;
+  }
 
-showToast(friendlyAuthError(error));
-return;
-}
+  const profile={
+    id:data.user.id,
+    name,
+    email,
+    type,
+    location:location||"Online",
+    languages:languages
+      ? languages.split(",").map(x=>x.trim()).filter(Boolean)
+      : ["English"],
+    bio:bio||"Learning and sharing skills.",
+    teach:teach
+      ? teach.split(",").map(x=>x.trim()).filter(Boolean)
+      : ["Knowledge Sharing"],
+    want:want
+      ? want.split(",").map(x=>x.trim()).filter(Boolean)
+      : ["Something New"],
+    availability:availability.length
+      ? availability
+      : ["Flexible"],
+    avatar:"🧑🏻",
+    category:"Technology"
+  };
 
-if(!data?.user){
-showToast("Account creation failed. Please try again.");
-return;
-}
+  /*
+    If email confirmation is disabled, Supabase returns a session and
+    we can insert the profile immediately.
 
-/*
-  If email confirmation is enabled, Supabase can create the user
-  without returning an active session. The profile insert is then
-  blocked by RLS. Store the profile temporarily so it can be
-  completed after the user confirms the email and signs in.
-*/
-const profile={
-id:data.user.id,
-name,
-email,
-type,
-location:location||"Online",
-languages:languages
-?languages.split(",").map(x=>x.trim()).filter(Boolean)
-:["English"],
-bio:bio||"Learning and sharing skills.",
-teach:teach
-?teach.split(",").map(x=>x.trim()).filter(Boolean)
-:["Knowledge Sharing"],
-want:want
-?want.split(",").map(x=>x.trim()).filter(Boolean)
-:["Something New"],
-availability:availability.length?availability:["Flexible"],
-avatar:"🧑🏻",
-category:"Technology"
-};
+    If email confirmation is enabled, there is no authenticated session
+    yet. Do NOT attempt an RLS-protected profile insert here. The account
+    is still successfully created; the profile is saved in user metadata
+    and will be created/loaded after the user confirms and signs in.
+  */
+  if(data.session){
 
-if(!data.session){
-localStorage.setItem(
-"skillswap_pending_profile",
-JSON.stringify(profile)
-);
+    const {error:profileError}=await supabaseClient
+      .from("profiles")
+      .upsert(profile,{onConflict:"id"});
 
-showToast(
-"Account created! Check your email to confirm your account, then sign in."
-);
+    if(profileError){
+      console.error("Profile insert error:",profileError);
+      showToast("Account created, but profile setup failed: "+profileError.message);
+      return;
+    }
 
-closeModal("authModal");
-return;
-}
+    saveCurrentUser(profile);
+    closeModal("authModal");
+    updateUserUI();
+    await renderEverything();
 
-const{
-error:profileError
-}=
-await supabaseClient
-.from("profiles")
-.insert(profile);
+    showToast("🎉 Welcome to SkillSwap India, "+name+"!");
+    return;
+  }
 
-if(profileError){
-console.error(profileError);
-showToast(
-"Account created, but profile setup needs attention. Please sign in again."
-);
-return;
-}
-
-clearSignupCooldown();
-localStorage.removeItem("skillswap_pending_profile");
-saveCurrentUser(profile);
-closeModal("authModal");
-updateUserUI();
-await renderEverything();
-showToast("🎉 Welcome to SkillSwap India, "+name+"!");
+  /*
+    Email confirmation is enabled.
+    The Auth account exists, but Supabase has not created a browser
+    session yet. Store the profile fields in metadata so they survive
+    until the user signs in.
+  */
+  showToast(
+    "Account created! Please check your email and confirm your account, then sign in."
+  );
 
 }catch(error){
-console.error(error);
-showToast(friendlyAuthError(error));
+
+  console.error("Unexpected signup error:",error);
+  showToast(error?.message||"Something went wrong while creating your account.");
 
 }finally{
-if(button){
-button.disabled=false;
-button.textContent=button.dataset.originalText||"Create account";
-}
-}
+
+  if(button){
+    button.disabled=false;
+    button.textContent=button.dataset.originalText||"Create my profile";
+  }
 
 }
 
+}
 
 /* =========================================================
    SIGN IN
@@ -2967,67 +2860,62 @@ try{
 const{
 data,
 error
-}=
-await supabaseClient
+}=await supabaseClient
 .from("profiles")
 .select("*")
 .eq("id",user.id)
-.single();
+.maybeSingle();
 
 if(!error&&data){
-
 saveCurrentUser(data);
-
 return data;
-
 }
 
-const fallback={
+/*
+  If the user confirmed email after signup, there may not yet be a
+  profiles row. Rebuild it from the signup metadata and insert it
+  while the user is authenticated.
+*/
+const meta=user.user_metadata||{};
 
+const profile={
 id:user.id,
-
-name:
-user.user_metadata?.name||
-"SkillSwap Member",
-
-email:user.email,
-
-type:
-user.user_metadata?.type||
-"Young Learner",
-
-location:"Online",
-
-languages:["English"],
-
-bio:"Learning and sharing skills.",
-
-teach:["Knowledge Sharing"],
-
-want:["Something New"],
-
-availability:["Flexible"],
-
-avatar:"🧑🏻",
-
-category:"Technology"
-
+name:meta.name||"SkillSwap Member",
+email:user.email||"",
+type:meta.type||"Young Learner",
+location:meta.location||"Online",
+languages:Array.isArray(meta.languages)?meta.languages:["English"],
+bio:meta.bio||"Learning and sharing skills.",
+teach:Array.isArray(meta.teach)?meta.teach:["Knowledge Sharing"],
+want:Array.isArray(meta.want)?meta.want:["Something New"],
+availability:Array.isArray(meta.availability)?meta.availability:["Flexible"],
+avatar:meta.avatar||"🧑🏻",
+category:meta.category||"Technology"
 };
 
-saveCurrentUser(fallback);
+const{data:created,error:createError}=await supabaseClient
+.from("profiles")
+.upsert(profile,{onConflict:"id"})
+.select()
+.single();
 
-return fallback;
+if(createError){
+console.error("Profile creation after sign-in failed:",createError);
+saveCurrentUser(profile);
+return profile;
+}
+
+saveCurrentUser(created||profile);
+return created||profile;
 
 }catch(error){
 
-console.error(error);
-
+console.error("Profile load failed:",error);
 return null;
 
 }
 
 }
-
 
 /* =========================================================
    AUTH SESSION
@@ -4703,10 +4591,6 @@ await renderEverything();
 </script>
 
 
-<script>
-window.SkillSwapAuth = {
-  signIn: signInUser
-};
-</script>
+
 </body>
 </html>
