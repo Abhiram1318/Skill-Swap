@@ -1,14 +1,11 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+from flask import Flask, render_template, request, jsonify, session
 import sqlite3
-from werkzeug.security import generate_password_hash, check_password_hash
-from functools import wraps
-from datetime import datetime
 import os
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
-# Change this in production
-app.secret_key = "skillswap-india-secret-key-change-this"
+app.secret_key = "skillswap-india-change-this-secret-key"
 
 DATABASE = "skillswap.db"
 
@@ -20,98 +17,275 @@ DATABASE = "skillswap.db"
 def get_db():
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON")
     return conn
 
 
 def init_db():
     conn = get_db()
+    cur = conn.cursor()
 
-    conn.executescript("""
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        email TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL,
-        type TEXT DEFAULT 'Student',
-        location TEXT DEFAULT 'Online',
-        languages TEXT DEFAULT '',
-        bio TEXT DEFAULT '',
-        avatar TEXT DEFAULT '🧑🏻',
-        rating REAL DEFAULT 0,
-        reviews INTEGER DEFAULT 0,
-        created_at TEXT NOT NULL
-    );
-
-    CREATE TABLE IF NOT EXISTS skills (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT UNIQUE NOT NULL
-    );
-
-    CREATE TABLE IF NOT EXISTS user_skills (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        skill TEXT NOT NULL,
-        skill_type TEXT NOT NULL,
-
-        FOREIGN KEY(user_id)
-            REFERENCES users(id)
-            ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS availability (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        value TEXT NOT NULL,
-
-        FOREIGN KEY(user_id)
-            REFERENCES users(id)
-            ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS swap_requests (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-        sender_id INTEGER NOT NULL,
-        receiver_id INTEGER NOT NULL,
-
-        skill_wanted TEXT NOT NULL,
-        skill_offered TEXT NOT NULL,
-        message TEXT,
-
-        status TEXT DEFAULT 'pending',
-
-        created_at TEXT NOT NULL,
-        accepted_at TEXT,
-
-        FOREIGN KEY(sender_id)
-            REFERENCES users(id)
-            ON DELETE CASCADE,
-
-        FOREIGN KEY(receiver_id)
-            REFERENCES users(id)
-            ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS messages (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-        sender_id INTEGER NOT NULL,
-        receiver_id INTEGER NOT NULL,
-
-        message TEXT NOT NULL,
-
-        created_at TEXT NOT NULL,
-
-        FOREIGN KEY(sender_id)
-            REFERENCES users(id)
-            ON DELETE CASCADE,
-
-        FOREIGN KEY(receiver_id)
-            REFERENCES users(id)
-            ON DELETE CASCADE
-    );
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            user_type TEXT,
+            location TEXT,
+            languages TEXT,
+            bio TEXT,
+            teach TEXT,
+            want TEXT,
+            availability TEXT,
+            avatar TEXT DEFAULT '🧑🏻',
+            rating REAL DEFAULT 0,
+            reviews INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
     """)
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS requests (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            sender_id INTEGER NOT NULL,
+            receiver_id INTEGER NOT NULL,
+            skill_wanted TEXT,
+            skill_offered TEXT,
+            message TEXT,
+            status TEXT DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            accepted_at TIMESTAMP,
+            FOREIGN KEY(sender_id) REFERENCES users(id),
+            FOREIGN KEY(receiver_id) REFERENCES users(id)
+        )
+    """)
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            sender_id INTEGER NOT NULL,
+            receiver_id INTEGER NOT NULL,
+            message TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(sender_id) REFERENCES users(id),
+            FOREIGN KEY(receiver_id) REFERENCES users(id)
+        )
+    """)
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS reviews (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            reviewer_id INTEGER NOT NULL,
+            reviewed_id INTEGER NOT NULL,
+            rating INTEGER NOT NULL,
+            comment TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(reviewer_id) REFERENCES users(id),
+            FOREIGN KEY(reviewed_id) REFERENCES users(id)
+        )
+    """)
+
+    conn.commit()
+
+    # Add demo users only if database is empty
+    count = cur.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+
+    if count == 0:
+        demo_people = [
+            (
+                "Ananya Reddy",
+                "ananya@skillswap.demo",
+                "Teen Student",
+                "Hyderabad, Telangana",
+                "Telugu,Hindi,English",
+                "School student who loves languages, technology and helping other students.",
+                "Telugu,Hindi",
+                "Python,AI",
+                "After school,Weekends",
+                "👩🏽",
+                4.9,
+                32
+            ),
+            (
+                "Aarav Sharma",
+                "aarav@skillswap.demo",
+                "School Student",
+                "Bengaluru, Karnataka",
+                "Hindi,English,Kannada",
+                "Young coding enthusiast building small robotics projects.",
+                "Python,Robotics",
+                "Guitar,Public Speaking",
+                "Weekday evenings,Weekends",
+                "👨🏽",
+                4.8,
+                27
+            ),
+            (
+                "Meera Krishnan",
+                "meera@skillswap.demo",
+                "Teen Student",
+                "Chennai, Tamil Nadu",
+                "Tamil,English",
+                "Learns classical Indian arts and enjoys creative projects.",
+                "Bharatanatyam,Carnatic Music",
+                "Graphic Design,Photography",
+                "Weekends",
+                "👩🏽",
+                5,
+                41
+            ),
+            (
+                "Rohan Patel",
+                "rohan@skillswap.demo",
+                "College Student",
+                "Pune, Maharashtra",
+                "Hindi,Marathi,English",
+                "Technology learner who enjoys explaining difficult ideas simply.",
+                "Python,AI,Machine Learning",
+                "Web Design,Video Editing",
+                "Weekday evenings,Flexible",
+                "👨🏽",
+                5,
+                46
+            ),
+            (
+                "Saanvi Gupta",
+                "saanvi@skillswap.demo",
+                "Teen Student",
+                "Delhi, India",
+                "Hindi,English",
+                "Student who enjoys maths, study techniques and music.",
+                "Mathematics,Study Planning",
+                "Spanish,Guitar",
+                "After school,Weekends",
+                "👩🏼",
+                4.9,
+                29
+            ),
+            (
+                "Vikram Rao",
+                "vikram@skillswap.demo",
+                "Teen Student",
+                "Vijayawada, Andhra Pradesh",
+                "Telugu,English",
+                "Cricket and chess fan who wants to explore technology.",
+                "Cricket,Chess",
+                "Python,Photography",
+                "Weekends,Flexible",
+                "👨🏽",
+                4.8,
+                21
+            ),
+            (
+                "Ishita Singh",
+                "ishita@skillswap.demo",
+                "Teen Student",
+                "Jaipur, Rajasthan",
+                "Hindi,English",
+                "Creative student interested in Indian art and digital design.",
+                "Rangoli,Mehendi,Drawing",
+                "Coding,Photography",
+                "Weekends",
+                "👩🏽",
+                4.9,
+                36
+            ),
+            (
+                "Aditya Nair",
+                "aditya@skillswap.demo",
+                "College Student",
+                "Kochi, Kerala",
+                "Malayalam,Hindi,English",
+                "Science student who loves practical experiments.",
+                "Physics,Science Projects",
+                "Video Editing,Guitar",
+                "Weekday evenings,Flexible",
+                "👨🏽",
+                4.7,
+                18
+            ),
+            (
+                "Kavya Das",
+                "kavya@skillswap.demo",
+                "Teen Student",
+                "Kolkata, West Bengal",
+                "Bengali,Hindi,English",
+                "Language lover and young writer.",
+                "Bengali,Creative Writing",
+                "Python,Public Speaking",
+                "Weekends",
+                "👩🏽",
+                4.8,
+                25
+            ),
+            (
+                "Dev Malhotra",
+                "dev@skillswap.demo",
+                "Teen Student",
+                "Mumbai, Maharashtra",
+                "Hindi,English",
+                "Music and video creator who loves learning new skills.",
+                "Guitar,Video Editing",
+                "Tabla,Cricket",
+                "Weekday evenings,Weekends",
+                "👨🏻",
+                4.8,
+                30
+            ),
+            (
+                "Priya Sharma",
+                "priya@skillswap.demo",
+                "College Student",
+                "Hyderabad, Telangana",
+                "Telugu,Hindi,English",
+                "Home cook who enjoys sharing Indian recipes.",
+                "Indian Cooking,Biryani",
+                "Baking,Photography",
+                "Weekends,Flexible",
+                "👩🏾",
+                5,
+                52
+            ),
+            (
+                "Arjun Mehta",
+                "arjun@skillswap.demo",
+                "Teen Student",
+                "Ahmedabad, Gujarat",
+                "Hindi,Gujarati,English",
+                "Sports enthusiast who wants to learn technology and music.",
+                "Cricket,Football",
+                "Coding,Guitar",
+                "Weekends",
+                "👨🏽",
+                4.8,
+                27
+            )
+        ]
+
+        for person in demo_people:
+            cur.execute("""
+                INSERT INTO users
+                (
+                    name,email,password,user_type,location,
+                    languages,bio,teach,want,availability,
+                    avatar,rating,reviews
+                )
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+            """, (
+                person[0],
+                person[1],
+                generate_password_hash("demo123"),
+                person[2],
+                person[3],
+                person[4],
+                person[5],
+                person[6],
+                person[7],
+                person[8],
+                person[9],
+                person[10],
+                person[11]
+            ))
 
     conn.commit()
     conn.close()
@@ -120,40 +294,6 @@ def init_db():
 # =========================================================
 # HELPERS
 # =========================================================
-
-def current_user():
-    user_id = session.get("user_id")
-
-    if not user_id:
-        return None
-
-    conn = get_db()
-
-    user = conn.execute(
-        "SELECT * FROM users WHERE id = ?",
-        (user_id,)
-    ).fetchone()
-
-    conn.close()
-
-    return user
-
-
-def login_required(function):
-
-    @wraps(function)
-    def wrapper(*args, **kwargs):
-
-        if not session.get("user_id"):
-            return jsonify({
-                "success": False,
-                "message": "Please sign in first."
-            }), 401
-
-        return function(*args, **kwargs)
-
-    return wrapper
-
 
 def split_values(value):
     if not value:
@@ -166,83 +306,57 @@ def split_values(value):
     ]
 
 
-def get_user_skills(user_id, skill_type):
+def user_to_dict(row):
+    if not row:
+        return None
+
+    return {
+        "id": row["id"],
+        "name": row["name"],
+        "email": row["email"],
+        "type": row["user_type"],
+        "location": row["location"],
+        "languages": split_values(row["languages"]),
+        "bio": row["bio"],
+        "teach": split_values(row["teach"]),
+        "want": split_values(row["want"]),
+        "availability": split_values(row["availability"]),
+        "avatar": row["avatar"],
+        "rating": row["rating"],
+        "reviews": row["reviews"]
+    }
+
+
+def current_user():
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return None
 
     conn = get_db()
-
-    rows = conn.execute("""
-        SELECT skill
-        FROM user_skills
-        WHERE user_id = ?
-        AND skill_type = ?
-    """, (user_id, skill_type)).fetchall()
-
+    row = conn.execute(
+        "SELECT * FROM users WHERE id = ?",
+        (user_id,)
+    ).fetchone()
     conn.close()
 
-    return [row["skill"] for row in rows]
+    return user_to_dict(row)
 
 
-def get_user_languages(user):
+def normalize(value):
+    if not value:
+        return ""
 
-    if not user["languages"]:
-        return []
-
-    return split_values(user["languages"])
-
-
-def get_user_availability(user_id):
-
-    conn = get_db()
-
-    rows = conn.execute("""
-        SELECT value
-        FROM availability
-        WHERE user_id = ?
-    """, (user_id,)).fetchall()
-
-    conn.close()
-
-    return [row["value"] for row in rows]
-
-
-# =========================================================
-# SKILL MATCHING
-# =========================================================
-
-ALIASES = {
-    "python": ["python", "py"],
-    "javascript": ["javascript", "js"],
-    "ai": [
-        "ai",
-        "artificial intelligence",
-        "machine learning",
-        "ml"
-    ],
-    "maths": [
-        "math",
-        "maths",
-        "mathematics"
-    ],
-    "telugu": ["telugu"],
-    "guitar": ["guitar"],
-    "cricket": ["cricket"]
-}
-
-
-def normalize_skill(skill):
-
-    return (
-        skill.lower()
-        .replace("-", " ")
-        .replace("_", " ")
-        .strip()
-    )
+    return "".join(
+        char.lower()
+        for char in str(value)
+        if char.isalnum() or char in " +#"
+    ).strip()
 
 
 def skill_matches(a, b):
-
-    x = normalize_skill(a)
-    y = normalize_skill(b)
+    x = normalize(a)
+    y = normalize(b)
 
     if not x or not y:
         return False
@@ -250,8 +364,15 @@ def skill_matches(a, b):
     if x == y:
         return True
 
-    for group in ALIASES.values():
+    aliases = [
+        ["javascript", "js"],
+        ["python", "py"],
+        ["ai", "artificial intelligence", "machine learning", "ml"],
+        ["math", "maths", "mathematics"],
+        ["drawing", "art"]
+    ]
 
+    for group in aliases:
         if x in group and y in group:
             return True
 
@@ -259,13 +380,10 @@ def skill_matches(a, b):
 
 
 def overlap(list_a, list_b):
-
     count = 0
 
     for a in list_a:
-
         for b in list_b:
-
             if skill_matches(a, b):
                 count += 1
 
@@ -273,86 +391,55 @@ def overlap(list_a, list_b):
 
 
 def calculate_match(user, person):
-
     if not user:
-
         return {
-            "score": 80,
+            "score": 85,
             "reasons": [
                 "Complementary skills",
                 "Active member"
             ]
         }
 
-    user_teach = get_user_skills(user["id"], "teach")
-    user_want = get_user_skills(user["id"], "want")
-
-    person_teach = get_user_skills(person["id"], "teach")
-    person_want = get_user_skills(person["id"], "want")
-
-    user_languages = get_user_languages(user)
-    person_languages = get_user_languages(person)
-
-    user_availability = get_user_availability(user["id"])
-    person_availability = get_user_availability(person["id"])
-
     score = 35
     reasons = []
 
-    learn = overlap(user_want, person_teach)
-    teach = overlap(user_teach, person_want)
-    language = overlap(user_languages, person_languages)
-    available = overlap(
-        user_availability,
-        person_availability
+    learn = overlap(user["want"], person["teach"])
+    teach = overlap(user["teach"], person["want"])
+    language = overlap(user["languages"], person["languages"])
+    availability = overlap(
+        user["availability"],
+        person["availability"]
     )
 
     if learn:
-
         score += min(28, learn * 14)
-
-        reasons.append(
-            "They teach what you want"
-        )
+        reasons.append("They teach what you want")
 
     if teach:
-
         score += min(22, teach * 11)
-
-        reasons.append(
-            "They want what you teach"
-        )
+        reasons.append("They want what you teach")
 
     if language:
-
         score += min(8, language * 4)
+        reasons.append("Shared language")
 
-        reasons.append(
-            "Shared language"
-        )
+    if availability:
+        score += min(7, availability * 4)
+        reasons.append("Matching availability")
 
-    if available:
+    city_a = user["location"].split(",")[0].strip().lower()
+    city_b = person["location"].split(",")[0].strip().lower()
 
-        score += min(7, available * 4)
-
-        reasons.append(
-            "Matching availability"
-        )
-
-    user_city = (user["location"] or "").split(",")[0].lower()
-    person_city = (person["location"] or "").split(",")[0].lower()
-
-    if user_city and user_city == person_city:
-
+    if city_a and city_b and city_a == city_b:
         score += 8
-
         reasons.append("Same city")
 
-    if not reasons:
+    if user["type"] and person["type"]:
+        if "Student" in user["type"] and "Student" in person["type"]:
+            score += 4
 
-        reasons.append(
-            "Good general compatibility"
-        )
+    if not reasons:
+        reasons.append("Good general compatibility")
 
     return {
         "score": min(99, max(50, round(score))),
@@ -361,71 +448,36 @@ def calculate_match(user, person):
 
 
 # =========================================================
-# MAIN PAGE
+# PAGE
 # =========================================================
 
 @app.route("/")
 def index():
-
-    return render_template(
-        "index.html",
-        user=current_user()
-    )
+    return render_template("index.html")
 
 
 # =========================================================
-# SIGN UP
+# AUTH
 # =========================================================
 
 @app.route("/api/signup", methods=["POST"])
 def signup():
-
     data = request.get_json() or {}
 
     name = data.get("name", "").strip()
     email = data.get("email", "").strip().lower()
-    password = data.get("password", "")
-
-    user_type = data.get(
-        "type",
-        "Teen Student"
-    )
-
-    location = data.get(
-        "location",
-        "Online"
-    ).strip()
-
-    languages = data.get(
-        "languages",
-        ""
-    ).strip()
-
-    bio = data.get(
-        "bio",
-        ""
-    ).strip()
-
-    teach = data.get(
-        "teach",
-        ""
-    )
-
-    want = data.get(
-        "want",
-        ""
-    )
-
-    availability = data.get(
-        "availability",
-        []
-    )
+    password = data.get("password", "").strip()
 
     if not name or not email or not password:
-
         return jsonify({
             "success": False,
             "message": "Please fill in your name, email and password."
+        }), 400
+
+    if len(password) < 6:
+        return jsonify({
+            "success": False,
+            "message": "Password must be at least 6 characters."
         }), 400
 
     conn = get_db()
@@ -436,74 +488,56 @@ def signup():
     ).fetchone()
 
     if existing:
-
         conn.close()
 
         return jsonify({
             "success": False,
             "message": "An account with this email already exists."
-        }), 400
+        }), 409
 
-    password_hash = generate_password_hash(password)
+    languages = data.get("languages", [])
+    teach = data.get("teach", [])
+    want = data.get("want", [])
+    availability = data.get("availability", [])
 
-    cursor = conn.execute("""
+    if isinstance(languages, list):
+        languages = ",".join(languages)
+
+    if isinstance(teach, list):
+        teach = ",".join(teach)
+
+    if isinstance(want, list):
+        want = ",".join(want)
+
+    if isinstance(availability, list):
+        availability = ",".join(availability)
+
+    cur = conn.execute("""
         INSERT INTO users
         (
-            name,
-            email,
-            password,
-            type,
-            location,
-            languages,
-            bio,
-            avatar,
-            created_at
+            name,email,password,user_type,location,
+            languages,bio,teach,want,availability,avatar
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?)
     """, (
         name,
         email,
-        password_hash,
-        user_type,
-        location,
-        languages,
-        bio or "Learning and sharing skills.",
-        "🧑🏻",
-        datetime.utcnow().isoformat()
+        generate_password_hash(password),
+        data.get("type", "Young Learner"),
+        data.get("location", "Online"),
+        languages or "English",
+        data.get("bio", "Learning and sharing skills."),
+        teach or "Knowledge Sharing",
+        want or "Something New",
+        availability or "Flexible",
+        "🧑🏻"
     ))
-
-    user_id = cursor.lastrowid
-
-    # Teaching skills
-    for skill in split_values(teach):
-
-        conn.execute("""
-            INSERT INTO user_skills
-            (user_id, skill, skill_type)
-            VALUES (?, ?, 'teach')
-        """, (user_id, skill))
-
-    # Wanted skills
-    for skill in split_values(want):
-
-        conn.execute("""
-            INSERT INTO user_skills
-            (user_id, skill, skill_type)
-            VALUES (?, ?, 'want')
-        """, (user_id, skill))
-
-    # Availability
-    for item in availability:
-
-        conn.execute("""
-            INSERT INTO availability
-            (user_id, value)
-            VALUES (?, ?)
-        """, (user_id, item))
 
     conn.commit()
 
-    user = conn.execute(
+    user_id = cur.lastrowid
+
+    row = conn.execute(
         "SELECT * FROM users WHERE id = ?",
         (user_id,)
     ).fetchone()
@@ -514,80 +548,48 @@ def signup():
 
     return jsonify({
         "success": True,
-        "message": f"Welcome to SkillSwap India, {name}!",
-        "user": dict(user)
+        "user": user_to_dict(row)
     })
 
 
-# =========================================================
-# SIGN IN
-# =========================================================
-
 @app.route("/api/signin", methods=["POST"])
 def signin():
-
     data = request.get_json() or {}
 
-    email = data.get(
-        "email",
-        ""
-    ).strip().lower()
-
-    password = data.get(
-        "password",
-        ""
-    )
-
-    if not email or not password:
-
-        return jsonify({
-            "success": False,
-            "message": "Please enter your email and password."
-        }), 400
+    email = data.get("email", "").strip().lower()
+    password = data.get("password", "")
 
     conn = get_db()
 
-    user = conn.execute("""
-        SELECT *
-        FROM users
-        WHERE email = ?
-    """, (email,)).fetchone()
+    row = conn.execute(
+        "SELECT * FROM users WHERE email = ?",
+        (email,)
+    ).fetchone()
 
     conn.close()
 
-    if not user:
-
+    if not row:
         return jsonify({
             "success": False,
             "message": "Account not found."
         }), 404
 
-    if not check_password_hash(
-        user["password"],
-        password
-    ):
-
+    if not check_password_hash(row["password"], password):
         return jsonify({
             "success": False,
             "message": "Incorrect email or password."
         }), 401
 
-    session["user_id"] = user["id"]
+    session["user_id"] = row["id"]
 
     return jsonify({
         "success": True,
-        "message": f"Welcome back, {user['name']}!",
-        "user": dict(user)
+        "user": user_to_dict(row)
     })
 
 
-# =========================================================
-# LOG OUT
-# =========================================================
-
 @app.route("/api/logout", methods=["POST"])
 def logout():
-
     session.clear()
 
     return jsonify({
@@ -595,179 +597,138 @@ def logout():
     })
 
 
-# =========================================================
-# CURRENT USER
-# =========================================================
-
 @app.route("/api/me")
 def me():
-
     user = current_user()
 
-    if not user:
-
-        return jsonify({
-            "logged_in": False
-        })
-
     return jsonify({
-        "logged_in": True,
-        "user": dict(user),
-        "teach": get_user_skills(
-            user["id"],
-            "teach"
-        ),
-        "want": get_user_skills(
-            user["id"],
-            "want"
-        ),
-        "availability": get_user_availability(
-            user["id"]
-        )
+        "logged_in": bool(user),
+        "user": user
     })
 
 
 # =========================================================
-# DISCOVER USERS
+# PEOPLE / MATCHING
 # =========================================================
 
 @app.route("/api/people")
 def people():
-
     user = current_user()
 
     conn = get_db()
-
-    rows = conn.execute("""
-        SELECT *
-        FROM users
-        ORDER BY created_at DESC
-    """).fetchall()
-
+    rows = conn.execute(
+        "SELECT * FROM users ORDER BY created_at DESC"
+    ).fetchall()
     conn.close()
 
-    results = []
+    result = []
 
-    for person in rows:
+    for row in rows:
+        person = user_to_dict(row)
 
         if user and person["id"] == user["id"]:
             continue
 
-        match = calculate_match(
-            user,
-            person
-        )
+        match = calculate_match(user, person)
 
-        results.append({
+        person["match"] = match["score"]
+        person["reasons"] = match["reasons"]
 
-            "id": person["id"],
+        result.append(person)
 
-            "name": person["name"],
-
-            "avatar": person["avatar"],
-
-            "location": person["location"],
-
-            "type": person["type"],
-
-            "languages": get_user_languages(
-                person
-            ),
-
-            "teach": get_user_skills(
-                person["id"],
-                "teach"
-            ),
-
-            "want": get_user_skills(
-                person["id"],
-                "want"
-            ),
-
-            "availability": get_user_availability(
-                person["id"]
-            ),
-
-            "rating": person["rating"],
-
-            "reviews": person["reviews"],
-
-            "bio": person["bio"],
-
-            "match": match["score"],
-
-            "reasons": match["reasons"]
-        })
-
-    results.sort(
-        key=lambda x: x["match"],
+    result.sort(
+        key=lambda person: person["match"],
         reverse=True
     )
 
-    return jsonify(results)
+    return jsonify(result)
 
 
 # =========================================================
-# SEND REQUEST
+# REQUESTS
 # =========================================================
+
+@app.route("/api/requests", methods=["GET"])
+def get_requests_api():
+    user = current_user()
+
+    if not user:
+        return jsonify([])
+
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT
+            r.*,
+            u.name AS receiver_name,
+            u.avatar AS receiver_avatar
+        FROM requests r
+        JOIN users u ON u.id = r.receiver_id
+        WHERE r.sender_id = ?
+        ORDER BY r.id DESC
+    """, (user["id"],)).fetchall()
+
+    conn.close()
+
+    result = []
+
+    for row in rows:
+        result.append({
+            "id": row["id"],
+            "receiverId": row["receiver_id"],
+            "receiverName": row["receiver_name"],
+            "receiverAvatar": row["receiver_avatar"],
+            "skillWanted": row["skill_wanted"],
+            "skillOffered": row["skill_offered"],
+            "message": row["message"],
+            "status": row["status"],
+            "createdAt": row["created_at"]
+        })
+
+    return jsonify(result)
+
 
 @app.route("/api/requests", methods=["POST"])
-@login_required
-def send_request():
-
+def create_request():
     user = current_user()
+
+    if not user:
+        return jsonify({
+            "success": False,
+            "message": "Please sign in first."
+        }), 401
 
     data = request.get_json() or {}
 
-    receiver_id = data.get("receiver_id")
-
-    wanted = data.get(
-        "skill_wanted",
-        ""
-    ).strip()
-
-    offered = data.get(
-        "skill_offered",
-        ""
-    ).strip()
-
+    receiver_id = data.get("receiverId")
+    wanted = data.get("wanted", "").strip()
+    offered = data.get("offered", "").strip()
     message = data.get(
         "message",
-        ""
+        "I'd love to exchange skills with you!"
     ).strip()
 
     if not receiver_id or not wanted or not offered:
-
         return jsonify({
             "success": False,
-            "message": "Please provide all required fields."
+            "message": "Please enter both skills."
         }), 400
 
-    if int(receiver_id) == user["id"]:
-
+    if int(receiver_id) == int(user["id"]):
         return jsonify({
             "success": False,
-            "message": "You cannot request a swap with yourself."
+            "message": "You cannot send a request to yourself."
         }), 400
 
     conn = get_db()
 
     existing = conn.execute("""
         SELECT id
-        FROM swap_requests
-
+        FROM requests
         WHERE
-        (
-            sender_id = ?
-            AND receiver_id = ?
-        )
-
+        (sender_id = ? AND receiver_id = ?)
         OR
-
-        (
-            sender_id = ?
-            AND receiver_id = ?
-        )
+        (sender_id = ? AND receiver_id = ?)
     """, (
         user["id"],
         receiver_id,
@@ -776,33 +737,29 @@ def send_request():
     )).fetchone()
 
     if existing:
-
         conn.close()
 
         return jsonify({
             "success": False,
             "message": "You already have a request with this member."
-        }), 400
+        }), 409
 
     conn.execute("""
-        INSERT INTO swap_requests
+        INSERT INTO requests
         (
             sender_id,
             receiver_id,
             skill_wanted,
             skill_offered,
-            message,
-            status,
-            created_at
+            message
         )
-        VALUES (?, ?, ?, ?, ?, 'pending', ?)
+        VALUES (?,?,?,?,?)
     """, (
         user["id"],
         receiver_id,
         wanted,
         offered,
-        message or "I'd love to exchange skills with you!",
-        datetime.utcnow().isoformat()
+        message
     ))
 
     conn.commit()
@@ -814,97 +771,68 @@ def send_request():
     })
 
 
-# =========================================================
-# GET REQUESTS
-# =========================================================
-
-@app.route("/api/requests")
-@login_required
-def requests():
-
+@app.route("/api/requests/incoming")
+def incoming_requests():
     user = current_user()
+
+    if not user:
+        return jsonify([])
 
     conn = get_db()
 
     rows = conn.execute("""
         SELECT
             r.*,
-
-            sender.name AS sender_name,
-            sender.avatar AS sender_avatar,
-
-            receiver.name AS receiver_name,
-            receiver.avatar AS receiver_avatar
-
-        FROM swap_requests r
-
-        JOIN users sender
-            ON sender.id = r.sender_id
-
-        JOIN users receiver
-            ON receiver.id = r.receiver_id
-
-        WHERE
-            r.sender_id = ?
-            OR
-            r.receiver_id = ?
-
-        ORDER BY r.created_at DESC
-    """, (
-        user["id"],
-        user["id"]
-    )).fetchall()
+            u.name AS sender_name,
+            u.avatar AS sender_avatar
+        FROM requests r
+        JOIN users u ON u.id = r.sender_id
+        WHERE r.receiver_id = ?
+        ORDER BY r.id DESC
+    """, (user["id"],)).fetchall()
 
     conn.close()
 
     return jsonify([
-        dict(row)
+        {
+            "id": row["id"],
+            "senderId": row["sender_id"],
+            "senderName": row["sender_name"],
+            "senderAvatar": row["sender_avatar"],
+            "skillWanted": row["skill_wanted"],
+            "skillOffered": row["skill_offered"],
+            "message": row["message"],
+            "status": row["status"]
+        }
         for row in rows
     ])
 
 
-# =========================================================
-# ACCEPT / REJECT REQUEST
-# =========================================================
-
-@app.route(
-    "/api/requests/<int:request_id>",
-    methods=["PATCH"]
-)
-@login_required
+@app.route("/api/requests/<int:request_id>", methods=["POST"])
 def update_request(request_id):
-
     user = current_user()
 
-    data = request.get_json() or {}
-
-    status = data.get("status")
-
-    if status not in [
-        "accepted",
-        "rejected"
-    ]:
-
+    if not user:
         return jsonify({
             "success": False,
-            "message": "Invalid status."
-        }), 400
+            "message": "Please sign in."
+        }), 401
+
+    data = request.get_json() or {}
+    action = data.get("action")
 
     conn = get_db()
 
     row = conn.execute("""
         SELECT *
-        FROM swap_requests
-
-        WHERE id = ?
-        AND receiver_id = ?
+        FROM requests
+        WHERE id = ? AND receiver_id = ?
     """, (
         request_id,
         user["id"]
     )).fetchone()
 
     if not row:
-
         conn.close()
 
         return jsonify({
@@ -912,32 +840,35 @@ def update_request(request_id):
             "message": "Request not found."
         }), 404
 
-    accepted_at = (
-        datetime.utcnow().isoformat()
-        if status == "accepted"
-        else None
-    )
+    if action == "accept":
+        conn.execute("""
+            UPDATE requests
+            SET status = 'accepted',
+                accepted_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        """, (request_id,))
 
-    conn.execute("""
-        UPDATE swap_requests
+    elif action == "reject":
+        conn.execute("""
+            UPDATE requests
+            SET status = 'rejected'
+            WHERE id = ?
+        """, (request_id,))
 
-        SET
-            status = ?,
-            accepted_at = ?
+    else:
+        conn.close()
 
-        WHERE id = ?
-    """, (
-        status,
-        accepted_at,
-        request_id
-    ))
+        return jsonify({
+            "success": False,
+            "message": "Invalid action."
+        }), 400
 
     conn.commit()
     conn.close()
 
     return jsonify({
         "success": True,
-        "message": f"Request {status}."
+        "message": f"Request {action}ed."
     })
 
 
@@ -946,110 +877,104 @@ def update_request(request_id):
 # =========================================================
 
 @app.route("/api/connections")
-@login_required
 def connections():
-
     user = current_user()
+
+    if not user:
+        return jsonify([])
 
     conn = get_db()
 
     rows = conn.execute("""
         SELECT
             r.*,
-
-            sender.name AS sender_name,
-            sender.avatar AS sender_avatar,
-
-            receiver.name AS receiver_name,
-            receiver.avatar AS receiver_avatar
-
-        FROM swap_requests r
-
-        JOIN users sender
-            ON sender.id = r.sender_id
-
-        JOIN users receiver
-            ON receiver.id = r.receiver_id
-
+            u.id AS person_id,
+            u.name AS person_name,
+            u.avatar AS person_avatar
+        FROM requests r
+        JOIN users u
+        ON u.id =
+            CASE
+                WHEN r.sender_id = ? THEN r.receiver_id
+                ELSE r.sender_id
+            END
         WHERE
             r.status = 'accepted'
             AND
-            (
-                r.sender_id = ?
-                OR
-                r.receiver_id = ?
-            )
-
+            (r.sender_id = ? OR r.receiver_id = ?)
         ORDER BY r.accepted_at DESC
     """, (
+        user["id"],
         user["id"],
         user["id"]
     )).fetchall()
 
     conn.close()
 
-    result = []
-
-    for row in rows:
-
-        data = dict(row)
-
-        if row["sender_id"] == user["id"]:
-
-            data["person_id"] = row["receiver_id"]
-            data["person_name"] = row["receiver_name"]
-            data["person_avatar"] = row["receiver_avatar"]
-
-        else:
-
-            data["person_id"] = row["sender_id"]
-            data["person_name"] = row["sender_name"]
-            data["person_avatar"] = row["sender_avatar"]
-
-        result.append(data)
-
-    return jsonify(result)
+    return jsonify([
+        {
+            "id": row["person_id"],
+            "name": row["person_name"],
+            "avatar": row["person_avatar"]
+        }
+        for row in rows
+    ])
 
 
 # =========================================================
 # CHAT
 # =========================================================
 
-@app.route(
-    "/api/messages/<int:person_id>"
-)
-@login_required
+@app.route("/api/messages/<int:person_id>")
 def get_messages(person_id):
-
     user = current_user()
+
+    if not user:
+        return jsonify({
+            "success": False,
+            "message": "Please sign in."
+        }), 401
 
     conn = get_db()
 
-    messages = conn.execute("""
+    connection = conn.execute("""
+        SELECT id
+        FROM requests
+        WHERE
+            status = 'accepted'
+            AND
+            (
+                (sender_id = ? AND receiver_id = ?)
+                OR
+                (sender_id = ? AND receiver_id = ?)
+            )
+        LIMIT 1
+    """, (
+        user["id"],
+        person_id,
+        person_id,
+        user["id"]
+    )).fetchone()
+
+    if not connection:
+        conn.close()
+
+        return jsonify({
+            "success": False,
+            "message": "Your request has not been accepted yet."
+        }), 403
+
+    rows = conn.execute("""
         SELECT
             m.*,
-            u.name AS sender_name,
-            u.avatar AS sender_avatar
-
+            u.name AS sender_name
         FROM messages m
-
-        JOIN users u
-            ON u.id = m.sender_id
-
+        JOIN users u ON u.id = m.sender_id
         WHERE
-            (
-                m.sender_id = ?
-                AND m.receiver_id = ?
-            )
-
+            (m.sender_id = ? AND m.receiver_id = ?)
             OR
-
-            (
-                m.sender_id = ?
-                AND m.receiver_id = ?
-            )
-
-        ORDER BY m.created_at ASC
+            (m.sender_id = ? AND m.receiver_id = ?)
+        ORDER BY m.id ASC
     """, (
         user["id"],
         person_id,
@@ -1060,29 +985,31 @@ def get_messages(person_id):
     conn.close()
 
     return jsonify([
-        dict(row)
-        for row in messages
+        {
+            "id": row["id"],
+            "type": "me" if row["sender_id"] == user["id"] else "them",
+            "text": row["message"],
+            "sender": row["sender_name"],
+            "createdAt": row["created_at"]
+        }
+        for row in rows
     ])
 
 
-@app.route(
-    "/api/messages/<int:person_id>",
-    methods=["POST"]
-)
-@login_required
+@app.route("/api/messages/<int:person_id>", methods=["POST"])
 def send_message(person_id):
-
     user = current_user()
 
-    data = request.get_json() or {}
+    if not user:
+        return jsonify({
+            "success": False,
+            "message": "Please sign in."
+        }), 401
 
-    message = data.get(
-        "message",
-        ""
-    ).strip()
+    data = request.get_json() or {}
+    message = data.get("message", "").strip()
 
     if not message:
-
         return jsonify({
             "success": False,
             "message": "Message cannot be empty."
@@ -1090,28 +1017,18 @@ def send_message(person_id):
 
     conn = get_db()
 
-    # Make sure they are connected
     connection = conn.execute("""
         SELECT id
-
-        FROM swap_requests
-
-        WHERE status = 'accepted'
-
-        AND
-        (
+        FROM requests
+        WHERE
+            status = 'accepted'
+            AND
             (
-                sender_id = ?
-                AND receiver_id = ?
+                (sender_id = ? AND receiver_id = ?)
+                OR
+                (sender_id = ? AND receiver_id = ?)
             )
-
-            OR
-
-            (
-                sender_id = ?
-                AND receiver_id = ?
-            )
-        )
+        LIMIT 1
     """, (
         user["id"],
         person_id,
@@ -1120,7 +1037,6 @@ def send_message(person_id):
     )).fetchone()
 
     if not connection:
-
         conn.close()
 
         return jsonify({
@@ -1133,15 +1049,13 @@ def send_message(person_id):
         (
             sender_id,
             receiver_id,
-            message,
-            created_at
+            message
         )
-        VALUES (?, ?, ?, ?)
+        VALUES (?,?,?)
     """, (
         user["id"],
         person_id,
-        message,
-        datetime.utcnow().isoformat()
+        message
     ))
 
     conn.commit()
@@ -1153,104 +1067,133 @@ def send_message(person_id):
 
 
 # =========================================================
-# SEARCH
+# REVIEWS
 # =========================================================
 
-@app.route("/api/search")
-def search():
-
-    query = request.args.get(
-        "q",
-        ""
-    ).strip().lower()
-
+@app.route("/api/reviews/<int:person_id>", methods=["POST"])
+def create_review(person_id):
     user = current_user()
+
+    if not user:
+        return jsonify({
+            "success": False,
+            "message": "Please sign in."
+        }), 401
+
+    data = request.get_json() or {}
+
+    try:
+        rating = int(data.get("rating"))
+    except:
+        rating = 0
+
+    comment = data.get("comment", "").strip()
+
+    if rating < 1 or rating > 5:
+        return jsonify({
+            "success": False,
+            "message": "Rating must be between 1 and 5."
+        }), 400
 
     conn = get_db()
 
-    rows = conn.execute("""
-        SELECT *
-        FROM users
-    """).fetchall()
+    connection = conn.execute("""
+        SELECT id
+        FROM requests
+        WHERE
+            status = 'accepted'
+            AND
+            (
+                (sender_id = ? AND receiver_id = ?)
+                OR
+                (sender_id = ? AND receiver_id = ?)
+            )
+        LIMIT 1
+    """, (
+        user["id"],
+        person_id,
+        person_id,
+        user["id"]
+    )).fetchone()
 
+    if not connection:
+        conn.close()
+
+        return jsonify({
+            "success": False,
+            "message": "You need a connection before reviewing."
+        }), 403
+
+    existing = conn.execute("""
+        SELECT id
+        FROM reviews
+        WHERE reviewer_id = ? AND reviewed_id = ?
+    """, (
+        user["id"],
+        person_id
+    )).fetchone()
+
+    if existing:
+        conn.close()
+
+        return jsonify({
+            "success": False,
+            "message": "You already reviewed this member."
+        }), 409
+
+    conn.execute("""
+        INSERT INTO reviews
+        (
+            reviewer_id,
+            reviewed_id,
+            rating,
+            comment
+        )
+        VALUES (?,?,?,?)
+    """, (
+        user["id"],
+        person_id,
+        rating,
+        comment
+    ))
+
+    stats = conn.execute("""
+        SELECT
+            AVG(rating) AS average_rating,
+            COUNT(*) AS total_reviews
+        FROM reviews
+        WHERE reviewed_id = ?
+    """, (person_id,)).fetchone()
+
+    conn.execute("""
+        UPDATE users
+        SET rating = ?,
+            reviews = ?
+        WHERE id = ?
+    """, (
+        round(stats["average_rating"], 1),
+        stats["total_reviews"],
+        person_id
+    ))
+
+    conn.commit()
     conn.close()
 
-    results = []
-
-    for person in rows:
-
-        if user and person["id"] == user["id"]:
-            continue
-
-        skills_teach = get_user_skills(
-            person["id"],
-            "teach"
-        )
-
-        skills_want = get_user_skills(
-            person["id"],
-            "want"
-        )
-
-        languages = get_user_languages(
-            person
-        )
-
-        searchable = " ".join([
-            person["name"],
-            person["location"],
-            person["type"],
-            person["bio"],
-            person["languages"],
-            " ".join(skills_teach),
-            " ".join(skills_want),
-            " ".join(languages)
-        ]).lower()
-
-        if query in searchable:
-
-            match = calculate_match(
-                user,
-                person
-            )
-
-            results.append({
-                "id": person["id"],
-                "name": person["name"],
-                "avatar": person["avatar"],
-                "location": person["location"],
-                "type": person["type"],
-                "teach": skills_teach,
-                "want": skills_want,
-                "languages": languages,
-                "availability": get_user_availability(
-                    person["id"]
-                ),
-                "rating": person["rating"],
-                "reviews": person["reviews"],
-                "bio": person["bio"],
-                "match": match["score"],
-                "reasons": match["reasons"]
-            })
-
-    results.sort(
-        key=lambda x: x["match"],
-        reverse=True
-    )
-
-    return jsonify(results)
+    return jsonify({
+        "success": True,
+        "message": "Review submitted!"
+    })
 
 
 # =========================================================
-# RUN SERVER
+# START SERVER
 # =========================================================
 
 if __name__ == "__main__":
-
     init_db()
 
     app.run(
-        debug=True,
         host="127.0.0.1",
-        port=5000
+        port=5000,
+        debug=True
     )
