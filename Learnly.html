@@ -12,16 +12,14 @@
 const SUPABASE_URL = "https://nqlojrsilxhmytwkdjec.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_uW-DOrhaI0DsaZgDs37bKQ_z2GyqQ_j";
 const { createClient } = window.supabase;
-
 const supabaseClient = createClient(
   SUPABASE_URL,
   SUPABASE_ANON_KEY,
   {
     auth: {
-      flowType: "pkce",
-      detectSessionInUrl: true,
       persistSession: true,
-      autoRefreshToken: true
+      autoRefreshToken: true,
+      detectSessionInUrl: true
     }
   }
 );
@@ -1080,6 +1078,13 @@ left:10px;
 bottom:10px;
 }
 }
+
+#otpCode{
+  text-align:center;
+  letter-spacing:6px;
+  font-size:1.3rem;
+  font-weight:800;
+}
 </style>
 <script>
 
@@ -1560,6 +1565,39 @@ Sign in
 
 </div>
 </div>
+</div>
+
+<!-- EMAIL OTP VERIFICATION -->
+<div class="modal-overlay" id="otpModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('otpModal')">×</button>
+    <h2>Verify your email ✉️</h2>
+    <p class="modal-subtitle">
+      Enter the one-time code we sent to your email address.
+    </p>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input id="otpEmail" type="email" readonly>
+    </div>
+
+    <div class="form-group">
+      <label>6-digit verification code</label>
+      <input id="otpCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Enter your code">
+    </div>
+
+    <button id="verifyOtpBtn" type="button" class="modal-submit" onclick="verifySignupOtp()">
+      Verify email
+    </button>
+
+    <button id="resendOtpBtn" type="button" style="width:100%;border:1px solid var(--green);background:#fff;color:var(--green);border-radius:11px;padding:12px;font-weight:800;margin-top:10px" onclick="resendSignupOtp()">
+      Resend code
+    </button>
+
+    <p style="text-align:center;margin-top:15px;color:var(--muted);font-size:.78rem">
+      Check your Gmail inbox and Spam folder. The code expires automatically.
+    </p>
+  </div>
 </div>
 
 <!-- PROFILE -->
@@ -2597,6 +2635,9 @@ function friendlyAuthError(error){
   if(message.includes("email not confirmed")){
     return "Please confirm your email address before signing in.";
   }
+  if(message.includes("token has expired") || message.includes("otp has expired") || message.includes("invalid or expired")){
+    return "That verification code has expired or is invalid. Please request a new code.";
+  }
   if(message.includes("password should be at least")){
     return "Password must be at least 6 characters.";
   }
@@ -2646,64 +2687,13 @@ const button=document.querySelector('#signupForm .modal-submit');
 if(button){
   button.disabled=true;
   button.dataset.originalText=button.textContent;
-  button.textContent="Creating profile...";
+  button.textContent="Creating account...";
 }
 
 try{
 
-  const {data,error}=await supabaseClient.auth.signUp({
-    email,
-    password,
-    options:{
-      emailRedirectTo: window.location.origin + window.location.pathname,
-      data:{
-        name,
-        type,
-        location:location||"Online",
-        languages:languages
-          ? languages.split(",").map(x=>x.trim()).filter(Boolean)
-          : ["English"],
-        bio:bio||"Learning and sharing skills.",
-        teach:teach
-          ? teach.split(",").map(x=>x.trim()).filter(Boolean)
-          : ["Knowledge Sharing"],
-        want:want
-          ? want.split(",").map(x=>x.trim()).filter(Boolean)
-          : ["Something New"],
-        availability:availability.length
-          ? availability
-          : ["Flexible"],
-        avatar:"🧑🏻",
-        category:"Technology"
-      }
-    }
-  });
-
-  if(error){
-    console.error("Supabase signup error:",error);
-
-    const msg=String(error.message||"");
-
-    if(/already registered|already been registered/i.test(msg)){
-      showToast("This email is already registered. Please sign in.");
-    }else if(/rate.?limit|too many requests|over_email_send_rate_limit/i.test(msg)){
-      showToast("Supabase email sending is temporarily limited. Please try again later.");
-    }else{
-      showToast(msg||"Account creation failed.");
-    }
-
-    return;
-  }
-
-  if(!data?.user){
-    showToast("Supabase did not create the account. Please try again.");
-    return;
-  }
-
-  const profile={
-    id:data.user.id,
+  const profileMeta={
     name,
-    email,
     type,
     location:location||"Online",
     languages:languages
@@ -2723,16 +2713,49 @@ try{
     category:"Technology"
   };
 
-  /*
-    If email confirmation is disabled, Supabase returns a session and
-    we can insert the profile immediately.
+  const {data,error}=await supabaseClient.auth.signUp({
+    email,
+    password,
+    options:{
+      data:profileMeta,
+      emailRedirectTo:window.location.origin + window.location.pathname
+    }
+  });
 
-    If email confirmation is enabled, there is no authenticated session
-    yet. Do NOT attempt an RLS-protected profile insert here. The account
-    is still successfully created; the profile is saved in user metadata
-    and will be created/loaded after the user confirms and signs in.
-  */
+  if(error){
+    console.error("Supabase signup error:",error);
+    showToast(friendlyAuthError(error));
+    return;
+  }
+
+  if(!data?.user){
+    showToast("Could not create your account. Please try again.");
+    return;
+  }
+
+  // Save the email and profile fields locally until the OTP is verified.
+  localStorage.setItem("skillswapPendingVerification",JSON.stringify({
+    email,
+    password,
+    userId:data.user.id,
+    profile:profileMeta
+  }));
+
+  // Supabase sends a confirmation message. For OTP mode, the email template
+  // must contain {{ .Token }}, and we verify it with verifyOtp({ type:'signup' }).
+  document.getElementById("otpEmail").value=email;
+  document.getElementById("otpCode").value="";
+
+  closeModal("authModal");
+  document.getElementById("otpModal").classList.add("show");
+
   if(data.session){
+    // Email confirmation may be disabled. Complete profile immediately.
+    const profile={
+      id:data.user.id,
+      email,
+      ...profileMeta
+    };
 
     const {error:profileError}=await supabaseClient
       .from("profiles")
@@ -2744,41 +2767,143 @@ try{
       return;
     }
 
+    localStorage.removeItem("skillswapPendingVerification");
     saveCurrentUser(profile);
-    closeModal("authModal");
+    closeModal("otpModal");
     updateUserUI();
     await renderEverything();
-
     showToast("🎉 Welcome to SkillSwap India, "+name+"!");
     return;
   }
 
-  /*
-    Email confirmation is enabled.
-    The Auth account exists, but Supabase has not created a browser
-    session yet. Store the profile fields in metadata so they survive
-    until the user signs in.
-  */
-  showToast(
-    "Account created! Please check your email and confirm your account, then sign in."
-  );
+  showToast("📧 Code sent! Enter the verification code from your email.");
 
 }catch(error){
-
   console.error("Unexpected signup error:",error);
   showToast(error?.message||"Something went wrong while creating your account.");
 
 }finally{
-
   if(button){
     button.disabled=false;
     button.textContent=button.dataset.originalText||"Create my profile";
   }
-
 }
 
 }
 
+/* =========================================================
+   VERIFY SIGNUP OTP
+   ========================================================= */
+
+async function verifySignupOtp(){
+
+const email=document.getElementById("otpEmail").value.trim().toLowerCase();
+const token=document.getElementById("otpCode").value.trim().replace(/\s+/g,"");
+const button=document.getElementById("verifyOtpBtn");
+
+if(!email||!token){
+  showToast("Please enter the verification code from your email.");
+  return;
+}
+
+if(!/^\d{6,8}$/.test(token)){
+  showToast("Please enter the complete verification code.");
+  return;
+}
+
+if(button){
+  button.disabled=true;
+  button.textContent="Verifying...";
+}
+
+try{
+
+  const {data,error}=await supabaseClient.auth.verifyOtp({
+    email,
+    token,
+    type:"signup"
+  });
+
+  if(error){
+    console.error("OTP verification error:",error);
+    showToast(friendlyAuthError(error));
+    return;
+  }
+
+  if(!data?.user){
+    showToast("Verification succeeded, but no user session was returned.");
+    return;
+  }
+
+  await loadLoggedInProfile(data.user);
+
+  localStorage.removeItem("skillswapPendingVerification");
+
+  closeModal("otpModal");
+  updateUserUI();
+  await renderEverything();
+
+  showToast("✅ Email verified! Welcome to SkillSwap India.");
+
+}catch(error){
+  console.error("OTP verification failed:",error);
+  showToast(error?.message||"Could not verify the code.");
+
+}finally{
+  if(button){
+    button.disabled=false;
+    button.textContent="Verify email";
+  }
+}
+
+}
+
+/* =========================================================
+   RESEND SIGNUP OTP
+   ========================================================= */
+
+async function resendSignupOtp(){
+
+const email=document.getElementById("otpEmail").value.trim().toLowerCase();
+const button=document.getElementById("resendOtpBtn");
+
+if(!email){
+  showToast("Enter your email address first.");
+  return;
+}
+
+if(button){
+  button.disabled=true;
+  button.textContent="Sending...";
+}
+
+try{
+
+  const {data,error}=await supabaseClient.auth.resend({
+    type:"signup",
+    email
+  });
+
+  if(error){
+    console.error("Resend OTP error:",error);
+    showToast(friendlyAuthError(error));
+    return;
+  }
+
+  showToast("📧 A new verification code has been sent.");
+
+}catch(error){
+  console.error("Resend failed:",error);
+  showToast(error?.message||"Could not resend the verification code.");
+
+}finally{
+  if(button){
+    button.disabled=false;
+    button.textContent="Resend code";
+  }
+}
+
+}
 /* =========================================================
    SIGN IN
    ========================================================= */
@@ -2933,59 +3058,6 @@ return null;
 }
 
 }
-
-/* =========================================================
-   EMAIL VERIFICATION / CONFIRMATION
-   ========================================================= */
-
-async function handleEmailVerification(){
-
-  try{
-
-    const url = new URL(window.location.href);
-    const code = url.searchParams.get("code");
-
-    if(!code){
-      return false;
-    }
-
-    const { data, error } =
-      await supabaseClient.auth.exchangeCodeForSession(code);
-
-    if(error){
-      console.error("Email verification error:", error);
-      showToast("Email verification failed. Please request a new verification email.");
-      return false;
-    }
-
-    url.searchParams.delete("code");
-    url.searchParams.delete("type");
-    url.searchParams.delete("error");
-    url.searchParams.delete("error_code");
-    url.searchParams.delete("error_description");
-
-    window.history.replaceState(
-      {},
-      document.title,
-      url.pathname + (url.search ? url.search : "") + url.hash
-    );
-
-    if(data?.session?.user){
-      await loadLoggedInProfile(data.session.user);
-      updateUserUI();
-      await renderEverything();
-      showToast("✅ Email verified! You are now signed in.");
-      return true;
-    }
-
-  }catch(error){
-    console.error("Email verification handling failed:", error);
-    showToast("Could not complete email verification.");
-  }
-
-  return false;
-}
-
 
 /* =========================================================
    AUTH SESSION
@@ -4647,7 +4719,22 @@ document.addEventListener(
 "DOMContentLoaded",
 async()=>{
 
-await handleEmailVerification();
+const pending=JSON.parse(
+  localStorage.getItem("skillswapPendingVerification")||"null"
+);
+
+if(pending?.email){
+  const otpEmail=document.getElementById("otpEmail");
+  if(otpEmail){
+    otpEmail.value=pending.email;
+  }
+
+  // Only reopen OTP if there isn't already an authenticated session.
+  const {data:sessionData}=await supabaseClient.auth.getSession();
+  if(!sessionData.session){
+    document.getElementById("otpModal").classList.add("show");
+  }
+}
 
 await restoreSession();
 
