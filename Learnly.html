@@ -12,17 +12,13 @@
 const SUPABASE_URL = "https://nqlojrsilxhmytwkdjec.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_uW-DOrhaI0DsaZgDs37bKQ_z2GyqQ_j";
 const { createClient } = window.supabase;
-const supabaseClient = createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
-    }
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true
   }
-);
+});
 </script>
 
 <script>
@@ -1078,13 +1074,6 @@ left:10px;
 bottom:10px;
 }
 }
-
-#otpCode{
-  text-align:center;
-  letter-spacing:6px;
-  font-size:1.3rem;
-  font-weight:800;
-}
 </style>
 <script>
 
@@ -1406,6 +1395,11 @@ id="signinPassword"
 type="password"
 placeholder="••••••••">
 </div>
+
+<label style="display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.8rem;margin:4px 0 14px">
+<input id="rememberEmail" type="checkbox" checked>
+Remember my email on this device
+</label>
 
 <button class="modal-submit" onclick="signIn()">
 Sign in
@@ -2602,9 +2596,6 @@ function friendlyAuthError(error){
   if(message.includes("email not confirmed")){
     return "Please confirm your email address before signing in.";
   }
-  if(message.includes("token has expired") || message.includes("otp has expired") || message.includes("invalid or expired")){
-    return "That verification code has expired or is invalid. Please request a new code.";
-  }
   if(message.includes("password should be at least")){
     return "Password must be at least 6 characters.";
   }
@@ -2649,8 +2640,10 @@ if(password.length<6){
   return;
 }
 
-const button=document.querySelector('#signupForm .modal-submit');
+// Remember only the email address. Never store the password in localStorage.
+localStorage.setItem("skillswapRememberedEmail", email);
 
+const button=document.getElementById("createProfileBtn");
 if(button){
   button.disabled=true;
   button.dataset.originalText=button.textContent;
@@ -2659,9 +2652,8 @@ if(button){
 
 try{
 
-  const profile={
+  const metadata={
     name,
-    email,
     type,
     location:location||"Online",
     languages:languages
@@ -2685,7 +2677,7 @@ try{
     email,
     password,
     options:{
-      data:profile
+      data:metadata
     }
   });
 
@@ -2696,25 +2688,38 @@ try{
   }
 
   if(!data?.user){
-    showToast("Could not create your account. Please try again.");
+    showToast("Supabase did not create the account. Please try again.");
     return;
   }
 
-  // Confirm email is intentionally disabled in Supabase.
-  // Supabase should return a live session here so the user can be logged in immediately.
+  /*
+    With Confirm email OFF, Supabase returns a session immediately.
+    If a session is missing, the project is still configured to require
+    confirmation, so explain exactly what setting must be changed.
+  */
   if(!data.session){
-    showToast("Account created, but Supabase still requires email confirmation. Turn off 'Confirm email' in Authentication settings.");
+    showToast("Signup is still requiring email verification. In Supabase, turn ON 'Allow new users to sign up' and turn OFF 'Confirm email' under Authentication settings.");
     return;
   }
 
-  const fullProfile={
+  const profile={
     id:data.user.id,
-    ...profile
+    name,
+    email,
+    type,
+    location:location||"Online",
+    languages:metadata.languages,
+    bio:metadata.bio,
+    teach:metadata.teach,
+    want:metadata.want,
+    availability:metadata.availability,
+    avatar:"🧑🏻",
+    category:"Technology"
   };
 
-  const {data:createdProfile,error:profileError}=await supabaseClient
+  const {data:created,error:profileError}=await supabaseClient
     .from("profiles")
-    .upsert(fullProfile,{onConflict:"id"})
+    .upsert(profile,{onConflict:"id"})
     .select()
     .single();
 
@@ -2724,7 +2729,7 @@ try{
     return;
   }
 
-  saveCurrentUser(createdProfile||fullProfile);
+  saveCurrentUser(created||profile);
   closeModal("authModal");
   updateUserUI();
   await renderEverything();
@@ -2769,6 +2774,15 @@ showToast(
 
 return;
 
+}
+
+const rememberEmail =
+  document.getElementById("rememberEmail")?.checked ?? true;
+
+if(rememberEmail){
+  localStorage.setItem("skillswapRememberedEmail", email);
+}else{
+  localStorage.removeItem("skillswapRememberedEmail");
 }
 
 try{
@@ -4552,12 +4566,33 @@ updateUserUI();
 
 
 /* =========================================================
+   REMEMBERED EMAIL
+   ========================================================= */
+
+function restoreRememberedEmail(){
+  const input = document.getElementById("signinEmail");
+  const checkbox = document.getElementById("rememberEmail");
+  const remembered = localStorage.getItem("skillswapRememberedEmail") || "";
+
+  if(input && remembered){
+    input.value = remembered;
+  }
+
+  if(checkbox){
+    checkbox.checked = Boolean(remembered);
+  }
+}
+
+
+/* =========================================================
    INITIALIZE
    ========================================================= */
 
 document.addEventListener(
 "DOMContentLoaded",
 async()=>{
+
+restoreRememberedEmail();
 
 await restoreSession();
 
@@ -4571,8 +4606,6 @@ await renderEverything();
 );
 
 </script>
-
-
 
 
 
