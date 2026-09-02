@@ -1,3 +1,6 @@
+pip install -r requirements.txt
+python app.py
+
 from flask import Flask, render_template, request, jsonify, session
 import sqlite3
 import os
