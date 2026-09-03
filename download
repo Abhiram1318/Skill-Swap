@@ -1,7 +1,0 @@
-__pycache__/
-*.py[cod]
-.venv/
-.env
-skillswap.db
-*.sqlite
-*.sqlite3
