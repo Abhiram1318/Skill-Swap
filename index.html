@@ -6449,7 +6449,7 @@ window.addEventListener("keydown",e=>{
 </div>
 
 <div class="ss3-palette" id="ss3Palette" aria-hidden="true">
-  <div class="ss3-palette-box"><input id="ss3PaletteInput" placeholder="Search SkillSwap actions…" autocomplete="off"><div class="ss3-commands" id="ss3Commands"></div></div>
+  <div class="ss3-palette-box"><input id="ss3PaletteInput" placeholder="Search commands…  (↑ ↓ Enter)" autocomplete="off"><div class="ss3-commands" id="ss3Commands"></div></div>
 </div>
 
 <div class="ss3-compare" id="ss3CompareBar"><span id="ss3CompareText">0 profiles selected</span><button onclick="ss3Compare()">Compare</button><button onclick="ss3ClearCompare()">Clear</button></div>
@@ -6511,12 +6511,62 @@ window.addEventListener("keydown",e=>{
 
   window.ss3ShareProfile=function(id,name){const url=new URL(location.href);url.searchParams.set('profile',id);const share=()=>{if(navigator.share)navigator.share({title:`${name} · SkillSwap India`,text:`Check out ${name}'s SkillSwap profile.`,url:url.toString()}).catch(()=>{});else navigator.clipboard?.writeText(url.toString()).then(()=>toast('🔗 Profile link copied.')).catch(()=>toast(url.toString()))};share()};
 
-  function palette(){
-    const actions=[['🔎','Focus skill search',()=>document.getElementById('searchInput')?.focus()],['⚙️','Advanced filters',window.ss3OpenFilters],['🔖','Show saved profiles',window.ss3ShowSaved],['👤','My profile',window.openEditProfile],['📅','Schedule a session',window.openScheduleModal],['🌙','Toggle dark mode',()=>document.getElementById('themeToggle')?.click()]];
-    const box=document.getElementById('ss3Commands');box.innerHTML=actions.map((a,i)=>`<button data-cmd="${i}">${a[0]} &nbsp; ${a[1]}</button>`).join('');box.querySelectorAll('button').forEach((b,i)=>b.onclick=()=>{document.getElementById('ss3Palette').classList.remove('show');actions[i][2]?.()});
-    document.getElementById('ss3PaletteInput').oninput=function(){const q=this.value.toLowerCase();box.querySelectorAll('button').forEach(b=>b.style.display=b.textContent.toLowerCase().includes(q)?'':'none')};
+  function runCommand(fn){
+    try{
+      const result=fn&&fn();
+      if(result&&typeof result.catch==='function')result.catch(e=>toast('Could not complete that action.'));
+    }catch(e){toast('Could not complete that action.')}
   }
-  window.ss3OpenPalette=function(){palette();const p=document.getElementById('ss3Palette');p.classList.add('show');setTimeout(()=>document.getElementById('ss3PaletteInput').focus(),30)};
+  function goTo(selector,message){
+    const el=document.querySelector(selector);
+    if(el){el.scrollIntoView({behavior:'smooth',block:'start'});if(message)toast(message);return true}
+    if(message)toast(message+' is not available yet.');
+    return false;
+  }
+  function palette(){
+    const actions=[
+      ['🔎','Focus skill search',()=>{const x=document.getElementById('searchInput');if(x){goTo('#discover','Ready to search skills');setTimeout(()=>x.focus(),350)}else toast('Skill search is unavailable.')}],
+      ['⚙️','Advanced filters',()=>window.ss3OpenFilters?.()],
+      ['🔖','Show saved profiles',()=>{goTo('#matches','Showing saved profiles');setTimeout(()=>window.ss3ShowSaved?.(),250)}],
+      ['👤','Edit my profile',()=>window.openEditProfile?.()],
+      ['👁️','View my profile',()=>window.openProfile?.()],
+      ['📅','Schedule a session',()=>window.openScheduleModal?.()],
+      ['🤝','Open requests & connections',()=>goTo('#requestsSection','Opening requests & connections')],
+      ['🔔','Open notifications',()=>goTo('#notificationsList','Opening notifications')],
+      ['🏆','Open achievements',()=>goTo('#skillswap2','Opening your progress')],
+      ['🌙','Toggle dark mode',()=>{const b=document.getElementById('themeToggleLogged')||document.getElementById('themeToggle');b?.click()}],
+      ['↻','Refresh dashboard',()=>window.ss4Refresh?.()]
+    ];
+    const box=document.getElementById('ss3Commands');
+    const input=document.getElementById('ss3PaletteInput');
+    if(!box||!input)return;
+    box.innerHTML=actions.map((a,i)=>`<button type="button" role="option" data-cmd="${i}" tabindex="-1"><span>${a[0]}</span> <span>${a[1]}</span></button>`).join('');
+    const buttons=[...box.querySelectorAll('button')];
+    let active=0;
+    function visible(){return buttons.filter(b=>b.style.display!=='none')}
+    function highlight(){const v=visible();if(!v.length)return;active=Math.max(0,Math.min(active,v.length-1));buttons.forEach(b=>b.classList.remove('active'));v[active].classList.add('active');v[active].scrollIntoView({block:'nearest'});}
+    function execute(i){const v=visible();const b=v[i];if(!b)return;const idx=Number(b.dataset.cmd);document.getElementById('ss3Palette').classList.remove('show');input.value='';buttons.forEach(x=>x.style.display='');active=0;runCommand(actions[idx][2]);}
+    buttons.forEach((b,i)=>b.addEventListener('click',()=>execute(visible().indexOf(b))));
+    input.oninput=function(){const q=this.value.trim().toLowerCase();buttons.forEach(b=>b.style.display=(!q||b.textContent.toLowerCase().includes(q))?'':'none');active=0;highlight()};
+    input.onkeydown=function(e){
+      const v=visible();
+      if(e.key==='ArrowDown'){e.preventDefault();active=(active+1)%Math.max(v.length,1);highlight()}
+      else if(e.key==='ArrowUp'){e.preventDefault();active=(active-1+Math.max(v.length,1))%Math.max(v.length,1);highlight()}
+      else if(e.key==='Enter'){e.preventDefault();execute(active)}
+      else if(e.key==='Escape'){e.preventDefault();document.getElementById('ss3Palette').classList.remove('show')}
+    };
+    highlight();
+  }
+  window.ss3OpenPalette=function(){
+    palette();
+    const p=document.getElementById('ss3Palette');
+    if(!p)return;
+    p.classList.add('show');p.setAttribute('aria-hidden','false');
+    const input=document.getElementById('ss3PaletteInput');
+    if(input){input.value='';setTimeout(()=>{input.focus();input.select()},30)}
+  };
+  window.ss3ClosePalette=function(){const p=document.getElementById('ss3Palette');if(p){p.classList.remove('show');p.setAttribute('aria-hidden','true')}};
+  document.addEventListener('click',e=>{const p=document.getElementById('ss3Palette');if(p&&e.target===p)window.ss3ClosePalette()});
 
   const oldOpen=window.openOtherProfile;
   if(oldOpen)window.openOtherProfile=async function(id){const r=await oldOpen(id);const p=(window.skillswapPeople||[]).find(x=>String(x.id)===String(id));if(p)addRecent(p.id,p.name,p.avatar);return r};
@@ -6525,7 +6575,7 @@ window.addEventListener("keydown",e=>{
   const oldRender=window.renderMatches;
   if(oldRender)window.renderMatches=async function(...args){const r=await oldRender.apply(this,args);setTimeout(decorateSoon,50);return r};
 
-  document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();ss3OpenPalette()}if(e.key==='Escape'){ss3CloseFilters();document.getElementById('ss3Palette')?.classList.remove('show')}});
+  document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();ss3OpenPalette()}if(e.key==='Escape'){ss3CloseFilters();window.ss3ClosePalette?.()}});
   document.getElementById('ss3MinMatch')?.addEventListener('input',e=>document.getElementById('ss3MinMatchOut').value=e.target.value+'%');
   document.getElementById('ss3FilterDrawer')?.addEventListener('click',e=>{if(e.target.id==='ss3FilterDrawer')ss3CloseFilters()});
   document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{toolbar();decorateSoon();ss3RenderRecent();if(new URLSearchParams(location.search).get('profile'))setTimeout(()=>openOtherProfile(new URLSearchParams(location.search).get('profile')),1200)},1200));
