@@ -1793,6 +1793,43 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
 </style>
 
 
+
+<style id="view-other-profile-style">
+.person-card-actions{
+    display:grid;
+    grid-template-columns:1fr 1.35fr;
+    gap:10px;
+    margin-top:14px;
+}
+.person-card-actions button{
+    width:100%;
+}
+.view-profile-btn{
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--green);
+    border-radius:12px;
+    padding:11px 12px;
+    font-weight:800;
+    cursor:pointer;
+    transition:.2s ease;
+}
+.view-profile-btn:hover{
+    background:var(--green-light);
+    transform:translateY(-1px);
+}
+@media(max-width:520px){
+    .person-card-actions{grid-template-columns:1fr;}
+}
+</style>
+
+<style id="profile-actions-fix">
+.person-card-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.person-card-actions button{flex:1 1 150px;min-height:42px;cursor:pointer}
+.view-profile-btn{border:1px solid var(--green);background:var(--green-light);color:var(--green);font-weight:800;border-radius:12px;padding:10px 14px}
+.view-profile-btn:hover{transform:translateY(-1px);filter:brightness(.98)}
+</style>
+
 </head>
 
 <body>
@@ -2295,7 +2332,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
     class="modal-overlay"
     id="authModal">
 
-```
 <div class="modal">
 
     <button
@@ -3587,6 +3623,9 @@ function getExistingRequest(user,person){
 
 function renderMatches(people=demoPeople){
 
+    // Keep the currently displayed people available to the profile viewer.
+    window.skillswapPeople = Array.isArray(people) ? people : demoPeople;
+
     const user=getCurrentUser();
 
     const container=
@@ -3805,11 +3844,18 @@ function renderMatches(people=demoPeople){
             </div>
 
 
-            <button
-                class="${buttonClass}"
-                onclick="${action}">
-                ${buttonText}
-            </button>
+            <div class="person-card-actions">
+                <button
+                    class="view-profile-btn"
+                    onclick="openOtherProfile('${person.id}')">
+                    👤 View Profile
+                </button>
+                <button
+                    class="${buttonClass}"
+                    onclick="${action}">
+                    ${buttonText}
+                </button>
+            </div>
 
         `;
 
@@ -4336,6 +4382,54 @@ function updateProfileModal(){
         (user.availability || [])
         .join(" · ");
 
+}
+
+
+function openOtherProfile(personId){
+
+    const availablePeople = Array.isArray(window.skillswapPeople)
+        ? window.skillswapPeople
+        : demoPeople;
+
+    const person=availablePeople.find(p=>String(p.id)===String(personId));
+
+    if(!person){
+        showToast("Profile not found.");
+        return;
+    }
+
+    const modal=document.getElementById("profileModal");
+    if(!modal){
+        showToast("Profile viewer is unavailable.");
+        return;
+    }
+
+    const avatar=document.getElementById("profileAvatar");
+    const name=document.getElementById("profileName");
+    const location=document.getElementById("profileLocation");
+    const bio=document.getElementById("profileBio");
+    const teach=document.getElementById("profileTeach");
+    const learn=document.getElementById("profileLearn");
+    const languages=document.getElementById("profileLanguages");
+    const availability=document.getElementById("profileAvailability");
+
+    if(avatar) avatar.textContent=person.avatar || "👤";
+    if(name) name.textContent=person.name || "SkillSwap Member";
+    if(location) location.textContent="📍 "+(person.location || "India");
+    if(bio) bio.textContent=person.bio || "SkillSwap student member.";
+    if(teach) teach.innerHTML=(person.teach || []).map(x=>`<span class="skill-tag">${escapeHTML(x)}</span>`).join("");
+    if(learn) learn.innerHTML=(person.want || []).map(x=>`<span class="skill-tag">${escapeHTML(x)}</span>`).join("");
+    if(languages) languages.textContent=(person.languages || []).join(" · ");
+    if(availability) availability.textContent=(person.availability || []).join(" · ");
+
+    const requestBtn=modal.querySelector("[data-profile-request]");
+    if(requestBtn){
+        requestBtn.style.display="inline-flex";
+        requestBtn.textContent="🤝 Request Skill Swap";
+        requestBtn.onclick=()=>openRequest(person.id);
+    }
+
+    modal.classList.add("show");
 }
 
 
