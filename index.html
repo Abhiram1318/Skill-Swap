@@ -1830,6 +1830,21 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
 .view-profile-btn:hover{transform:translateY(-1px);filter:brightness(.98)}
 </style>
 
+
+<style id="profile-edit-styles">
+.profile-modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.profile-modal-actions button{flex:1 1 180px;min-height:44px}
+.edit-profile-btn{border:1px solid var(--green);background:var(--green);color:#fff;padding:11px 15px;border-radius:12px;font-weight:800}
+.edit-profile-secondary{border:1px solid var(--border);background:#fff;color:var(--text);padding:11px 15px;border-radius:12px;font-weight:800}
+.edit-profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.edit-profile-grid .full{grid-column:1/-1}
+.edit-profile-grid label{display:block;font-size:.78rem;font-weight:800;color:var(--muted);margin-bottom:6px}
+.edit-profile-grid input,.edit-profile-grid select,.edit-profile-grid textarea{width:100%}
+.edit-profile-grid textarea{min-height:100px;resize:vertical}
+.edit-profile-hint{font-size:.74rem;color:var(--muted);margin-top:4px}
+@media(max-width:650px){.edit-profile-grid{grid-template-columns:1fr}.edit-profile-grid .full{grid-column:auto}.profile-modal-actions{flex-direction:column}}
+</style>
+
 </head>
 
 <body>
@@ -1840,7 +1855,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
 
 <nav>
 
-```
 <div class="logo">
     <div class="logo-mark">↔</div>
     SkillSwap
@@ -1888,7 +1902,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
     </button>
 
 </div>
-```
 
 </nav>
 
@@ -1898,7 +1911,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
 
 <section class="hero">
 
-```
 <div class="hero-content">
 
     <div class="eyebrow">
@@ -1952,7 +1964,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
     </button>
 
 </div>
-```
 
 </section>
 
@@ -1970,7 +1981,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
 
 <section class="section" id="discover">
 
-```
 <div class="section-header">
 
     <div>
@@ -2048,7 +2058,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
     class="matches"
     id="matches">
 </div>
-```
 
 </section>
 
@@ -2060,7 +2069,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
     class="section"
     id="studentSkills">
 
-```
 <div class="section-header">
 
     <div>
@@ -2079,7 +2087,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
     class="filter-bar"
     id="skillFilters">
 </div>
-```
 
 </section>
 
@@ -2114,7 +2121,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
     class="section"
     id="requestsSection">
 
-```
 <div class="section-header">
 
     <div>
@@ -2186,7 +2192,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
     </div>
 
 </div>
-```
 
 </section>
 
@@ -2198,7 +2203,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
     class="how"
     id="howItWorks">
 
-```
 <h2>
     How SkillSwap works
 </h2>
@@ -2272,7 +2276,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
     </div>
 
 </div>
-```
 
 </section>
 
@@ -2282,7 +2285,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
 
 <section class="cta">
 
-```
 <h2>
     Everyone knows something.
 </h2>
@@ -2295,7 +2297,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
 <button onclick="openAuth('signup')">
     Create your free student profile →
 </button>
-```
 
 </section>
 
@@ -2303,7 +2304,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
 
 <footer>
 
-```
 <div>
     © 2026 SkillSwap India
 </div>
@@ -2311,7 +2311,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
 <div>
     🇮🇳 Learn · Teach · Connect
 </div>
-```
 
 </footer>
 
@@ -2646,7 +2645,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
     </div>
 
 </div>
-```
 
 </div>
 
@@ -2658,7 +2656,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
     class="modal-overlay"
     id="profileModal">
 
-```
 <div class="modal">
 
     <button
@@ -2750,11 +2747,94 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
             style="color:var(--muted);margin-top:6px">
         </p>
 
+        <div class="profile-modal-actions" id="ownProfileActions">
+            <button class="edit-profile-btn" type="button" onclick="openEditProfile()">
+                ✏️ Edit My Profile
+            </button>
+            <button class="edit-profile-secondary" type="button" onclick="closeModal('profileModal')">
+                Close
+            </button>
+        </div>
+
     </div>
 
 </div>
-```
 
+</div>
+
+<!-- =========================
+     EDIT PROFILE MODAL
+========================= -->
+<div class="modal-overlay" id="editProfileModal">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('editProfileModal')">×</button>
+        <h2>✏️ Edit your profile</h2>
+        <p class="modal-subtitle">Keep your skills, learning goals and availability up to date.</p>
+
+        <div class="edit-profile-grid">
+            <div>
+                <label for="editName">Full name</label>
+                <input id="editName" type="text" maxlength="80" autocomplete="name">
+            </div>
+            <div>
+                <label for="editEmail">Email</label>
+                <input id="editEmail" type="email" readonly>
+                <div class="edit-profile-hint">Email is linked to your account.</div>
+            </div>
+            <div>
+                <label for="editType">I am a</label>
+                <select id="editType">
+                    <option value="School Student">School Student</option>
+                    <option value="Junior College Student">Junior College Student</option>
+                    <option value="University Student">University Student</option>
+                    <option value="Other Student">Other Student</option>
+                </select>
+            </div>
+            <div>
+                <label for="editLocation">City / Location</label>
+                <input id="editLocation" type="text" maxlength="80" placeholder="e.g. Hyderabad">
+            </div>
+            <div>
+                <label for="editAvatar">Avatar</label>
+                <input id="editAvatar" type="text" maxlength="4" placeholder="🧑🏻">
+            </div>
+            <div>
+                <label for="editLanguages">Languages</label>
+                <input id="editLanguages" type="text" maxlength="200" placeholder="English, Telugu, Hindi">
+            </div>
+            <div class="full">
+                <label for="editBio">About me</label>
+                <textarea id="editBio" maxlength="500" placeholder="Tell other learners a little about yourself..."></textarea>
+            </div>
+            <div>
+                <label for="editTeach">Skills I can teach</label>
+                <input id="editTeach" type="text" maxlength="300" placeholder="Python, Canva, Guitar">
+                <div class="edit-profile-hint">Separate multiple skills with commas.</div>
+            </div>
+            <div>
+                <label for="editWant">Skills I want to learn</label>
+                <input id="editWant" type="text" maxlength="300" placeholder="JavaScript, Photography">
+                <div class="edit-profile-hint">Separate multiple skills with commas.</div>
+            </div>
+            <div class="full">
+                <label>Availability</label>
+                <div class="check-grid">
+                    <label class="check-option"><input type="checkbox" name="editAvailability" value="Weekday mornings"> Weekday mornings</label>
+                    <label class="check-option"><input type="checkbox" name="editAvailability" value="Weekday evenings"> Weekday evenings</label>
+                    <label class="check-option"><input type="checkbox" name="editAvailability" value="Weekends"> Weekends</label>
+                    <label class="check-option"><input type="checkbox" name="editAvailability" value="Flexible"> Flexible</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="safety-note" style="background:#eef7ff;color:#275b80;margin-top:15px">
+            🛡️ Don't include your phone number, home address or other private information.
+        </div>
+
+        <button class="modal-submit" type="button" id="saveProfileBtn" onclick="saveEditedProfile()">
+            💾 Save Changes
+        </button>
+    </div>
 </div>
 
 <!-- =========================
@@ -2765,7 +2845,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
     class="modal-overlay"
     id="requestModal">
 
-```
 <div class="modal">
 
     <button
@@ -2827,7 +2906,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
     </button>
 
 </div>
-```
 
 </div>
 
@@ -2839,7 +2917,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
     class="modal-overlay"
     id="chatModal">
 
-```
 <div class="modal chat-modal">
 
     <div class="chat-header">
@@ -2895,7 +2972,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
     </div>
 
 </div>
-```
 
 </div>
 
@@ -4382,6 +4458,9 @@ function updateProfileModal(){
         (user.availability || [])
         .join(" · ");
 
+    const ownActions=document.getElementById("ownProfileActions");
+    if(ownActions) ownActions.style.display="flex";
+
 }
 
 
@@ -4422,6 +4501,9 @@ function openOtherProfile(personId){
     if(languages) languages.textContent=(person.languages || []).join(" · ");
     if(availability) availability.textContent=(person.availability || []).join(" · ");
 
+    const ownActions=modal.querySelector("#ownProfileActions");
+    if(ownActions) ownActions.style.display="none";
+
     const requestBtn=modal.querySelector("[data-profile-request]");
     if(requestBtn){
         requestBtn.style.display="inline-flex";
@@ -4435,19 +4517,165 @@ function openOtherProfile(personId){
 
 function openProfile(){
 
-    if(!getCurrentUser()){
+    const user=getCurrentUser();
 
+    if(!user){
         openAuth("signin");
-
         return;
     }
 
     updateProfileModal();
 
-    document
-        .getElementById("profileModal")
-        .classList.add("show");
+    const actions=document.getElementById("ownProfileActions");
+    if(actions) actions.style.display="flex";
 
+    document.getElementById("profileModal").classList.add("show");
+}
+
+
+function openEditProfile(){
+
+    const user=getCurrentUser();
+
+    if(!user){
+        openAuth("signin");
+        return;
+    }
+
+    const setValue=(id,value)=>{
+        const el=document.getElementById(id);
+        if(el) el.value=value || "";
+    };
+
+    setValue("editName",user.name);
+    setValue("editEmail",user.email);
+    setValue("editType",user.type || "University Student");
+    setValue("editLocation",user.location);
+    setValue("editAvatar",user.avatar || "🧑🏻");
+    setValue("editLanguages",Array.isArray(user.languages)?user.languages.join(", "):user.languages);
+    setValue("editBio",user.bio);
+    setValue("editTeach",Array.isArray(user.teach)?user.teach.join(", "):user.teach);
+    setValue("editWant",Array.isArray(user.want)?user.want.join(", "):user.want);
+
+    document.querySelectorAll('input[name="editAvailability"]').forEach(cb=>{
+        cb.checked=Array.isArray(user.availability) && user.availability.includes(cb.value);
+    });
+
+    closeModal("profileModal");
+    document.getElementById("editProfileModal").classList.add("show");
+}
+
+
+function profileList(value,fallback){
+    return String(value || "")
+        .split(",")
+        .map(x=>x.trim())
+        .filter(Boolean)
+        .slice(0,20) || fallback;
+}
+
+
+async function saveEditedProfile(){
+
+    const current=getCurrentUser();
+    if(!current){
+        openAuth("signin");
+        return;
+    }
+
+    const name=document.getElementById("editName").value.trim();
+    const email=current.email || document.getElementById("editEmail").value.trim();
+    const type=document.getElementById("editType").value;
+    const location=document.getElementById("editLocation").value.trim();
+    const avatar=document.getElementById("editAvatar").value.trim() || "🧑🏻";
+    const languages=profileList(document.getElementById("editLanguages").value,"English");
+    const bio=document.getElementById("editBio").value.trim();
+    const teach=profileList(document.getElementById("editTeach").value,"Knowledge Sharing");
+    const want=profileList(document.getElementById("editWant").value,"Something New");
+    const availability=[...document.querySelectorAll('input[name="editAvailability"]:checked')].map(x=>x.value);
+
+    if(!name){
+        showToast("Please enter your name.");
+        return;
+    }
+
+    if(!location){
+        showToast("Please enter your city or location.");
+        return;
+    }
+
+    const updated={
+        ...current,
+        name,
+        email,
+        type,
+        location,
+        avatar,
+        languages:languages.length?languages:["English"],
+        bio:bio || "Learning and sharing skills.",
+        teach:teach.length?teach:["Knowledge Sharing"],
+        want:want.length?want:["Something New"],
+        availability:availability.length?availability:["Flexible"]
+    };
+
+    const btn=document.getElementById("saveProfileBtn");
+    if(btn){
+        btn.disabled=true;
+        btn.textContent="Saving…";
+    }
+
+    let backendSaved=false;
+
+    // If the Flask app has the update endpoint, save to the database too.
+    try{
+        const data=await api("/api/profile/update",{
+            method:"POST",
+            body:JSON.stringify({
+                name:updated.name,
+                type:updated.type,
+                location:updated.location,
+                languages:updated.languages,
+                bio:updated.bio,
+                teach:updated.teach,
+                want:updated.want,
+                availability:updated.availability,
+                avatar:updated.avatar
+            })
+        });
+        if(data && data.success){
+            backendSaved=true;
+            if(data.user) Object.assign(updated,data.user);
+        }
+    }catch(error){
+        console.info("Profile API unavailable; keeping the edit locally.",error);
+    }
+
+    localStorage.setItem("skillswapUser",JSON.stringify(updated));
+
+    try{
+        const users=JSON.parse(localStorage.getItem("skillswapUsers") || "{}");
+        if(email) users[email]=updated;
+        localStorage.setItem("skillswapUsers",JSON.stringify(users));
+    }catch(error){
+        console.warn("Could not update local user directory.",error);
+    }
+
+    window.skillswapPeople=Array.isArray(window.skillswapPeople)
+        ? window.skillswapPeople.map(person=>String(person.id)===String(updated.id)?{...person,...updated}:person)
+        : window.skillswapPeople;
+
+    closeModal("editProfileModal");
+    updateUserUI();
+    updateProfileModal();
+    renderEverything();
+    document.getElementById("profileModal").classList.add("show");
+
+    showToast(backendSaved ? "✅ Profile updated successfully." : "✅ Profile updated on this device.");
+
+    if(btn){
+        btn.disabled=false;
+        btn.textContent="💾 Save Changes";
+    }
 }
 
 
@@ -5752,6 +5980,12 @@ document.addEventListener("DOMContentLoaded",()=>{
     observer.observe(el);
   });
 })();
+window.addEventListener("keydown",e=>{
+    if(e.key==="Escape"){
+        document.querySelectorAll(".modal-overlay.show").forEach(m=>m.classList.remove("show"));
+    }
+});
+
 </script>
 
 <!-- =========================
