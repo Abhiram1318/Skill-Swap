@@ -1612,7 +1612,9 @@ body.dark-mode .logout-btn{background:#10211c!important;color:#bde2d7!important;
 .quick-action:hover{border-color:var(--e-green);color:var(--e-green);transform:translateY(-2px)}
 .progress-row{display:flex;justify-content:space-between;font-size:13px;font-weight:800;margin-bottom:9px}
 .progress-track{height:9px;border-radius:99px;background:#e7efec;overflow:hidden}
-.progress-fill{height:100%;width:72%;border-radius:99px;background:linear-gradient(90deg,var(--e-green),#48b899)}
+.progress-fill{height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,var(--e-green),#48b899);transition:width .45s ease}
+.profile-health-action{margin-top:12px;border:1px solid var(--e-green);background:var(--e-mint);color:var(--e-green);padding:9px 12px;border-radius:11px;font-weight:800;cursor:pointer}
+.profile-health-action:hover{transform:translateY(-1px)}
 @media(max-width:850px){.quality-inner{grid-template-columns:1fr}.nav-links{display:none!important}}
 @media(max-width:650px){
  .hero{padding:62px 14px!important}.hero h1{font-size:45px!important}
@@ -2106,9 +2108,10 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
       </div>
     </div>
     <div class="progress-panel">
-      <div class="progress-row"><span>Community profile health</span><strong>72%</strong></div>
-      <div class="progress-track"><div class="progress-fill"></div></div>
-      <p style="margin:10px 0 0;color:var(--e-muted);font-size:13px">Add availability and a short bio to improve your matches.</p>
+      <div class="progress-row"><span>Community profile health</span><strong id="profileHealthPercent">0%</strong></div>
+      <div class="progress-track" aria-label="Community profile health"><div class="progress-fill" id="profileHealthFill"></div></div>
+      <p id="profileHealthMessage" style="margin:10px 0 0;color:var(--e-muted);font-size:13px">Complete your profile to improve your matches.</p>
+      <button type="button" class="profile-health-action" id="profileHealthAction" onclick="openEditProfile()">✏️ Improve my profile</button>
     </div>
   </div>
 </section>
@@ -5834,10 +5837,63 @@ function quickSkill(skill){
    RENDER EVERYTHING
 ========================= */
 
+function updateProfileHealth(){
+
+    const user=getCurrentUser();
+    const percentEl=document.getElementById("profileHealthPercent");
+    const fillEl=document.getElementById("profileHealthFill");
+    const messageEl=document.getElementById("profileHealthMessage");
+    const actionEl=document.getElementById("profileHealthAction");
+
+    if(!percentEl || !fillEl || !messageEl){
+        return;
+    }
+
+    if(!user){
+        percentEl.textContent="0%";
+        fillEl.style.width="0%";
+        messageEl.textContent="Sign in and complete your profile to improve your matches.";
+        if(actionEl) actionEl.textContent="✨ Create my profile";
+        return;
+    }
+
+    const hasText=value=>String(value || "").trim().length>0;
+    const hasList=value=>Array.isArray(value) && value.some(x=>hasText(x));
+
+    const checks=[
+        {ok:hasText(user.name),label:"name"},
+        {ok:hasText(user.type),label:"student type"},
+        {ok:hasText(user.location),label:"location"},
+        {ok:hasText(user.bio) && String(user.bio).trim().length>=20,label:"bio"},
+        {ok:hasList(user.teach),label:"teaching skills"},
+        {ok:hasList(user.want),label:"learning goals"},
+        {ok:hasList(user.languages),label:"languages"},
+        {ok:hasList(user.availability),label:"availability"}
+    ];
+
+    const completed=checks.filter(x=>x.ok).length;
+    const score=Math.round((completed/checks.length)*100);
+    const missing=checks.filter(x=>!x.ok).map(x=>x.label);
+
+    percentEl.textContent=score+"%";
+    fillEl.style.width=score+"%";
+
+    if(score>=100){
+        messageEl.textContent="🎉 Excellent! Your profile is complete and ready for great matches.";
+        if(actionEl) actionEl.style.display="none";
+    }else if(score>=75){
+        messageEl.textContent="Almost there — add " + missing.slice(0,2).join(" and ") + " to reach 100%.";
+        if(actionEl){ actionEl.style.display="inline-flex"; actionEl.textContent="✏️ Finish my profile"; }
+    }else{
+        messageEl.textContent="Complete " + missing.slice(0,3).join(", ") + (missing.length>3 ? " and more" : "") + " to improve your matches.";
+        if(actionEl){ actionEl.style.display="inline-flex"; actionEl.textContent="✏️ Improve my profile"; }
+    }
+}
+
 function renderEverything(){
 
+    updateProfileHealth();
     renderMatches();
-
     renderDashboard();
 
 }
