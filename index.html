@@ -3087,30 +3087,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
 
 </div>
 
-
-<style>
-/* ================= SKILLSWAP 2.0 UPGRADE ================= */
-.ss2-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:18px}
-.ss2-card{background:var(--surface,#fff);border:1px solid var(--border,#dce9e4);border-radius:22px;padding:20px;box-shadow:0 12px 30px rgba(4,56,44,.06)}
-.ss2-card h3{margin:0 0 8px}.ss2-muted{color:var(--muted,#647772);font-size:13px}.ss2-xp{font-size:34px;font-weight:900;margin:8px 0}.ss2-progress{height:9px;background:var(--mint-2,#d7f0e7);border-radius:99px;overflow:hidden}.ss2-progress span{display:block;height:100%;width:0;background:var(--primary,#087f5b);border-radius:99px;transition:width .5s}
-.ss2-badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}.ss2-badge{border:1px solid var(--border,#dce9e4);border-radius:16px;padding:9px 11px;background:var(--bg,#f7faf9);font-size:12px}.ss2-recs{display:grid;gap:10px;margin-top:12px;max-height:340px;overflow:auto}.ss2-rec{display:flex;align-items:center;gap:11px;padding:11px;border:1px solid var(--border,#dce9e4);border-radius:15px}.ss2-rec-avatar{font-size:28px}.ss2-rec-main{flex:1;min-width:0}.ss2-score{font-weight:900;color:var(--primary,#087f5b)}.ss2-btn{border:0;border-radius:12px;padding:9px 12px;cursor:pointer;font-weight:800;background:var(--primary,#087f5b);color:#fff}.ss2-btn.secondary{background:var(--mint,#e8f7f1);color:var(--deep,#04382c)}.ss2-admin{display:none}.ss2-admin table{width:100%;border-collapse:collapse;font-size:13px}.ss2-admin th,.ss2-admin td{padding:9px;border-bottom:1px solid var(--border,#dce9e4);text-align:left}.ss2-security{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ss2-security input{width:100%;padding:11px;border:1px solid var(--border,#dce9e4);border-radius:12px;background:var(--surface,#fff);color:var(--text,#102a24)}
-@media(max-width:900px){.ss2-grid{grid-template-columns:1fr}.ss2-security{grid-template-columns:1fr}}
-</style>
-
-<section id="skillswap2" class="dashboard-section" style="display:none">
-  <div class="section-heading"><span class="eyebrow">SKILLSWAP 2.0</span><h2>Your learning command center</h2><p>Matches, progress, badges and account security — all in one place.</p></div>
-  <div class="ss2-grid">
-    <article class="ss2-card"><h3>🎯 Recommended for you</h3><div class="ss2-muted">Best two-way skill matches based on your profile.</div><div id="ss2Recommendations" class="ss2-recs"><div class="ss2-muted">Loading recommendations…</div></div></article>
-    <article class="ss2-card"><h3>🏆 XP & Level</h3><div class="ss2-xp" id="ss2XP">0 XP</div><div class="ss2-muted" id="ss2Level">Level 1</div><div class="ss2-progress"><span id="ss2XPBar"></span></div><div id="ss2Badges" class="ss2-badges"></div></article>
-    <article class="ss2-card"><h3>🔐 Account security</h3><div class="ss2-muted">Change your password without leaving SkillSwap.</div><div class="ss2-security" style="margin-top:12px"><input id="ss2OldPass" type="password" placeholder="Current password"><input id="ss2NewPass" type="password" placeholder="New password (8+ chars)"></div><button class="ss2-btn" style="margin-top:12px" onclick="ss2ChangePassword()">Update password</button><button class="ss2-btn secondary" style="margin:12px 0 0 6px" onclick="ss2ForgotPassword()">Forgot password?</button></article>
-  </div>
-  <div id="ss2Admin" class="ss2-card ss2-admin" style="margin-top:18px"><h3>🛡️ Admin moderation</h3><div id="ss2AdminStats" class="ss2-muted">Loading…</div><div style="overflow:auto;margin-top:12px"><table><thead><tr><th>Report</th><th>Reporter</th><th>Reported</th><th>Reason</th><th>Action</th></tr></thead><tbody id="ss2Reports"></tbody></table></div></div>
-</section>
-
-<div class="modal-overlay" id="confirmResetModal"><div class="modal"><button class="modal-close" onclick="closeModal('confirmResetModal')">×</button><h2>Choose a new password 🔐</h2><p class="modal-subtitle">This reset link expires after 30 minutes.</p><div class="form-group"><label>New password</label><input id="ss2ConfirmNewPass" type="password" minlength="8" placeholder="At least 8 characters"></div><button class="modal-submit" onclick="ss2ConfirmReset()">Set new password</button></div></div>
-
-<div class="modal-overlay" id="resetPasswordModal"><div class="modal"><button class="modal-close" onclick="closeModal('resetPasswordModal')">×</button><h2>Reset password 🔐</h2><p class="modal-subtitle">Enter your email. If the account exists, a reset link can be delivered when SMTP is configured.</p><div class="form-group"><label>Email</label><input id="ss2ResetEmail" type="email" autocomplete="email"></div><button class="modal-submit" onclick="ss2RequestReset()">Send reset link</button><div id="ss2ResetDev" class="ss2-muted" style="margin-top:12px"></div></div></div>
-
 <script>
 
 /* =========================================================
@@ -6415,30 +6391,242 @@ window.addEventListener("keydown",e=>{
   const oldSearch=window.searchSkills;
   window.searchSkills=async function(){const input=document.getElementById('searchInput');if(input&&input.value.includes('@'))input.value='';const q=input?.value.trim()||'';const live=await window.skillswapLoadPeople(q);if(live){window.skillswapPeople=live;if(oldRenderMatches)oldRenderMatches(live);const title=document.getElementById('matchTitle');if(title)title.textContent=q?`Results for “${q}”`:'Popular Indian skill matches';return}if(oldSearch)oldSearch()};
 
-  async function ss2LoadRecommendations(){
-    const box=document.getElementById('ss2Recommendations'); if(!box||!logged())return;
-    const d=await safeJSON('/api/recommendations'); if(d.__error){box.innerHTML='<div class="ss2-muted">Sign in to see recommendations.</div>';return}
-    box.innerHTML=(d.recommendations||[]).slice(0,8).map(p=>`<div class="ss2-rec"><div class="ss2-rec-avatar">${esc(p.avatar||'🧑')}</div><div class="ss2-rec-main"><strong>${esc(p.name)}</strong><div class="ss2-muted">${esc(p.location||'Online')} · ${(p.reasons||[]).map(esc).join(' · ')}</div></div><div class="ss2-score">${p.match}%</div><button class="ss2-btn" onclick="openOtherProfile('${esc(p.id)}')">View</button></div>`).join('')||'<div class="ss2-muted">Complete your profile to unlock stronger matches.</div>';
-  }
-  async function ss2LoadGamification(){
-    const d=await safeJSON('/api/gamification');if(d.__error)return;
-    document.getElementById('ss2XP').textContent=(d.xp||0)+' XP';document.getElementById('ss2Level').textContent='Level '+(d.level||1)+' · '+(d.nextXp||100)+' XP to next level';
-    document.getElementById('ss2XPBar').style.width=Math.min(100,((d.xp||0)%100))+'%';
-    document.getElementById('ss2Badges').innerHTML=(d.badges||[]).map(b=>`<span class="ss2-badge">${esc(b.icon)} ${esc(b.name)} <small>+${b.xp} XP</small></span>`).join('')||'<span class="ss2-muted">Earn badges by making connections and completing sessions.</span>';
-  }
-  window.ss2ChangePassword=async function(){const old=document.getElementById('ss2OldPass').value,newp=document.getElementById('ss2NewPass').value;if(!old||!newp){showToast('Enter both passwords.');return}const d=await safeJSON('/api/change-password',{method:'POST',body:JSON.stringify({currentPassword:old,newPassword:newp})});if(d.__error){showToast(d.__error.message);return}document.getElementById('ss2OldPass').value='';document.getElementById('ss2NewPass').value='';showToast('🔐 Password updated successfully.');};
-  window.ss2ForgotPassword=function(){document.getElementById('resetPasswordModal').classList.add('show')};
-  window.ss2ConfirmReset=async function(){const token=new URLSearchParams(location.search).get('token');const newp=document.getElementById('ss2ConfirmNewPass').value;if(!token||newp.length<8){showToast('Use a valid reset link and an 8+ character password.');return}const d=await safeJSON('/api/password-reset/confirm',{method:'POST',body:JSON.stringify({token,newPassword:newp})});if(d.__error){showToast(d.__error.message);return}closeModal('confirmResetModal');history.replaceState({},'',location.pathname);showToast('✅ Password reset. You can sign in now.');openAuth('signin');};
-  function ss2CheckResetToken(){const token=new URLSearchParams(location.search).get('token');if(token){setTimeout(()=>document.getElementById('confirmResetModal')?.classList.add('show'),300)}}
-  window.ss2RequestReset=async function(){const email=document.getElementById('ss2ResetEmail').value.trim();if(!email){showToast('Enter your email.');return}const d=await safeJSON('/api/password-reset/request',{method:'POST',body:JSON.stringify({email})});if(d.__error){showToast(d.__error.message);return}document.getElementById('ss2ResetDev').textContent=d.resetLink?'Development reset link: '+d.resetLink:'If SMTP is configured, check your email.';showToast('📩 Reset request processed.');};
-  async function ss2LoadAdmin(){
-    const box=document.getElementById('ss2Admin');if(!box||!logged())return;const d=await safeJSON('/api/admin/overview');if(d.__error){box.style.display='none';return}box.style.display='block';const c=d.counts||{};document.getElementById('ss2AdminStats').textContent=`${c.users||0} users · ${c.activeUsers||0} new in 30 days · ${c.connections||0} connections · ${c.sessions||0} sessions · ${c.listings||0} active listings · ${c.reports||0} open reports`;document.getElementById('ss2Reports').innerHTML=(d.reports||[]).map(r=>`<tr><td>#${r.id}</td><td>${esc(r.reporter)}</td><td>${esc(r.reported)}</td><td>${esc(r.reason)}</td><td><button class="ss2-btn" onclick="ss2ResolveReport(${r.id},'resolve')">Resolve</button> <button class="ss2-btn secondary" onclick="ss2ResolveReport(${r.id},'dismiss')">Dismiss</button></td></tr>`).join('')||'<tr><td colspan="5">No open reports.</td></tr>';
-  }
-  window.ss2ResolveReport=async function(id,action){const d=await safeJSON('/api/admin/report/'+id,{method:'POST',body:JSON.stringify({action})});if(d.__error){showToast(d.__error.message);return}ss2LoadAdmin();showToast('Report updated.');};
-  async function ss2Refresh(){if(!logged())return;const sec=document.getElementById('skillswap2');if(sec)sec.style.display='block';await Promise.all([ss2LoadRecommendations(),ss2LoadGamification(),ss2LoadAdmin()]);}
-  setInterval(()=>{if(logged()){loadMessages();refreshProDashboard();ss2LoadGamification();}},5000);
-  document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{refreshProDashboard();ss2Refresh();ss2CheckResetToken();},900)});
+  document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{refreshProDashboard();},700)});
 })();
 </script>
+
+
+<style id="skillswap-3-ui">
+  /* SkillSwap 3.0 — HTML-only enhancement layer */
+  .ss3-toolbar{margin:18px 0 8px;padding:16px;border:1px solid var(--e-border,#dce9e4);background:rgba(255,255,255,.88);backdrop-filter:blur(14px);border-radius:20px;box-shadow:0 10px 30px rgba(4,56,44,.07)}
+  body.dark .ss3-toolbar{background:rgba(20,30,27,.88)}
+  .ss3-toolbar-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .ss3-toolbar strong{font-size:14px;color:var(--e-text,#102a24)}
+  .ss3-btn{border:1px solid var(--e-border,#dce9e4);background:#fff;color:var(--e-text,#102a24);border-radius:12px;padding:10px 13px;font-weight:700;cursor:pointer;transition:.2s}
+  body.dark .ss3-btn{background:#17221f;color:#eef8f4}
+  .ss3-btn:hover{transform:translateY(-1px);box-shadow:0 7px 18px rgba(4,56,44,.10)}
+  .ss3-btn.primary{background:var(--e-primary,#087f5b);color:#fff;border-color:var(--e-primary,#087f5b)}
+  .ss3-count{margin-left:auto;font-size:12px;color:var(--e-muted,#647772)}
+  .ss3-saved-btn{position:absolute;right:14px;top:52px;width:38px;height:38px;border-radius:50%;border:1px solid var(--e-border,#dce9e4);background:#fff;cursor:pointer;font-size:18px;z-index:3;box-shadow:0 5px 14px rgba(0,0,0,.08)}
+  body.dark .ss3-saved-btn{background:#17221f;color:#fff}
+  .person-card{position:relative}
+  .ss3-drawer{position:fixed;inset:0;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.38);z-index:10050;padding:18px}
+  .ss3-drawer.show{display:flex}
+  .ss3-sheet{width:min(720px,100%);background:#fff;border-radius:24px;padding:22px;box-shadow:0 25px 70px rgba(0,0,0,.22);max-height:88vh;overflow:auto}
+  body.dark .ss3-sheet{background:#15201d;color:#eef8f4}
+  .ss3-sheet-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:16px}
+  .ss3-sheet-head h3{margin:0}
+  .ss3-close{border:0;background:transparent;font-size:24px;cursor:pointer;color:inherit}
+  .ss3-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+  .ss3-field label{display:block;font-size:12px;font-weight:800;margin-bottom:6px;color:var(--e-muted,#647772)}
+  .ss3-field input,.ss3-field select{width:100%;padding:12px;border:1px solid var(--e-border,#dce9e4);border-radius:12px;background:#fff;color:inherit}
+  body.dark .ss3-field input,body.dark .ss3-field select{background:#1b2925;color:#fff}
+  .ss3-range{display:flex;align-items:center;gap:10px}.ss3-range input{flex:1}.ss3-range output{min-width:45px;font-weight:800}
+  .ss3-recent{display:flex;gap:8px;overflow:auto;padding-top:8px}
+  .ss3-recent button{white-space:nowrap;border:1px solid var(--e-border,#dce9e4);background:var(--e-mint,#e8f7f1);border-radius:999px;padding:8px 11px;cursor:pointer}
+  .ss3-empty{padding:28px;text-align:center;color:var(--e-muted,#647772)}
+  .ss3-compare{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);display:none;z-index:10040;background:#04382c;color:#fff;border-radius:18px;padding:12px 16px;box-shadow:0 16px 40px rgba(4,56,44,.28);align-items:center;gap:12px;max-width:calc(100% - 28px)}
+  .ss3-compare.show{display:flex}.ss3-compare span{font-size:13px}.ss3-compare button{border:0;border-radius:10px;padding:9px 12px;font-weight:800;cursor:pointer}
+  .ss3-palette{position:fixed;inset:0;display:none;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.42);z-index:10100;padding:10vh 18px}
+  .ss3-palette.show{display:flex}.ss3-palette-box{width:min(620px,100%);background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.28)}
+  body.dark .ss3-palette-box{background:#15201d;color:#fff}.ss3-palette input{width:100%;padding:18px;border:0;border-bottom:1px solid var(--e-border,#dce9e4);font-size:17px;outline:0;background:transparent;color:inherit}.ss3-commands button{width:100%;text-align:left;border:0;background:transparent;padding:14px 18px;cursor:pointer;color:inherit}.ss3-commands button:hover{background:var(--e-mint,#e8f7f1)}
+  @media(max-width:640px){.ss3-grid{grid-template-columns:1fr}.ss3-count{width:100%;margin-left:0}.ss3-toolbar{border-radius:16px}.ss3-btn{flex:1}.ss3-compare{width:calc(100% - 20px)}}
+</style>
+
+<div class="ss3-drawer" id="ss3FilterDrawer" aria-hidden="true">
+  <div class="ss3-sheet" role="dialog" aria-modal="true" aria-labelledby="ss3FilterTitle">
+    <div class="ss3-sheet-head"><div><h3 id="ss3FilterTitle">Advanced Discovery</h3><small>Find students who fit your learning style.</small></div><button class="ss3-close" onclick="ss3CloseFilters()" aria-label="Close">×</button></div>
+    <div class="ss3-grid">
+      <div class="ss3-field"><label>City</label><input id="ss3City" placeholder="Hyderabad, Bengaluru…"></div>
+      <div class="ss3-field"><label>Profile type</label><select id="ss3Type"><option value="">Everyone</option><option value="student">Student</option><option value="teacher">Teacher</option></select></div>
+      <div class="ss3-field"><label>Skill category / keyword</label><input id="ss3Keyword" placeholder="Python, Guitar, Telugu…"></div>
+      <div class="ss3-field"><label>Sort by</label><select id="ss3Sort"><option value="match">Best match</option><option value="rating">Highest rated</option><option value="name">Name A–Z</option></select></div>
+      <div class="ss3-field" style="grid-column:1/-1"><label>Minimum match score</label><div class="ss3-range"><input id="ss3MinMatch" type="range" min="0" max="95" value="0"><output id="ss3MinMatchOut">0%</output></div></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:18px"><button class="ss3-btn" onclick="ss3ResetFilters()">Reset</button><button class="ss3-btn primary" onclick="ss3ApplyFilters()">Apply filters</button></div>
+    <div style="margin-top:20px"><strong>Recently viewed</strong><div class="ss3-recent" id="ss3RecentList"></div></div>
+  </div>
+</div>
+
+<div class="ss3-palette" id="ss3Palette" aria-hidden="true">
+  <div class="ss3-palette-box"><input id="ss3PaletteInput" placeholder="Search SkillSwap actions…" autocomplete="off"><div class="ss3-commands" id="ss3Commands"></div></div>
+</div>
+
+<div class="ss3-compare" id="ss3CompareBar"><span id="ss3CompareText">0 profiles selected</span><button onclick="ss3Compare()">Compare</button><button onclick="ss3ClearCompare()">Clear</button></div>
+
+<script id="skillswap-3-js">
+(function(){
+  'use strict';
+  const SAVE_KEY='skillswap_saved_profiles_v3';
+  const RECENT_KEY='skillswap_recent_profiles_v3';
+  const COMPARE_KEY='skillswap_compare_v3';
+  const getJSON=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(e){return d}};
+  const setJSON=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+  const esc3=s=>String(s??'').replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));
+  const saved=()=>getJSON(SAVE_KEY,[]);
+  const recent=()=>getJSON(RECENT_KEY,[]);
+  const compare=()=>getJSON(COMPARE_KEY,[]);
+  const toast=m=>typeof window.showToast==='function'?window.showToast(m):alert(m);
+
+  function toolbar(){
+    if(document.getElementById('ss3Toolbar'))return;
+    const filters=document.getElementById('skillFilters')||document.getElementById('matches');
+    if(!filters)return;
+    const el=document.createElement('div');el.id='ss3Toolbar';el.className='ss3-toolbar';
+    el.innerHTML='<div class="ss3-toolbar-row"><strong>Smart discovery</strong><button class="ss3-btn primary" onclick="ss3OpenFilters()">⚙️ Advanced filters</button><button class="ss3-btn" onclick="ss3ShowSaved()">🔖 Saved</button><button class="ss3-btn" onclick="ss3ClearView()">↺ All</button><span class="ss3-count" id="ss3Count">0 profiles</span></div>';
+    filters.parentNode.insertBefore(el,filters);
+  }
+
+  window.ss3OpenFilters=function(){toolbar();const d=document.getElementById('ss3FilterDrawer');d.classList.add('show');d.setAttribute('aria-hidden','false');ss3RenderRecent()};
+  window.ss3CloseFilters=function(){const d=document.getElementById('ss3FilterDrawer');d.classList.remove('show');d.setAttribute('aria-hidden','true')};
+  window.ss3ResetFilters=function(){['ss3City','ss3Keyword'].forEach(id=>document.getElementById(id).value='');document.getElementById('ss3Type').value='';document.getElementById('ss3Sort').value='match';document.getElementById('ss3MinMatch').value=0;document.getElementById('ss3MinMatchOut').value='0%';ss3ApplyFilters()};
+  window.ss3ApplyFilters=function(){
+    const city=(document.getElementById('ss3City').value||'').trim().toLowerCase(), kw=(document.getElementById('ss3Keyword').value||'').trim().toLowerCase(), type=(document.getElementById('ss3Type').value||'').toLowerCase(), min=Number(document.getElementById('ss3MinMatch').value||0), sort=document.getElementById('ss3Sort').value;
+    const cards=[...document.querySelectorAll('#matches .person-card')];
+    cards.forEach(c=>{const text=(c.dataset.search||c.textContent||'').toLowerCase();const score=Number((c.querySelector('.match-score')?.textContent||'').replace(/\D/g,''))||0;const okCity=!city||text.includes(city),okKw=!kw||text.includes(kw),okType=!type||text.includes(type),okScore=score>=min;c.style.display=(okCity&&okKw&&okType&&okScore)?'':'none'});
+    const visible=cards.filter(c=>c.style.display!=='none');
+    visible.sort((a,b)=>{if(sort==='name')return (a.querySelector('h3')?.textContent||'').localeCompare(b.querySelector('h3')?.textContent||'');if(sort==='rating'){const ra=parseFloat((a.querySelector('.rating')?.textContent||'').replace(/[^0-9.]/g,''))||0;const rb=parseFloat((b.querySelector('.rating')?.textContent||'').replace(/[^0-9.]/g,''))||0;return rb-ra}return (Number((b.querySelector('.match-score')?.textContent||'').replace(/\D/g,''))||0)-(Number((a.querySelector('.match-score')?.textContent||'').replace(/\D/g,''))||0)});
+    const box=document.getElementById('matches');visible.forEach(c=>box.appendChild(c));
+    ss3UpdateCount(visible.length,cards.length);ss3CloseFilters();
+  };
+  function ss3UpdateCount(v,total){const x=document.getElementById('ss3Count');if(x)x.textContent=`${v} of ${total} profiles`}
+
+  window.ss3ToggleSaved=function(id,button){let a=saved().map(String),sid=String(id);if(a.includes(sid)){a=a.filter(x=>x!==sid);if(button)button.textContent='☆';toast('Removed from saved profiles.')}else{a.push(sid);if(button)button.textContent='★';toast('🔖 Profile saved.')}setJSON(SAVE_KEY,a);ss3DecorateCards()};
+  window.ss3ShowSaved=function(){const a=saved().map(String);const cards=[...document.querySelectorAll('#matches .person-card')];if(!a.length){toast('No saved profiles yet. Tap ☆ on a profile to save it.');return}cards.forEach(c=>{const id=c.dataset.personId; c.style.display=a.includes(String(id))?'':'none'});ss3UpdateCount(cards.filter(c=>c.style.display!=='none').length,cards.length)};
+  window.ss3ClearView=function(){document.querySelectorAll('#matches .person-card').forEach(c=>c.style.display='');ss3ApplyFilters();document.getElementById('ss3City').value='';document.getElementById('ss3Keyword').value='';document.getElementById('ss3Type').value='';document.getElementById('ss3MinMatch').value=0;document.getElementById('ss3MinMatchOut').value='0%'};
+
+  function ss3DecorateCards(){
+    const a=saved().map(String), cmp=compare().map(String);
+    document.querySelectorAll('#matches .person-card').forEach(c=>{const id=c.dataset.personId;if(!id)return;let b=c.querySelector('.ss3-saved-btn');if(!b){b=document.createElement('button');b.className='ss3-saved-btn';b.title='Save profile';b.addEventListener('click',e=>{e.stopPropagation();ss3ToggleSaved(id,b)});c.appendChild(b)}b.textContent=a.includes(String(id))?'★':'☆';b.setAttribute('aria-label',a.includes(String(id))?'Remove saved profile':'Save profile');
+      let cb=c.querySelector('.ss3-compare-check');if(!cb){cb=document.createElement('button');cb.className='ss3-compare-check ss3-btn';cb.style.cssText='position:absolute;right:14px;top:98px;padding:6px 9px;font-size:11px;z-index:2';cb.textContent='Compare';cb.addEventListener('click',e=>{e.stopPropagation();ss3ToggleCompare(id)});c.appendChild(cb)}cb.textContent=cmp.includes(String(id))?'✓ Selected':'Compare';
+    });updateCompareBar();ss3UpdateCount([...document.querySelectorAll('#matches .person-card')].filter(c=>c.style.display!=='none').length,document.querySelectorAll('#matches .person-card').length)
+  }
+  window.ss3ToggleCompare=function(id){let a=compare().map(String),sid=String(id);if(a.includes(sid))a=a.filter(x=>x!==sid);else{if(a.length>=3){toast('You can compare up to 3 profiles.');return}a.push(sid)}setJSON(COMPARE_KEY,a);ss3DecorateCards()};
+  window.ss3ClearCompare=function(){setJSON(COMPARE_KEY,[]);ss3DecorateCards()};
+  function updateCompareBar(){const a=compare();const b=document.getElementById('ss3CompareBar');document.getElementById('ss3CompareText').textContent=`${a.length} profile${a.length===1?'':'s'} selected`;b.classList.toggle('show',a.length>0)}
+  window.ss3Compare=function(){const ids=compare();if(ids.length<2){toast('Select at least 2 profiles to compare.');return}const people=window.skillswapPeople||[];const rows=ids.map(id=>people.find(p=>String(p.id)===String(id))).filter(Boolean);if(!rows.length){toast('Refresh discovery and try again.');return}const html='<div style="display:grid;grid-template-columns:repeat('+rows.length+',1fr);gap:10px">'+rows.map(p=>`<div style="border:1px solid var(--e-border,#dce9e4);border-radius:16px;padding:14px"><div style="font-size:28px">${esc3(p.avatar||'🧑')}</div><h3>${esc3(p.name)}</h3><p>📍 ${esc3(p.location||'Online')}</p><p><b>${esc3(p.match||'—')}% match</b></p><p><b>Teaches:</b> ${esc3((p.teach||[]).join(', ')||'—')}</p><p><b>Wants:</b> ${esc3((p.want||[]).join(', ')||'—')}</p><p>⭐ ${esc3(p.rating||'New')}</p></div>`).join('')+'</div>';let m=document.getElementById('ss3CompareModal');if(!m){m=document.createElement('div');m.id='ss3CompareModal';m.className='ss3-drawer';document.body.appendChild(m)}m.innerHTML='<div class="ss3-sheet"><div class="ss3-sheet-head"><h3>Profile comparison</h3><button class="ss3-close" onclick="document.getElementById(\'ss3CompareModal\').classList.remove(\'show\')">×</button></div>'+html+'</div>';m.classList.add('show')};
+
+  function addRecent(id,name,avatar){let a=recent().filter(x=>String(x.id)!==String(id));a.unshift({id,name,avatar:avatar||'🧑'});setJSON(RECENT_KEY,a.slice(0,6));ss3RenderRecent()}
+  function ss3RenderRecent(){const box=document.getElementById('ss3RecentList');if(!box)return;const a=recent();box.innerHTML=a.length?a.map(x=>`<button onclick="openOtherProfile('${esc3(x.id)}')">${esc3(x.avatar)} ${esc3(x.name)}</button>`).join(''):'<span class="ss3-empty">Profiles you open will appear here.</span>'}
+
+  window.ss3ShareProfile=function(id,name){const url=new URL(location.href);url.searchParams.set('profile',id);const share=()=>{if(navigator.share)navigator.share({title:`${name} · SkillSwap India`,text:`Check out ${name}'s SkillSwap profile.`,url:url.toString()}).catch(()=>{});else navigator.clipboard?.writeText(url.toString()).then(()=>toast('🔗 Profile link copied.')).catch(()=>toast(url.toString()))};share()};
+
+  function palette(){
+    const actions=[['🔎','Focus skill search',()=>document.getElementById('searchInput')?.focus()],['⚙️','Advanced filters',window.ss3OpenFilters],['🔖','Show saved profiles',window.ss3ShowSaved],['👤','My profile',window.openEditProfile],['📅','Schedule a session',window.openScheduleModal],['🌙','Toggle dark mode',()=>document.getElementById('themeToggle')?.click()]];
+    const box=document.getElementById('ss3Commands');box.innerHTML=actions.map((a,i)=>`<button data-cmd="${i}">${a[0]} &nbsp; ${a[1]}</button>`).join('');box.querySelectorAll('button').forEach((b,i)=>b.onclick=()=>{document.getElementById('ss3Palette').classList.remove('show');actions[i][2]?.()});
+    document.getElementById('ss3PaletteInput').oninput=function(){const q=this.value.toLowerCase();box.querySelectorAll('button').forEach(b=>b.style.display=b.textContent.toLowerCase().includes(q)?'':'none')};
+  }
+  window.ss3OpenPalette=function(){palette();const p=document.getElementById('ss3Palette');p.classList.add('show');setTimeout(()=>document.getElementById('ss3PaletteInput').focus(),30)};
+
+  const oldOpen=window.openOtherProfile;
+  if(oldOpen)window.openOtherProfile=async function(id){const r=await oldOpen(id);const p=(window.skillswapPeople||[]).find(x=>String(x.id)===String(id));if(p)addRecent(p.id,p.name,p.avatar);return r};
+
+  function decorateSoon(){toolbar();document.querySelectorAll('#matches .person-card').forEach((c,i)=>{const p=(window.skillswapPeople||[])[i];if(p)c.dataset.personId=p.id});ss3DecorateCards()}
+  const oldRender=window.renderMatches;
+  if(oldRender)window.renderMatches=async function(...args){const r=await oldRender.apply(this,args);setTimeout(decorateSoon,50);return r};
+
+  document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();ss3OpenPalette()}if(e.key==='Escape'){ss3CloseFilters();document.getElementById('ss3Palette')?.classList.remove('show')}});
+  document.getElementById('ss3MinMatch')?.addEventListener('input',e=>document.getElementById('ss3MinMatchOut').value=e.target.value+'%');
+  document.getElementById('ss3FilterDrawer')?.addEventListener('click',e=>{if(e.target.id==='ss3FilterDrawer')ss3CloseFilters()});
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{toolbar();decorateSoon();ss3RenderRecent();if(new URLSearchParams(location.search).get('profile'))setTimeout(()=>openOtherProfile(new URLSearchParams(location.search).get('profile')),1200)},1200));
+})();
+</script>
+
 </body>
 </html>
+<!-- =========================================================
+     SKILLSWAP INDIA 4.0 — STARTUP DASHBOARD ENHANCEMENT
+     HTML/CSS/JS only; designed to sit on top of existing app.
+========================================================= -->
+<style id="skillswap-4-dashboard">
+:root{--ss4-green:#087f5b;--ss4-dark:#063f32;--ss4-mint:#eaf8f3;--ss4-line:#dce9e4;--ss4-bg:#f6faf8;--ss4-card:#fff;--ss4-text:#102a24;--ss4-muted:#6b7d78;--ss4-shadow:0 18px 50px rgba(6,63,50,.10)}
+body.ss4-ready{background:linear-gradient(180deg,#f7fbf9 0,#f5f9f7 100%)}
+.ss4-shell{max-width:1220px;margin:0 auto;padding:24px 20px 70px;font-family:inherit;color:var(--ss4-text)}
+.ss4-top{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:22px}
+.ss4-kicker{font-size:12px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--ss4-green)}
+.ss4-title{font-size:clamp(25px,4vw,38px);font-weight:900;letter-spacing:-.04em;margin:5px 0}
+.ss4-sub{color:var(--ss4-muted);font-size:14px}
+.ss4-actions{display:flex;gap:9px;flex-wrap:wrap}
+.ss4-btn{border:1px solid var(--ss4-line);background:#fff;border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer;transition:.2s;box-shadow:0 4px 15px rgba(0,0,0,.03)}
+.ss4-btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(6,63,50,.10)}
+.ss4-btn.primary{background:var(--ss4-green);color:#fff;border-color:var(--ss4-green)}
+.ss4-grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(290px,.8fr);gap:18px}
+.ss4-card{background:rgba(255,255,255,.94);border:1px solid var(--ss4-line);border-radius:22px;padding:20px;box-shadow:var(--ss4-shadow)}
+.ss4-hero{background:linear-gradient(135deg,#063f32,#087f5b 55%,#12a879);color:#fff;border:0;overflow:hidden;position:relative}
+.ss4-hero:after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;right:-80px;top:-90px;background:rgba(255,255,255,.10)}
+.ss4-hero-inner{position:relative;z-index:1;display:flex;justify-content:space-between;gap:24px;align-items:center}
+.ss4-avatar{width:68px;height:68px;border-radius:20px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:25px;font-weight:900;border:1px solid rgba(255,255,255,.25)}
+.ss4-profile{display:flex;gap:14px;align-items:center}
+.ss4-hero h2{margin:0;font-size:25px}.ss4-hero p{margin:5px 0 0;opacity:.82;font-size:13px}
+.ss4-progress{margin-top:19px}.ss4-progress-row{display:flex;justify-content:space-between;font-size:12px;font-weight:800;margin-bottom:7px}.ss4-track{height:9px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden}.ss4-fill{height:100%;width:72%;border-radius:99px;background:#fff}
+.ss4-statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}.ss4-stat{background:rgba(255,255,255,.10);padding:11px;border-radius:14px}.ss4-stat b{display:block;font-size:19px}.ss4-stat span{font-size:11px;opacity:.75}
+.ss4-section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.ss4-section-head h3{margin:0;font-size:17px}.ss4-link{font-size:12px;font-weight:800;color:var(--ss4-green);cursor:pointer}
+.ss4-list{display:grid;gap:10px}.ss4-row{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--ss4-line);border-radius:15px;background:#fff}.ss4-mini{width:43px;height:43px;border-radius:13px;background:var(--ss4-mint);color:var(--ss4-green);display:grid;place-items:center;font-weight:900;flex:none}.ss4-row-main{min-width:0;flex:1}.ss4-row-main b{font-size:13px}.ss4-row-main p{margin:3px 0 0;color:var(--ss4-muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ss4-pill{font-size:10px;font-weight:900;border-radius:999px;padding:6px 9px;background:var(--ss4-mint);color:var(--ss4-green);white-space:nowrap}
+.ss4-right{display:grid;gap:18px;align-content:start}.ss4-ring{width:112px;height:112px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--ss4-green) 0 72%,#e6eeeb 72%);margin:auto}.ss4-ring:after{content:"";width:83px;height:83px;border-radius:50%;background:#fff;position:absolute}.ss4-ring span{position:relative;z-index:1;font-size:22px;font-weight:900}.ss4-center{text-align:center}.ss4-center h3{margin:12px 0 4px}.ss4-center p{font-size:12px;color:var(--ss4-muted);margin:0}
+.ss4-steps{display:grid;gap:9px}.ss4-step{display:flex;gap:10px;align-items:center;font-size:12px}.ss4-check{width:24px;height:24px;border-radius:8px;background:var(--ss4-mint);color:var(--ss4-green);display:grid;place-items:center;font-weight:900}.ss4-step.pending .ss4-check{background:#f3f5f4;color:#9aa8a4}
+.ss4-chart{height:115px;display:flex;align-items:end;gap:7px;padding-top:12px}.ss4-bar{flex:1;min-width:10px;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,#12a879,#087f5b);height:var(--h)}
+.ss4-nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:18px 0}.ss4-nav button{border:1px solid var(--ss4-line);background:#fff;border-radius:13px;padding:10px 7px;font-size:11px;font-weight:800;cursor:pointer}.ss4-nav button:hover{background:var(--ss4-mint);color:var(--ss4-green)}
+.ss4-toast{position:fixed;right:20px;bottom:20px;z-index:99999;background:#102a24;color:#fff;padding:13px 16px;border-radius:13px;box-shadow:0 15px 40px rgba(0,0,0,.22);font-size:13px;opacity:0;transform:translateY(10px);pointer-events:none;transition:.25s}.ss4-toast.show{opacity:1;transform:none}
+@media(max-width:900px){.ss4-grid{grid-template-columns:1fr}.ss4-statgrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.ss4-shell{padding:15px 12px 90px}.ss4-top{align-items:flex-start;flex-direction:column}.ss4-hero-inner{align-items:flex-start;flex-direction:column}.ss4-actions{width:100%}.ss4-actions .ss4-btn{flex:1}.ss4-nav{position:sticky;bottom:8px;z-index:1000;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);padding:7px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.12)}.ss4-nav button{padding:9px 4px}.ss4-statgrid{gap:7px}}
+</style>
+
+<section id="skillswap4Dashboard" class="ss4-shell" aria-label="SkillSwap 4.0 dashboard">
+  <div class="ss4-top">
+    <div><div class="ss4-kicker">SkillSwap 4.0</div><div class="ss4-title">Your learning command center</div><div class="ss4-sub" id="ss4Greeting">Build skills. Meet people. Keep moving.</div></div>
+    <div class="ss4-actions"><button class="ss4-btn" onclick="ss4Refresh()">↻ Refresh</button><button class="ss4-btn primary" onclick="ss4Discover()">+ Find a skill partner</button></div>
+  </div>
+
+  <div class="ss4-grid">
+    <main>
+      <div class="ss4-card ss4-hero">
+        <div class="ss4-hero-inner"><div class="ss4-profile"><div class="ss4-avatar" id="ss4Avatar">S</div><div><h2 id="ss4Name">Welcome to SkillSwap</h2><p id="ss4Headline">Your personalized student learning dashboard</p></div></div><button class="ss4-btn" onclick="ss4Profile()">View profile →</button></div>
+        <div class="ss4-progress"><div class="ss4-progress-row"><span>Profile strength</span><span id="ss4ProfilePct">72%</span></div><div class="ss4-track"><div class="ss4-fill" id="ss4ProfileFill"></div></div></div>
+        <div class="ss4-statgrid"><div class="ss4-stat"><b id="ss4XP">0</b><span>XP earned</span></div><div class="ss4-stat"><b id="ss4Level">1</b><span>Level</span></div><div class="ss4-stat"><b id="ss4Matches">0</b><span>Best matches</span></div><div class="ss4-stat"><b id="ss4Streak">0</b><span>Day streak</span></div></div>
+      </div>
+
+      <div class="ss4-nav"><button onclick="ss4Discover()">🔎 Discover</button><button onclick="ss4Chat()">💬 Messages</button><button onclick="ss4Sessions()">📅 Sessions</button><button onclick="ss4Requests()">🤝 Requests</button><button onclick="ss4Profile()">👤 Profile</button></div>
+
+      <div class="ss4-card"><div class="ss4-section-head"><h3>Recommended for you</h3><span class="ss4-link" onclick="ss4Discover()">See all</span></div><div class="ss4-list" id="ss4Recommendations"><div class="ss4-row"><div class="ss4-mini">★</div><div class="ss4-row-main"><b>Finding your best matches…</b><p>Personalized recommendations will appear here.</p></div><span class="ss4-pill">Smart match</span></div></div></div>
+
+      <div class="ss4-card" style="margin-top:18px"><div class="ss4-section-head"><h3>Weekly activity</h3><span class="ss4-link">Last 7 days</span></div><div class="ss4-chart" aria-label="Weekly activity chart"><div class="ss4-bar" style="--h:35%"></div><div class="ss4-bar" style="--h:52%"></div><div class="ss4-bar" style="--h:42%"></div><div class="ss4-bar" style="--h:74%"></div><div class="ss4-bar" style="--h:62%"></div><div class="ss4-bar" style="--h:88%"></div><div class="ss4-bar" style="--h:68%"></div></div><div style="display:flex;justify-content:space-between;color:var(--ss4-muted);font-size:10px"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div></div>
+    </main>
+
+    <aside class="ss4-right">
+      <div class="ss4-card"><div class="ss4-center"><div class="ss4-ring"><span id="ss4Completion">72%</span></div><h3>Profile completion</h3><p>Complete your profile to get better matches.</p></div><div class="ss4-steps" style="margin-top:16px"><div class="ss4-step"><span class="ss4-check">✓</span><span>Add your skills</span></div><div class="ss4-step"><span class="ss4-check">✓</span><span>Add what you want to learn</span></div><div class="ss4-step pending"><span class="ss4-check">+</span><span>Add a profile headline</span></div><div class="ss4-step pending"><span class="ss4-check">+</span><span>Verify your profile</span></div></div></div>
+      <div class="ss4-card"><div class="ss4-section-head"><h3>Momentum</h3><span class="ss4-pill">This week</span></div><div class="ss4-list"><div class="ss4-row"><div class="ss4-mini">🔥</div><div class="ss4-row-main"><b>Keep your streak alive</b><p>Make one meaningful learning action today.</p></div></div><div class="ss4-row"><div class="ss4-mini">⚡</div><div class="ss4-row-main"><b>Earn more XP</b><p>Connect, teach, learn and complete sessions.</p></div></div><div class="ss4-row"><div class="ss4-mini">🏆</div><div class="ss4-row-main"><b>Unlock achievements</b><p>Build your reputation through helpful exchanges.</p></div></div></div></div>
+      <div class="ss4-card"><div class="ss4-section-head"><h3>Quick actions</h3></div><div class="ss4-list"><button class="ss4-btn" onclick="ss4EditProfile()">✏️ Improve my profile</button><button class="ss4-btn" onclick="ss4Discover()">🎯 Find best matches</button><button class="ss4-btn" onclick="ss4Sessions()">📅 Plan a session</button></div></div>
+    </aside>
+  </div>
+</section>
+<div id="ss4Toast" class="ss4-toast"></div>
+
+<script id="skillswap-4-js">
+(function(){
+  const $=id=>document.getElementById(id);
+  const toast=(m)=>{const t=$('ss4Toast');if(!t)return;t.textContent=m;t.classList.add('show');clearTimeout(window.__ss4t);window.__ss4t=setTimeout(()=>t.classList.remove('show'),2400)};
+  const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  window.ss4Toast=toast;
+  window.ss4Discover=()=>{document.querySelector('#discovery,#discover,#people,#matches')?.scrollIntoView({behavior:'smooth'});toast('Opening discovery');};
+  window.ss4Chat=()=>{document.querySelector('#chat,#messages,#dashboardChat')?.scrollIntoView({behavior:'smooth'});toast('Opening messages');};
+  window.ss4Sessions=()=>{document.querySelector('#sessions,#sessionPanel')?.scrollIntoView({behavior:'smooth'});toast('Opening sessions');};
+  window.ss4Requests=()=>{document.querySelector('#requests,#connections')?.scrollIntoView({behavior:'smooth'});toast('Opening requests');};
+  window.ss4Profile=()=>{document.querySelector('#profile,#myProfile')?.scrollIntoView({behavior:'smooth'});toast('Opening your profile');};
+  window.ss4EditProfile=()=>{if(typeof window.openProfileEditor==='function')return window.openProfileEditor();ss4Profile()};
+  window.ss4Refresh=()=>{if(typeof window.loadDashboard==='function')window.loadDashboard();if(typeof window.ss2Refresh==='function')window.ss2Refresh();toast('Dashboard refreshed');};
+  function nameFrom(u){return u?.name||u?.full_name||u?.display_name||u?.username||'SkillSwap member'}
+  async function api(url,opts){try{const r=await fetch(url,opts);return await r.json()}catch(e){return null}}
+  async function load(){
+    document.body.classList.add('ss4-ready');
+    const me=await api('/api/me');
+    if(me?.user){const u=me.user,n=nameFrom(u);$('ss4Name').textContent=n;$('ss4Avatar').textContent=n.trim().charAt(0).toUpperCase();$('ss4Headline').textContent=u.headline||u.bio||'Student learner & teacher';}
+    const dash=await api('/api/dashboard');
+    const gam=await api('/api/gamification');
+    const rec=await api('/api/recommendations');
+    if(gam){const g=gam.gamification||gam;$('ss4XP').textContent=g.xp??g.total_xp??0;$('ss4Level').textContent=g.level??1;$('ss4Streak').textContent=g.streak??g.current_streak??0}
+    if(rec){const arr=rec.recommendations||rec.people||rec.matches||[];$('ss4Matches').textContent=arr.length; if(arr.length){$('ss4Recommendations').innerHTML=arr.slice(0,5).map(p=>{const n=nameFrom(p),initial=n.charAt(0).toUpperCase(),pct=p.match_score??p.match??p.score??'—';return `<div class="ss4-row"><div class="ss4-mini">${esc(initial)}</div><div class="ss4-row-main"><b>${esc(n)}</b><p>${esc(p.headline||p.teaches||p.skills||'Potential learning partner')}</p></div><span class="ss4-pill">${esc(pct)}${typeof pct==='number'?'%':''} match</span></div>`}).join('')}}
+    const profilePct=(dash?.profile_completion??dash?.profile_health??72);const p=Math.max(0,Math.min(100,Number(profilePct)||72));$('ss4ProfilePct').textContent=p+'%';$('ss4ProfileFill').style.width=p+'%';$('ss4Completion').textContent=p+'%';
+  }
+  window.addEventListener('load',()=>setTimeout(load,250));
+})();
+</script>
