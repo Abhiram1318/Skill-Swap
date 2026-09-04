@@ -1949,11 +1949,13 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
         <input
             id="searchInput"
             type="search"
-            name="skill-search"
-            autocomplete="off"
+            name="ss_skill_lookup_9f3a"
+            autocomplete="new-password"
             autocapitalize="none"
             spellcheck="false"
+            readonly
             placeholder="Try Python, Telugu, cricket, maths, guitar..."
+            onfocus="this.readOnly=false; this.value='';"
             oninput="searchSkills()">
 
         <button
@@ -5640,6 +5642,22 @@ function handleChatKey(e){
 /* =========================================================
    SEARCH
 ========================================================= */
+
+function protectSkillSearchField(){
+    const input=document.getElementById("searchInput");
+    if(!input) return;
+
+    // Prevent browser autofill from placing an email/username in the skill search.
+    if(input.value && input.value.includes("@")){
+        input.value="";
+    }
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+    protectSkillSearchField();
+    setTimeout(protectSkillSearchField,250);
+    setTimeout(protectSkillSearchField,1000);
+});
 
 function searchSkills(){
 
