@@ -4780,6 +4780,7 @@ async function saveEditedProfile(){
     updateUserUI();
     updateProfileModal();
     renderEverything();
+    if(typeof window.ss4UpdateProfileCompletion === "function"){ window.ss4UpdateProfileCompletion(updated); }
     document.getElementById("profileModal").classList.add("show");
 
     showToast(backendSaved ? "✅ Profile updated successfully." : "✅ Profile updated on this device.");
@@ -6662,7 +6663,12 @@ body.ss4-ready{background:linear-gradient(180deg,#f7fbf9 0,#f5f9f7 100%)}
   window.ss4Sessions=()=>{document.querySelector('#sessions,#sessionPanel')?.scrollIntoView({behavior:'smooth'});toast('Opening sessions');};
   window.ss4Requests=()=>{document.querySelector('#requests,#connections')?.scrollIntoView({behavior:'smooth'});toast('Opening requests');};
   window.ss4Profile=()=>{document.querySelector('#profile,#myProfile')?.scrollIntoView({behavior:'smooth'});toast('Opening your profile');};
-  window.ss4EditProfile=()=>{if(typeof window.openProfileEditor==='function')return window.openProfileEditor();ss4Profile()};
+  window.ss4EditProfile=()=>{
+    if(typeof window.openEditProfile==='function'){ window.openEditProfile(); return; }
+    const modal=document.getElementById('editProfileModal');
+    if(modal){ modal.classList.add('show'); return; }
+    if(typeof window.openProfile==='function') window.openProfile();
+};
   window.ss4Refresh=()=>{if(typeof window.loadDashboard==='function')window.loadDashboard();if(typeof window.ss2Refresh==='function')window.ss2Refresh();toast('Dashboard refreshed');};
   function nameFrom(u){return u?.name||u?.full_name||u?.display_name||u?.username||'SkillSwap member'}
   async function api(url,opts){try{const r=await fetch(url,opts);return await r.json()}catch(e){return null}}
@@ -6675,7 +6681,40 @@ body.ss4-ready{background:linear-gradient(180deg,#f7fbf9 0,#f5f9f7 100%)}
     const rec=await api('/api/recommendations');
     if(gam){const g=gam.gamification||gam;$('ss4XP').textContent=g.xp??g.total_xp??0;$('ss4Level').textContent=g.level??1;$('ss4Streak').textContent=g.streak??g.current_streak??0}
     if(rec){const arr=rec.recommendations||rec.people||rec.matches||[];$('ss4Matches').textContent=arr.length; if(arr.length){$('ss4Recommendations').innerHTML=arr.slice(0,5).map(p=>{const n=nameFrom(p),initial=n.charAt(0).toUpperCase(),pct=p.match_score??p.match??p.score??'—';return `<div class="ss4-row"><div class="ss4-mini">${esc(initial)}</div><div class="ss4-row-main"><b>${esc(n)}</b><p>${esc(p.headline||p.teaches||p.skills||'Potential learning partner')}</p></div><span class="ss4-pill">${esc(pct)}${typeof pct==='number'?'%':''} match</span></div>`}).join('')}}
-    const profilePct=(dash?.profile_completion??dash?.profile_health??72);const p=Math.max(0,Math.min(100,Number(profilePct)||72));$('ss4ProfilePct').textContent=p+'%';$('ss4ProfileFill').style.width=p+'%';$('ss4Completion').textContent=p+'%';
+    function calculateCompletion(u){
+      if(!u) return 0;
+      const text=v=>String(v??'').trim().length>0;
+      const list=v=>Array.isArray(v) ? v.some(x=>text(x)) : text(v);
+      const checks=[
+        text(u.name),
+        text(u.type),
+        text(u.location),
+        text(u.bio) && String(u.bio).trim().length>=20,
+        list(u.teach),
+        list(u.want),
+        list(u.languages),
+        list(u.availability)
+      ];
+      return Math.round(checks.filter(Boolean).length/checks.length*100);
+    }
+    function syncCompletion(u){
+      const p=calculateCompletion(u);
+      if($('ss4ProfilePct')) $('ss4ProfilePct').textContent=p+'%';
+      if($('ss4ProfileFill')) $('ss4ProfileFill').style.width=p+'%';
+      if($('ss4Completion')) $('ss4Completion').textContent=p+'%';
+      const steps=document.querySelectorAll('#skillswap4Dashboard .ss4-step');
+      const checks=[
+        !!u && String(u.teach||'').trim().length>0 || !!(u&&Array.isArray(u.teach)&&u.teach.length),
+        !!u && String(u.want||'').trim().length>0 || !!(u&&Array.isArray(u.want)&&u.want.length),
+        !!u && String(u.headline||'').trim().length>0,
+        !!u && !!u.verified
+      ];
+      steps.forEach((el,i)=>{ if(checks[i]){el.classList.remove('pending'); const c=el.querySelector('.ss4-check'); if(c)c.textContent='✓';} else {el.classList.add('pending'); const c=el.querySelector('.ss4-check'); if(c)c.textContent='+';} });
+      return p;
+    }
+    window.ss4UpdateProfileCompletion=syncCompletion;
+    const profilePct=me?.user ? calculateCompletion(me.user) : 0;
+    syncCompletion(me?.user||null);
   }
   window.addEventListener('load',()=>setTimeout(load,250));
 })();
