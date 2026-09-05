@@ -6609,11 +6609,11 @@ body.ss4-ready{background:linear-gradient(180deg,#f7fbf9 0,#f5f9f7 100%)}
 .ss4-avatar{width:68px;height:68px;border-radius:20px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:25px;font-weight:900;border:1px solid rgba(255,255,255,.25)}
 .ss4-profile{display:flex;gap:14px;align-items:center}
 .ss4-hero h2{margin:0;font-size:25px}.ss4-hero p{margin:5px 0 0;opacity:.82;font-size:13px}
-.ss4-progress{margin-top:19px}.ss4-progress-row{display:flex;justify-content:space-between;font-size:12px;font-weight:800;margin-bottom:7px}.ss4-track{height:9px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden}.ss4-fill{height:100%;width:72%;border-radius:99px;background:#fff}
+.ss4-progress{margin-top:19px}.ss4-progress-row{display:flex;justify-content:space-between;font-size:12px;font-weight:800;margin-bottom:7px}.ss4-track{height:9px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden}.ss4-fill{height:100%;width:0%;border-radius:99px;background:#fff}
 .ss4-statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}.ss4-stat{background:rgba(255,255,255,.10);padding:11px;border-radius:14px}.ss4-stat b{display:block;font-size:19px}.ss4-stat span{font-size:11px;opacity:.75}
 .ss4-section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.ss4-section-head h3{margin:0;font-size:17px}.ss4-link{font-size:12px;font-weight:800;color:var(--ss4-green);cursor:pointer}
 .ss4-list{display:grid;gap:10px}.ss4-row{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--ss4-line);border-radius:15px;background:#fff}.ss4-mini{width:43px;height:43px;border-radius:13px;background:var(--ss4-mint);color:var(--ss4-green);display:grid;place-items:center;font-weight:900;flex:none}.ss4-row-main{min-width:0;flex:1}.ss4-row-main b{font-size:13px}.ss4-row-main p{margin:3px 0 0;color:var(--ss4-muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ss4-pill{font-size:10px;font-weight:900;border-radius:999px;padding:6px 9px;background:var(--ss4-mint);color:var(--ss4-green);white-space:nowrap}
-.ss4-right{display:grid;gap:18px;align-content:start}.ss4-ring{width:112px;height:112px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--ss4-green) 0 72%,#e6eeeb 72%);margin:auto}.ss4-ring:after{content:"";width:83px;height:83px;border-radius:50%;background:#fff;position:absolute}.ss4-ring span{position:relative;z-index:1;font-size:22px;font-weight:900}.ss4-center{text-align:center}.ss4-center h3{margin:12px 0 4px}.ss4-center p{font-size:12px;color:var(--ss4-muted);margin:0}
+.ss4-right{display:grid;gap:18px;align-content:start}.ss4-ring{width:112px;height:112px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--ss4-green) 0 0%,#e6eeeb 0%);margin:auto}.ss4-ring:after{content:"";width:83px;height:83px;border-radius:50%;background:#fff;position:absolute}.ss4-ring span{position:relative;z-index:1;font-size:22px;font-weight:900}.ss4-center{text-align:center}.ss4-center h3{margin:12px 0 4px}.ss4-center p{font-size:12px;color:var(--ss4-muted);margin:0}
 .ss4-steps{display:grid;gap:9px}.ss4-step{display:flex;gap:10px;align-items:center;font-size:12px}.ss4-check{width:24px;height:24px;border-radius:8px;background:var(--ss4-mint);color:var(--ss4-green);display:grid;place-items:center;font-weight:900}.ss4-step.pending .ss4-check{background:#f3f5f4;color:#9aa8a4}
 .ss4-chart{height:115px;display:flex;align-items:end;gap:7px;padding-top:12px}.ss4-bar{flex:1;min-width:10px;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,#12a879,#087f5b);height:var(--h)}
 .ss4-nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:18px 0}.ss4-nav button{border:1px solid var(--ss4-line);background:#fff;border-radius:13px;padding:10px 7px;font-size:11px;font-weight:800;cursor:pointer}.ss4-nav button:hover{background:var(--ss4-mint);color:var(--ss4-green)}
@@ -6624,7 +6624,7 @@ body.ss4-ready{background:linear-gradient(180deg,#f7fbf9 0,#f5f9f7 100%)}
 
 <section id="skillswap4Dashboard" class="ss4-shell" aria-label="SkillSwap 4.0 dashboard">
   <div class="ss4-top">
-    <div><div class="ss4-kicker">SkillSwap 4.0</div><div class="ss4-title">Your learning command center</div><div class="ss4-sub" id="ss4Greeting">Build skills. Meet people. Keep moving.</div></div>
+    <div><div class="ss4-kicker">SkillSwap 4.0</div><div class="ss4-title">Your learning command center</div><div class="ss4-sub" id="ss4Greeting">Your personal space to discover, learn, teach and grow.</div></div>
     <div class="ss4-actions"><button class="ss4-btn" onclick="ss4Refresh()">↻ Refresh</button><button class="ss4-btn primary" onclick="ss4Discover()">+ Find a skill partner</button></div>
   </div>
 
@@ -6632,7 +6632,7 @@ body.ss4-ready{background:linear-gradient(180deg,#f7fbf9 0,#f5f9f7 100%)}
     <main>
       <div class="ss4-card ss4-hero">
         <div class="ss4-hero-inner"><div class="ss4-profile"><div class="ss4-avatar" id="ss4Avatar">S</div><div><h2 id="ss4Name">Welcome to SkillSwap</h2><p id="ss4Headline">Your personalized student learning dashboard</p></div></div><button class="ss4-btn" onclick="ss4Profile()">View profile →</button></div>
-        <div class="ss4-progress"><div class="ss4-progress-row"><span>Profile strength</span><span id="ss4ProfilePct">72%</span></div><div class="ss4-track"><div class="ss4-fill" id="ss4ProfileFill"></div></div></div>
+        <div class="ss4-progress"><div class="ss4-progress-row"><span>Profile strength</span><span id="ss4ProfilePct">0%</span></div><div class="ss4-track"><div class="ss4-fill" id="ss4ProfileFill"></div></div></div>
         <div class="ss4-statgrid"><div class="ss4-stat"><b id="ss4XP">0</b><span>XP earned</span></div><div class="ss4-stat"><b id="ss4Level">1</b><span>Level</span></div><div class="ss4-stat"><b id="ss4Matches">0</b><span>Best matches</span></div><div class="ss4-stat"><b id="ss4Streak">0</b><span>Day streak</span></div></div>
       </div>
 
@@ -6644,7 +6644,7 @@ body.ss4-ready{background:linear-gradient(180deg,#f7fbf9 0,#f5f9f7 100%)}
     </main>
 
     <aside class="ss4-right">
-      <div class="ss4-card"><div class="ss4-center"><div class="ss4-ring"><span id="ss4Completion">72%</span></div><h3>Profile completion</h3><p>Complete your profile to get better matches.</p></div><div class="ss4-steps" style="margin-top:16px"><div class="ss4-step"><span class="ss4-check">✓</span><span>Add your skills</span></div><div class="ss4-step"><span class="ss4-check">✓</span><span>Add what you want to learn</span></div><div class="ss4-step pending"><span class="ss4-check">+</span><span>Add a profile headline</span></div><div class="ss4-step pending"><span class="ss4-check">+</span><span>Verify your profile</span></div></div></div>
+      <div class="ss4-card"><div class="ss4-center"><div class="ss4-ring" id="ss4CompletionRing"><span id="ss4Completion">0%</span></div><h3>Profile completion</h3><p>Complete your profile to get better matches.</p></div><div class="ss4-steps" style="margin-top:16px"><div class="ss4-step pending"><span class="ss4-check">+</span><span>Add your skills</span></div><div class="ss4-step pending"><span class="ss4-check">+</span><span>Add what you want to learn</span></div><div class="ss4-step pending"><span class="ss4-check">+</span><span>Add a profile headline</span></div><div class="ss4-step pending"><span class="ss4-check">+</span><span>Verify your profile</span></div></div></div>
       <div class="ss4-card"><div class="ss4-section-head"><h3>Momentum</h3><span class="ss4-pill">This week</span></div><div class="ss4-list"><div class="ss4-row"><div class="ss4-mini">🔥</div><div class="ss4-row-main"><b>Keep your streak alive</b><p>Make one meaningful learning action today.</p></div></div><div class="ss4-row"><div class="ss4-mini">⚡</div><div class="ss4-row-main"><b>Earn more XP</b><p>Connect, teach, learn and complete sessions.</p></div></div><div class="ss4-row"><div class="ss4-mini">🏆</div><div class="ss4-row-main"><b>Unlock achievements</b><p>Build your reputation through helpful exchanges.</p></div></div></div></div>
       <div class="ss4-card"><div class="ss4-section-head"><h3>Quick actions</h3></div><div class="ss4-list"><button class="ss4-btn" onclick="ss4EditProfile()">✏️ Improve my profile</button><button class="ss4-btn" onclick="ss4Discover()">🎯 Find best matches</button><button class="ss4-btn" onclick="ss4Sessions()">📅 Plan a session</button></div></div>
     </aside>
@@ -6658,64 +6658,86 @@ body.ss4-ready{background:linear-gradient(180deg,#f7fbf9 0,#f5f9f7 100%)}
   const toast=(m)=>{const t=$('ss4Toast');if(!t)return;t.textContent=m;t.classList.add('show');clearTimeout(window.__ss4t);window.__ss4t=setTimeout(()=>t.classList.remove('show'),2400)};
   const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   window.ss4Toast=toast;
-  window.ss4Discover=()=>{document.querySelector('#discovery,#discover,#people,#matches')?.scrollIntoView({behavior:'smooth'});toast('Opening discovery');};
-  window.ss4Chat=()=>{document.querySelector('#chat,#messages,#dashboardChat')?.scrollIntoView({behavior:'smooth'});toast('Opening messages');};
-  window.ss4Sessions=()=>{document.querySelector('#sessions,#sessionPanel')?.scrollIntoView({behavior:'smooth'});toast('Opening sessions');};
-  window.ss4Requests=()=>{document.querySelector('#requests,#connections')?.scrollIntoView({behavior:'smooth'});toast('Opening requests');};
-  window.ss4Profile=()=>{document.querySelector('#profile,#myProfile')?.scrollIntoView({behavior:'smooth'});toast('Opening your profile');};
+  function go(sel,msg){const el=document.querySelector(sel);if(el){el.scrollIntoView({behavior:'smooth',block:'start'});toast(msg);return true}toast('That area is not available yet');return false}
+  window.ss4Discover=()=>go('#discovery,#discover,#people,#matches','Opening discovery');
+  window.ss4Chat=()=>{if(typeof window.openChat==='function'){window.openChat();return}go('#chat,#messages,#dashboardChat','Opening messages')};
+  window.ss4Sessions=()=>go('#sessions,#sessionPanel','Opening sessions');
+  window.ss4Requests=()=>go('#requestsSection,#requests,#connections','Opening requests');
+  window.ss4Profile=()=>{if(typeof window.openOwnProfile==='function'){window.openOwnProfile();return} if(typeof window.openProfile==='function'){window.openProfile();return} go('#profileSection,#profile,#myProfile','Opening your profile')};
   window.ss4EditProfile=()=>{
-    if(typeof window.openEditProfile==='function'){ window.openEditProfile(); return; }
-    const modal=document.getElementById('editProfileModal');
-    if(modal){ modal.classList.add('show'); return; }
-    if(typeof window.openProfile==='function') window.openProfile();
-};
-  window.ss4Refresh=()=>{if(typeof window.loadDashboard==='function')window.loadDashboard();if(typeof window.ss2Refresh==='function')window.ss2Refresh();toast('Dashboard refreshed');};
+    if(typeof window.openEditProfile==='function'){window.openEditProfile();return}
+    const modal=$('editProfileModal');
+    if(modal){modal.classList.add('show');document.body.classList.add('modal-open');return}
+    if(typeof window.openProfile==='function'){window.openProfile();return}
+    toast('Profile editor is not available');
+  };
+  window.ss4Refresh=()=>{if(typeof window.loadDashboard==='function')window.loadDashboard();if(typeof window.refreshProDashboard==='function')window.refreshProDashboard();if(typeof window.ss2Refresh==='function')window.ss2Refresh();load();toast('Dashboard refreshed')};
   function nameFrom(u){return u?.name||u?.full_name||u?.display_name||u?.username||'SkillSwap member'}
-  async function api(url,opts){try{const r=await fetch(url,opts);return await r.json()}catch(e){return null}}
+  function has(v,min=1){if(Array.isArray(v))return v.some(x=>String(x??'').trim().length>=min);return String(v??'').trim().length>=min}
+  function calculateCompletion(u){
+    if(!u)return 0;
+    const checks=[
+      has(u.name),
+      has(u.type)||has(u.student_type),
+      has(u.location),
+      has(u.bio,20),
+      has(u.teach)||has(u.teaching)||has(u.skills_teach),
+      has(u.want)||has(u.learning)||has(u.skills_want),
+      has(u.languages)||has(u.language),
+      has(u.availability)
+    ];
+    return Math.round(checks.filter(Boolean).length/checks.length*100);
+  }
+  function syncCompletion(u){
+    const p=calculateCompletion(u);
+    if($('ss4ProfilePct'))$('ss4ProfilePct').textContent=p+'%';
+    if($('ss4ProfileFill'))$('ss4ProfileFill').style.width=p+'%';
+    if($('ss4Completion'))$('ss4Completion').textContent=p+'%';
+    const ring=$('ss4CompletionRing');
+    if(ring)ring.style.background=`conic-gradient(var(--ss4-green) 0 ${p}%,#e6eeeb ${p}% 100%)`;
+    const teach=has(u?.teach)||has(u?.teaching)||has(u?.skills_teach);
+    const want=has(u?.want)||has(u?.learning)||has(u?.skills_want);
+    const headline=has(u?.headline);
+    const verified=!!u?.verified;
+    const checks=[teach,want,headline,verified];
+    document.querySelectorAll('#skillswap4Dashboard .ss4-step').forEach((el,i)=>{
+      const ok=!!checks[i];el.classList.toggle('pending',!ok);
+      const c=el.querySelector('.ss4-check');if(c)c.textContent=ok?'✓':'+';
+    });
+    const msg=$('ss4Greeting');
+    if(msg){msg.textContent=p>=90?'Your profile is ready to attract great learning partners.':p>=60?'You are on a strong start. Finish a few details to improve your matches.':'Complete your profile to unlock stronger, more relevant matches.'}
+    return p;
+  }
+  async function api(url,opts){try{const r=await fetch(url,opts);if(!r.ok)return null;return await r.json()}catch(e){return null}}
+  function setText(id,v){if($(id))$(id).textContent=v}
   async function load(){
     document.body.classList.add('ss4-ready');
     const me=await api('/api/me');
-    if(me?.user){const u=me.user,n=nameFrom(u);$('ss4Name').textContent=n;$('ss4Avatar').textContent=n.trim().charAt(0).toUpperCase();$('ss4Headline').textContent=u.headline||u.bio||'Student learner & teacher';}
-    const dash=await api('/api/dashboard');
-    const gam=await api('/api/gamification');
-    const rec=await api('/api/recommendations');
-    if(gam){const g=gam.gamification||gam;$('ss4XP').textContent=g.xp??g.total_xp??0;$('ss4Level').textContent=g.level??1;$('ss4Streak').textContent=g.streak??g.current_streak??0}
-    if(rec){const arr=rec.recommendations||rec.people||rec.matches||[];$('ss4Matches').textContent=arr.length; if(arr.length){$('ss4Recommendations').innerHTML=arr.slice(0,5).map(p=>{const n=nameFrom(p),initial=n.charAt(0).toUpperCase(),pct=p.match_score??p.match??p.score??'—';return `<div class="ss4-row"><div class="ss4-mini">${esc(initial)}</div><div class="ss4-row-main"><b>${esc(n)}</b><p>${esc(p.headline||p.teaches||p.skills||'Potential learning partner')}</p></div><span class="ss4-pill">${esc(pct)}${typeof pct==='number'?'%':''} match</span></div>`}).join('')}}
-    function calculateCompletion(u){
-      if(!u) return 0;
-      const text=v=>String(v??'').trim().length>0;
-      const list=v=>Array.isArray(v) ? v.some(x=>text(x)) : text(v);
-      const checks=[
-        text(u.name),
-        text(u.type),
-        text(u.location),
-        text(u.bio) && String(u.bio).trim().length>=20,
-        list(u.teach),
-        list(u.want),
-        list(u.languages),
-        list(u.availability)
-      ];
-      return Math.round(checks.filter(Boolean).length/checks.length*100);
+    const u=me?.user||null;
+    if(u){
+      const n=nameFrom(u);setText('ss4Name',n);setText('ss4Avatar',n.trim().charAt(0).toUpperCase());setText('ss4Headline',u.headline||u.bio||'Student learner & teacher');
+      syncCompletion(u);
+    }else{
+      setText('ss4Name','Welcome to SkillSwap');setText('ss4Avatar','S');setText('ss4Headline','Sign in to see your personalized learning dashboard');syncCompletion(null);
+      setText('ss4XP','0');setText('ss4Level','1');setText('ss4Matches','0');setText('ss4Streak','0');
+      if($('ss4Recommendations'))$('ss4Recommendations').innerHTML='<div class="ss4-row"><div class="ss4-mini">🔐</div><div class="ss4-row-main"><b>Sign in to unlock recommendations</b><p>Your command center will personalize itself from your profile.</p></div><span class="ss4-pill">Personalized</span></div>';
+      return;
     }
-    function syncCompletion(u){
-      const p=calculateCompletion(u);
-      if($('ss4ProfilePct')) $('ss4ProfilePct').textContent=p+'%';
-      if($('ss4ProfileFill')) $('ss4ProfileFill').style.width=p+'%';
-      if($('ss4Completion')) $('ss4Completion').textContent=p+'%';
-      const steps=document.querySelectorAll('#skillswap4Dashboard .ss4-step');
-      const checks=[
-        !!u && String(u.teach||'').trim().length>0 || !!(u&&Array.isArray(u.teach)&&u.teach.length),
-        !!u && String(u.want||'').trim().length>0 || !!(u&&Array.isArray(u.want)&&u.want.length),
-        !!u && String(u.headline||'').trim().length>0,
-        !!u && !!u.verified
-      ];
-      steps.forEach((el,i)=>{ if(checks[i]){el.classList.remove('pending'); const c=el.querySelector('.ss4-check'); if(c)c.textContent='✓';} else {el.classList.add('pending'); const c=el.querySelector('.ss4-check'); if(c)c.textContent='+';} });
-      return p;
+    const [dash,gam,rec]=await Promise.all([api('/api/dashboard'),api('/api/gamification'),api('/api/recommendations')]);
+    const g=gam?.gamification||gam||{};
+    setText('ss4XP',g.xp??g.total_xp??0);setText('ss4Level',g.level??1);setText('ss4Streak',g.streak??g.current_streak??0);
+    const arr=rec?.recommendations||rec?.people||rec?.matches||[];setText('ss4Matches',arr.length);
+    if($('ss4Recommendations')){
+      $('ss4Recommendations').innerHTML=arr.length?arr.slice(0,5).map(p=>{const n=nameFrom(p),initial=n.charAt(0).toUpperCase(),raw=p.match_score??p.match??p.score??'—';const pct=typeof raw==='number'?raw:String(raw);return `<div class="ss4-row"><div class="ss4-mini">${esc(initial)}</div><div class="ss4-row-main"><b>${esc(n)}</b><p>${esc(p.headline||p.teaches||p.skills||p.bio||'Potential learning partner')}</p></div><span class="ss4-pill">${esc(pct)}${typeof raw==='number'?'%':''} match</span></div>`}).join(''):'<div class="ss4-row"><div class="ss4-mini">★</div><div class="ss4-row-main"><b>No recommendations yet</b><p>Add more skills and learning goals to improve matching.</p></div><span class="ss4-pill">Improve profile</span></div>';
     }
-    window.ss4UpdateProfileCompletion=syncCompletion;
-    const profilePct=me?.user ? calculateCompletion(me.user) : 0;
-    syncCompletion(me?.user||null);
+    // Use real dashboard counts when the backend provides them.
+    const d=dash?.dashboard||dash||{};
+    const conn=d.connections??d.connection_count??d.stats?.connections;
+    if(conn!=null)document.querySelector('.ss4-stat:nth-child(1)')?.setAttribute('title',`XP: ${g.xp??0} • Connections: ${conn}`);
   }
+  window.ss4UpdateProfileCompletion=syncCompletion;
   window.addEventListener('load',()=>setTimeout(load,250));
+  // If the existing profile editor saves successfully, refresh this command center automatically.
+  window.addEventListener('skillswap:profile-updated',e=>{if(e.detail)syncCompletion(e.detail);load()});
 })();
 </script>
