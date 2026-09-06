@@ -1943,6 +1943,80 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
 }
 </style>
 
+
+<style id="skillswap-main-menu-fix">
+.ss-main-menu{display:flex;align-items:center;gap:6px;}
+.ss-main-menu a{display:inline-flex;align-items:center;gap:6px;padding:9px 11px;border-radius:10px;text-decoration:none;color:inherit;font-weight:750;transition:.2s;}
+.ss-main-menu a:hover{background:rgba(18,107,87,.09);color:#126b57;transform:translateY(-1px);}
+@media(max-width:900px){.ss-main-menu{gap:2px}.ss-main-menu a{padding:8px 7px;font-size:13px}.ss-main-menu a span{display:none}}
+</style>
+
+<style id="skillswap-separate-menu-button">
+.ss-menu-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:10px 15px;
+  margin-left:8px;
+  border:1px solid #cfe4dc;
+  border-radius:12px;
+  background:#ffffff;
+  color:#126b57;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:0 4px 14px rgba(18,107,87,.08);
+  transition:transform .2s, background .2s, box-shadow .2s;
+}
+.ss-menu-btn:hover{
+  background:#f0faf6;
+  transform:translateY(-1px);
+  box-shadow:0 7px 18px rgba(18,107,87,.13);
+}
+.ss-menu-overlay{
+  position:fixed;
+  inset:0;
+  z-index:9998;
+  background:rgba(9,35,29,.38);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .2s;
+}
+.ss-menu-overlay.open{opacity:1;pointer-events:auto}
+.ss-menu-panel{
+  position:fixed;
+  top:0;
+  right:0;
+  width:min(330px,88vw);
+  height:100vh;
+  z-index:9999;
+  background:#fff;
+  box-shadow:-12px 0 35px rgba(0,0,0,.18);
+  transform:translateX(100%);
+  transition:transform .25s ease;
+  padding:24px 18px;
+  overflow:auto;
+}
+.ss-menu-panel.open{transform:translateX(0)}
+.ss-menu-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.ss-menu-head h3{margin:0;color:#126b57;font-size:1.2rem}
+.ss-menu-close{
+  border:0;background:#eef7f3;color:#126b57;border-radius:10px;
+  width:38px;height:38px;font-size:20px;cursor:pointer;
+}
+.ss-menu-items{display:grid;gap:8px}
+.ss-menu-items a,.ss-menu-items button{
+  display:flex;align-items:center;gap:12px;width:100%;padding:13px 14px;
+  border:0;border-radius:12px;background:#f7fbf9;color:#183c33;
+  text-decoration:none;font:inherit;font-weight:750;cursor:pointer;text-align:left;
+}
+.ss-menu-items a:hover,.ss-menu-items button:hover{background:#e9f6f1;color:#126b57}
+@media(max-width:900px){
+  .ss-menu-btn{padding:9px 11px;margin-left:4px}
+  .ss-menu-btn .ss-menu-label{display:none}
+}
+</style>
+
 </head>
 
 <body>
@@ -1959,12 +2033,11 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
     <span class="india-badge">🇮🇳 INDIA</span>
 </div>
 
-<div class="nav-links">
-    <a href="#discover">Discover</a>
-    <a href="#studentSkills">Student Skills</a>
-    <a href="#requestsSection">Requests</a>
-    <a href="#howItWorks">How it works</a>
-</div>
+
+<button id="ssSeparateMenuButton" class="ss-menu-btn" type="button"
+        onclick="ssOpenMenu()" aria-label="Open menu" aria-controls="ssMenuPanel">
+  <span aria-hidden="true">☰</span><span class="ss-menu-label">Menu</span>
+</button>
 
 <button class="theme-btn" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">☾</button>
 
@@ -2007,7 +2080,7 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
      HERO
 ========================= -->
 
-<section class="hero">
+<section class="hero" id="top">
 
 <div class="hero-content">
 
@@ -6729,6 +6802,67 @@ window.addEventListener("keydown",e=>{
  window.ss5Refresh=load; window.addEventListener('load',()=>setTimeout(load,500));
 })();
 </script>
+
+<script id="skillswap-main-menu-js">
+(function(){
+ function go(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+ window.ssNavHome=function(e){e.preventDefault();go('top');};
+ window.ssNavDiscover=function(e){e.preventDefault();go('discover');};
+ window.ssNavSessions=function(e){e.preventDefault();if(typeof logged==='function'&&!logged()){if(typeof openAuth==='function')openAuth('signin');return;}go('sessions');};
+ window.ssNavMessages=function(e){e.preventDefault();if(typeof logged==='function'&&!logged()){if(typeof openAuth==='function')openAuth('signin');return;}
+   const chat=document.getElementById('chatModal');
+   if(chat && typeof closeModal==='function'){}
+   const el=document.getElementById('messages');
+   if(el)go('messages');
+   else {const sessions=document.getElementById('sessions'); if(sessions)go('sessions'); if(typeof showToast==='function')showToast('Open a connection from Discover to start messaging.');}
+ };
+ window.ssNavProfile=function(e){e.preventDefault();if(typeof logged==='function'&&!logged()){if(typeof openAuth==='function')openAuth('signin');return;}if(typeof openProfile==='function'){openProfile();}else{const el=document.getElementById('profile');if(el)go('profile');}};
+})();
+</script>
+
+<div id="ssMenuOverlay" class="ss-menu-overlay" onclick="ssCloseMenu()" aria-hidden="true"></div>
+<aside id="ssMenuPanel" class="ss-menu-panel" aria-label="SkillSwap menu">
+  <div class="ss-menu-head">
+    <h3>SkillSwap Menu</h3>
+    <button class="ss-menu-close" type="button" onclick="ssCloseMenu()" aria-label="Close menu">×</button>
+  </div>
+  <nav class="ss-menu-items">
+    <a href="#top" onclick="ssMenuGo(event,'top')">⌂ <span>Home</span></a>
+    <a href="#discover" onclick="ssMenuGo(event,'discover')">🔎 <span>Discover</span></a>
+    <a href="#sessions" onclick="ssMenuGo(event,'sessions')">📅 <span>Sessions</span></a>
+    <button type="button" onclick="ssNavMessages(event)">💬 <span>Messages</span></button>
+    <button type="button" onclick="ssNavProfile(event)">👤 <span>Profile</span></button>
+    <button type="button" onclick="ssCloseMenu();openAuth('signin')">🔐 <span>Sign in</span></button>
+    <button type="button" onclick="ssCloseMenu();openAuth('signup')">✨ <span>Join free</span></button>
+  </nav>
+</aside>
+
+<script id="skillswap-separate-menu-js">
+(function(){
+  function openMenu(){
+    const o=document.getElementById('ssMenuOverlay'), p=document.getElementById('ssMenuPanel');
+    if(o)o.classList.add('open');
+    if(p)p.classList.add('open');
+    document.body.style.overflow='hidden';
+  }
+  function closeMenu(){
+    const o=document.getElementById('ssMenuOverlay'), p=document.getElementById('ssMenuPanel');
+    if(o)o.classList.remove('open');
+    if(p)p.classList.remove('open');
+    document.body.style.overflow='';
+  }
+  function menuGo(e,id){
+    e.preventDefault(); closeMenu();
+    const el=document.getElementById(id);
+    if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  window.ssOpenMenu=openMenu;
+  window.ssCloseMenu=closeMenu;
+  window.ssMenuGo=menuGo;
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMenu();});
+})();
+</script>
+
 </body>
 </html>
 <!-- =========================================================
