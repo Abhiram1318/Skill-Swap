@@ -3249,168 +3249,99 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
 
 </div>
 
-<!-- Firebase SDK: Auth + Firestore. Firebase is the online backend; no Python/Flask/Supabase is required. -->
+<!-- Firebase SDK: Auth + Realtime Database. No Python/Flask/Supabase/browser persistence. -->
 <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-database-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script>
 /* =========================================================
-   SKILLSWAP INDIA — FIREBASE CLOUD ADAPTER
-   Replaces the old Flask/SQLite API with Firebase Auth + Firestore.
-   App data is stored online. This adapter intentionally keeps only
-   a volatile in-memory session/cache; it does NOT use localStorage.
+   SKILLSWAP INDIA — FIREBASE REALTIME DATABASE ADAPTER
+   Keeps the existing Flask-style frontend API but stores all
+   application data in Firebase Realtime Database.
 ========================================================= */
 (function(){
   const cfg=window.SKILLSWAP_FIREBASE_CONFIG||{};
-  const ready=cfg.apiKey && cfg.projectId && cfg.appId;
+  const ready=!!(cfg.apiKey&&cfg.projectId&&cfg.appId);
   const memory={};
-  window.ssMemoryStorage={
-    getItem:k=>Object.prototype.hasOwnProperty.call(memory,k)?memory[k]:null,
-    setItem:(k,v)=>{memory[k]=String(v)},
-    removeItem:k=>{delete memory[k]},
-    clear:()=>{Object.keys(memory).forEach(k=>delete memory[k])}
-  };
-  window.ssFirebaseReady=!!ready;
-  if(!ready){
-    window.ssFirebaseError='Firebase is not configured. Edit firebase-config.js with your Firebase web app configuration.';
-    return;
-  }
-  if(!firebase.apps.length) firebase.initializeApp(cfg);
+  window.ssMemoryStorage={getItem:k=>Object.prototype.hasOwnProperty.call(memory,k)?memory[k]:null,setItem:(k,v)=>memory[k]=String(v),removeItem:k=>delete memory[k],clear:()=>Object.keys(memory).forEach(k=>delete memory[k])};
+  window.ssFirebaseReady=ready;
+  if(!ready){window.ssFirebaseError='Firebase is not configured. Edit firebase-config.js with your Firebase web app configuration.';return;}
+  if(!firebase.apps.length)firebase.initializeApp(cfg);
   const auth=firebase.auth();
-  const db=firebase.firestore();
+  const db=firebase.database();
   window.ssFirebase={auth,db};
   auth.setPersistence(firebase.auth.Auth.Persistence.NONE).catch(()=>{});
-
-  const json=(obj,status=200)=>new Response(JSON.stringify(obj),{status,headers:{'Content-Type':'application/json'}});
+  const json=(obj,status=200)=>new Response(JSON.stringify(obj),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}});
   const bodyOf=async(init)=>{try{return init&&init.body?JSON.parse(init.body):{}}catch{return{}}};
   const now=()=>new Date().toISOString();
-  const userDoc=uid=>db.collection('users').doc(uid);
-  const legacyId=()=>Date.now()+Math.floor(Math.random()*1000);
-  const cleanUser=(d)=>({
-    ...d,
-    id:d.id||d.legacyId||d.uid,
-    uid:d.uid||d.id,
-    email:d.email||'',
-    languages:Array.isArray(d.languages)?d.languages:[],
-    teach:Array.isArray(d.teach)?d.teach:[],
-    want:Array.isArray(d.want)?d.want:[],
-    availability:Array.isArray(d.availability)?d.availability:[]
-  });
+  const cleanUser=d=>{if(!d)return null;return {...d,id:d.id||d.legacyId||d.uid,uid:d.uid||d.id,email:d.email||'',languages:Array.isArray(d.languages)?d.languages:[],teach:Array.isArray(d.teach)?d.teach:[],want:Array.isArray(d.want)?d.want:[],availability:Array.isArray(d.availability)?d.availability:[]};};
+  const usersRef=()=>db.ref('users');
   async function profileByAny(id){
     const s=String(id);
-    const byUid=await db.collection('users').doc(s).get();
-    if(byUid.exists)return cleanUser(byUid.data());
-    const q=await db.collection('users').where('legacyId','==',Number(id)).limit(1).get();
-    if(!q.empty)return cleanUser(q.docs[0].data());
+    let snap=await db.ref('users/'+s).get();
+    if(snap.exists())return cleanUser(snap.val());
+    const all=await usersRef().get(), vals=all.val()||{};
+    for(const [uid,d] of Object.entries(vals))if(String(d.legacyId)===s||String(d.id)===s)return cleanUser(d);
     return null;
   }
-  async function currentProfile(){
-    const u=auth.currentUser;
-    if(!u)return null;
-    const snap=await userDoc(u.uid).get();
-    return snap.exists?cleanUser(snap.data()):null;
-  }
-  async function people(){
-    const snap=await db.collection('users').limit(100).get();
-    return snap.docs.map(x=>cleanUser(x.data()));
-  }
-  async function notify(uid,title,body){
-    if(!uid)return;
-    await db.collection('notifications').add({uid,title,body,is_read:false,created_at:now()});
-  }
+  async function currentProfile(){const u=auth.currentUser;if(!u)return null;const s=await db.ref('users/'+u.uid).get();return s.exists()?cleanUser(s.val()):null;}
+  async function people(){const s=await usersRef().get();return Object.values(s.val()||{}).map(cleanUser).filter(Boolean).slice(0,100);}
+  async function notify(uid,title,body){if(!uid)return;const ref=db.ref('notifications').push();await ref.set({uid,title,body,is_read:false,created_at:now()});}
+  async function allUnder(path){const s=await db.ref(path).get();return s.val()||{};}
+  function entries(obj){return Object.entries(obj||{}).map(([id,d])=>({id,...d}));}
   async function route(path,init={}){
-    if(!path.startsWith('/api/')) return null;
-    if(!ready) return json({success:false,message:window.ssFirebaseError},503);
-    const method=(init.method||'GET').toUpperCase();
-    const payload=await bodyOf(init);
-    const current=auth.currentUser;
+    if(!path.startsWith('/api/'))return null;
+    if(!ready)return json({success:false,message:window.ssFirebaseError},503);
+    const method=(init.method||'GET').toUpperCase(), payload=await bodyOf(init), current=auth.currentUser;
     const requireAuth=()=>{if(!current)throw new Error('Please sign in first.');};
     try{
-      if(path==='/api/signup' && method==='POST'){
+      if(path==='/api/signup'&&method==='POST'){
         const cred=await auth.createUserWithEmailAndPassword(payload.email,payload.password);
-        const profile={uid:cred.user.uid,legacyId:legacyId(),id:legacyId(),name:payload.name||'SkillSwap Member',email:payload.email,type:payload.type||'University Student',location:payload.location||'Online',languages:String(payload.languages||'English').split(',').map(x=>x.trim()).filter(Boolean),bio:payload.bio||'Learning and sharing skills.',teach:String(payload.teach||payload.skill||'Knowledge Sharing').split(',').map(x=>x.trim()).filter(Boolean),want:String(payload.want||payload.wanted||'Something New').split(',').map(x=>x.trim()).filter(Boolean),availability:Array.isArray(payload.availability)?payload.availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:now()};
-        profile.id=profile.legacyId;
-        await userDoc(cred.user.uid).set(profile);
-        return json({success:true,user:profile});
+        const id=Date.now()+Math.floor(Math.random()*1000);
+        const profile={uid:cred.user.uid,legacyId:id,id,name:payload.name||'SkillSwap Member',email:payload.email,type:payload.type||'University Student',location:payload.location||'Online',languages:String(payload.languages||'English').split(',').map(x=>x.trim()).filter(Boolean),bio:payload.bio||'Learning and sharing skills.',teach:String(payload.teach||payload.skill||'Knowledge Sharing').split(',').map(x=>x.trim()).filter(Boolean),want:String(payload.want||payload.wanted||'Something New').split(',').map(x=>x.trim()).filter(Boolean),availability:Array.isArray(payload.availability)?payload.availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:now()};
+        await db.ref('users/'+cred.user.uid).set(profile);return json({success:true,user:profile});
       }
-      if(path==='/api/signin' && method==='POST'){
-        const cred=await auth.signInWithEmailAndPassword(payload.email,payload.password);
-        const p=await userDoc(cred.user.uid).get();
-        if(!p.exists) throw new Error('Profile not found.');
-        return json({success:true,user:cleanUser(p.data())});
+      if(path==='/api/signin'&&method==='POST'){
+        const cred=await auth.signInWithEmailAndPassword(payload.email,payload.password), s=await db.ref('users/'+cred.user.uid).get();
+        if(!s.exists())throw new Error('Profile not found. Please complete your profile.');
+        return json({success:true,user:cleanUser(s.val())});
       }
-      if(path==='/api/logout' && method==='POST'){await auth.signOut();return json({success:true});}
-      if(path==='/api/me' && method==='GET'){const p=await currentProfile();return json(p?{logged_in:true,user:p}:{logged_in:false,user:null});}
-      if(path==='/api/people' && method==='GET'){
-        let list=await people();
-        const q=new URLSearchParams(location.search).get('q')?.toLowerCase()||'';
-        if(q)list=list.filter(p=>[p.name,p.location,p.bio,...p.teach,...p.want,...p.languages].join(' ').toLowerCase().includes(q));
-        return json(list);
+      if(path==='/api/logout'&&method==='POST'){await auth.signOut();return json({success:true});}
+      if(path==='/api/me'&&method==='GET'){const p=await currentProfile();return json(p?{logged_in:true,user:p}:{logged_in:false,user:null});}
+      if(path==='/api/people'&&method==='GET'){
+        let list=await people();const q=(new URLSearchParams(path.split('?')[1]||'').get('q')||'').toLowerCase();
+        if(q)list=list.filter(p=>[p.name,p.location,p.bio,...p.teach,...p.want,...p.languages].join(' ').toLowerCase().includes(q));return json(list);
       }
-      const profMatch=path.match(/^\/api\/profile\/([^/]+)$/);
-      if(profMatch && method==='GET'){const p=await profileByAny(decodeURIComponent(profMatch[1]));return p?json({user:p}):json({message:'Profile not found.'},404);}
-      if(path==='/api/profile/update' && method==='POST'){
-        requireAuth();
-        const ref=userDoc(current.uid); await ref.set({...payload,uid:current.uid,updated_at:now()},{merge:true});
-        return json({success:true,user:cleanUser((await ref.get()).data())});
-      }
-      if(path==='/api/profile-view/' + path.split('/').pop() && method==='POST') return json({success:true});
-      const pv=path.match(/^\/api\/profile-view\/(.+)$/); if(pv&&method==='POST'){
-        requireAuth(); await db.collection('profileViews').add({viewerUid:current.uid,personId:String(pv[1]),created_at:now()}); return json({success:true});
-      }
-      if(path==='/api/requests' && method==='POST'){
-        requireAuth(); const receiver=await profileByAny(payload.receiverId); if(!receiver)throw new Error('Member not found.');
-        const sender=await currentProfile(); const ref=await db.collection('requests').add({senderUid:current.uid,senderId:sender.id,senderName:sender.name,senderAvatar:sender.avatar||'🧑',receiverUid:receiver.uid,receiverId:receiver.id,receiverName:receiver.name,receiverAvatar:receiver.avatar||'🧑',skillWanted:payload.wanted,skillOffered:payload.offered,message:payload.message||'',status:'pending',created_at:now()});
-        await notify(receiver.uid,'New skill-swap request',`${sender.name} wants to exchange skills with you.`); return json({success:true,id:ref.id});
-      }
-      if(path==='/api/requests/incoming' && method==='GET'){
-        requireAuth(); const snap=await db.collection('requests').where('receiverUid','==',current.uid).limit(100).get(); return json(snap.docs.map(x=>({id:x.id,...x.data()})));
-      }
-      const reqMatch=path.match(/^\/api\/requests\/([^/]+)$/); if(reqMatch){
-        requireAuth(); const ref=db.collection('requests').doc(reqMatch[1]); const snap=await ref.get(); if(!snap.exists)return json({message:'Request not found.'},404); const r=snap.data();
-        if(method==='POST'){const action=payload.action||payload.status||'cancel'; const status=action==='accept'?'accepted':action==='reject'?'declined':action==='complete'?'completed':'cancelled'; await ref.update({status,updated_at:now()}); if(r.senderUid)await notify(r.senderUid,status==='accepted'?'Request accepted':'Request updated',`${r.receiverName||'Your connection'} ${status}.`); return json({success:true,status});}
-        return json({id:snap.id,...r});
-      }
-      if(path==='/api/favorites' && method==='GET'){
-        requireAuth(); const snap=await db.collection('favorites').where('uid','==',current.uid).limit(100).get(); const out=[]; for(const d of snap.docs){const p=await profileByAny(d.data().personId);if(p)out.push(p)} return json(out);
-      }
-      if(path==='/api/favorites' && (method==='POST'||method==='DELETE')){
-        requireAuth(); const q=await db.collection('favorites').where('uid','==',current.uid).where('personId','==',String(payload.person_id||payload.personId)).limit(1).get();
-        if(method==='POST'){if(q.empty)await db.collection('favorites').add({uid:current.uid,personId:String(payload.person_id||payload.personId),created_at:now()});}
-        else if(!q.empty)await q.docs[0].ref.delete(); return json({success:true});
-      }
-      const msgMatch=path.match(/^\/api\/messages\/([^/]+)$/); if(msgMatch){
-        requireAuth(); const other=await profileByAny(msgMatch[1]); if(!other)throw new Error('Member not found.');
-        const pair=[current.uid,other.uid].sort().join('_'); const col=db.collection('chats').doc(pair).collection('messages');
-        if(method==='GET'){const snap=await col.orderBy('created_at','asc').limit(200).get();return json(snap.docs.map(x=>{const d=x.data();return {id:x.id,type:d.senderUid===current.uid?'me':'them',text:d.text,created_at:d.created_at}}));}
-        if(method==='POST'){const p=await currentProfile();await col.add({senderUid:current.uid,text:String(payload.message||'').slice(0,4000),created_at:now()});await notify(other.uid,'New message',`${p.name} sent you a message.`);return json({success:true});}
-      }
-      if(path==='/api/notifications' && method==='GET'){requireAuth();const snap=await db.collection('notifications').where('uid','==',current.uid).limit(100).get();return json(snap.docs.map(x=>({id:x.id,...x.data()})));}
-      if(path==='/api/notifications/read' && method==='POST'){requireAuth(); if(payload.id){await db.collection('notifications').doc(payload.id).update({is_read:true});}else{const s=await db.collection('notifications').where('uid','==',current.uid).where('is_read','==',false).limit(100).get();await Promise.all(s.docs.map(d=>d.ref.update({is_read:true})));}return json({success:true});}
-      if(path==='/api/connections' && method==='GET'){requireAuth();const snap=await db.collection('requests').where('status','==','accepted').limit(200).get();const ids=new Set();snap.docs.forEach(d=>{const r=d.data();if(r.senderUid===current.uid)ids.add(r.receiverId);if(r.receiverUid===current.uid)ids.add(r.senderId)});const out=[];for(const id of ids){const p=await profileByAny(id);if(p)out.push(p)}return json(out);}
-      if(path==='/api/sessions' && method==='GET'){requireAuth();const snap=await db.collection('sessions').where('participantUids','array-contains',current.uid).limit(100).get();return json(snap.docs.map(d=>({id:d.id,...d.data()})));}
-      if(path==='/api/sessions' && method==='POST'){requireAuth();const partner=await profileByAny(payload.partner_id||payload.guestId);if(!partner)throw new Error('Choose a valid connection.');const me=await currentProfile();const data={host_uid:current.uid,guest_uid:partner.uid,host_name:me.name,guest_name:partner.name,participantUids:[current.uid,partner.uid],title:payload.title||'SkillSwap Session',starts_at:payload.start_at||payload.startsAt,duration:Number(payload.duration||payload.durationMinutes||60),notes:payload.notes||'',status:'scheduled',created_at:now()};const ref=await db.collection('sessions').add(data);await notify(partner.uid,'Session scheduled',`${me.name} scheduled a SkillSwap session with you.`);return json({success:true,id:ref.id});}
-      const sm=path.match(/^\/api\/sessions\/([^/]+)$/);if(sm&&method==='POST'){requireAuth();const ref=db.collection('sessions').doc(sm[1]);await ref.update({status:payload.status||payload.action,updated_at:now()});return json({success:true});}
-      if(path==='/api/listings' && method==='GET'){const snap=await db.collection('listings').limit(100).get();return json(snap.docs.map(d=>({id:d.id,...d.data()})));}
-      if(path==='/api/listings' && method==='POST'){requireAuth();const me=await currentProfile();const ref=await db.collection('listings').add({...payload,uid:current.uid,name:me.name,created_at:now()});return json({success:true,id:ref.id});}
-      const report=path.match(/^\/api\/report\/(.+)$/);if(report&&method==='POST'){requireAuth();await db.collection('reports').add({reporterUid:current.uid,targetId:String(report[1]),...payload,created_at:now()});return json({success:true});}
-      const block=path.match(/^\/api\/block\/(.+)$/);if(block&&method==='POST'){requireAuth();await db.collection('blocks').doc(current.uid+'_'+String(block[1])).set({uid:current.uid,targetId:String(block[1]),created_at:now()});return json({success:true});}
-      if(path==='/api/gamification'&&method==='GET'){requireAuth();const snap=await db.collection('gamification').doc(current.uid).get();return json({gamification:snap.exists?snap.data():{xp:0,level:1,streak:0,next_level_xp:500}});}
-      if(path==='/api/journey'&&method==='GET'){requireAuth();const p=await currentProfile();return json({milestones:[{title:'Create your profile',done:!!p},{title:'Add teaching skills',done:(p.teach||[]).length>0},{title:'Add learning goals',done:(p.want||[]).length>0},{title:'Make your first connection',done:false},{title:'Complete your first session',done:false}]});}
-      if((path==='/api/analytics'||path==='/api/dashboard')&&method==='GET'){requireAuth();const uid=current.uid;const [reqs,sess,views,favs]=await Promise.all([db.collection('requests').where('senderUid','==',uid).limit(100).get(),db.collection('sessions').where('participantUids','array-contains',uid).limit(100).get(),db.collection('profileViews').where('personId','==',(await currentProfile()).id).limit(100).get(),db.collection('favorites').where('uid','==',uid).limit(100).get()]);const connections=(await db.collection('requests').where('status','==','accepted').limit(200).get()).docs.filter(d=>{const r=d.data();return r.senderUid===uid||r.receiverUid===uid}).length;const analytics={connections,sessions:sess.size,profile_views:views.size,offers:reqs.size,weekly:[]};return path==='/api/analytics'?json({analytics}):json({dashboard:{...analytics}});}
-      if(path==='/api/recommendations'&&method==='GET'){requireAuth();const me=await currentProfile();const list=(await people()).filter(p=>p.uid!==current.uid).map(p=>{const a=new Set((me.want||[]).map(x=>String(x).toLowerCase()));const b=new Set((p.teach||[]).map(x=>String(x).toLowerCase()));const c=new Set((me.teach||[]).map(x=>String(x).toLowerCase()));const d=new Set((p.want||[]).map(x=>String(x).toLowerCase()));let score=35;[...a].forEach(x=>{if([...b].some(y=>x.includes(y)||y.includes(x)))score+=18});[...c].forEach(x=>{if([...d].some(y=>x.includes(y)||y.includes(x)))score+=18});score=Math.min(99,score);return {...p,match:score}}).sort((a,b)=>b.match-a.match).slice(0,20);return json({recommendations:list});}
+      const profMatch=path.match(/^\/api\/profile\/([^/]+)$/);if(profMatch&&method==='GET'){const p=await profileByAny(decodeURIComponent(profMatch[1]));return p?json({user:p}):json({message:'Profile not found.'},404);}
+      if(path==='/api/profile/update'&&method==='POST'){requireAuth();await db.ref('users/'+current.uid).update({...payload,uid:current.uid,updated_at:now()});return json({success:true,user:await currentProfile()});}
+      const pv=path.match(/^\/api\/profile-view\/(.+)$/);if(pv&&method==='POST'){requireAuth();const ref=db.ref('profileViews').push();await ref.set({viewerUid:current.uid,personId:String(pv[1]),created_at:now()});return json({success:true});}
+      if(path==='/api/requests'&&method==='POST'){requireAuth();const receiver=await profileByAny(payload.receiverId);if(!receiver)throw new Error('Member not found.');const sender=await currentProfile();const ref=db.ref('requests').push();await ref.set({senderUid:current.uid,senderId:sender.id,senderName:sender.name,senderAvatar:sender.avatar||'🧑',receiverUid:receiver.uid,receiverId:receiver.id,receiverName:receiver.name,receiverAvatar:receiver.avatar||'🧑',skillWanted:payload.wanted,skillOffered:payload.offered,message:payload.message||'',status:'pending',created_at:now()});await notify(receiver.uid,'New skill-swap request',`${sender.name} wants to exchange skills with you.`);return json({success:true,id:ref.key});}
+      if(path==='/api/requests/incoming'&&method==='GET'){requireAuth();const all=await allUnder('requests');return json(entries(all).filter(r=>r.receiverUid===current.uid).slice(0,100));}
+      const reqMatch=path.match(/^\/api\/requests\/([^/]+)$/);if(reqMatch){requireAuth();const ref=db.ref('requests/'+reqMatch[1]),snap=await ref.get();if(!snap.exists())return json({message:'Request not found.'},404);const r=snap.val();if(method==='POST'){const action=payload.action||payload.status||'cancel';const status=action==='accept'?'accepted':action==='reject'?'declined':action==='complete'?'completed':'cancelled';await ref.update({status,updated_at:now()});if(r.senderUid)await notify(r.senderUid,status==='accepted'?'Request accepted':'Request updated',`${r.receiverName||'Your connection'} ${status}.`);return json({success:true,status});}return json({id:snap.key,...r});}
+      if(path==='/api/favorites'&&method==='GET'){requireAuth();const all=await allUnder('favorites');const out=[];for(const d of Object.values(all)){if(d.uid===current.uid){const p=await profileByAny(d.personId);if(p)out.push(p);}}return json(out.slice(0,100));}
+      if(path==='/api/favorites'&&(method==='POST'||method==='DELETE')){requireAuth();const personId=String(payload.person_id||payload.personId);const all=await allUnder('favorites');let found=null;for(const [id,d] of Object.entries(all))if(d.uid===current.uid&&String(d.personId)===personId){found=id;break;}if(method==='POST'&&!found)await db.ref('favorites').push().set({uid:current.uid,personId,created_at:now()});if(method==='DELETE'&&found)await db.ref('favorites/'+found).remove();return json({success:true});}
+      const msgMatch=path.match(/^\/api\/messages\/([^/]+)$/);if(msgMatch){requireAuth();const other=await profileByAny(msgMatch[1]);if(!other)throw new Error('Member not found.');const pair=[current.uid,other.uid].sort().join('_');const col=db.ref('chats/'+pair+'/messages');if(method==='GET'){const snap=await col.get();return json(entries(snap.val()).sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at))).slice(-200).map(d=>({id:d.id,type:d.senderUid===current.uid?'me':'them',text:d.text,created_at:d.created_at})));}if(method==='POST'){const p=await currentProfile();await col.push().set({senderUid:current.uid,text:String(payload.message||'').slice(0,4000),created_at:now()});await notify(other.uid,'New message',`${p.name} sent you a message.`);return json({success:true});}}
+      if(path==='/api/notifications'&&method==='GET'){requireAuth();const all=await allUnder('notifications');return json(entries(all).filter(d=>d.uid===current.uid).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,100));}
+      if(path==='/api/notifications/read'&&method==='POST'){requireAuth();const all=await allUnder('notifications');const updates={};for(const [id,d] of Object.entries(all))if(d.uid===current.uid&&(!payload.id||id===String(payload.id)))updates[id+'/is_read']=true;await db.ref('notifications').update(updates);return json({success:true});}
+      if(path==='/api/connections'&&method==='GET'){requireAuth();const all=await allUnder('requests'),ids=new Set();Object.values(all).forEach(r=>{if(r.status==='accepted'){if(r.senderUid===current.uid)ids.add(r.receiverId);if(r.receiverUid===current.uid)ids.add(r.senderId);}});const out=[];for(const id of ids){const p=await profileByAny(id);if(p)out.push(p);}return json(out);}
+      if(path==='/api/sessions'&&method==='GET'){requireAuth();const all=await allUnder('sessions');return json(entries(all).filter(d=>Array.isArray(d.participantUids)&&d.participantUids.includes(current.uid)).slice(0,100));}
+      if(path==='/api/sessions'&&method==='POST'){requireAuth();const partner=await profileByAny(payload.partner_id||payload.guestId);if(!partner)throw new Error('Choose a valid connection.');const me=await currentProfile(),ref=db.ref('sessions').push();const data={host_uid:current.uid,guest_uid:partner.uid,host_name:me.name,guest_name:partner.name,participantUids:[current.uid,partner.uid],title:payload.title||'SkillSwap Session',starts_at:payload.start_at||payload.startsAt,duration:Number(payload.duration||payload.durationMinutes||60),notes:payload.notes||'',status:'scheduled',created_at:now()};await ref.set(data);await notify(partner.uid,'Session scheduled',`${me.name} scheduled a SkillSwap session with you.`);return json({success:true,id:ref.key});}
+      const sm=path.match(/^\/api\/sessions\/([^/]+)$/);if(sm&&method==='POST'){requireAuth();await db.ref('sessions/'+sm[1]).update({status:payload.status||payload.action,updated_at:now()});return json({success:true});}
+      if(path==='/api/listings'&&method==='GET'){return json(entries(await allUnder('listings')).slice(0,100));}
+      if(path==='/api/listings'&&method==='POST'){requireAuth();const me=await currentProfile(),ref=db.ref('listings').push();await ref.set({...payload,uid:current.uid,name:me.name,created_at:now()});return json({success:true,id:ref.key});}
+      const report=path.match(/^\/api\/report\/(.+)$/);if(report&&method==='POST'){requireAuth();await db.ref('reports').push().set({reporterUid:current.uid,targetId:String(report[1]),...payload,created_at:now()});return json({success:true});}
+      const block=path.match(/^\/api\/block\/(.+)$/);if(block&&method==='POST'){requireAuth();await db.ref('blocks/'+current.uid+'_'+String(block[1])).set({uid:current.uid,targetId:String(block[1]),created_at:now()});return json({success:true});}
+      if(path==='/api/gamification'&&method==='GET'){requireAuth();const s=await db.ref('gamification/'+current.uid).get();return json({gamification:s.exists()?s.val():{xp:0,level:1,streak:0,next_level_xp:500}});}
+      if(path==='/api/journey'&&method==='GET'){requireAuth();const p=await currentProfile();const all=await allUnder('requests');const connected=Object.values(all).some(r=>r.status==='accepted'&&(r.senderUid===current.uid||r.receiverUid===current.uid));const sess=await allUnder('sessions');const completed=Object.values(sess).some(x=>Array.isArray(x.participantUids)&&x.participantUids.includes(current.uid)&&x.status==='complete');return json({milestones:[{title:'Create your profile',done:!!p},{title:'Add teaching skills',done:(p.teach||[]).length>0},{title:'Add learning goals',done:(p.want||[]).length>0},{title:'Make your first connection',done:connected},{title:'Complete your first session',done:completed}]});}
+      if((path==='/api/analytics'||path==='/api/dashboard')&&method==='GET'){requireAuth();const uid=current.uid,p=await currentProfile(),reqs=await allUnder('requests'),sess=await allUnder('sessions'),views=await allUnder('profileViews');const connections=Object.values(reqs).filter(r=>r.status==='accepted'&&(r.senderUid===uid||r.receiverUid===uid)).length;const analytics={connections,sessions:Object.values(sess).filter(x=>Array.isArray(x.participantUids)&&x.participantUids.includes(uid)).length,profile_views:Object.values(views).filter(x=>String(x.personId)===String(p.id)).length,offers:Object.values(reqs).filter(x=>x.senderUid===uid).length,weekly:[]};return path==='/api/analytics'?json({analytics}):json({dashboard:{...analytics}});}
+      if(path==='/api/recommendations'&&method==='GET'){requireAuth();const me=await currentProfile(),list=(await people()).filter(p=>p.uid!==current.uid).map(p=>{const a=(me.want||[]).map(x=>String(x).toLowerCase()),b=(p.teach||[]).map(x=>String(x).toLowerCase()),c=(me.teach||[]).map(x=>String(x).toLowerCase()),d=(p.want||[]).map(x=>String(x).toLowerCase());let score=35;a.forEach(x=>{if(b.some(y=>x.includes(y)||y.includes(x)))score+=18});c.forEach(x=>{if(d.some(y=>x.includes(y)||y.includes(x)))score+=18});return {...p,match:Math.min(99,score)}}).sort((a,b)=>b.match-a.match).slice(0,20);return json({recommendations:list});}
       return json({message:'Firebase route not implemented: '+path},404);
-    }catch(e){console.error('SkillSwap Firebase API',path,e);return json({success:false,message:e.message||'Firebase request failed.'},400);}
+    }catch(e){console.error('SkillSwap Firebase RTDB',path,e);return json({success:false,message:e.message||'Firebase request failed.'},400);}
   }
   const nativeFetch=window.fetch.bind(window);
-  window.fetch=async function(input,init){
-    const url=typeof input==='string'?input:input.url;
-    try{const u=new URL(url,location.href);if(u.pathname.startsWith('/api/'))return route(u.pathname+(u.search||''),init||{});}catch(e){}
-    return nativeFetch(input,init);
-  };
-  window.ssFirebaseRoute=route;
-  window.ssFirebaseAuth=auth;
+  window.fetch=async function(input,init){const url=typeof input==='string'?input:input.url;try{const u=new URL(url,location.href);if(u.pathname.startsWith('/api/'))return route(u.pathname+(u.search||''),init||{});}catch(e){}return nativeFetch(input,init);};
+  window.ssFirebaseRoute=route;window.ssFirebaseAuth=auth;
   auth.onAuthStateChanged(async u=>{if(u){const p=await currentProfile();window.ssFirebaseProfile=p;window.ssMemoryStorage.setItem('skillswapUser',JSON.stringify(p||null));}else{window.ssFirebaseProfile=null;window.ssMemoryStorage.removeItem('skillswapUser');}});
 })();
 </script>
