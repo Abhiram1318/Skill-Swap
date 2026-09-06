@@ -1,7 +1,7 @@
 window.SKILLSWAP_FIREBASE_CONFIG = {
     apiKey: "AIzaSyCI3r2qw_xHMwI4hH04PeXTxoq7euQR508",
     authDomain: "skillswap-india-ae59f.firebaseapp.com",
-    databaseURL: "https://skillswap-india-ae59f-default-rtdb.firebaseio.com",
+    databaseURL: "https://skillswap-india-ae59f-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "skillswap-india-ae59f",
     storageBucket: "skillswap-india-ae59f.firebasestorage.app",
     messagingSenderId: "479580370395",
