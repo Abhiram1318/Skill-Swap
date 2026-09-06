@@ -2232,61 +2232,103 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
 
 </div>
 
-<div
-    class="matches"
-    id="matches">
+<div class="matches" id="matches"></div>
 
-<div class="ss-static-members-head">
-  <div>
-    <h2>👥 Members you can connect with</h2>
-    <p>Explore skill partners and start a conversation.</p>
+<div id="ssCommunityMembers" class="ss-community-members" aria-label="SkillSwap community members">
+  <div class="ss-community-head">
+    <div>
+      <span class="ss-community-kicker">COMMUNITY</span>
+      <h2>👥 SkillSwap members</h2>
+      <p>Browse starter profiles now. Registered SkillSwap members appear automatically when their profiles are available in Firebase.</p>
+    </div>
+    <strong id="ssCommunityCount">12 starter profiles</strong>
   </div>
-  <span>6 practice partners</span>
-</div>
-<div class="ss-static-member-grid">
-  <article class="ss-static-card">
-    <div class="ss-static-top"><div class="ss-static-avatar">👩🏻‍💻</div><span>✨ Virtual Practice Partner</span></div>
-    <h3>Anaya Kapoor</h3><p class="ss-static-location">📍 Bengaluru, Karnataka</p>
-    <p class="ss-static-bio">A friendly practice partner who enjoys breaking difficult coding ideas into simple, practical steps.</p>
-    <div class="ss-static-skills"><b>Can teach</b><div>Python · JavaScript · AI basics</div><b>Wants to learn</b><div>Public Speaking · Product Design</div></div>
-    <button class="ss-static-chat" onclick="ssStaticChat('anaya')">💬 Chat now</button>
-  </article>
-  <article class="ss-static-card">
-    <div class="ss-static-top"><div class="ss-static-avatar">👨🏽‍🎨</div><span>✨ Virtual Practice Partner</span></div>
-    <h3>Rohan Mehta</h3><p class="ss-static-location">📍 Mumbai, Maharashtra</p>
-    <p class="ss-static-bio">A relaxed practice partner for creative projects, feedback and brainstorming.</p>
-    <div class="ss-static-skills"><b>Can teach</b><div>Drawing · Design Thinking · Photography</div><b>Wants to learn</b><div>Coding · Cricket</div></div>
-    <button class="ss-static-chat" onclick="ssStaticChat('rohan')">💬 Chat now</button>
-  </article>
-  <article class="ss-static-card">
-    <div class="ss-static-top"><div class="ss-static-avatar">👩🏽‍🏫</div><span>✨ Virtual Practice Partner</span></div>
-    <h3>Meera Iyer</h3><p class="ss-static-location">📍 Chennai, Tamil Nadu</p>
-    <p class="ss-static-bio">A patient conversation partner for language practice, storytelling and confidence-building.</p>
-    <div class="ss-static-skills"><b>Can teach</b><div>Tamil · English Conversation · Public Speaking</div><b>Wants to learn</b><div>Python · Guitar</div></div>
-    <button class="ss-static-chat" onclick="ssStaticChat('meera')">💬 Chat now</button>
-  </article>
-  <article class="ss-static-card">
-    <div class="ss-static-top"><div class="ss-static-avatar">🧑🏽‍🎓</div><span>✨ Virtual Practice Partner</span></div>
-    <h3>Vihaan Rao</h3><p class="ss-static-location">📍 Hyderabad, Telangana</p>
-    <p class="ss-static-bio">A focused study partner who likes solving problems step by step and keeping practice fun.</p>
-    <div class="ss-static-skills"><b>Can teach</b><div>Maths · Physics · Chess</div><b>Wants to learn</b><div>Web Development · Guitar</div></div>
-    <button class="ss-static-chat" onclick="ssStaticChat('vihaan')">💬 Chat now</button>
-  </article>
-  <article class="ss-static-card">
-    <div class="ss-static-top"><div class="ss-static-avatar">👩🏽‍🎤</div><span>✨ Virtual Practice Partner</span></div>
-    <h3>Sana Khan</h3><p class="ss-static-location">📍 Pune, Maharashtra</p>
-    <p class="ss-static-bio">A warm practice partner for music, creativity and casual skill-building conversations.</p>
-    <div class="ss-static-skills"><b>Can teach</b><div>Guitar · Music Theory · Creative Writing</div><b>Wants to learn</b><div>Python · Drawing</div></div>
-    <button class="ss-static-chat" onclick="ssStaticChat('sana')">💬 Chat now</button>
-  </article>
-  <article class="ss-static-card">
-    <div class="ss-static-top"><div class="ss-static-avatar">👨🏽‍💼</div><span>✨ Virtual Practice Partner</span></div>
-    <h3>Aryan Nair</h3><p class="ss-static-location">📍 Kochi, Kerala</p>
-    <p class="ss-static-bio">A supportive practice partner for interviews, communication and professional confidence.</p>
-    <div class="ss-static-skills"><b>Can teach</b><div>Interview Skills · Communication · Presentation</div><b>Wants to learn</b><div>JavaScript · Photography</div></div>
-    <button class="ss-static-chat" onclick="ssStaticChat('aryan')">💬 Chat now</button>
-  </article>
-</div>
+  <div id="ssCommunityGrid" class="ss-community-grid">
+    <article class="ss-community-card">
+      <div class="ss-community-top"><div class="ss-community-avatar">👩🏽</div><span>Starter profile</span></div>
+      <h3>Ananya Reddy</h3><p class="ss-community-location">📍 Hyderabad, Telangana</p>
+      <p class="ss-community-category">Languages</p>
+      <div class="ss-community-skills"><div><b>Can teach</b><span>Telugu · Hindi</span></div><div><b>Wants to learn</b><span>Python · AI</span></div></div>
+      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-community-card">
+      <div class="ss-community-top"><div class="ss-community-avatar">👨🏽</div><span>Starter profile</span></div>
+      <h3>Aarav Sharma</h3><p class="ss-community-location">📍 Bengaluru, Karnataka</p>
+      <p class="ss-community-category">Technology</p>
+      <div class="ss-community-skills"><div><b>Can teach</b><span>Python · Robotics</span></div><div><b>Wants to learn</b><span>Guitar · Public Speaking</span></div></div>
+      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-community-card">
+      <div class="ss-community-top"><div class="ss-community-avatar">👩🏽</div><span>Starter profile</span></div>
+      <h3>Meera Krishnan</h3><p class="ss-community-location">📍 Chennai, Tamil Nadu</p>
+      <p class="ss-community-category">Music & Dance</p>
+      <div class="ss-community-skills"><div><b>Can teach</b><span>Bharatanatyam · Carnatic Music</span></div><div><b>Wants to learn</b><span>Graphic Design · Photography</span></div></div>
+      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-community-card">
+      <div class="ss-community-top"><div class="ss-community-avatar">👨🏽</div><span>Starter profile</span></div>
+      <h3>Rohan Patel</h3><p class="ss-community-location">📍 Pune, Maharashtra</p>
+      <p class="ss-community-category">Technology</p>
+      <div class="ss-community-skills"><div><b>Can teach</b><span>Python · AI · Machine Learning</span></div><div><b>Wants to learn</b><span>Web Design · Video Editing</span></div></div>
+      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-community-card">
+      <div class="ss-community-top"><div class="ss-community-avatar">👩🏼</div><span>Starter profile</span></div>
+      <h3>Saanvi Gupta</h3><p class="ss-community-location">📍 Delhi, India</p>
+      <p class="ss-community-category">Academics</p>
+      <div class="ss-community-skills"><div><b>Can teach</b><span>Mathematics · Study Planning</span></div><div><b>Wants to learn</b><span>Spanish · Guitar</span></div></div>
+      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-community-card">
+      <div class="ss-community-top"><div class="ss-community-avatar">👨🏽</div><span>Starter profile</span></div>
+      <h3>Vikram Rao</h3><p class="ss-community-location">📍 Vijayawada, Andhra Pradesh</p>
+      <p class="ss-community-category">Sports</p>
+      <div class="ss-community-skills"><div><b>Can teach</b><span>Cricket · Chess</span></div><div><b>Wants to learn</b><span>Python · Photography</span></div></div>
+      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-community-card">
+      <div class="ss-community-top"><div class="ss-community-avatar">👩🏽</div><span>Starter profile</span></div>
+      <h3>Ishita Singh</h3><p class="ss-community-location">📍 Jaipur, Rajasthan</p>
+      <p class="ss-community-category">Indian Arts</p>
+      <div class="ss-community-skills"><div><b>Can teach</b><span>Rangoli · Mehendi · Drawing</span></div><div><b>Wants to learn</b><span>Coding · Photography</span></div></div>
+      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-community-card">
+      <div class="ss-community-top"><div class="ss-community-avatar">👨🏽</div><span>Starter profile</span></div>
+      <h3>Aditya Nair</h3><p class="ss-community-location">📍 Kochi, Kerala</p>
+      <p class="ss-community-category">Academics</p>
+      <div class="ss-community-skills"><div><b>Can teach</b><span>Physics · Science Projects</span></div><div><b>Wants to learn</b><span>Video Editing · Guitar</span></div></div>
+      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-community-card">
+      <div class="ss-community-top"><div class="ss-community-avatar">👩🏽</div><span>Starter profile</span></div>
+      <h3>Kavya Das</h3><p class="ss-community-location">📍 Kolkata, West Bengal</p>
+      <p class="ss-community-category">Languages</p>
+      <div class="ss-community-skills"><div><b>Can teach</b><span>Bengali · Creative Writing</span></div><div><b>Wants to learn</b><span>Python · Public Speaking</span></div></div>
+      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-community-card">
+      <div class="ss-community-top"><div class="ss-community-avatar">👨🏻</div><span>Starter profile</span></div>
+      <h3>Dev Malhotra</h3><p class="ss-community-location">📍 Mumbai, Maharashtra</p>
+      <p class="ss-community-category">Indian Arts</p>
+      <div class="ss-community-skills"><div><b>Can teach</b><span>Guitar · Video Editing</span></div><div><b>Wants to learn</b><span>Tabla · Cricket</span></div></div>
+      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-community-card">
+      <div class="ss-community-top"><div class="ss-community-avatar">👩🏾</div><span>Starter profile</span></div>
+      <h3>Priya Sharma</h3><p class="ss-community-location">📍 Hyderabad, Telangana</p>
+      <p class="ss-community-category">Indian Arts</p>
+      <div class="ss-community-skills"><div><b>Can teach</b><span>Indian Cooking · Biryani</span></div><div><b>Wants to learn</b><span>Baking · Photography</span></div></div>
+      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-community-card">
+      <div class="ss-community-top"><div class="ss-community-avatar">👨🏽</div><span>Starter profile</span></div>
+      <h3>Arjun Mehta</h3><p class="ss-community-location">📍 Ahmedabad, Gujarat</p>
+      <p class="ss-community-category">Sports</p>
+      <div class="ss-community-skills"><div><b>Can teach</b><span>Cricket · Football</span></div><div><b>Wants to learn</b><span>Coding · Guitar</span></div></div>
+      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+  </div>
 </div>
 
 </section>
@@ -6740,7 +6782,7 @@ window.addEventListener("keydown",e=>{
   // Use the Flask/SQLite directory as the source of truth; demo profiles remain the visual fallback.
   window.skillswapLoadPeople=async function(q=''){const d=await safeJSON('/api/people'+(q?'?q='+encodeURIComponent(q):''));if(d.__error||!Array.isArray(d))return null;return d};
   const oldRenderMatches=window.renderMatches;
-  window.renderMatches=async function(people){const q=(document.getElementById('searchInput')?.value||'').trim();let live=await window.skillswapLoadPeople(q);if(!live){return oldRenderMatches?oldRenderMatches(people):undefined}window.skillswapPeople=live;return oldRenderMatches?oldRenderMatches(live):undefined};
+  window.renderMatches=async function(people){const fallback=Array.isArray(people)&&people.length?people:demoPeople;const q=(document.getElementById('searchInput')?.value||'').trim();let live=await window.skillswapLoadPeople(q);if(!Array.isArray(live)||live.length===0){window.skillswapPeople=fallback;return oldRenderMatches?oldRenderMatches(fallback):undefined}window.skillswapPeople=live;return oldRenderMatches?oldRenderMatches(live):undefined};
   const oldSearch=window.searchSkills;
   window.searchSkills=async function(){const input=document.getElementById('searchInput');if(input&&input.value.includes('@'))input.value='';const q=input?.value.trim()||'';const live=await window.skillswapLoadPeople(q);if(live){window.skillswapPeople=live;if(oldRenderMatches)oldRenderMatches(live);const title=document.getElementById('matchTitle');if(title)title.textContent=q?`Results for “${q}”`:'Popular Indian skill matches';return}if(oldSearch)oldSearch()};
 
@@ -7670,6 +7712,70 @@ body.dark-mode .ss-static-skills div{color:#dceae6}
 </script>
 <!-- END SKILLSWAP COMMUNITY MEMBERS -->
 
+
+<style id="ss-community-fix-css">
+.ss-community-members{max-width:1180px;margin:10px auto 35px;padding:28px 20px 8px}
+.ss-community-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:22px}
+.ss-community-kicker{font-size:.72rem;font-weight:900;letter-spacing:.12em;color:var(--green,#087f5b)}
+.ss-community-head h2{font-size:clamp(1.8rem,4vw,2.7rem);margin:5px 0 5px}
+.ss-community-head p{color:var(--muted,#647772);max-width:720px;font-size:.92rem}
+#ssCommunityCount{white-space:nowrap;color:var(--green,#087f5b);background:var(--green-light,#e8f7f1);border:1px solid var(--border,#dce9e4);padding:9px 12px;border-radius:999px;font-size:.75rem}
+.ss-community-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.ss-community-card{background:#fff;border:1px solid #dce9e4;border-radius:22px;padding:22px;box-shadow:0 10px 30px rgba(6,78,59,.07)}
+.ss-community-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.ss-community-top>span{font-size:.68rem;font-weight:850;color:#6b5a1c;background:#fff5d8;border:1px solid #f0df9f;padding:5px 8px;border-radius:999px}
+.ss-community-avatar{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;background:#e8f7f1;font-size:26px}
+.ss-community-card h3{font-size:1.05rem;margin-bottom:2px}.ss-community-location{font-size:.78rem;color:#687a75}.ss-community-category{display:inline-block;margin:10px 0;padding:5px 8px;border-radius:999px;background:#f3faf7;color:#087f5b;font-size:.68rem;font-weight:800}
+.ss-community-skills{display:grid;gap:9px;margin:8px 0 14px}.ss-community-skills div{background:#f7faf9;border-radius:12px;padding:10px}.ss-community-skills b{display:block;font-size:.65rem;text-transform:uppercase;color:#687a75;margin-bottom:3px}.ss-community-skills span{font-size:.78rem;font-weight:700}
+.ss-community-btn{width:100%;border:1px solid #087f5b;background:#fff;color:#087f5b;border-radius:12px;padding:10px;font-weight:800;cursor:pointer}.ss-community-btn:hover{background:#e8f7f1}
+.ss-live-card{border-color:#9bd6c5;background:linear-gradient(180deg,#fff,#f4fbf8)}
+.ss-live-card .ss-community-top>span{background:#e8f7f1;color:#087f5b;border-color:#c6e8dc}
+.ss-live-btn{margin-top:4px}
+body.dark-mode .ss-community-card{background:#10211c;border-color:#28483f;color:#e8f4f0}.
+body.dark-mode .ss-community-location,body.dark-mode .ss-community-head p{color:#a2b5ae}.
+@media(max-width:900px){.ss-community-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.ss-community-head{align-items:flex-start;flex-direction:column}.ss-community-grid{grid-template-columns:1fr}.ss-community-members{padding-left:14px;padding-right:14px}}
+</style>
+<script id="ss-community-fix-js">
+(function(){
+  const starters=Array.from(document.querySelectorAll('#ssCommunityGrid .ss-community-card'));
+  function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  window.ssStarterInfo=function(){
+    if(typeof showToast==='function')showToast('Starter profiles are available for browsing. Sign in and create your profile to appear as a real SkillSwap member.');
+    else alert('Starter profile — create your own profile to appear as a real SkillSwap member.');
+  };
+  function card(m){
+    const uid=String(m.uid||m.id||'');
+    const teach=Array.isArray(m.teach)?m.teach:(Array.isArray(m.skills)?m.skills:[]);
+    const want=Array.isArray(m.want)?m.want:(Array.isArray(m.wantedSkills)?m.wantedSkills:[]);
+    return `<article class="ss-community-card ss-live-card"><div class="ss-community-top"><div class="ss-community-avatar">${esc(m.avatar||'🧑🏻')}</div><span>✓ Real SkillSwap member</span></div><h3>${esc(m.name||'SkillSwap Member')}</h3><p class="ss-community-location">📍 ${esc(m.location||'India')}</p><p class="ss-community-category">${esc(m.type||m.category||'Skill Exchange')}</p><div class="ss-community-skills"><div><b>Can teach</b><span>${esc(teach.slice(0,4).join(' · ')||'Skills shared on profile')}</span></div><div><b>Wants to learn</b><span>${esc(want.slice(0,4).join(' · ')||'Open to learning')}</span></div></div><button type="button" class="ss-community-btn ss-live-btn" onclick="ssViewLiveMember('${uid.replace(/'/g,"\'")}')">View profile</button></article>`;
+  }
+  window.ssViewLiveMember=async function(uid){
+    if(!uid)return;
+    if(typeof openOtherProfile==='function'){try{await openOtherProfile(uid);return}catch(e){console.warn(e)}}
+    if(typeof showToast==='function')showToast('Please sign in to view member profiles.');
+  };
+  async function loadLive(){
+    const db=window.ssFirebase&&window.ssFirebase.db;
+    if(!db)return [];
+    try{
+      const snap=await db.ref('users').once('value');
+      const data=snap&&snap.val?snap.val():{};
+      return Object.entries(data||{}).map(([uid,m])=>Object.assign({},m,{uid,id:uid,__live:true})).filter(m=>m&&m.name);
+    }catch(e){console.warn('SkillSwap live members unavailable:',e);return []}
+  }
+  async function refresh(){
+    const grid=document.getElementById('ssCommunityGrid'),count=document.getElementById('ssCommunityCount');
+    if(!grid)return;
+    const live=await loadLive();
+    let current=null;try{current=(window.ssFirebaseAuth&&window.ssFirebaseAuth.currentUser)?window.ssFirebaseAuth.currentUser.uid:null}catch(e){}
+    const others=live.filter(m=>String(m.uid)!==String(current));
+    if(others.length){grid.insertAdjacentHTML('beforeend',others.map(card).join(''));if(count)count.textContent=(starters.length+others.length)+' members';}
+    else if(count)count.textContent=starters.length+' starter profiles';
+  }
+  document.addEventListener('DOMContentLoaded',function(){refresh();setTimeout(refresh,1000);setTimeout(refresh,2500);setTimeout(refresh,5000);});
+})();
+</script>
 </body>
 </html>
 <!-- =========================================================
