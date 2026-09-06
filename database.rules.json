@@ -1,0 +1,75 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "users": {
+      ".read": true,
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "requests": {
+      "$id": {
+        ".read": "auth != null && (data.child('senderUid').val() === auth.uid || data.child('receiverUid').val() === auth.uid)",
+        ".write": "auth != null && ((!data.exists() && newData.child('senderUid').val() === auth.uid) || (data.exists() && (data.child('senderUid').val() === auth.uid || data.child('receiverUid').val() === auth.uid)))"
+      }
+    },
+    "favorites": {
+      "$id": {
+        ".read": "auth != null && data.child('uid').val() === auth.uid",
+        ".write": "auth != null && ((!data.exists() && newData.child('uid').val() === auth.uid) || (data.exists() && data.child('uid').val() === auth.uid))"
+      }
+    },
+    "chats": {
+      "$chatId": {
+        "messages": {
+          "$messageId": {
+            ".read": "auth != null",
+            ".write": "auth != null && (!data.exists() && newData.child('senderUid').val() === auth.uid)"
+          }
+        }
+      }
+    },
+    "notifications": {
+      "$id": {
+        ".read": "auth != null && data.child('uid').val() === auth.uid",
+        ".write": "auth != null && ((!data.exists()) || data.child('uid').val() === auth.uid)"
+      }
+    },
+    "sessions": {
+      "$id": {
+        ".read": "auth != null && (data.child('participantUids').child(auth.uid).exists() || data.child('host_uid').val() === auth.uid || data.child('guest_uid').val() === auth.uid)",
+        ".write": "auth != null && ((!data.exists() && newData.child('participantUids').child(auth.uid).exists()) || (data.exists() && (data.child('host_uid').val() === auth.uid || data.child('guest_uid').val() === auth.uid)))"
+      }
+    },
+    "listings": {
+      ".read": true,
+      "$id": {
+        ".write": "auth != null && ((!data.exists() && newData.child('uid').val() === auth.uid) || (data.exists() && data.child('uid').val() === auth.uid))"
+      }
+    },
+    "profileViews": {
+      "$id": {
+        ".write": "auth != null && !data.exists() && newData.child('viewerUid').val() === auth.uid",
+        ".read": "auth != null && (data.child('viewerUid').val() === auth.uid || data.child('personId').val() === root.child('users').child(auth.uid).child('id').val())"
+      }
+    },
+    "reports": {
+      "$id": {
+        ".write": "auth != null && !data.exists() && newData.child('reporterUid').val() === auth.uid"
+      }
+    },
+    "blocks": {
+      "$id": {
+        ".read": "auth != null && data.child('uid').val() === auth.uid",
+        ".write": "auth != null && ((!data.exists() && newData.child('uid').val() === auth.uid) || (data.exists() && data.child('uid').val() === auth.uid))"
+      }
+    },
+    "gamification": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    }
+  }
+}
