@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify, session
+from datetime import timedelta
 import sqlite3
 import os
 import re
@@ -6,10 +7,92 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
-app.secret_key = os.environ.get("SKILLSWAP_SECRET_KEY", "skillswap-india-change-this-secret-key")
+# Production-friendly configuration. Keep the secret outside source control.
+_SECRET = os.environ.get("SKILLSWAP_SECRET_KEY")
+if not _SECRET:
+    _SECRET = "dev-only-change-me"
+    print("WARNING: SKILLSWAP_SECRET_KEY is not set. Set it before deployment.")
+app.secret_key = _SECRET
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_SECURE=os.environ.get("SKILLSWAP_COOKIE_SECURE", "0") == "1",
+    PERMANENT_SESSION_LIFETIME=timedelta(days=14),
+    MAX_CONTENT_LENGTH=1 * 1024 * 1024,
+)
 
-DATABASE = "skillswap.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATABASE = os.path.join(BASE_DIR, "skillswap.db")
 
+# Small in-process rate limiter for auth endpoints. This is intentionally
+# dependency-free and resets when the process restarts.
+_RATE_BUCKETS = {}
+_RATE_LIMITS = {"/api/signup": (8, 600), "/api/signin": (12, 600)}
+
+
+
+def _client_key():
+    return request.headers.get("X-Forwarded-For", request.remote_addr or "unknown").split(",")[0].strip()
+
+
+def _rate_limited(path):
+    import time
+    limit, window = _RATE_LIMITS[path]
+    now = time.time()
+    key = (path, _client_key())
+    hits = [t for t in _RATE_BUCKETS.get(key, []) if now - t < window]
+    if len(hits) >= limit:
+        _RATE_BUCKETS[key] = hits
+        return True
+    hits.append(now)
+    _RATE_BUCKETS[key] = hits
+    return False
+
+
+@app.before_request
+def security_checks():
+    # Reject cross-origin state-changing browser requests when an Origin is
+    # supplied. Normal same-origin requests do not need a custom CSRF token.
+    if request.method in {"POST", "PUT", "PATCH", "DELETE"}:
+        origin = request.headers.get("Origin")
+        if origin and origin.rstrip("/") != request.host_url.rstrip("/"):
+            return jsonify({"success": False, "message": "Cross-origin request blocked."}), 403
+    if request.path in _RATE_LIMITS and request.method == "POST" and _rate_limited(request.path):
+        return jsonify({"success": False, "message": "Too many attempts. Please wait a few minutes and try again."}), 429
+
+
+@app.after_request
+def security_headers(response):
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    if request.path.startswith("/api/"):
+        response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.errorhandler(413)
+def request_too_large(_error):
+    return jsonify({"success": False, "message": "Request is too large."}), 413
+
+
+@app.errorhandler(404)
+def not_found(error):
+    if request.path.startswith("/api/"):
+        return jsonify({"success": False, "message": "API endpoint not found."}), 404
+    return error
+
+
+@app.route("/api/health")
+def health_api():
+    try:
+        conn = get_db()
+        conn.execute("SELECT 1").fetchone()
+        conn.close()
+        return jsonify({"ok": True, "service": "SkillSwap India"})
+    except Exception:
+        return jsonify({"ok": False, "service": "SkillSwap India"}), 503
 
 # =========================================================
 # DATABASE
@@ -612,6 +695,7 @@ def signup():
 
     conn.close()
 
+    session.permanent = True
     session["user_id"] = user_id
 
     return jsonify({
@@ -648,6 +732,7 @@ def signin():
             "message": "Incorrect email or password."
         }), 401
 
+    session.permanent = True
     session["user_id"] = row["id"]
 
     return jsonify({
@@ -1640,4 +1725,7 @@ if __name__ == "__main__":
                 webbrowser.open("http://127.0.0.1:5000")
         threading.Timer(1.0, open_browser).start()
 
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    host = os.environ.get("SKILLSWAP_HOST", "127.0.0.1")
+    port = int(os.environ.get("PORT", "5000"))
+    debug = os.environ.get("SKILLSWAP_DEBUG", "0") == "1"
+    app.run(host=host, port=port, debug=debug)
