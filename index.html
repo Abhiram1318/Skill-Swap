@@ -1854,6 +1854,95 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
 @media(max-width:900px){.ss-pro-grid{grid-template-columns:1fr 1fr}.ss-span-3{grid-column:1/-1}.ss-journey{grid-template-columns:repeat(3,1fr)}.ss-listings{grid-template-columns:1fr 1fr}.ss-metrics{grid-template-columns:1fr 1fr}}
 @media(max-width:650px){.ss-pro{margin-top:45px;padding:18px;border-radius:20px}.ss-pro-head{display:block}.ss-pro-actions{margin-top:15px}.ss-pro-grid{grid-template-columns:1fr}.ss-span-2,.ss-span-3{grid-column:auto}.ss-listings{grid-template-columns:1fr}.ss-journey{grid-template-columns:repeat(2,1fr)}.ss-form-grid{grid-template-columns:1fr}.ss-full{grid-column:auto}}
 </style>
+
+<style id="skillswap-how-text-final-fix">
+/* Final visibility fix for the How SkillSwap Works section */
+.how,
+.how * {
+  box-sizing: border-box;
+}
+
+.how {
+  color: #17352d !important;
+  background: #f3fbf7 !important;
+}
+
+.how h2 {
+  color: #126b57 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  text-shadow: none !important;
+}
+
+.how .how-intro {
+  color: #34443f !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.how .steps,
+.how .step {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.how .step {
+  background: #ffffff !important;
+  color: #17352d !important;
+  border-color: #d5e8e0 !important;
+}
+
+.how .step h3 {
+  color: #123c31 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.how .step p {
+  color: #526761 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.how .step-number {
+  color: #126b57 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.how .step-icon {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Also protect the redesigned version if it is displayed */
+.ss-how-premium {
+  color: #17352d !important;
+}
+
+.ss-how-premium .ss-how-heading h2 {
+  color: #123c31 !important;
+}
+
+.ss-how-premium .ss-how-heading h2 span,
+.ss-how-premium .ss-how-kicker,
+.ss-how-premium .ss-kicker {
+  color: #126b57 !important;
+}
+
+.ss-how-premium .ss-how-heading p {
+  color: #34443f !important;
+}
+
+.ss-how-premium .ss-how-step h3 {
+  color: #123c31 !important;
+}
+
+.ss-how-premium .ss-how-step p {
+  color: #526761 !important;
+}
+</style>
+
 </head>
 
 <body>
@@ -6173,6 +6262,25 @@ window.addEventListener("keydown",e=>{
 
 </script>
 
+
+<style id="skillswap-how-visibility-fix">
+/* Make the How SkillSwap Works text clearly visible */
+.how h2, .ss-how-premium h2 {
+  color: #176b57 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  text-shadow: none !important;
+}
+.how .how-intro, .ss-how-premium .how-intro {
+  color: #34443f !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  text-shadow: none !important;
+}
+.how {
+  background: #f3fbf7 !important;
+}
+</style>
 <!-- =========================
      HOW SKILLSWAP WORKS — REDESIGNED
 ========================= -->
