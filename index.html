@@ -6863,6 +6863,205 @@ window.addEventListener("keydown",e=>{
 })();
 </script>
 
+
+<style id="skillswap-dashboard-working-fix">
+  #skillswap4Dashboard, #skillswap5Growth { scroll-margin-top: 90px; }
+  .ss4-row-action{border:0;border-radius:10px;padding:8px 10px;background:#e8f7f1;color:#087f5b;font-weight:800;cursor:pointer}
+  .ss4-row-action:hover{background:#d9f0e8}
+  .ss5-status{margin-top:10px;font-size:13px;color:#647772}
+  .ss5-error{padding:14px;border-radius:14px;background:#fff3f1;color:#9b3b2f;border:1px solid #f0cbc5}
+</style>
+<script id="skillswap-dashboard-working-fix-js">
+(function(){
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  async function getJSON(url){
+    try{
+      const r=await fetch(url,{credentials:'same-origin'});
+      let d=null; try{d=await r.json()}catch(e){}
+      if(!r.ok) return {__error:true,status:r.status,data:d};
+      return d||{};
+    }catch(e){return {__error:true,status:0,data:null}}
+  }
+  function signedIn(d){return !!d?.user || d?.logged_in===true}
+
+  /* -------- Learning command center -------- */
+  async function loadCommandCenter(){
+    const me=await getJSON('/api/me');
+    if(!signedIn(me)){
+      if($('ss4Name'))$('ss4Name').textContent='Welcome to SkillSwap';
+      if($('ss4Avatar'))$('ss4Avatar').textContent='S';
+      if($('ss4Headline'))$('ss4Headline').textContent='Sign in to see your personalized learning dashboard';
+      if($('ss4Recommendations'))$('ss4Recommendations').innerHTML=
+        '<div class="ss4-row"><div class="ss4-mini">🔐</div><div class="ss4-row-main"><b>Sign in to unlock your command center</b><p>Your matches, XP, streak and profile progress will appear here.</p></div><button class="ss4-row-action" onclick="openAuth(\'signin\')">Sign in</button></div>';
+      if($('ss4XP'))$('ss4XP').textContent='0';
+      if($('ss4Level'))$('ss4Level').textContent='1';
+      if($('ss4Matches'))$('ss4Matches').textContent='0';
+      if($('ss4Streak'))$('ss4Streak').textContent='0';
+      if($('ss4ProfilePct'))$('ss4ProfilePct').textContent='0%';
+      if($('ss4ProfileFill'))$('ss4ProfileFill').style.width='0%';
+      if($('ss4Completion'))$('ss4Completion').textContent='0%';
+      return false;
+    }
+
+    const u=me.user||{};
+    const name=u.name||u.full_name||u.username||'SkillSwap member';
+    if($('ss4Name'))$('ss4Name').textContent=name;
+    if($('ss4Avatar'))$('ss4Avatar').textContent=name.trim().charAt(0).toUpperCase()||'S';
+    if($('ss4Headline'))$('ss4Headline').textContent=u.headline||u.bio||'Student learner & teacher';
+
+    if(typeof window.ss4UpdateProfileCompletion==='function') window.ss4UpdateProfileCompletion(u);
+
+    const [dash,gam,rec]=await Promise.all([
+      getJSON('/api/dashboard'),getJSON('/api/gamification'),getJSON('/api/recommendations')
+    ]);
+    const d=dash?.dashboard||dash||{};
+    const g=gam?.gamification||gam||{};
+    if($('ss4XP'))$('ss4XP').textContent=Number(g.xp||0);
+    if($('ss4Level'))$('ss4Level').textContent=Number(g.level||1);
+    if($('ss4Streak'))$('ss4Streak').textContent=Number(g.streak||0);
+
+    const arr=Array.isArray(rec?.recommendations)?rec.recommendations:[];
+    if($('ss4Matches'))$('ss4Matches').textContent=arr.length;
+
+    if($('ss4Recommendations')){
+      $('ss4Recommendations').innerHTML=arr.length ? arr.slice(0,5).map(p=>{
+        const n=p.name||p.full_name||p.username||'SkillSwap member';
+        const score=Number(p.match??p.score??0);
+        const detail=p.headline||p.bio||((p.teach||[]).join(', '))||'Potential learning partner';
+        return `<div class="ss4-row">
+          <div class="ss4-mini">${esc(n.charAt(0).toUpperCase())}</div>
+          <div class="ss4-row-main"><b>${esc(n)}</b><p>${esc(detail)}</p></div>
+          <span class="ss4-pill">${score}% match</span>
+          <button class="ss4-row-action" onclick="openOtherProfile(${Number(p.id)})">View</button>
+        </div>`;
+      }).join('') :
+      '<div class="ss4-row"><div class="ss4-mini">★</div><div class="ss4-row-main"><b>No recommendations yet</b><p>Add skills and learning goals to improve your matches.</p></div><button class="ss4-row-action" onclick="ss4EditProfile()">Improve</button></div>';
+    }
+
+    if($('ss4Greeting')){
+      const pct=parseInt(($('ss4ProfilePct')?.textContent||'0'),10)||0;
+      $('ss4Greeting').textContent=pct>=90
+        ? 'Your profile is ready to attract great learning partners.'
+        : pct>=60
+        ? 'You are on a strong start. Finish a few details to improve your matches.'
+        : 'Complete your profile to unlock stronger, more relevant matches.';
+    }
+
+    // Keep dashboard counts available to the command center without changing the design.
+    if($('ss4Matches') && d.connections!=null) $('ss4Matches').title=`${d.connections} accepted connection${d.connections==1?'':'s'}`;
+    return true;
+  }
+
+  window.ss4Refresh=async function(){
+    const ok=await loadCommandCenter();
+    if(typeof window.refreshProDashboard==='function') await window.refreshProDashboard();
+    if(typeof window.ss5Refresh==='function') await window.ss5Refresh(true);
+    if(typeof window.showToast==='function') showToast(ok?'Dashboard refreshed':'Sign in to use your dashboard');
+  };
+
+  window.ss4Discover=function(){
+    const el=document.querySelector('#discover,#discovery,#people,#matches');
+    if(el){el.scrollIntoView({behavior:'smooth',block:'start'});return}
+    if(typeof window.showToast==='function')showToast('Discover section is unavailable.');
+  };
+  window.ss4Sessions=function(){
+    const el=document.getElementById('sessions');
+    if(el){el.scrollIntoView({behavior:'smooth',block:'start'});return}
+    if(typeof window.showToast==='function')showToast('Sessions section is unavailable.');
+  };
+  window.ss4Chat=function(){
+    if(typeof window.openChat==='function'){window.openChat();return}
+    if(typeof window.openAuth==='function'){window.openAuth('signin');return}
+  };
+  window.ss4Requests=function(){
+    const el=document.querySelector('#requestsSection,#requests,#connections');
+    if(el){el.scrollIntoView({behavior:'smooth',block:'start'});return}
+    if(typeof window.showToast==='function')showToast('Requests section is unavailable.');
+  };
+  window.ss4Profile=function(){
+    if(typeof window.openOwnProfile==='function'){window.openOwnProfile();return}
+    if(typeof window.openProfile==='function'){window.openProfile();return}
+    if(typeof window.showToast==='function')showToast('Profile is unavailable.');
+  };
+
+  /* -------- Growth hub -------- */
+  async function loadGrowthHub(){
+    const me=await getJSON('/api/me');
+    if(!signedIn(me)){
+      ['ss5Connections','ss5Sessions','ss5Views','ss5Offers','ss5XP'].forEach(id=>{if($(id))$(id).textContent='0'});
+      if($('ss5Level'))$('ss5Level').textContent='Level 1';
+      if($('ss5XPBar'))$('ss5XPBar').style.width='0%';
+      if($('ss5Saved'))$('ss5Saved').innerHTML='<div class="ss5-empty">Sign in to use your growth hub.</div>';
+      if($('ss5Chart'))$('ss5Chart').innerHTML='<div class="ss5-empty" style="width:100%">Sign in to see your weekly activity.</div>';
+      if($('ss5Days'))$('ss5Days').innerHTML='';
+      return false;
+    }
+
+    const [a,g,s]=await Promise.all([
+      getJSON('/api/analytics'),getJSON('/api/gamification'),getJSON('/api/favorites')
+    ]);
+    const x=a?.analytics||{};
+    const gg=g?.gamification||{};
+    const saved=Array.isArray(s)?s:[];
+
+    if($('ss5Connections'))$('ss5Connections').textContent=Number(x.connections||0);
+    if($('ss5Sessions'))$('ss5Sessions').textContent=Number(x.sessions||0);
+    if($('ss5Views'))$('ss5Views').textContent=Number(x.profile_views||0);
+    if($('ss5Offers'))$('ss5Offers').textContent=Number(x.offers||0);
+
+    const xp=Number(gg.xp||0), level=Number(gg.level||1), next=Number(gg.next_level_xp||level*500);
+    if($('ss5XP'))$('ss5XP').textContent=xp;
+    if($('ss5Level'))$('ss5Level').textContent='Level '+level;
+    if($('ss5XPBar')){
+      const previous=(level-1)*500;
+      const progress=Math.max(0,Math.min(100,((xp-previous)/Math.max(1,next-previous))*100));
+      $('ss5XPBar').style.width=progress+'%';
+    }
+
+    const weekly=Array.isArray(x.weekly)?x.weekly:[];
+    const chart=$('ss5Chart');
+    if(chart){
+      if(weekly.length){
+        const max=Math.max(1,...weekly.map(d=>Number(d.actions||0)));
+        chart.innerHTML=weekly.map(d=>{
+          const v=Number(d.actions||0);
+          return `<div class="ss5-bar" style="--h:${Math.max(12,(v/max)*100)}%" title="${v} actions"></div>`;
+        }).join('');
+      }else{
+        chart.innerHTML='<div class="ss5-empty" style="width:100%">No activity recorded yet. Start a skill exchange to build momentum.</div>';
+      }
+    }
+    if($('ss5Days'))$('ss5Days').innerHTML=weekly.map(d=>`<span>${esc(d.day||'')}</span>`).join('');
+
+    if($('ss5Saved')){
+      $('ss5Saved').innerHTML=saved.length?saved.slice(0,6).map(p=>{
+        const n=p.name||'SkillSwap member';
+        const skills=Array.isArray(p.teach)?p.teach.slice(0,2).join(', '):(p.location||'Saved profile');
+        return `<div class="ss5-item">
+          <div class="ss5-icon">${esc(String(p.avatar||n).slice(0,2))}</div>
+          <div class="ss5-main"><b>${esc(n)}</b><small>${esc(skills)}</small></div>
+          <button class="ss5-btn secondary" onclick="openOtherProfile(${Number(p.id)})">View</button>
+        </div>`;
+      }).join(''):'<div class="ss5-empty">No saved profiles yet. Save people you want to learn from.</div>';
+    }
+    return true;
+  }
+
+  window.ss5Refresh=async function(silent){
+    const ok=await loadGrowthHub();
+    if(!silent && typeof window.showToast==='function') showToast(ok?'Growth hub refreshed':'Sign in to use your growth hub');
+    return ok;
+  };
+
+  // Run after the page's other scripts have initialized.
+  window.addEventListener('load',function(){
+    setTimeout(loadCommandCenter,900);
+    setTimeout(loadGrowthHub,1100);
+  });
+})();
+</script>
+
 </body>
 </html>
 <!-- =========================================================
