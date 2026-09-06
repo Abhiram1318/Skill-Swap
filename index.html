@@ -3303,10 +3303,33 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
         await db.ref('users/'+cred.user.uid).set(profile);return json({success:true,user:profile});
       }
       if(path==='/api/signin'&&method==='POST'){
-        const cred=await auth.signInWithEmailAndPassword(payload.email,payload.password), s=await db.ref('users/'+cred.user.uid).get();
-        if(!s.exists())throw new Error('Profile not found. Please complete your profile.');
-        return json({success:true,user:cleanUser(s.val())});
-      }
+    const cred=await auth.signInWithEmailAndPassword(payload.email,payload.password);
+    let s=await db.ref('users/'+cred.user.uid).get();
+    if(!s.exists()){
+      const id=Date.now()+Math.floor(Math.random()*1000);
+      const profile={
+        uid:cred.user.uid,
+        legacyId:id,
+        id,
+        name:cred.user.displayName || ((cred.user.email||payload.email||'').split('@')[0]) || 'SkillSwap Member',
+        email:cred.user.email || payload.email || '',
+        type:'University Student',
+        location:'Online',
+        languages:['English'],
+        bio:'Welcome to SkillSwap India! Complete your profile to start learning and teaching.',
+        teach:['Knowledge Sharing'],
+        want:['Something New'],
+        availability:['Flexible'],
+        avatar:'🧑🏻',
+        rating:0,
+        reviews:0,
+        created_at:now()
+      };
+      await db.ref('users/'+cred.user.uid).set(profile);
+      s=await db.ref('users/'+cred.user.uid).get();
+    }
+    return json({success:true,user:cleanUser(s.val())});
+  }
       if(path==='/api/logout'&&method==='POST'){await auth.signOut();return json({success:true});}
       if(path==='/api/me'&&method==='GET'){const p=await currentProfile();return json(p?{logged_in:true,user:p}:{logged_in:false,user:null});}
       if(path==='/api/people'&&method==='GET'){
