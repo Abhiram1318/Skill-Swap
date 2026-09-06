@@ -7403,7 +7403,7 @@ window.addEventListener("keydown",e=>{
   };
 })();
 </script>
-<style id="skillswap-always-visible-members">#matches.ss-force-members{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:22px}@media(max-width:900px){#matches.ss-force-members{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){#matches.ss-force-members{grid-template-columns:1fr}}.ss-direct-member{background:#fff;border:1px solid #e1e9e5;border-radius:20px;padding:22px;box-shadow:0 8px 28px rgba(23,49,43,.07)}.ss-direct-member .ss-dm-top{display:flex;gap:13px;align-items:center;margin-bottom:14px}.ss-direct-member .ss-dm-avatar{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;background:#e7f5ef;font-size:28px}.ss-direct-member h3{font-size:1rem;margin:0}.ss-direct-member p{color:#6d7b76;font-size:.78rem;margin:2px 0}.ss-dm-badge{display:inline-block;background:#eef7f4;color:#176b57;border-radius:999px;padding:5px 9px;font-size:.68rem;font-weight:800;margin-bottom:12px}.ss-dm-skills{font-size:.82rem;line-height:1.7;margin:8px 0 14px}.ss-dm-chat{width:100%;border:0;background:#176b57;color:#fff;padding:11px;border-radius:11px;font-weight:800;cursor:pointer}.ss-direct-title{grid-column:1/-1;font-size:1.25rem;font-weight:850;margin-bottom:-5px}</style><script id="skillswap-always-visible-members">(function(){const members=[{id:'virtual-anaya',name:'Anaya Kapoor',avatar:'👩🏻‍💻',location:'Bengaluru, Karnataka',teach:'Python • JavaScript • AI basics',want:'Public Speaking • Product Design',intro:'Friendly, practical and great for coding practice.'},{id:'virtual-rohan',name:'Rohan Mehta',avatar:'👨🏽‍🎨',location:'Mumbai, Maharashtra',teach:'Drawing • Design • Photography',want:'Coding • Cricket',intro:'Relaxed and encouraging for creative projects.'},{id:'virtual-meera',name:'Meera Iyer',avatar:'👩🏽‍🏫',location:'Chennai, Tamil Nadu',teach:'Tamil • English Conversation • Speaking',want:'Python • Guitar',intro:'Patient and conversational for language practice.'},{id:'virtual-vihaan',name:'Vihaan Rao',avatar:'🧑🏽‍🎓',location:'Hyderabad, Telangana',teach:'Maths • Physics • Chess',want:'Web Development • Guitar',intro:'Focused study partner who enjoys problem solving.'},{id:'virtual-sana',name:'Sana Khan',avatar:'👩🏽‍🎤',location:'Pune, Maharashtra',teach:'Guitar • Music Theory • Writing',want:'Python • Drawing',intro:'Warm and creative for music and brainstorming.'},{id:'virtual-aryan',name:'Aryan Nair',avatar:'👨🏽‍💼',location:'Kochi, Kerala',teach:'Interview Skills • Communication • Presentation',want:'JavaScript • Photography',intro:'Supportive practice partner for confidence and careers.'}];function show(){const box=document.getElementById('matches');if(!box)return;box.classList.add('ss-force-members');box.innerHTML='<div class="ss-direct-title">👥 Members you can connect with</div>'+members.map(m=>'<article class="ss-direct-member"><span class="ss-dm-badge">✨ Virtual Practice Partner</span><div class="ss-dm-top"><div class="ss-dm-avatar">'+m.avatar+'</div><div><h3>'+m.name+'</h3><p>📍 '+m.location+'</p><p>⭐ 4.9 • Available now</p></div></div><div class="ss-dm-skills"><b>Can teach:</b> '+m.teach+'<br><b>Wants to learn:</b> '+m.want+'</div><p>'+m.intro+'</p><br><button class="ss-dm-chat" onclick="window.ssOpenVirtualChat && window.ssOpenVirtualChat(\''+m.id+'\')">💬 Chat now</button></article>').join('')}window.ssOpenVirtualChat=function(id){const m=members.find(x=>x.id===id);if(!m)return;let old=document.getElementById('ss-direct-chat');if(old)old.remove();const el=document.createElement('div');el.id='ss-direct-chat';el.style.cssText='position:fixed;inset:0;background:rgba(10,30,25,.58);z-index:10000;display:flex;align-items:center;justify-content:center;padding:18px';el.innerHTML='<div style="background:#fff;width:min(520px,100%);border-radius:22px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.25)"><div style="padding:18px 20px;background:#176b57;color:#fff;display:flex;justify-content:space-between;align-items:center"><b>'+m.avatar+' '+m.name+'</b><button onclick="document.getElementById(\'ss-direct-chat\').remove()" style="background:none;border:0;color:#fff;font-size:22px">×</button></div><div id="ss-dm-msgs" style="height:320px;overflow:auto;padding:16px"><div style="background:#eef7f4;padding:10px 13px;border-radius:14px;max-width:82%;margin-bottom:10px">Hey! 👋 I’m '+m.name+'. Want to practise '+m.teach.split(' • ')[0]+' together?</div></div><div style="display:flex;gap:8px;padding:12px;border-top:1px solid #e1e9e5"><input id="ss-dm-input" placeholder="Type a message…" style="flex:1;border:1px solid #dce7e2;border-radius:11px;padding:11px"><button onclick="window.ssSendVirtualMessage()" style="border:0;background:#176b57;color:#fff;border-radius:11px;padding:11px 15px;font-weight:800">Send</button></div></div>';document.body.appendChild(el);document.getElementById('ss-dm-input').focus()};window.ssSendVirtualMessage=function(){const input=document.getElementById('ss-dm-input'),msgs=document.getElementById('ss-dm-msgs');if(!input||!input.value.trim())return;const text=input.value.trim();msgs.insertAdjacentHTML('beforeend','<div style="background:#176b57;color:#fff;padding:10px 13px;border-radius:14px;max-width:82%;margin:10px 0 10px auto">'+text.replace(/[&<>]/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[x]))+'</div>');input.value='';setTimeout(()=>{msgs.insertAdjacentHTML('beforeend','<div style="background:#eef7f4;padding:10px 13px;border-radius:14px;max-width:82%;margin-bottom:10px">That sounds good! Tell me what you’re working on, and we can practise it step by step. 😊</div>');msgs.scrollTop=msgs.scrollHeight},650);msgs.scrollTop=msgs.scrollHeight};document.addEventListener('DOMContentLoaded',()=>{show();setTimeout(show,700);setTimeout(show,1800);setTimeout(show,3500)})})();</script>
+<style id="skillswap-always-visible-members">#matches.ss-force-members{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:22px}@media(max-width:900px){#matches.ss-force-members{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){#matches.ss-force-members{grid-template-columns:1fr}}.ss-direct-member{background:#fff;border:1px solid #e1e9e5;border-radius:20px;padding:22px;box-shadow:0 8px 28px rgba(23,49,43,.07)}.ss-direct-member .ss-dm-top{display:flex;gap:13px;align-items:center;margin-bottom:14px}.ss-direct-member .ss-dm-avatar{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;background:#e7f5ef;font-size:28px}.ss-direct-member h3{font-size:1rem;margin:0}.ss-direct-member p{color:#6d7b76;font-size:.78rem;margin:2px 0}.ss-dm-badge{display:inline-block;background:#eef7f4;color:#176b57;border-radius:999px;padding:5px 9px;font-size:.68rem;font-weight:800;margin-bottom:12px}.ss-dm-skills{font-size:.82rem;line-height:1.7;margin:8px 0 14px}.ss-dm-chat{width:100%;border:0;background:#176b57;color:#fff;padding:11px;border-radius:11px;font-weight:800;cursor:pointer}.ss-direct-title{grid-column:1/-1;font-size:1.25rem;font-weight:850;margin-bottom:-5px}</style><script id="skillswap-always-visible-members">(function(){const members=[{id:'virtual-anaya',name:'Anaya Kapoor',avatar:'👩🏻‍💻',location:'Bengaluru, Karnataka',teach:'Python • JavaScript • AI basics',want:'Public Speaking • Product Design',intro:'Friendly, practical and great for coding practice.'},{id:'virtual-rohan',name:'Rohan Mehta',avatar:'👨🏽‍🎨',location:'Mumbai, Maharashtra',teach:'Drawing • Design • Photography',want:'Coding • Cricket',intro:'Relaxed and encouraging for creative projects.'},{id:'virtual-meera',name:'Meera Iyer',avatar:'👩🏽‍🏫',location:'Chennai, Tamil Nadu',teach:'Tamil • English Conversation • Speaking',want:'Python • Guitar',intro:'Patient and conversational for language practice.'},{id:'virtual-vihaan',name:'Vihaan Rao',avatar:'🧑🏽‍🎓',location:'Hyderabad, Telangana',teach:'Maths • Physics • Chess',want:'Web Development • Guitar',intro:'Focused study partner who enjoys problem solving.'},{id:'virtual-sana',name:'Sana Khan',avatar:'👩🏽‍🎤',location:'Pune, Maharashtra',teach:'Guitar • Music Theory • Writing',want:'Python • Drawing',intro:'Warm and creative for music and brainstorming.'},{id:'virtual-aryan',name:'Aryan Nair',avatar:'👨🏽‍💼',location:'Kochi, Kerala',teach:'Interview Skills • Communication • Presentation',want:'JavaScript • Photography',intro:'Supportive practice partner for confidence and careers.'}];function show(){const box=document.getElementById('matches');if(!box)return;box.classList.add('ss-force-members');box.innerHTML='<div class="ss-direct-title">👥 Members you can connect with</div>'+members.map(m=>'<article class="ss-direct-member"><span class="ss-dm-badge">✨ Virtual Practice Partner</span><div class="ss-dm-top"><div class="ss-dm-avatar">'+m.avatar+'</div><div><h3>'+m.name+'</h3><p>📍 '+m.location+'</p><p>⭐ 4.9 • Available now</p></div></div><div class="ss-dm-skills"><b>Can teach:</b> '+m.teach+'<br><b>Wants to learn:</b> '+m.want+'</div><p>'+m.intro+'</p><br><button class="ss-dm-chat" onclick="window.ssOpenVirtualChat && window.ssOpenVirtualChat(\''+m.id+'\')">💬 Chat now</button></article>').join('')}window.ssOpenVirtualChat=function(id){const auth=(window.ssFirebaseAuth || (window.firebase && firebase.auth ? firebase.auth() : null));if(!(auth && auth.currentUser)){if(typeof window.openAuth==='function')window.openAuth('signin');else alert('Please sign in to chat with members.');return;}const m=members.find(x=>x.id===id);if(!m)return;let old=document.getElementById('ss-direct-chat');if(old)old.remove();const el=document.createElement('div');el.id='ss-direct-chat';el.style.cssText='position:fixed;inset:0;background:rgba(10,30,25,.58);z-index:10000;display:flex;align-items:center;justify-content:center;padding:18px';el.innerHTML='<div style="background:#fff;width:min(520px,100%);border-radius:22px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.25)"><div style="padding:18px 20px;background:#176b57;color:#fff;display:flex;justify-content:space-between;align-items:center"><b>'+m.avatar+' '+m.name+'</b><button onclick="document.getElementById(\'ss-direct-chat\').remove()" style="background:none;border:0;color:#fff;font-size:22px">×</button></div><div id="ss-dm-msgs" style="height:320px;overflow:auto;padding:16px"><div style="background:#eef7f4;padding:10px 13px;border-radius:14px;max-width:82%;margin-bottom:10px">Hey! 👋 I’m '+m.name+'. Want to practise '+m.teach.split(' • ')[0]+' together?</div></div><div style="display:flex;gap:8px;padding:12px;border-top:1px solid #e1e9e5"><input id="ss-dm-input" placeholder="Type a message…" style="flex:1;border:1px solid #dce7e2;border-radius:11px;padding:11px"><button onclick="window.ssSendVirtualMessage()" style="border:0;background:#176b57;color:#fff;border-radius:11px;padding:11px 15px;font-weight:800">Send</button></div></div>';document.body.appendChild(el);document.getElementById('ss-dm-input').focus()};window.ssSendVirtualMessage=function(){const input=document.getElementById('ss-dm-input'),msgs=document.getElementById('ss-dm-msgs');if(!input||!input.value.trim())return;const text=input.value.trim();msgs.insertAdjacentHTML('beforeend','<div style="background:#176b57;color:#fff;padding:10px 13px;border-radius:14px;max-width:82%;margin:10px 0 10px auto">'+text.replace(/[&<>]/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[x]))+'</div>');input.value='';setTimeout(()=>{msgs.insertAdjacentHTML('beforeend','<div style="background:#eef7f4;padding:10px 13px;border-radius:14px;max-width:82%;margin-bottom:10px">That sounds good! Tell me what you’re working on, and we can practise it step by step. 😊</div>');msgs.scrollTop=msgs.scrollHeight},650);msgs.scrollTop=msgs.scrollHeight};document.addEventListener('DOMContentLoaded',()=>{show();setTimeout(show,700);setTimeout(show,1800);setTimeout(show,3500)})})();</script>
 
 <style id="ss-static-members-css">
 .ss-static-members-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:0 0 22px}
@@ -7460,6 +7460,13 @@ body.dark-mode .ss-static-skills div{color:#dceae6}
   let active=null;
   function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
   window.ssStaticChat=function(id){
+    const auth=(window.ssFirebaseAuth || (window.firebase && firebase.auth ? firebase.auth() : null));
+    const loggedIn=!!(auth && auth.currentUser);
+    if(!loggedIn){
+      if(typeof window.openAuth==='function') window.openAuth("signin");
+      else alert("Please sign in to chat with members.");
+      return;
+    }
     const p=people[id]; if(!p)return;
     active=p;
     let old=document.getElementById("ssStaticChatOverlay"); if(old)old.remove();
@@ -7570,6 +7577,99 @@ body.dark-mode .ss-static-skills div{color:#dceae6}
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
 })();
 </script>
+
+<!-- SKILLSWAP COMMUNITY MEMBERS: 12 STARTER PROFILES + LIVE FIREBASE MEMBERS -->
+<style id="ss-community-members-style">
+#ssCommunityMembers{margin-top:56px;padding:0 0 20px}
+#ssCommunityMembers .ss-cm-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:20px}
+#ssCommunityMembers .ss-cm-head h2{font-size:1.7rem;margin:0}
+#ssCommunityMembers .ss-cm-head p{color:#6d7b76;font-size:.9rem;margin-top:5px}
+#ssCommunityMembers .ss-cm-live{font-size:.72rem;font-weight:800;color:#176b57;background:#e7f5ef;padding:8px 11px;border-radius:999px;white-space:nowrap}
+#ssCommunityMembers .ss-cm-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+#ssCommunityMembers .ss-cm-card{background:#fff;border:1px solid #e1e9e5;border-radius:20px;padding:20px;box-shadow:0 8px 28px rgba(23,49,43,.06)}
+#ssCommunityMembers .ss-cm-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+#ssCommunityMembers .ss-cm-avatar{width:54px;height:54px;border-radius:15px;display:grid;place-items:center;background:#e7f5ef;font-size:27px;flex:0 0 auto}
+#ssCommunityMembers .ss-cm-name{font-size:1rem;font-weight:850}
+#ssCommunityMembers .ss-cm-meta{font-size:.75rem;color:#6d7b76;margin-top:2px}
+#ssCommunityMembers .ss-cm-badge{display:inline-block;font-size:.65rem;font-weight:850;padding:5px 8px;border-radius:999px;background:#eef7f4;color:#176b57;margin-bottom:11px}
+#ssCommunityMembers .ss-cm-card.ss-live .ss-cm-badge{background:#e9f1ff;color:#315f9b}
+#ssCommunityMembers .ss-cm-skills{font-size:.78rem;line-height:1.65;color:#3d514b;margin-bottom:10px}
+#ssCommunityMembers .ss-cm-bio{font-size:.75rem;color:#6d7b76;min-height:38px;margin-bottom:12px}
+#ssCommunityMembers .ss-cm-chat{width:100%;border:0;background:#176b57;color:#fff;padding:11px;border-radius:11px;font-weight:800;cursor:pointer}
+#ssCommunityMembers .ss-cm-chat:hover{filter:brightness(.96);transform:translateY(-1px)}
+#ssCommunityMembers .ss-cm-empty{grid-column:1/-1;padding:22px;border:1px dashed #cbdad5;border-radius:16px;color:#6d7b76;text-align:center;background:#fff}
+@media(max-width:900px){#ssCommunityMembers .ss-cm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){#ssCommunityMembers .ss-cm-grid{grid-template-columns:1fr}#ssCommunityMembers .ss-cm-head{display:block}}
+</style>
+<section id="ssCommunityMembers" class="section" aria-label="SkillSwap community members">
+  <div class="ss-cm-head">
+    <div><h2>👥 SkillSwap Community</h2><p>Meet starter profiles and real members who have created profiles on SkillSwap.</p></div>
+    <span class="ss-cm-live" id="ssCmLiveCount">Loading members…</span>
+  </div>
+  <div class="ss-cm-grid" id="ssCmGrid"></div>
+</section>
+<script id="ss-community-members-script">
+(function(){
+  const starterMembers=[
+    {id:'starter-ananya',name:'Ananya Reddy',avatar:'👩🏻',location:'Hyderabad, Telangana',teach:'English • Public Speaking',want:'Web Development',bio:'Starter profile for practising communication and skill exchange.'},
+    {id:'starter-aarav',name:'Aarav Sharma',avatar:'👨🏻',location:'Delhi, India',teach:'Python • Maths',want:'Photography',bio:'Starter profile for learning through practical projects.'},
+    {id:'starter-meera',name:'Meera Krishnan',avatar:'👩🏽',location:'Chennai, Tamil Nadu',teach:'Tamil • Writing',want:'JavaScript',bio:'Starter profile for language and creative practice.'},
+    {id:'starter-rohan',name:'Rohan Patel',avatar:'👨🏽',location:'Ahmedabad, Gujarat',teach:'Graphic Design • Canva',want:'Marketing',bio:'Starter profile for creative collaboration.'},
+    {id:'starter-saanvi',name:'Saanvi Gupta',avatar:'👩🏻‍💻',location:'Bengaluru, Karnataka',teach:'JavaScript • UI Design',want:'Public Speaking',bio:'Starter profile for technology and presentation practice.'},
+    {id:'starter-vikram',name:'Vikram Rao',avatar:'👨🏽‍💻',location:'Pune, Maharashtra',teach:'Excel • Data Analysis',want:'Python',bio:'Starter profile for data and productivity skills.'},
+    {id:'starter-ishita',name:'Ishita Singh',avatar:'👩🏽‍🎨',location:'Jaipur, Rajasthan',teach:'Drawing • Creative Writing',want:'Coding',bio:'Starter profile for creative learning and feedback.'},
+    {id:'starter-aditya',name:'Aditya Nair',avatar:'🧑🏽‍🎓',location:'Kochi, Kerala',teach:'Physics • Chess',want:'Web Development',bio:'Starter profile for study and problem-solving practice.'},
+    {id:'starter-kavya',name:'Kavya Das',avatar:'👩🏻‍🎤',location:'Kolkata, West Bengal',teach:'Music • Guitar',want:'Photography',bio:'Starter profile for music and creative skill exchange.'},
+    {id:'starter-dev',name:'Dev Malhotra',avatar:'👨🏻‍💼',location:'Mumbai, Maharashtra',teach:'Presentation • Interview Skills',want:'Coding',bio:'Starter profile for career and communication practice.'},
+    {id:'starter-priya',name:'Priya Sharma',avatar:'👩🏻‍🏫',location:'Lucknow, Uttar Pradesh',teach:'Hindi • English',want:'Digital Marketing',bio:'Starter profile for language and career learning.'},
+    {id:'starter-arjun',name:'Arjun Mehta',avatar:'👨🏻‍🔬',location:'Hyderabad, Telangana',teach:'Chemistry • Research',want:'Programming',bio:'Starter profile for academic and technical learning.'}
+  ];
+  const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  function logged(){const a=window.ssFirebaseAuth||(window.firebase&&firebase.auth?firebase.auth():null);return !!(a&&a.currentUser)}
+  function requireLogin(){if(!logged()){if(typeof window.openAuth==='function')window.openAuth('signin');else alert('Please sign in to chat with members.');return false}return true}
+  function chat(id){if(!requireLogin())return; if(typeof window.openChat==='function'){window.openChat(id);return;} if(typeof window.ssOpenVirtualChat==='function'&&String(id).startsWith('virtual-')){window.ssOpenVirtualChat(id);return;} alert('Chat is available after sign-in.');}
+  window.ssCommunityChat=chat;
+  function card(m,isLive){
+    const teach=Array.isArray(m.teach)?m.teach.join(' • '):(m.teach||'Skills to share');
+    const want=Array.isArray(m.want)?m.want.join(' • '):(m.want||'Something new');
+    const location=m.location||'India';
+    const avatar=m.avatar||'🧑🏻';
+    const badge=isLive?'✓ Real SkillSwap member':'Starter profile';
+    const uid=esc(m.uid||m.id);
+    return '<article class="ss-cm-card '+(isLive?'ss-live':'')+'">'+
+      '<span class="ss-cm-badge">'+badge+'</span>'+ 
+      '<div class="ss-cm-top"><div class="ss-cm-avatar">'+esc(avatar)+'</div><div><div class="ss-cm-name">'+esc(m.name||'SkillSwap Member')+'</div><div class="ss-cm-meta">📍 '+esc(location)+'</div></div></div>'+
+      '<div class="ss-cm-skills"><b>Can teach:</b> '+esc(teach)+'<br><b>Wants to learn:</b> '+esc(want)+'</div>'+ 
+      '<div class="ss-cm-bio">'+esc(m.bio||'Ready to connect and exchange skills.')+'</div>'+ 
+      '<button class="ss-cm-chat" type="button" onclick="ssCommunityChat(\''+uid+'\')">💬 Chat</button>'+
+      '</article>';
+  }
+  async function loadLive(){
+    const db=window.ssFirebase?.db;
+    if(!db)return [];
+    try{
+      const snap=await db.ref('users').limitToLast(100).get();
+      const data=snap.exists()?snap.val():{};
+      return Object.entries(data||{}).map(([uid,m])=>({...m,uid,id:uid,__live:true})).filter(m=>m&&m.name);
+    }catch(e){console.warn('SkillSwap live members unavailable:',e);return []}
+  }
+  async function render(){
+    const grid=document.getElementById('ssCmGrid'),count=document.getElementById('ssCmLiveCount');if(!grid)return;
+    grid.innerHTML=starterMembers.map(m=>card(m,false)).join('');
+    const live=await loadLive();
+    const current=(window.ssFirebaseAuth||window.firebase?.auth?.())?.currentUser?.uid;
+    const filtered=live.filter(m=>String(m.uid)!==String(current));
+    if(filtered.length){
+      grid.insertAdjacentHTML('beforeend',filtered.map(m=>card(m,true)).join(''));
+      if(count)count.textContent=filtered.length+' real member'+(filtered.length===1?'':'s')+' online in the community';
+    }else if(count){count.textContent='12 starter profiles';}
+  }
+  document.addEventListener('DOMContentLoaded',()=>{render();setTimeout(render,1200);setTimeout(render,3000);});
+  window.ssRefreshCommunityMembers=render;
+})();
+</script>
+<!-- END SKILLSWAP COMMUNITY MEMBERS -->
+
 </body>
 </html>
 <!-- =========================================================
