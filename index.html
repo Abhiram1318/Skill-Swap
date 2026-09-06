@@ -3553,6 +3553,21 @@ const demoPeople = [
 
 ];
 
+/* =========================================================
+   VIRTUAL PRACTICE MEMBERS
+   These are conversational virtual members, clearly identified
+   so users are never misled about who they are chatting with.
+========================================================= */
+const virtualMembers = [
+  {id:"virtual-anaya",name:"Anaya Kapoor",avatar:"👩🏻‍💻",location:"Bengaluru, Karnataka",category:"Technology",type:"Virtual Practice Partner",languages:["English","Hindi"],teach:["Python","JavaScript","AI basics"],want:["Public Speaking","Product Design"],availability:["Evenings","Flexible"],rating:4.9,reviews:148,bio:"A friendly virtual practice partner who enjoys breaking difficult coding ideas into simple, practical steps.",virtual:true,persona:"anaya"},
+  {id:"virtual-rohan",name:"Rohan Mehta",avatar:"👨🏽‍🎨",location:"Mumbai, Maharashtra",category:"Creative Skills",type:"Virtual Practice Partner",languages:["English","Hindi","Marathi"],teach:["Drawing","Design Thinking","Photography"],want:["Coding","Cricket"],availability:["Weekends","Evenings"],rating:4.8,reviews:121,bio:"A relaxed, encouraging virtual practice partner for creative projects, feedback and brainstorming.",virtual:true,persona:"rohan"},
+  {id:"virtual-meera",name:"Meera Iyer",avatar:"👩🏽‍🏫",location:"Chennai, Tamil Nadu",category:"Languages",type:"Virtual Practice Partner",languages:["English","Tamil","Hindi"],teach:["Tamil","English Conversation","Public Speaking"],want:["Python","Guitar"],availability:["After school","Weekends"],rating:5,reviews:203,bio:"A patient virtual conversation partner who loves language practice, storytelling and confidence-building.",virtual:true,persona:"meera"},
+  {id:"virtual-vihaan",name:"Vihaan Rao",avatar:"🧑🏽‍🎓",location:"Hyderabad, Telangana",category:"Academics",type:"Virtual Practice Partner",languages:["English","Telugu","Hindi"],teach:["Maths","Physics","Chess"],want:["Web Development","Guitar"],availability:["Evenings","Flexible"],rating:4.9,reviews:176,bio:"A focused virtual study partner who likes solving problems step by step and keeping practice sessions fun.",virtual:true,persona:"vihaan"},
+  {id:"virtual-sana",name:"Sana Khan",avatar:"👩🏽‍🎤",location:"Pune, Maharashtra",category:"Arts & Music",type:"Virtual Practice Partner",languages:["English","Hindi","Urdu"],teach:["Guitar","Music Theory","Creative Writing"],want:["Python","Drawing"],availability:["Evenings","Weekends"],rating:4.9,reviews:167,bio:"A warm virtual practice partner for music, creativity and casual skill-building conversations.",virtual:true,persona:"sana"},
+  {id:"virtual-aryan",name:"Aryan Nair",avatar:"👨🏽‍💼",location:"Kochi, Kerala",category:"Career Skills",type:"Virtual Practice Partner",languages:["English","Malayalam","Hindi"],teach:["Interview Skills","Communication","Presentation"],want:["JavaScript","Photography"],availability:["Evenings","Flexible"],rating:4.8,reviews:134,bio:"A supportive virtual practice partner for interviews, communication and professional confidence.",virtual:true,persona:"aryan"}
+];
+
+demoPeople.push(...virtualMembers);
 
 /* =========================
    STATE
@@ -4139,8 +4154,13 @@ function renderMatches(people=demoPeople){
         let action=
             `openRequest('${person.id}')`;
 
+        if(person.virtual){
+            buttonText="💬 Chat now";
+            buttonClass="connect connected";
+            action=`openChat('${person.id}')`;
+        }
 
-        if(request?.status==="pending"){
+        if(request?.status==="pending" && !person.virtual){
 
             buttonText=
                 "Request Pending";
@@ -4202,7 +4222,7 @@ function renderMatches(people=demoPeople){
             </div>
 
             <div class="member-badge">
-                🧑‍🎓 SkillSwap Member
+                ${person.virtual ? "✨ Virtual Practice Partner" : "🧑‍🎓 SkillSwap Member"}
             </div>
 
             <div class="profile">
@@ -7257,6 +7277,78 @@ window.addEventListener("keydown",e=>{
     setTimeout(forceMembers,2000);
     setTimeout(forceMembers,4000);
   });
+})();
+</script>
+
+<style id="skillswap-virtual-members-style">
+.virtual-chat-note{font-size:12px;color:#647772;margin-top:2px}.virtual-pill{display:inline-flex;align-items:center;gap:5px;margin-top:5px;padding:4px 8px;border-radius:999px;background:#e8f7f1;color:#087f5b;font-size:11px;font-weight:800}
+</style>
+<script id="skillswap-virtual-members">
+(function(){
+  const virtualMap=Object.fromEntries((typeof virtualMembers!=="undefined"?virtualMembers:[]).map(p=>[String(p.id),p]));
+  const oldOpenChat=window.openChat;
+  const oldSendMessage=window.sendMessage;
+  function vReply(person,text){
+    const t=String(text||"").toLowerCase();
+    if(person.persona==="anaya") {
+      if(/hello|hi|hey/.test(t)) return "Hey! 😊 Good to meet you. What are you working on today?";
+      if(/python|code|coding|javascript|ai/.test(t)) return "Absolutely. Tell me what you already know and I'll help you build it step by step. We can even make a tiny project together.";
+      if(/project|idea/.test(t)) return "I like that idea. Start small: define the goal, list the inputs and outputs, then build the simplest version first.";
+      return "That makes sense. Tell me a little more and let's figure it out together.";
+    }
+    if(person.persona==="rohan") {
+      if(/hello|hi|hey/.test(t)) return "Hey! 👋 What are you creating lately?";
+      if(/draw|design|photo|creative/.test(t)) return "Nice! Show me the idea in words and I'll help you turn it into a simple practice plan.";
+      return "I like where you're going with that. What part feels hardest right now?";
+    }
+    if(person.persona==="meera") {
+      if(/hello|hi|hey/.test(t)) return "Hi! 🌼 Let's practise together. Do you want casual conversation or focused language practice?";
+      if(/tamil|english|language|speak|conversation/.test(t)) return "Great. Try writing one sentence and I'll reply naturally, then gently correct anything that could sound more natural.";
+      return "Tell me what you'd like to practise, and we'll take it one small step at a time.";
+    }
+    if(person.persona==="vihaan") {
+      if(/hello|hi|hey/.test(t)) return "Hey! 📚 Ready for a quick challenge? What topic are you studying?";
+      if(/math|physics|chess|study|problem/.test(t)) return "Sure. Send me the question or topic. I'll help you reason through it instead of just giving you the answer.";
+      return "Let's break that down. What do you already understand, and where do you get stuck?";
+    }
+    if(person.persona==="sana") {
+      if(/hello|hi|hey/.test(t)) return "Hey! 🎸 What are you in the mood to practise today?";
+      if(/guitar|music|song|write|creative/.test(t)) return "Love it. We can make the practice short and fun. What level are you at right now?";
+      return "That sounds interesting. Tell me more and we'll turn it into something you can practise.";
+    }
+    if(person.persona==="aryan") {
+      if(/hello|hi|hey/.test(t)) return "Hey! 👋 What would you like to get better at?";
+      if(/interview|job|career|presentation|communication/.test(t)) return "Absolutely. Give me the situation and I'll role-play the other side, then give you practical feedback.";
+      return "Got it. Let's make this practical. What's the real situation you're preparing for?";
+    }
+    return "Sounds good! Tell me more and we'll work through it together.";
+  }
+  window.openChat=async function(personId){
+    const person=virtualMap[String(personId)];
+    if(!person){return oldOpenChat?oldOpenChat(personId):undefined}
+    if(!getCurrentUser()){openAuth("signin");return}
+    currentChatPerson={id:person.id,name:person.name,avatar:person.avatar,virtual:true};
+    document.getElementById("chatName").textContent=person.name;
+    document.getElementById("chatAvatar").textContent=person.avatar;
+    const sub=document.querySelector("#chatModal .chat-person p");
+    if(sub)sub.innerHTML='<span class="virtual-chat-note">✨ Virtual Practice Partner</span>';
+    document.getElementById("chatModal").classList.add("show");
+    loadMessages();
+  };
+  const baseLoad=window.loadMessages;
+  window.loadMessages=function(){
+    if(!currentChatPerson?.virtual){return baseLoad?baseLoad():undefined}
+    const user=getCurrentUser(); if(!user||!currentChatPerson)return;
+    const messages=getMessages(),key=chatKey(user.id,currentChatPerson.id);
+    if(!messages[key]) messages[key]=[{type:"them",text:"Hi! 👋 I'm here to practise with you. What would you like to work on?"}];
+    const c=document.getElementById("chatMessages"); if(!c)return; c.innerHTML=""; messages[key].forEach(m=>{const d=document.createElement("div");d.className="message "+m.type;d.textContent=m.text;c.appendChild(d)});c.scrollTop=c.scrollHeight;saveMessages(messages);
+  };
+  window.sendMessage=function(){
+    if(!currentChatPerson?.virtual){return oldSendMessage?oldSendMessage():undefined}
+    const user=getCurrentUser(),input=document.getElementById("chatInput"),text=input?.value.trim(); if(!user||!text)return;
+    const messages=getMessages(),key=chatKey(user.id,currentChatPerson.id); if(!messages[key])messages[key]=[]; messages[key].push({type:"me",text}); saveMessages(messages); input.value=""; loadMessages();
+    setTimeout(()=>{const now=getMessages(); if(!now[key])now[key]=[]; now[key].push({type:"them",text:vReply(virtualMap[String(currentChatPerson.id)],text)}); saveMessages(now); loadMessages()},700+Math.random()*800);
+  };
 })();
 </script>
 </body>
