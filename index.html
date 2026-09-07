@@ -8033,3 +8033,518 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
   document.addEventListener('DOMContentLoaded',bind);
 })();
 </script>
+
+
+<!-- ================================================================
+     SKILLSWAP INDIA — ULTIMATE PLATFORM ENHANCEMENT
+     Static GitHub Pages + Firebase Auth + Firebase Realtime Database
+     No Supabase / no Python / no Render / no app-managed localStorage
+     ================================================================ -->
+
+<style id="ss-ultimate-styles">
+:root{
+  --ss-bg:#f5faf8;
+  --ss-card:#ffffff;
+  --ss-ink:#17352d;
+  --ss-muted:#687a73;
+  --ss-border:#dce9e4;
+  --ss-green:#176b57;
+  --ss-green-2:#23866c;
+  --ss-soft:#e8f5f0;
+  --ss-gold:#d69b22;
+  --ss-danger:#c84b4b;
+  --ss-shadow:0 18px 45px rgba(23,107,87,.10);
+}
+.ss-ultimate-shell{max-width:1180px;margin:42px auto;padding:0 20px}
+.ss-ultimate-hero{
+  position:relative;overflow:hidden;border-radius:30px;padding:42px;
+  background:linear-gradient(135deg,#123f34,#176b57 58%,#23866c);
+  color:#fff;box-shadow:var(--ss-shadow)
+}
+.ss-ultimate-hero:before,.ss-ultimate-hero:after{
+  content:"";position:absolute;border-radius:999px;background:rgba(255,255,255,.08)
+}
+.ss-ultimate-hero:before{width:240px;height:240px;right:-80px;top:-80px}
+.ss-ultimate-hero:after{width:160px;height:160px;left:-70px;bottom:-80px}
+.ss-ultimate-kicker{font-size:12px;letter-spacing:2px;font-weight:800;opacity:.8}
+.ss-ultimate-hero h2{font-size:clamp(30px,5vw,48px);margin:10px 0}
+.ss-ultimate-hero p{max-width:760px;line-height:1.7;opacity:.92}
+.ss-ultimate-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.ss-ultimate-btn{
+  border:0;border-radius:13px;padding:11px 16px;font-weight:800;cursor:pointer;
+  background:#fff;color:var(--ss-green)
+}
+.ss-ultimate-btn.alt{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.3)}
+.ss-ultimate-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-top:18px
+}
+.ss-ultimate-stat{
+  background:var(--ss-card);border:1px solid var(--ss-border);border-radius:18px;
+  padding:19px;box-shadow:0 8px 28px rgba(0,0,0,.04)
+}
+.ss-ultimate-stat b{display:block;font-size:27px;color:var(--ss-green)}
+.ss-ultimate-stat span{font-size:13px;color:var(--ss-muted)}
+.ss-ultimate-nav{
+  display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 12px
+}
+.ss-ultimate-tab{
+  border:1px solid var(--ss-border);background:#fff;border-radius:999px;
+  padding:9px 14px;cursor:pointer;font-weight:700;color:var(--ss-ink)
+}
+.ss-ultimate-tab.active{background:var(--ss-green);color:#fff;border-color:var(--ss-green)}
+.ss-ultimate-panel{
+  background:#fff;border:1px solid var(--ss-border);border-radius:22px;
+  padding:25px;box-shadow:0 10px 35px rgba(0,0,0,.05);min-height:180px
+}
+.ss-feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.ss-feature-card{
+  border:1px solid var(--ss-border);border-radius:18px;padding:20px;background:#fff;
+  transition:transform .2s,box-shadow .2s
+}
+.ss-feature-card:hover{transform:translateY(-3px);box-shadow:var(--ss-shadow)}
+.ss-feature-icon{font-size:30px}
+.ss-feature-card h3{margin:9px 0 7px;color:var(--ss-ink)}
+.ss-feature-card p{font-size:14px;line-height:1.6;color:var(--ss-muted)}
+.ss-feature-card button{
+  margin-top:13px;border:0;border-radius:10px;padding:9px 13px;
+  background:var(--ss-soft);color:var(--ss-green);font-weight:800;cursor:pointer
+}
+.ss-ultimate-list{display:grid;gap:10px;margin-top:14px}
+.ss-ultimate-row{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px;border:1px solid var(--ss-border);border-radius:14px;background:#fff
+}
+.ss-ultimate-row-main{min-width:0}
+.ss-ultimate-row strong{display:block;color:var(--ss-ink)}
+.ss-ultimate-row small{display:block;color:var(--ss-muted);margin-top:3px}
+.ss-ultimate-pill{display:inline-block;padding:5px 9px;border-radius:999px;background:var(--ss-soft);color:var(--ss-green);font-size:12px;font-weight:800}
+.ss-ultimate-form{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.ss-ultimate-form .full{grid-column:1/-1}
+.ss-ultimate-form label{display:block;font-size:12px;font-weight:800;margin-bottom:5px;color:var(--ss-ink)}
+.ss-ultimate-form input,.ss-ultimate-form textarea,.ss-ultimate-form select{
+  width:100%;border:1px solid var(--ss-border);border-radius:11px;padding:11px;
+  background:#fff;font:inherit
+}
+.ss-ultimate-form button{
+  border:0;border-radius:11px;padding:11px 15px;background:var(--ss-green);
+  color:#fff;font-weight:800;cursor:pointer
+}
+.ss-searchbar{
+  display:flex;gap:9px;margin-bottom:15px
+}
+.ss-searchbar input{flex:1;border:1px solid var(--ss-border);border-radius:12px;padding:12px}
+.ss-searchbar button{border:0;border-radius:12px;padding:0 16px;background:var(--ss-green);color:#fff;font-weight:800}
+.ss-mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.ss-mini-card{padding:16px;border:1px solid var(--ss-border);border-radius:15px;background:#fff}
+.ss-mini-card h4{margin-bottom:6px}
+.ss-mini-card p{font-size:13px;color:var(--ss-muted);line-height:1.55}
+.ss-progress{height:9px;border-radius:99px;background:#e6efeb;overflow:hidden;margin-top:9px}
+.ss-progress span{display:block;height:100%;background:var(--ss-green);border-radius:99px}
+.ss-empty{padding:28px;text-align:center;color:var(--ss-muted);border:1px dashed var(--ss-border);border-radius:15px}
+.ss-toast{
+  position:fixed;right:20px;bottom:20px;z-index:99999;max-width:360px;
+  padding:14px 17px;border-radius:14px;background:#17352d;color:#fff;
+  box-shadow:0 12px 35px rgba(0,0,0,.2);display:none
+}
+.ss-toast.show{display:block;animation:ssToastIn .25s ease}
+@keyframes ssToastIn{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
+.ss-skeleton{height:80px;border-radius:14px;background:linear-gradient(90deg,#eef4f1,#fff,#eef4f1);background-size:200% 100%;animation:ssShimmer 1.2s infinite}
+@keyframes ssShimmer{to{background-position:-200% 0}}
+.ss-privacy-note{font-size:12px;color:var(--ss-muted);line-height:1.6;margin-top:15px}
+@media(max-width:900px){
+  .ss-ultimate-grid{grid-template-columns:repeat(2,1fr)}
+  .ss-feature-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+  .ss-ultimate-hero{padding:28px 22px}
+  .ss-ultimate-grid,.ss-feature-grid,.ss-mini-grid,.ss-ultimate-form{grid-template-columns:1fr}
+  .ss-ultimate-form .full{grid-column:auto}
+  .ss-searchbar{flex-direction:column}
+  .ss-searchbar button{padding:11px}
+  .ss-ultimate-row{align-items:flex-start;flex-direction:column}
+}
+</style>
+
+<section id="ssUltimatePlatform" class="ss-ultimate-shell" aria-label="SkillSwap India ultimate platform">
+  <div class="ss-ultimate-hero">
+    <span class="ss-ultimate-kicker">SKILLSWAP INDIA • COMMUNITY PLATFORM</span>
+    <h2>🌱 Learn something. Teach something. Grow together.</h2>
+    <p>
+      A richer SkillSwap experience for discovering people, organizing exchanges,
+      tracking goals, building reputation and participating in the community —
+      powered by Firebase and designed for GitHub Pages.
+    </p>
+    <div class="ss-ultimate-actions">
+      <button class="ss-ultimate-btn" onclick="ssUltimateOpen('discover')">🔎 Discover skills</button>
+      <button class="ss-ultimate-btn alt" onclick="ssUltimateOpen('dashboard')">📊 My activity</button>
+      <button class="ss-ultimate-btn alt" onclick="ssUltimateOpen('create')">✨ Create something</button>
+    </div>
+  </div>
+
+  <div class="ss-ultimate-grid">
+    <div class="ss-ultimate-stat"><b id="ssUStatPeople">—</b><span>Community members</span></div>
+    <div class="ss-ultimate-stat"><b id="ssUStatConnections">—</b><span>My connections</span></div>
+    <div class="ss-ultimate-stat"><b id="ssUStatSessions">—</b><span>My sessions</span></div>
+    <div class="ss-ultimate-stat"><b id="ssUStatXP">—</b><span>My XP</span></div>
+  </div>
+
+  <div class="ss-ultimate-nav" role="tablist">
+    <button class="ss-ultimate-tab active" onclick="ssUltimateOpen('discover',this)">🔎 Discover</button>
+    <button class="ss-ultimate-tab" onclick="ssUltimateOpen('dashboard',this)">📊 Dashboard</button>
+    <button class="ss-ultimate-tab" onclick="ssUltimateOpen('skills',this)">🧠 Skills</button>
+    <button class="ss-ultimate-tab" onclick="ssUltimateOpen('goals',this)">🎯 Goals</button>
+    <button class="ss-ultimate-tab" onclick="ssUltimateOpen('events',this)">📅 Sessions</button>
+    <button class="ss-ultimate-tab" onclick="ssUltimateOpen('community',this)">💬 Community</button>
+    <button class="ss-ultimate-tab" onclick="ssUltimateOpen('reputation',this)">🏆 Reputation</button>
+    <button class="ss-ultimate-tab" onclick="ssUltimateOpen('help',this)">❓ Help</button>
+  </div>
+
+  <div id="ssUltimatePanel" class="ss-ultimate-panel">
+    <div class="ss-skeleton"></div>
+  </div>
+
+  <div id="ssUltimateToast" class="ss-toast" role="status"></div>
+</section>
+
+<script id="ss-ultimate-platform-js">
+(function(){
+  'use strict';
+
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+  const db=()=>window.ssFirebase?.db||null;
+  const auth=()=>window.ssFirebaseAuth||window.ssFirebase?.auth||null;
+  const uid=()=>auth()?.currentUser?.uid||null;
+  const me=()=>window.ssFirebaseProfile||{};
+  const arr=v=>Array.isArray(v)?v:(v?String(v).split(',').map(x=>x.trim()).filter(Boolean):[]);
+  const now=()=>new Date().toISOString();
+
+  function toast(msg){
+    const el=document.getElementById('ssUltimateToast');
+    if(!el){ if(typeof showToast==='function')showToast(msg); return; }
+    el.textContent=msg;el.classList.add('show');
+    clearTimeout(window.__ssUltimateToastTimer);
+    window.__ssUltimateToastTimer=setTimeout(()=>el.classList.remove('show'),3000);
+  }
+
+  async function loginRequired(){
+    if(uid())return true;
+    toast('Please sign in to use this feature.');
+    if(typeof openAuth==='function')openAuth('signin');
+    return false;
+  }
+
+  function panel(html){
+    const p=document.getElementById('ssUltimatePanel');
+    if(p)p.innerHTML=html;
+  }
+
+  function tabs(active){
+    document.querySelectorAll('#ssUltimatePlatform .ss-ultimate-tab').forEach(b=>{
+      b.classList.toggle('active',b.textContent.toLowerCase().includes(String(active).toLowerCase()));
+    });
+  }
+
+  async function read(path){
+    const d=db();
+    if(!d)throw new Error('Firebase is still loading. Please try again in a moment.');
+    return (await d.ref(path).once('value')).val();
+  }
+
+  async function write(path,value){
+    const d=db();
+    if(!d)throw new Error('Firebase is not ready.');
+    return d.ref(path).set(value);
+  }
+
+  async function update(path,value){
+    const d=db();
+    if(!d)throw new Error('Firebase is not ready.');
+    return d.ref(path).update(value);
+  }
+
+  function fail(e){
+    console.error('SkillSwap Ultimate:',e);
+    panel('<div class="ss-empty"><strong>⚠️ Could not load this area</strong><p style="margin-top:7px">'+esc(e?.message||'Please try again.')+'</p><button class="ss-ultimate-btn" style="margin-top:14px;background:var(--ss-green);color:#fff" onclick="ssUltimateOpen(\'discover\')">Back to Discover</button></div>');
+  }
+
+  window.ssUltimateOpen=function(which,button){
+    Promise.resolve().then(async()=>{
+      if(button)tabs(button.textContent.split(' ')[1]||which);
+      if(which==='discover')return renderDiscover();
+      if(which==='dashboard')return renderDashboard();
+      if(which==='skills')return renderSkills();
+      if(which==='goals')return renderGoals();
+      if(which==='events')return renderEvents();
+      if(which==='community')return renderCommunity();
+      if(which==='reputation')return renderReputation();
+      if(which==='help')return renderHelp();
+      if(which==='create')return renderCreate();
+      fail(new Error('Unknown section.'));
+    }).catch(fail);
+  };
+
+  async function updateStats(){
+    try{
+      const users=await read('users')||{};
+      document.getElementById('ssUStatPeople').textContent=Object.keys(users).length;
+      if(!uid()){
+        ['ssUStatConnections','ssUStatSessions','ssUStatXP'].forEach(id=>document.getElementById(id).textContent='—');
+        return;
+      }
+      const requests=await read('requests')||{};
+      const con=Object.values(requests).filter(x=>x.status==='accepted'&&(x.senderUid===uid()||x.receiverUid===uid())).length;
+      const sessions=await read('sessions')||{};
+      const ses=Object.values(sessions).filter(x=>arr(x.participantUids).includes(uid())).length;
+      const g=await read('gamification/'+uid())||{};
+      document.getElementById('ssUStatConnections').textContent=con;
+      document.getElementById('ssUStatSessions').textContent=ses;
+      document.getElementById('ssUStatXP').textContent=Number(g.xp||0);
+    }catch(e){console.warn(e)}
+  }
+
+  async function renderDiscover(){
+    tabs('discover');
+    panel('<h3>🔎 Discover people & skills</h3><p class="ss-privacy-note">Search community members by name, location, teaching skill or learning goal.</p><div class="ss-searchbar"><input id="ssUDiscoverQ" placeholder="Try: Python, Telugu, Hyderabad..."><button id="ssUDiscoverBtn">Search</button></div><div id="ssUDiscoverResults" class="ss-mini-grid"></div>');
+    const users=Object.entries(await read('users')||{}).map(([id,v])=>({...v,uid:id})).filter(x=>x.name&&x.uid!==uid());
+    const render=()=>{
+      const q=(document.getElementById('ssUDiscoverQ')?.value||'').toLowerCase().trim();
+      const list=users.filter(x=>!q||[x.name,x.location,x.bio,...arr(x.teach),...arr(x.want)].join(' ').toLowerCase().includes(q)).slice(0,30);
+      const el=document.getElementById('ssUDiscoverResults');
+      el.innerHTML=list.length?list.map(x=>'<article class="ss-mini-card"><div class="ss-feature-icon">'+esc(x.avatar||'🧑🏻')+'</div><h4>'+esc(x.name)+'</h4><p>📍 '+esc(x.location||'Online')+'</p><p><b>Teaches:</b> '+esc(arr(x.teach).slice(0,4).join(' · ')||'—')+'</p><p><b>Wants:</b> '+esc(arr(x.want).slice(0,4).join(' · ')||'—')+'</p><button onclick="ssUltimateConnect(\''+esc(x.uid)+'\')">🤝 Connect</button></article>').join(''):'<div class="ss-empty" style="grid-column:1/-1">No matching members found.</div>';
+    };
+    document.getElementById('ssUDiscoverBtn').onclick=render;
+    document.getElementById('ssUDiscoverQ').onkeydown=e=>{if(e.key==='Enter')render()};
+    render();
+  }
+
+  window.ssUltimateConnect=function(other){
+    Promise.resolve().then(async()=>{
+      if(!(await loginRequired()))return;
+      if(!other||other===uid())return toast('You cannot connect with yourself.');
+      const users=await read('users')||{}, target=users[other];
+      if(!target)return toast('Member not found.');
+      const requests=await read('requests')||{};
+      const duplicate=Object.values(requests).find(r=>
+        (r.senderUid===uid()&&r.receiverUid===other)||(r.senderUid===other&&r.receiverUid===uid())
+      );
+      if(duplicate&&['pending','accepted'].includes(duplicate.status))
+        return toast(duplicate.status==='accepted'?'Already connected.':'Request already pending.');
+      const d=db(), ref=d.ref('requests').push();
+      await ref.set({
+        senderUid:uid(),receiverUid:other,
+        senderName:me().name||'SkillSwap Member',receiverName:target.name||'SkillSwap Member',
+        skillOffered:arr(me().teach)[0]||'',skillWanted:arr(me().want)[0]||'',
+        status:'pending',created_at:now()
+      });
+      await d.ref('notifications').push().set({
+        uid:other,title:'New SkillSwap connection request',
+        body:(me().name||'A member')+' wants to connect with you.',
+        is_read:false,created_at:now()
+      });
+      toast('🤝 Connection request sent!');
+      updateStats();
+    }).catch(fail);
+  };
+
+  async function renderDashboard(){
+    tabs('dashboard');
+    if(!(await loginRequired()))return;
+    const requests=await read('requests')||{};
+    const accepted=Object.entries(requests).map(([id,x])=>({...x,id})).filter(x=>x.status==='accepted'&&(x.senderUid===uid()||x.receiverUid===uid()));
+    const incoming=Object.entries(requests).map(([id,x])=>({...x,id})).filter(x=>x.status==='pending'&&x.receiverUid===uid());
+    const sessions=await read('sessions')||{};
+    const mySessions=Object.entries(sessions).map(([id,x])=>({...x,id})).filter(x=>arr(x.participantUids).includes(uid())).slice(-8).reverse();
+    const notifications=Object.values(await read('notifications')||{}).filter(x=>x.uid===uid()&&!x.is_read).length;
+    const g=await read('gamification/'+uid())||{};
+    panel('<h3>📊 My SkillSwap activity</h3><div class="ss-feature-grid">'+
+      '<div class="ss-feature-card"><div class="ss-feature-icon">🤝</div><h3>'+accepted.length+'</h3><p>Accepted connections</p></div>'+
+      '<div class="ss-feature-card"><div class="ss-feature-icon">📨</div><h3>'+incoming.length+'</h3><p>Pending requests</p></div>'+
+      '<div class="ss-feature-card"><div class="ss-feature-icon">📅</div><h3>'+mySessions.length+'</h3><p>Recent sessions</p></div>'+
+      '<div class="ss-feature-card"><div class="ss-feature-icon">🔔</div><h3>'+notifications+'</h3><p>Unread notifications</p></div>'+
+      '<div class="ss-feature-card"><div class="ss-feature-icon">⭐</div><h3>'+Number(me().rating||0).toFixed(1)+'</h3><p>Profile rating</p></div>'+
+      '<div class="ss-feature-card"><div class="ss-feature-icon">🏆</div><h3>'+Number(g.xp||0)+'</h3><p>XP earned</p></div>'+
+      '</div><h3 style="margin-top:25px">Recent sessions</h3><div class="ss-ultimate-list">'+
+      (mySessions.length?mySessions.map(x=>'<div class="ss-ultimate-row"><div class="ss-ultimate-row-main"><strong>'+esc(x.title||'SkillSwap session')+'</strong><small>'+esc(x.starts_at||'Time not set')+'</small></div><span class="ss-ultimate-pill">'+esc(x.status||'pending')+'</span></div>').join(''):'<div class="ss-empty">No sessions yet.</div>')+
+      '</div>');
+  }
+
+  async function renderSkills(){
+    tabs('skills');
+    const users=Object.values(await read('users')||{});
+    const counts={};
+    users.forEach(u=>arr(u.teach).forEach(s=>{const k=s.trim();if(k)counts[k]=(counts[k]||0)+1}));
+    const popular=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,18);
+    panel('<h3>🧠 Skill directory</h3><p class="ss-privacy-note">See what the community is teaching and discover areas with active members.</p><div class="ss-feature-grid">'+
+      (popular.length?popular.map(([skill,n])=>'<div class="ss-feature-card"><div class="ss-feature-icon">💡</div><h3>'+esc(skill)+'</h3><p>'+n+' member'+(n===1?'':'s')+' currently list this as a teaching skill.</p><button onclick="ssUltimateSkillSearch(\''+esc(skill)+'\')">Find people</button></div>').join(''):'<div class="ss-empty">No skills are available yet.</div>')+
+      '</div>');
+  }
+
+  window.ssUltimateSkillSearch=function(skill){
+    renderDiscover().then(()=>{const i=document.getElementById('ssUDiscoverQ');if(i){i.value=skill;document.getElementById('ssUDiscoverBtn').click()}}).catch(fail);
+  };
+
+  async function renderGoals(){
+    tabs('goals');
+    if(!(await loginRequired()))return;
+    const plans=Object.entries(await read('learningPlans/'+uid())||{}).map(([id,x])=>({...x,id}));
+    panel('<h3>🎯 Goals & milestones</h3><p class="ss-privacy-note">Keep your learning goals visible and move them forward one milestone at a time.</p><div class="ss-ultimate-form"><div><label>Goal</label><input id="ssUGoal" placeholder="Learn public speaking"></div><div><label>Target date</label><input id="ssUGoalDate" type="date"></div><div class="full"><label>Milestones (comma separated)</label><textarea id="ssUGoalSteps" rows="3" placeholder="Basics, practice, feedback, final project"></textarea></div><button id="ssUGoalSave">Create goal</button></div><div class="ss-ultimate-list">'+
+      (plans.length?plans.map(x=>'<div class="ss-ultimate-row"><div class="ss-ultimate-row-main"><strong>'+esc(x.goal||'Learning goal')+'</strong><small>'+esc(x.targetDate||'No target date')+'</small><div class="ss-progress"><span style="width:'+Math.min(100,Number(x.progress||0))+'%"></span></div></div><span class="ss-ultimate-pill">'+Math.min(100,Number(x.progress||0))+'%</span></div>').join(''):'<div class="ss-empty">No goals yet. Create your first one above.</div>')+
+      '</div>');
+    document.getElementById('ssUGoalSave').onclick=async()=>{
+      try{
+        const goal=document.getElementById('ssUGoal').value.trim();if(!goal)return toast('Enter a goal.');
+        const steps=document.getElementById('ssUGoalSteps').value.split(',').map(x=>x.trim()).filter(Boolean);
+        await db().ref('learningPlans/'+uid()).push().set({goal,targetDate:document.getElementById('ssUGoalDate').value||'',steps,progress:0,created_at:now()});
+        toast('🎯 Goal created!');await renderGoals();
+      }catch(e){fail(e)}
+    };
+  }
+
+  async function renderEvents(){
+    tabs('events');
+    if(!(await loginRequired()))return;
+    const sessions=Object.entries(await read('sessions')||{}).map(([id,x])=>({...x,id})).filter(x=>arr(x.participantUids).includes(uid())).reverse();
+    panel('<h3>📅 Sessions</h3><p class="ss-privacy-note">Your scheduled and proposed SkillSwap exchanges.</p><div class="ss-ultimate-list">'+
+      (sessions.length?sessions.map(x=>'<div class="ss-ultimate-row"><div class="ss-ultimate-row-main"><strong>'+esc(x.title||'SkillSwap session')+'</strong><small>🕒 '+esc(x.starts_at||'Not scheduled')+' · '+esc(x.duration||60)+' min</small><small>'+esc(x.notes||'')+'</small></div><span class="ss-ultimate-pill">'+esc(x.status||'pending')+'</span></div>').join(''):'<div class="ss-empty">No sessions yet. Use the Swap Booking feature above to schedule one.</div>')+
+      '</div>');
+  }
+
+  async function renderCommunity(){
+    tabs('community');
+    const posts=Object.entries(await read('posts')||{}).map(([id,x])=>({...x,id})).reverse().slice(0,30);
+    panel('<h3>💬 Community feed</h3><p class="ss-privacy-note">Offers, questions and learning opportunities shared by SkillSwap members.</p><div class="ss-ultimate-form"><div class="full"><textarea id="ssUPost" rows="3" maxlength="1200" placeholder="Share something useful with the community..."></textarea></div><button id="ssUPostBtn">Publish</button></div><div class="ss-ultimate-list">'+
+      (posts.length?posts.map(x=>'<div class="ss-ultimate-row"><div class="ss-ultimate-row-main"><strong>'+esc(x.authorName||'SkillSwap Member')+'</strong><small>'+esc(x.created_at||'')+'</small><div style="margin-top:7px;line-height:1.6">'+esc(x.text||'')+'</div></div><span class="ss-ultimate-pill">❤️ '+Number(x.likes||0)+'</span></div>').join(''):'<div class="ss-empty">No posts yet.</div>')+
+      '</div>');
+    document.getElementById('ssUPostBtn').onclick=async()=>{
+      try{
+        if(!(await loginRequired()))return;
+        const text=document.getElementById('ssUPost').value.trim();if(!text)return toast('Write something first.');
+        await db().ref('posts').push().set({authorUid:uid(),authorName:me().name||'SkillSwap Member',text,likes:0,created_at:now()});
+        toast('💬 Post published!');await renderCommunity();
+      }catch(e){fail(e)}
+    };
+  }
+
+  async function renderReputation(){
+    tabs('reputation');
+    if(!(await loginRequired()))return;
+    const g=await read('gamification/'+uid())||{};
+    const xp=Number(g.xp||0),level=Math.floor(xp/100)+1,progress=xp%100,badges=Object.keys(g.badges||{});
+    panel('<h3>🏆 Reputation center</h3><div class="ss-feature-grid">'+
+      '<div class="ss-feature-card"><div class="ss-feature-icon">⚡</div><h3>'+xp+' XP</h3><p>Every useful action can contribute to your SkillSwap reputation.</p></div>'+
+      '<div class="ss-feature-card"><div class="ss-feature-icon">🎖️</div><h3>Level '+level+'</h3><p>'+progress+' / 100 XP toward the next level.</p><div class="ss-progress"><span style="width:'+progress+'%"></span></div></div>'+
+      '<div class="ss-feature-card"><div class="ss-feature-icon">🏅</div><h3>'+badges.length+' badges</h3><p>'+(badges.length?badges.map(esc).join(' · '):'Keep participating to unlock badges.')+'</p></div>'+
+      '</div>');
+  }
+
+  async function renderCreate(){
+    tabs('create');
+    panel('<h3>✨ Create something for the community</h3><div class="ss-feature-grid">'+
+      '<div class="ss-feature-card"><div class="ss-feature-icon">🤝</div><h3>Find a partner</h3><p>Discover someone who can teach what you want to learn.</p><button onclick="ssUltimateOpen(\'discover\')">Discover</button></div>'+
+      '<div class="ss-feature-card"><div class="ss-feature-icon">📚</div><h3>Learning goal</h3><p>Turn a skill you want into a measurable plan.</p><button onclick="ssUltimateOpen(\'goals\')">Create goal</button></div>'+
+      '<div class="ss-feature-card"><div class="ss-feature-icon">💬</div><h3>Community post</h3><p>Ask a question, share an opportunity or offer a skill.</p><button onclick="ssUltimateOpen(\'community\')">Post</button></div>'+
+      '<div class="ss-feature-card"><div class="ss-feature-icon">📅</div><h3>Book an exchange</h3><p>Arrange a session after you have an accepted connection.</p><button onclick="ssHubOpen(\'booking\')">Book</button></div>'+
+      '</div>');
+  }
+
+  async function renderHelp(){
+    tabs('help');
+    panel('<h3>❓ SkillSwap help center</h3><div class="ss-mini-grid">'+
+      '<div class="ss-mini-card"><h4>How do I find people?</h4><p>Open Discover or Smart Matching, search by skill and send a connection request.</p></div>'+
+      '<div class="ss-mini-card"><h4>How do exchanges work?</h4><p>Connect with a member, get the request accepted, then propose a session.</p></div>'+
+      '<div class="ss-mini-card"><h4>How do I improve my profile?</h4><p>Add clear teaching skills, learning goals, location, availability and a useful bio.</p></div>'+
+      '<div class="ss-mini-card"><h4>How does reputation work?</h4><p>Participate in exchanges and community activities, collect reviews and earn XP/badges.</p></div>'+
+      '<div class="ss-mini-card"><h4>Is my login persistent?</h4><p>Yes. Firebase Authentication uses LOCAL persistence so your session can survive a page reload.</p></div>'+
+      '<div class="ss-mini-card"><h4>Where is my data stored?</h4><p>Core account and community data is handled through Firebase Authentication and Realtime Database.</p></div>'+
+      '</div><p class="ss-privacy-note">For production launch, Firebase Realtime Database security rules should be reviewed and tightened around private records such as chats and notifications.</p>');
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    updateStats();
+    window.addEventListener('ss-auth-ready',updateStats);
+    setTimeout(updateStats,1200);
+    setTimeout(updateStats,3500);
+    ssUltimateOpen('discover');
+  });
+})();
+</script>
+
+<!-- SKILLSWAP ULTIMATE EDITION: enhanced discovery, dashboard, skill directory,
+     goals, sessions, community, reputation, help center and responsive UI. -->
+
+
+<!-- FINAL FIX: "More ways to learn, teach & connect" groups no longer depends on a /groups read. -->
+<script id="ss-final-feature-hub-fix">
+(function(){
+  const E=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const D=()=>window.ssFirebase?.db||null;
+  const U=()=>window.ssFirebaseAuth?.currentUser?.uid||null;
+  const T=m=>typeof showToast==='function'?showToast(m):alert(m);
+  const groups=[
+    {id:'python-ai',name:'Python & AI',icon:'🐍',description:'Python, automation, data, machine learning and practical AI.'},
+    {id:'web-development',name:'Web Development',icon:'💻',description:'HTML, CSS, JavaScript, Firebase and web projects.'},
+    {id:'languages',name:'Languages',icon:'🌐',description:'English, Hindi, Telugu and other language-learning practice.'},
+    {id:'creative',name:'Creative Skills',icon:'🎨',description:'Design, music, photography, drawing and creative projects.'},
+    {id:'career',name:'Career Skills',icon:'🚀',description:'Interviews, presentations, CVs and professional growth.'},
+    {id:'business',name:'Business & Entrepreneurship',icon:'💼',description:'Ideas, startups, marketing, sales and entrepreneurship.'},
+    {id:'study',name:'Study & Academics',icon:'📚',description:'Study techniques, exams, research and academic support.'},
+    {id:'fitness',name:'Fitness & Lifestyle',icon:'🏃',description:'Healthy routines, sports and lifestyle skills.'}
+  ];
+  function panel(h){
+    const p=document.getElementById('ssHubPanel');
+    if(!p)return;
+    p.innerHTML=h;p.classList.add('active');
+    try{p.scrollIntoView({behavior:'smooth',block:'nearest'})}catch(e){}
+  }
+  async function renderGroups(){
+    let remote=[];
+    try{
+      const d=D();
+      if(d){
+        const s=await d.ref('groups').once('value');
+        const v=s.val()||{};
+        remote=Object.entries(v).map(([id,g])=>({...g,id}));
+      }
+    }catch(e){
+      console.warn('Optional /groups read skipped:',e);
+    }
+    const map=new Map(groups.map(g=>[g.id,g]));
+    remote.forEach(g=>map.set(g.id,{...map.get(g.id),...g}));
+    const signed=!!U();
+    panel('<h3>👥 Skill groups</h3><p class="ss-hub-help">Join communities around skills you want to learn or teach.</p><div class="ss-hub-results">'+
+      [...map.values()].map(g=>'<article class="ss-hub-item"><div style="font-size:28px">'+E(g.icon||'👥')+'</div><strong>'+E(g.name||g.id)+'</strong><small>'+Number(g.members||0)+' members</small><p>'+E(g.description||'SkillSwap community group')+'</p><button data-ss-safe-group="'+E(g.id)+'" data-ss-safe-name="'+E(g.name||g.id)+'">'+(signed?'Join group':'Sign in to join')+'</button></article>').join('')+
+      '</div><p class="ss-hub-help">The group catalog remains available even when Firebase rules deny access to <code>/groups</code>.</p>');
+    document.querySelectorAll('[data-ss-safe-group]').forEach(b=>b.onclick=()=>join(b.dataset.ssSafeGroup,b.dataset.ssSafeName));
+  }
+  async function join(id,name){
+    if(!U()){
+      T('Please sign in to join a group.');
+      if(typeof openAuth==='function')openAuth('signin');
+      return;
+    }
+    const d=D();
+    try{
+      const ref=d.ref('groupMembers/'+id+'/'+U());
+      const old=await ref.once('value');
+      if(old.exists())return T('You are already a member of '+name+'.');
+      await ref.set({uid:U(),groupId:id,groupName:name,joined_at:new Date().toISOString()});
+      try{
+        const gr=d.ref('groups/'+id), s=await gr.once('value');
+        if(s.exists())await gr.update({members:Number(s.val()?.members||0)+1});
+      }catch(e){console.warn('Optional group counter skipped:',e)}
+      T('👥 Joined '+name+'!');
+      await renderGroups();
+    }catch(e){
+      console.error(e);
+      T('Firebase blocked saving this membership. The group browser itself is working.');
+    }
+  }
+  const oldOpen=window.ssHubOpen;
+  window.ssHubOpen=function(which){
+    if(which==='groups')return renderGroups().catch(e=>panel('<div class="ss-hub-error"><strong>⚠️ Groups could not load</strong><p>Please try again.</p><button onclick="ssHubOpen(\'groups\')">Try again</button></div>'));
+    if(typeof oldOpen==='function')return oldOpen(which);
+  };
+})();
+</script>
