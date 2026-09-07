@@ -2017,6 +2017,16 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
 }
 </style>
 
+
+<style id="ss-feature-hub-fix-css">
+.ss-hub-loading,.ss-hub-error{padding:24px;text-align:center;border-radius:16px;background:rgba(255,255,255,.8);border:1px solid #dce9e4}
+.ss-hub-loading strong,.ss-hub-error strong{display:block;font-size:18px;margin-bottom:7px}
+.ss-hub-loading small{display:block;color:#687a73;margin-top:5px}
+.ss-hub-error p{margin:8px 0 16px;color:#687a73}
+.ss-hub-spinner{width:28px;height:28px;border:3px solid #dce9e4;border-top-color:var(--green,#176b57);border-radius:50%;margin:0 auto 12px;animation:ssHubSpin .8s linear infinite}
+.ss-hub-help{color:#687a73;margin:6px 0 16px}
+@keyframes ssHubSpin{to{transform:rotate(360deg)}}
+</style>
 </head>
 
 <body>
@@ -7634,54 +7644,359 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
 <script id="ss-major-features-js">
 (function(){
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const db=()=>window.ssFirebase?.db;
-  const uid=()=>window.ssFirebaseAuth?.currentUser?.uid||null;
+  const db=()=>window.ssFirebase&&window.ssFirebase.db;
+  const auth=()=>window.ssFirebaseAuth;
+  const uid=()=>auth()?.currentUser?.uid||null;
   const profile=()=>window.ssFirebaseProfile||null;
   const arr=v=>Array.isArray(v)?v:(v?String(v).split(',').map(x=>x.trim()).filter(Boolean):[]);
   const toast=m=>typeof showToast==='function'?showToast(m):alert(m);
-  async function require(){if(!uid()){toast('Please sign in to use this feature.');return false}return true}
-  async function getUsers(){const d=db();if(!d)return [];const s=await d.ref('users').once('value');return Object.entries(s.val()||{}).map(([id,v])=>({...v,uid:id,id:id})).filter(x=>x.name&&x.uid!==uid())}
-  async function getRequests(){const d=db();if(!d||!uid())return [];const s=await d.ref('requests').once('value');return Object.entries(s.val()||{}).map(([id,v])=>({...v,id})).filter(x=>x.status==='accepted'&&(x.senderUid===uid()||x.receiverUid===uid()))}
-  function panel(html){const p=document.getElementById('ssHubPanel');p.innerHTML=html;p.classList.add('active');p.scrollIntoView({behavior:'smooth',block:'nearest'});}
-  window.ssHubOpen=async function(which){
-    if(which!=='matches'&&which!=='groups'&&which!=='posts'&&!(await require()))return;
-    if(which==='matches')return renderMatchesPanel();
-    if(which==='booking')return renderBooking();
-    if(which==='reviews')return renderReviews();
-    if(which==='rewards')return renderRewards();
-    if(which==='plans')return renderPlans();
-    if(which==='groups')return renderGroups();
-    if(which==='posts')return renderPosts();
-    if(which==='notifications')return renderNotifications();
-  };
-  async function renderMatchesPanel(){
-    const me=profile()||{};const myTeach=arr(me.teach),myWant=arr(me.want);
-    let people=await getUsers();
-    const scores=people.map(p=>{const t=arr(p.teach),w=arr(p.want);let score=0;score+=w.filter(x=>myTeach.some(y=>y.toLowerCase()===x.toLowerCase())).length*35;score+=t.filter(x=>myWant.some(y=>y.toLowerCase()===x.toLowerCase())).length*35;if((p.location||'').toLowerCase()===(me.location||'').toLowerCase())score+=10;score=Math.min(100,score);return {...p,score}}).sort((a,b)=>b.score-a.score);
-    panel(`<div class="ss-hub-toolbar"><input id="ssMatchSearch" placeholder="Search by name, skill or location"><button onclick="ssRenderMatchResults()">Search</button></div><div id="ssMatchResults" class="ss-hub-results"></div>`);
-    window.ssRenderMatchResults=async function(){const q=(document.getElementById('ssMatchSearch')?.value||'').toLowerCase();const list=scores.filter(p=>!q||[p.name,p.location,...arr(p.teach),...arr(p.want)].join(' ').toLowerCase().includes(q));document.getElementById('ssMatchResults').innerHTML=list.length?list.slice(0,30).map(p=>`<article class="ss-hub-item"><strong>${esc(p.name)}</strong><small>📍 ${esc(p.location||'India')}</small><small class="ss-match-score">${p.score}% compatibility</small><p>Teaches: ${esc(arr(p.teach).slice(0,3).join(' · ')||'—')}</p><p>Wants: ${esc(arr(p.want).slice(0,3).join(' · ')||'—')}</p><button onclick="ssHubConnect('${esc(p.uid)}')">Connect</button></article>`).join(''):'<div class="ss-hub-empty">No strong matches found yet. Add more teaching and learning goals to your profile.</div>'};
-    ssRenderMatchResults();
+
+  function panel(html){
+    const p=document.getElementById('ssHubPanel');
+    if(!p)return;
+    p.innerHTML=html;
+    p.classList.add('active');
+    try{p.scrollIntoView({behavior:'smooth',block:'nearest'});}catch(e){}
   }
-  window.ssHubConnect=async function(other){if(!(await require()))return;const me=profile()||{};const p=await db().ref('users/'+other).once('value');if(!p.exists())return toast('Member not found.');const target=p.val();const all=(await db().ref('requests').once('value')).val()||{};const dup=Object.values(all).find(r=>(r.senderUid===uid()&&r.receiverUid===other)||(r.senderUid===other&&r.receiverUid===uid()));if(dup&&['pending','accepted'].includes(dup.status))return toast(dup.status==='accepted'?'Already connected.':'Request already pending.');const ref=db().ref('requests').push();await ref.set({senderUid:uid(),receiverUid:other,senderId:me.id||uid(),receiverId:other,senderName:me.name||'SkillSwap Member',receiverName:target.name,skillOffered:arr(me.teach)[0]||'',skillWanted:arr(me.want)[0]||'',status:'pending',created_at:new Date().toISOString()});await db().ref('notifications').push().set({uid:other,title:'New skill-swap request',body:(me.name||'A member')+' wants to connect with you.',is_read:false,created_at:new Date().toISOString()});toast('Connection request sent!');};
-  async function renderBooking(){const con=await getRequests();panel(`<h3>📅 Schedule a skill-swap</h3><div class="ss-hub-form"><div><label>Partner</label><select id="ssBookPartner">${con.length?con.map(r=>{const other=r.senderUid===uid()?r.receiverUid:r.senderUid;const name=r.senderUid===uid()?r.receiverName:r.senderName;return `<option value="${esc(other)}">${esc(name)}</option>`}).join(''):'<option value="">No accepted connections yet</option>'}</select></div><div><label>Date & time</label><input id="ssBookTime" type="datetime-local"></div><div><label>Title</label><input id="ssBookTitle" placeholder="e.g. Python basics swap"></div><div><label>Duration (minutes)</label><input id="ssBookDuration" type="number" min="15" value="60"></div><div class="full"><label>Notes</label><textarea id="ssBookNotes" rows="3" placeholder="What will you learn or teach?"></textarea></div><button onclick="ssSaveBooking()">Create booking</button></div><div id="ssBookList" style="margin-top:18px"></div>`);loadBookings();}
-  window.ssSaveBooking=async function(){const partner=document.getElementById('ssBookPartner')?.value;if(!partner)return toast('Choose an accepted connection first.');const me=profile()||{};const data={host_uid:uid(),guest_uid:partner,title:document.getElementById('ssBookTitle').value||'SkillSwap session',starts_at:document.getElementById('ssBookTime').value,duration:Number(document.getElementById('ssBookDuration').value||60),notes:document.getElementById('ssBookNotes').value||'',status:'pending',participantUids:[uid(),partner],created_at:new Date().toISOString()};await db().ref('sessions').push().set(data);await db().ref('notifications').push().set({uid:partner,title:'New session proposal',body:(me.name||'A member')+' proposed a SkillSwap session.',is_read:false,created_at:new Date().toISOString()});toast('Session proposal created!');loadBookings();};
-  async function loadBookings(){const s=await db().ref('sessions').once('value');const list=Object.entries(s.val()||{}).map(([id,v])=>({...v,id})).filter(x=>arr(x.participantUids).includes(uid())).slice(-20).reverse();const el=document.getElementById('ssBookList');if(el)el.innerHTML=list.length?list.map(x=>`<div class="ss-hub-item"><strong>${esc(x.title)}</strong><small>${esc(x.starts_at||'Time not set')} · ${esc(x.duration||60)} min · ${esc(x.status||'pending')}</small><p>${esc(x.notes||'')}</p></div>`).join(''):'<div class="ss-hub-empty">No sessions yet.</div>';}
-  async function renderReviews(){const con=await getRequests();panel(`<h3>⭐ Rate a completed exchange</h3><div class="ss-hub-form"><div><label>Member</label><select id="ssReviewPerson">${con.length?con.map(r=>{const other=r.senderUid===uid()?r.receiverUid:r.senderUid;const name=r.senderUid===uid()?r.receiverName:r.senderName;return `<option value="${esc(other)}">${esc(name)}</option>`}).join(''):'<option value="">No connections yet</option>'}</select></div><div><label>Rating</label><select id="ssReviewRating"><option value="5">★★★★★ 5</option><option value="4">★★★★☆ 4</option><option value="3">★★★☆☆ 3</option><option value="2">★★☆☆☆ 2</option><option value="1">★☆☆☆☆ 1</option></select></div><div class="full"><label>Review</label><textarea id="ssReviewText" rows="4" maxlength="1000" placeholder="How was the exchange?"></textarea></div><button onclick="ssSaveReview()">Publish review</button></div>`);}
-  window.ssSaveReview=async function(){const target=document.getElementById('ssReviewPerson')?.value;if(!target)return toast('Choose a member.');const rating=Number(document.getElementById('ssReviewRating').value);const d=await safeJSON('/api/reviews',{method:'POST',body:JSON.stringify({targetUid:target,rating,text:document.getElementById('ssReviewText').value.trim()})});if(d.__error)return toast(d.__error.message);toast('⭐ Review published!');renderReviews();};
-  async function renderRewards(){const me=profile()||{};const snap=await db().ref('gamification/'+uid()).once('value');const g=snap.val()||{};const xp=Number(g.xp||0);const level=Math.floor(xp/100)+1;const badges=g.badges||{};panel(`<h3>🏆 Your SkillSwap reputation</h3><div class="ss-xp">${xp} XP</div><p>Level ${level} · ${100-(xp%100)} XP to next level</p><div class="ss-plan-progress"><span style="width:${xp%100}%"></span></div><div class="ss-badges">${Object.keys(badges).length?Object.keys(badges).map(b=>`<span class="ss-badge-chip">🏅 ${esc(b)}</span>`).join(''):'<span class="ss-badge-chip">🌱 First steps — complete a session to earn your first badge</span>'}</div><button onclick="ssClaimProfileXP()">Check my rewards</button>`);}
-  window.ssClaimProfileXP=async function(){const me=profile()||{};const ref=db().ref('gamification/'+uid());const s=await ref.once('value');const g=s.val()||{};const xp=Math.max(Number(g.xp||0),me.name&&arr(me.teach).length&&arr(me.want).length?100:25);const badges={...(g.badges||{})};if(xp>=100)badges['Profile Ready']=true;await ref.update({xp,badges,updated_at:new Date().toISOString()});toast('Rewards updated!');renderRewards();};
-  async function renderPlans(){const s=await db().ref('learningPlans/'+uid()).once('value');const plans=Object.entries(s.val()||{}).map(([id,v])=>({...v,id}));panel(`<h3>📚 Learning plans</h3><div class="ss-hub-form"><div><label>Goal</label><input id="ssPlanGoal" placeholder="Learn Python basics"></div><div><label>Target date</label><input id="ssPlanDate" type="date"></div><div class="full"><label>Milestones</label><textarea id="ssPlanSteps" rows="3" placeholder="Variables, functions, projects"></textarea></div><button onclick="ssCreatePlan()">Create plan</button></div><div style="margin-top:18px">${plans.length?plans.map(x=>`<div class="ss-hub-item"><strong>${esc(x.goal)}</strong><small>Target: ${esc(x.targetDate||'Open')}</small><p>${esc(arr(x.steps).join(' · '))}</p><div class="ss-plan-progress"><span style="width:${Number(x.progress||0)}%"></span></div><button onclick="ssAdvancePlan('${esc(x.id)}')">Mark milestone complete</button></div>`).join(''):'<div class="ss-hub-empty">Create your first learning plan.</div>'}</div>`);}
-  window.ssCreatePlan=async function(){const goal=document.getElementById('ssPlanGoal').value.trim();if(!goal)return toast('Enter a learning goal.');await db().ref('learningPlans/'+uid()).push().set({goal,targetDate:document.getElementById('ssPlanDate').value,steps:document.getElementById('ssPlanSteps').value.split(',').map(x=>x.trim()).filter(Boolean),progress:0,created_at:new Date().toISOString()});toast('Learning plan created!');renderPlans();};
-  window.ssAdvancePlan=async function(id){const ref=db().ref('learningPlans/'+uid()+'/'+id);const s=await ref.once('value');if(!s.exists())return;const x=s.val();await ref.update({progress:Math.min(100,Number(x.progress||0)+25)});renderPlans();};
-  async function renderGroups(){const s=await db().ref('groups').once('value');let groups=Object.entries(s.val()||{}).map(([id,v])=>({...v,id}));if(!groups.length){groups=[{id:'python',name:'Python & AI',description:'Coding, automation and AI learning',members:0},{id:'languages',name:'Languages',description:'Practice English, Hindi, Telugu and more',members:0},{id:'creative',name:'Creative Skills',description:'Music, art, photography and design',members:0},{id:'career',name:'Career Skills',description:'Interviews, presentations and professional growth',members:0}];}panel(`<h3>👥 Skill groups</h3><div class="ss-hub-results">${groups.map(g=>`<article class="ss-hub-item"><strong>${esc(g.name)}</strong><small>${esc(g.members||0)} members</small><p>${esc(g.description||'SkillSwap community group')}</p><button onclick="ssJoinGroup('${esc(g.id)}','${esc(g.name)}')">Join group</button></article>`).join('')}</div>`);}
-  window.ssJoinGroup=async function(id,name){const ref=db().ref('groupMembers/'+id+'/'+uid());const existing=await ref.once('value');if(existing.exists())return toast('You are already a member of '+name+'.');await ref.set({joined_at:new Date().toISOString()});const gref=db().ref('groups/'+id);const gs=await gref.once('value');if(gs.exists())await gref.update({members:Number(gs.val().members||0)+1});else await gref.set({name,description:'SkillSwap community group',members:1});await award(10,'Community Connector');toast('Joined '+name+'!');renderGroups();};
-  async function renderPosts(){const s=await db().ref('posts').once('value');const posts=Object.entries(s.val()||{}).map(([id,v])=>({...v,id})).reverse().slice(0,50);panel(`<h3>📝 Community posts</h3><div class="ss-hub-form"><div class="full"><textarea id="ssPostText" rows="3" maxlength="1200" placeholder="Share a skill offer, question or learning opportunity..."></textarea></div><button onclick="ssCreatePost()">Publish post</button></div><div style="margin-top:18px">${posts.length?posts.map(x=>`<article class="ss-post"><strong>${esc(x.authorName||'SkillSwap Member')}</strong><div class="ss-post-meta">${esc(x.created_at||'')}</div><p style="margin-top:8px">${esc(x.text)}</p><div class="ss-post-actions"><button class="ss-like" onclick="ssLikePost('${esc(x.id)}')">❤️ ${Number(x.likes||0)}</button></div></article>`).join(''):'<div class="ss-hub-empty">Be the first to post something.</div>'}</div>`);}
-  window.ssCreatePost=async function(){const text=document.getElementById('ssPostText').value.trim();if(!text)return toast('Write something first.');const me=profile()||{};await db().ref('posts').push().set({authorUid:uid(),authorName:me.name||'SkillSwap Member',text,likes:0,created_at:new Date().toISOString()});await award(15,'Community Contributor');toast('Post published!');renderPosts();};
-  window.ssLikePost=async function(id){if(!uid())return toast('Sign in to like posts.');const likeRef=db().ref('postLikes/'+id+'/'+uid());const existing=await likeRef.once('value');if(existing.exists())return toast('You already liked this post.');await likeRef.set(true);const ref=db().ref('posts/'+id+'/likes');const s=await ref.once('value');await ref.set(Number(s.val()||0)+1);renderPosts();};
-  async function renderNotifications(){const snap=await db().ref('notifications').once('value');const list=Object.entries(snap.val()||{}).map(([id,v])=>({...v,id})).filter(n=>n.uid===uid()).reverse().slice(0,50);panel(`<h3>🔔 Notification center</h3><div class="ss-notifications">${list.length?list.map(n=>`<div class="ss-notification ${n.is_read?'':'unread'}"><strong>${esc(n.title||'Notification')}</strong><p>${esc(n.body||n.message||'')}</p><small>${esc(n.created_at||'')}</small></div>`).join(''):'<div class="ss-hub-empty">You are all caught up.</div>'}</div><button onclick="ssMarkNotificationsRead()">Mark all as read</button>`);}
-  window.ssMarkNotificationsRead=async function(){const snap=await db().ref('notifications').once('value');const updates={};Object.entries(snap.val()||{}).forEach(([id,v])=>{if(v.uid===uid()){updates[id+'/is_read']=true;updates[id+'/read']=true;}});if(Object.keys(updates).length)await db().ref('notifications').update(updates);toast('Notifications marked as read.');renderNotifications();};
-  async function award(points,badge){const ref=db().ref('gamification/'+uid());const s=await ref.once('value');const g=s.val()||{};const badges={...(g.badges||{})};if(badge)badges[badge]=true;await ref.update({xp:Number(g.xp||0)+Number(points||0),badges,updated_at:new Date().toISOString()});}
-  window.ssAwardFeatureXP=award;
+  function loading(title){
+    panel('<div class="ss-hub-loading"><div class="ss-hub-spinner"></div><strong>'+esc(title||'Loading…')+'</strong><small>Please wait a moment.</small></div>');
+  }
+  function errorPanel(message,retry){
+    panel('<div class="ss-hub-error"><strong>⚠️ Something went wrong</strong><p>'+esc(message||'This feature could not be loaded.')+'</p>'+
+      (retry?'<button onclick="'+retry+'">Try again</button>':'')+'</div>');
+  }
+  async function requireLogin(){
+    if(uid())return true;
+    toast('Please sign in to use this feature.');
+    if(typeof openAuth==='function')openAuth('signin');
+    return false;
+  }
+  async function safeOnce(path){
+    const d=db();
+    if(!d)throw new Error('Firebase is not ready yet. Please wait a moment and try again.');
+    return d.ref(path).once('value');
+  }
+  async function getUsers(){
+    const s=await safeOnce('users');
+    return Object.entries(s.val()||{}).map(([id,v])=>({...v,uid:id,id:id}))
+      .filter(x=>x.name&&x.uid!==uid());
+  }
+  async function getRequests(){
+    const s=await safeOnce('requests');
+    return Object.entries(s.val()||{}).map(([id,v])=>({...v,id}))
+      .filter(x=>x.status==='accepted'&&(x.senderUid===uid()||x.receiverUid===uid()));
+  }
+  function run(fn){
+    Promise.resolve().then(fn).catch(e=>{
+      console.error('SkillSwap feature:',e);
+      errorPanel(e?.message||'Please try again.');
+    });
+  }
+
+  window.ssHubOpen=function(which){
+    run(async()=>{
+      if(which!=='matches'&&which!=='groups'&&which!=='posts'&&!(await requireLogin()))return;
+      if(which==='matches')return renderMatchesPanel();
+      if(which==='booking')return renderBooking();
+      if(which==='reviews')return renderReviews();
+      if(which==='rewards')return renderRewards();
+      if(which==='plans')return renderPlans();
+      if(which==='groups')return renderGroups();
+      if(which==='posts')return renderPosts();
+      if(which==='notifications')return renderNotifications();
+      errorPanel('Unknown feature.');
+    });
+  };
+
+  async function renderMatchesPanel(){
+    loading('Finding compatible members…');
+    const me=profile()||{};
+    const myTeach=arr(me.teach).map(x=>x.toLowerCase());
+    const myWant=arr(me.want).map(x=>x.toLowerCase());
+    const people=await getUsers();
+    const scores=people.map(p=>{
+      const t=arr(p.teach).map(x=>x.toLowerCase()), w=arr(p.want).map(x=>x.toLowerCase());
+      let score=0;
+      score += w.filter(x=>myTeach.includes(x)).length*35;
+      score += t.filter(x=>myWant.includes(x)).length*35;
+      if(me.location && p.location && me.location.toLowerCase()===p.location.toLowerCase())score+=10;
+      return {...p,score:Math.min(100,score)};
+    }).sort((a,b)=>b.score-a.score);
+
+    panel('<div class="ss-hub-toolbar"><input id="ssMatchSearch" placeholder="Search by name, skill or location"><button id="ssMatchSearchBtn">Search</button></div><div id="ssMatchResults" class="ss-hub-results"></div>');
+    const render=()=>{
+      const q=(document.getElementById('ssMatchSearch')?.value||'').trim().toLowerCase();
+      const list=scores.filter(p=>!q||[p.name,p.location,...arr(p.teach),...arr(p.want)].join(' ').toLowerCase().includes(q));
+      const el=document.getElementById('ssMatchResults');
+      if(!el)return;
+      el.innerHTML=list.length?list.slice(0,30).map(p=>`
+        <article class="ss-hub-item">
+          <strong>${esc(p.name)}</strong>
+          <small>📍 ${esc(p.location||'India')}</small>
+          <small class="ss-match-score">${p.score}% compatibility</small>
+          <p>Teaches: ${esc(arr(p.teach).slice(0,3).join(' · ')||'—')}</p>
+          <p>Wants: ${esc(arr(p.want).slice(0,3).join(' · ')||'—')}</p>
+          <button onclick="ssHubConnect('${esc(p.uid)}')">🤝 Connect</button>
+        </article>`).join(''):'<div class="ss-hub-empty">No members matched your search. Add teaching and learning goals to improve compatibility.</div>';
+    };
+    document.getElementById('ssMatchSearchBtn').onclick=render;
+    document.getElementById('ssMatchSearch').onkeydown=e=>{if(e.key==='Enter')render();};
+    render();
+  }
+
+  window.ssHubConnect=function(other){
+    run(async()=>{
+      if(!(await requireLogin()))return;
+      if(!other||other===uid())return toast('You cannot connect with yourself.');
+      const d=db(), me=profile()||{};
+      const targetSnap=await d.ref('users/'+other).once('value');
+      if(!targetSnap.exists())return toast('Member not found.');
+      const target=targetSnap.val();
+      const all=(await d.ref('requests').once('value')).val()||{};
+      const dup=Object.values(all).find(r=>(r.senderUid===uid()&&r.receiverUid===other)||(r.senderUid===other&&r.receiverUid===uid()));
+      if(dup&&['pending','accepted'].includes(dup.status))return toast(dup.status==='accepted'?'Already connected.':'Request already pending.');
+      const ref=d.ref('requests').push();
+      await ref.set({
+        senderUid:uid(),receiverUid:other,senderId:me.id||uid(),receiverId:other,
+        senderName:me.name||'SkillSwap Member',receiverName:target.name||'SkillSwap Member',
+        skillOffered:arr(me.teach)[0]||'',skillWanted:arr(me.want)[0]||'',
+        status:'pending',created_at:new Date().toISOString()
+      });
+      await d.ref('notifications').push().set({
+        uid:other,title:'New skill-swap request',
+        body:(me.name||'A member')+' wants to connect with you.',
+        is_read:false,created_at:new Date().toISOString()
+      });
+      toast('🤝 Connection request sent!');
+    });
+  };
+
+  async function renderBooking(){
+    loading('Loading your connections…');
+    const con=await getRequests();
+    panel(`<h3>📅 Schedule a skill-swap</h3>
+      <p class="ss-hub-help">${con.length?'Choose an accepted connection and propose a time.':'You need an accepted connection before you can book a swap.'}</p>
+      ${con.length?`<div class="ss-hub-form">
+        <div><label>Partner</label><select id="ssBookPartner">${con.map(r=>{
+          const other=r.senderUid===uid()?r.receiverUid:r.senderUid;
+          const name=r.senderUid===uid()?r.receiverName:r.senderName;
+          return `<option value="${esc(other)}">${esc(name||'SkillSwap member')}</option>`;
+        }).join('')}</select></div>
+        <div><label>Date & time</label><input id="ssBookTime" type="datetime-local"></div>
+        <div><label>Title</label><input id="ssBookTitle" placeholder="e.g. Python basics swap"></div>
+        <div><label>Duration (minutes)</label><input id="ssBookDuration" type="number" min="15" max="240" value="60"></div>
+        <div class="full"><label>Notes</label><textarea id="ssBookNotes" rows="3" placeholder="What will you learn or teach?"></textarea></div>
+        <button id="ssBookSaveBtn">Create booking</button>
+      </div>`:'<div class="ss-hub-empty">No accepted connections yet. Use Smart matching to find someone, then accept the connection request.</div>'}
+      <div id="ssBookList" style="margin-top:18px"></div>`);
+    const btn=document.getElementById('ssBookSaveBtn');
+    if(btn)btn.onclick=()=>run(ssSaveBooking);
+    await loadBookings();
+  }
+
+  async function ssSaveBooking(){
+    const partner=document.getElementById('ssBookPartner')?.value;
+    if(!partner)return toast('Choose an accepted connection first.');
+    const when=document.getElementById('ssBookTime')?.value;
+    if(!when)return toast('Choose a date and time.');
+    const duration=Math.max(15,Math.min(240,Number(document.getElementById('ssBookDuration')?.value||60)));
+    const me=profile()||{}, d=db();
+    const data={
+      host_uid:uid(),guest_uid:partner,host_name:me.name||'SkillSwap Member',
+      title:document.getElementById('ssBookTitle')?.value.trim()||'SkillSwap session',
+      starts_at:when,duration,notes:document.getElementById('ssBookNotes')?.value.trim()||'',
+      status:'pending',participantUids:[uid(),partner],created_at:new Date().toISOString()
+    };
+    await d.ref('sessions').push().set(data);
+    await d.ref('notifications').push().set({uid:partner,title:'New session proposal',body:(me.name||'A member')+' proposed a SkillSwap session.',is_read:false,created_at:new Date().toISOString()});
+    toast('📅 Session proposal created!');
+    await loadBookings();
+  }
+
+  async function loadBookings(){
+    const s=await safeOnce('sessions');
+    const list=Object.entries(s.val()||{}).map(([id,v])=>({...v,id}))
+      .filter(x=>arr(x.participantUids).includes(uid())).slice(-20).reverse();
+    const el=document.getElementById('ssBookList');
+    if(!el)return;
+    el.innerHTML=list.length?list.map(x=>`<div class="ss-hub-item"><strong>${esc(x.title||'SkillSwap session')}</strong><small>${esc(x.starts_at||'Time not set')} · ${esc(x.duration||60)} min · ${esc(x.status||'pending')}</small><p>${esc(x.notes||'')}</p></div>`).join(''):'<div class="ss-hub-empty">No sessions yet.</div>';
+  }
+
+  async function renderReviews(){
+    loading('Loading connections…');
+    const con=await getRequests();
+    panel(`<h3>⭐ Rate a completed exchange</h3>
+      <p class="ss-hub-help">Reviews help the community know who is reliable.</p>
+      ${con.length?`<div class="ss-hub-form">
+        <div><label>Member</label><select id="ssReviewPerson">${con.map(r=>{
+          const other=r.senderUid===uid()?r.receiverUid:r.senderUid;
+          const name=r.senderUid===uid()?r.receiverName:r.senderName;
+          return `<option value="${esc(other)}">${esc(name||'SkillSwap member')}</option>`;
+        }).join('')}</select></div>
+        <div><label>Rating</label><select id="ssReviewRating"><option value="5">★★★★★ 5</option><option value="4">★★★★☆ 4</option><option value="3">★★★☆☆ 3</option><option value="2">★★☆☆☆ 2</option><option value="1">★☆☆☆☆ 1</option></select></div>
+        <div class="full"><label>Review</label><textarea id="ssReviewText" rows="4" maxlength="1000" placeholder="How was the exchange?"></textarea></div>
+        <button id="ssReviewSaveBtn">Publish review</button>
+      </div>`:'<div class="ss-hub-empty">No accepted connections yet. Complete a connection first, then you can leave a review.</div>'}`);
+    const btn=document.getElementById('ssReviewSaveBtn');
+    if(btn)btn.onclick=()=>run(ssSaveReview);
+  }
+
+  async function ssSaveReview(){
+    const target=document.getElementById('ssReviewPerson')?.value;
+    if(!target)return toast('Choose a member.');
+    const rating=Number(document.getElementById('ssReviewRating')?.value||5);
+    const text=document.getElementById('ssReviewText')?.value.trim()||'';
+    if(!text)return toast('Write a short review first.');
+    const d=await (typeof safeJSON==='function'?safeJSON('/api/reviews',{method:'POST',body:JSON.stringify({targetUid:target,rating,text})}):Promise.reject(new Error('Review service is not ready.')));
+    if(d?.__error)return toast(d.__error.message||'Could not publish review.');
+    toast('⭐ Review published!');
+    await renderReviews();
+  }
+
+  async function renderRewards(){
+    loading('Loading your rewards…');
+    const s=await safeOnce('gamification/'+uid()), g=s.val()||{};
+    const xp=Number(g.xp||0), level=Math.floor(xp/100)+1, progress=xp%100;
+    const badges=g.badges||{};
+    panel(`<h3>🏆 Your SkillSwap reputation</h3>
+      <div class="ss-xp">${xp} XP</div>
+      <p>Level ${level} · ${progress===0?100:100-progress} XP to next level</p>
+      <div class="ss-plan-progress"><span style="width:${progress}%"></span></div>
+      <div class="ss-badges">${Object.keys(badges).length?Object.keys(badges).map(b=>`<span class="ss-badge-chip">🏅 ${esc(b)}</span>`).join(''):'<span class="ss-badge-chip">🌱 First steps — complete your profile and activity to earn badges</span>'}</div>
+      <button id="ssRewardsBtn">Check my rewards</button>`);
+    document.getElementById('ssRewardsBtn').onclick=()=>run(ssClaimProfileXP);
+  }
+
+  async function ssClaimProfileXP(){
+    const me=profile()||{}, ref=db().ref('gamification/'+uid()), s=await ref.once('value'), g=s.val()||{};
+    const xp=Math.max(Number(g.xp||0),me.name&&arr(me.teach).length&&arr(me.want).length?100:25);
+    const badges={...(g.badges||{})};
+    if(xp>=100)badges['Profile Ready']=true;
+    await ref.update({xp,badges,updated_at:new Date().toISOString()});
+    toast('🏆 Rewards updated!');
+    await renderRewards();
+  }
+
+  async function renderPlans(){
+    loading('Loading your learning plans…');
+    const s=await safeOnce('learningPlans/'+uid());
+    const plans=Object.entries(s.val()||{}).map(([id,v])=>({...v,id}));
+    panel(`<h3>📚 Learning plans</h3>
+      <div class="ss-hub-form">
+        <div><label>Goal</label><input id="ssPlanGoal" placeholder="Learn Python basics"></div>
+        <div><label>Target date</label><input id="ssPlanDate" type="date"></div>
+        <div class="full"><label>Milestones</label><textarea id="ssPlanSteps" rows="3" placeholder="Variables, functions, projects"></textarea></div>
+        <button id="ssPlanCreateBtn">Create plan</button>
+      </div>
+      <div style="margin-top:18px">${plans.length?plans.map(x=>`<div class="ss-hub-item"><strong>${esc(x.goal||'Learning goal')}</strong><small>Target: ${esc(x.targetDate||'Open')}</small><p>${esc(arr(x.steps).join(' · ')||'No milestones added')}</p><div class="ss-plan-progress"><span style="width:${Math.min(100,Number(x.progress||0))}%"></span></div><button onclick="ssAdvancePlan('${esc(x.id)}')">Mark milestone complete</button></div>`).join(''):'<div class="ss-hub-empty">Create your first learning plan.</div>'}</div>`);
+    document.getElementById('ssPlanCreateBtn').onclick=()=>run(ssCreatePlan);
+  }
+
+  async function ssCreatePlan(){
+    const goal=document.getElementById('ssPlanGoal')?.value.trim();
+    if(!goal)return toast('Enter a learning goal.');
+    const steps=(document.getElementById('ssPlanSteps')?.value||'').split(',').map(x=>x.trim()).filter(Boolean);
+    await db().ref('learningPlans/'+uid()).push().set({goal,targetDate:document.getElementById('ssPlanDate')?.value||'',steps,progress:0,created_at:new Date().toISOString()});
+    toast('📚 Learning plan created!');
+    await renderPlans();
+  }
+  window.ssAdvancePlan=function(id){run(async()=>{
+    const ref=db().ref('learningPlans/'+uid()+'/'+id), s=await ref.once('value');
+    if(!s.exists())return toast('Plan not found.');
+    const x=s.val(), next=Math.min(100,Number(x.progress||0)+25);
+    await ref.update({progress:next,updated_at:new Date().toISOString()});
+    toast(next>=100?'🎉 Learning plan completed!':'Milestone completed!');
+    await renderPlans();
+  });};
+
+  async function renderGroups(){
+    loading('Loading skill groups…');
+    const s=await safeOnce('groups');
+    let groups=Object.entries(s.val()||{}).map(([id,v])=>({...v,id}));
+    if(!groups.length){
+      groups=[
+        {id:'python',name:'Python & AI',description:'Coding, automation and AI learning',members:0},
+        {id:'languages',name:'Languages',description:'Practice English, Hindi, Telugu and more',members:0},
+        {id:'creative',name:'Creative Skills',description:'Music, art, photography and design',members:0},
+        {id:'career',name:'Career Skills',description:'Interviews, presentations and professional growth',members:0}
+      ];
+    }
+    panel(`<h3>👥 Skill groups</h3><div class="ss-hub-results">${groups.map(g=>`<article class="ss-hub-item"><strong>${esc(g.name||'Skill group')}</strong><small>${esc(g.members||0)} members</small><p>${esc(g.description||'SkillSwap community group')}</p><button onclick="ssJoinGroup('${esc(g.id)}','${esc(g.name||'Skill group')}')">Join group</button></article>`).join('')}</div>`);
+  }
+
+  window.ssJoinGroup=function(id,name){run(async()=>{
+    if(!(await requireLogin()))return;
+    const ref=db().ref('groupMembers/'+id+'/'+uid()), existing=await ref.once('value');
+    if(existing.exists())return toast('You are already a member of '+name+'.');
+    await ref.set({joined_at:new Date().toISOString()});
+    const gref=db().ref('groups/'+id), gs=await gref.once('value');
+    if(gs.exists())await gref.update({members:Number(gs.val().members||0)+1});
+    else await gref.set({name,description:'SkillSwap community group',members:1});
+    if(typeof window.ssAwardFeatureXP==='function')await window.ssAwardFeatureXP(10,'Community Connector');
+    toast('👥 Joined '+name+'!');
+    await renderGroups();
+  });};
+
+  async function renderPosts(){
+    loading('Loading community posts…');
+    const s=await safeOnce('posts');
+    const posts=Object.entries(s.val()||{}).map(([id,v])=>({...v,id})).reverse().slice(0,50);
+    panel(`<h3>📝 Community posts</h3>
+      <div class="ss-hub-form"><div class="full"><textarea id="ssPostText" rows="3" maxlength="1200" placeholder="Share a skill offer, question or learning opportunity..."></textarea></div><button id="ssPostCreateBtn">Publish post</button></div>
+      <div style="margin-top:18px">${posts.length?posts.map(x=>`<article class="ss-post"><strong>${esc(x.authorName||'SkillSwap Member')}</strong><div class="ss-post-meta">${esc(x.created_at||'')}</div><p style="margin-top:8px">${esc(x.text||'')}</p><div class="ss-post-actions"><button class="ss-like" onclick="ssLikePost('${esc(x.id)}')">❤️ ${Number(x.likes||0)}</button></div></article>`).join(''):'<div class="ss-hub-empty">Be the first to post something.</div>'}</div>`);
+    document.getElementById('ssPostCreateBtn').onclick=()=>run(ssCreatePost);
+  }
+
+  async function ssCreatePost(){
+    const text=document.getElementById('ssPostText')?.value.trim();
+    if(!text)return toast('Write something first.');
+    const me=profile()||{};
+    await db().ref('posts').push().set({authorUid:uid(),authorName:me.name||'SkillSwap Member',text,likes:0,created_at:new Date().toISOString()});
+    if(typeof window.ssAwardFeatureXP==='function')await window.ssAwardFeatureXP(15,'Community Contributor');
+    toast('📝 Post published!');
+    await renderPosts();
+  }
+
+  window.ssLikePost=function(id){run(async()=>{
+    if(!(await requireLogin()))return;
+    const likeRef=db().ref('postLikes/'+id+'/'+uid()), existing=await likeRef.once('value');
+    if(existing.exists())return toast('You already liked this post.');
+    await likeRef.set(true);
+    const ref=db().ref('posts/'+id+'/likes'), s=await ref.once('value');
+    await ref.set(Number(s.val()||0)+1);
+    toast('❤️ Post liked!');
+    await renderPosts();
+  });};
+
+  async function renderNotifications(){
+    loading('Loading notifications…');
+    const snap=await safeOnce('notifications');
+    const list=Object.entries(snap.val()||{}).map(([id,v])=>({...v,id})).filter(n=>n.uid===uid()).reverse().slice(0,50);
+    panel(`<h3>🔔 Notification center</h3><div class="ss-notifications">${list.length?list.map(n=>`<div class="ss-notification ${n.is_read?'':'unread'}"><strong>${esc(n.title||'Notification')}</strong><p>${esc(n.body||n.message||'')}</p><small>${esc(n.created_at||'')}</small></div>`).join(''):'<div class="ss-hub-empty">You are all caught up.</div>'}</div>${list.length?'<button id="ssMarkReadBtn">Mark all as read</button>':''}`);
+    const btn=document.getElementById('ssMarkReadBtn');
+    if(btn)btn.onclick=()=>run(ssMarkNotificationsRead);
+  }
+
+  async function ssMarkNotificationsRead(){
+    const snap=await safeOnce('notifications'), updates={};
+    Object.entries(snap.val()||{}).forEach(([id,v])=>{if(v.uid===uid()){updates[id+'/is_read']=true;updates[id+'/read']=true;}});
+    if(Object.keys(updates).length)await db().ref('notifications').update(updates);
+    toast('🔔 Notifications marked as read.');
+    await renderNotifications();
+  }
+
+  window.ssAwardFeatureXP=window.ssAwardFeatureXP||async function(points,badge){
+    if(!uid())return;
+    const ref=db().ref('gamification/'+uid()), s=await ref.once('value'), g=s.val()||{}, badges={...(g.badges||{})};
+    if(badge)badges[badge]=true;
+    await ref.update({xp:Number(g.xp||0)+Number(points||0),badges,updated_at:new Date().toISOString()});
+  };
+
+  // Make the section usable even when Firebase is still restoring the LOCAL auth session.
+  document.addEventListener('DOMContentLoaded',()=>{
+    const p=document.getElementById('ssHubPanel');
+    if(p)p.classList.remove('active');
+  });
 })();
 </script>
 
