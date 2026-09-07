@@ -2234,103 +2234,90 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
 
 <div class="matches" id="matches"></div>
 
-<div id="ssCommunityMembers" class="ss-community-members" aria-label="SkillSwap community members">
-  <div class="ss-community-head">
+<section id="ssCommunityMembers" class="ss-other-community" aria-label="Other community members">
+  <div class="ss-other-head">
     <div>
-      <span class="ss-community-kicker">COMMUNITY</span>
-      <h2>👥 SkillSwap members</h2>
-      <p>Browse starter profiles now. Registered SkillSwap members appear automatically when their profiles are available in Firebase.</p>
+      <span class="ss-other-kicker">COMMUNITY</span>
+      <h2>👥 Other community members</h2>
+      <p>Discover people on SkillSwap, see what they can teach, and find what they want to learn.</p>
     </div>
-    <strong id="ssCommunityCount">12 starter profiles</strong>
+    <span id="ssOtherCount" class="ss-other-count">12 profiles</span>
   </div>
-  <div id="ssCommunityGrid" class="ss-community-grid">
-    <article class="ss-community-card">
-      <div class="ss-community-top"><div class="ss-community-avatar">👩🏽</div><span>Starter profile</span></div>
-      <h3>Ananya Reddy</h3><p class="ss-community-location">📍 Hyderabad, Telangana</p>
-      <p class="ss-community-category">Languages</p>
-      <div class="ss-community-skills"><div><b>Can teach</b><span>Telugu · Hindi</span></div><div><b>Wants to learn</b><span>Python · AI</span></div></div>
-      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
-    </article>
-    <article class="ss-community-card">
-      <div class="ss-community-top"><div class="ss-community-avatar">👨🏽</div><span>Starter profile</span></div>
-      <h3>Aarav Sharma</h3><p class="ss-community-location">📍 Bengaluru, Karnataka</p>
-      <p class="ss-community-category">Technology</p>
-      <div class="ss-community-skills"><div><b>Can teach</b><span>Python · Robotics</span></div><div><b>Wants to learn</b><span>Guitar · Public Speaking</span></div></div>
-      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
-    </article>
-    <article class="ss-community-card">
-      <div class="ss-community-top"><div class="ss-community-avatar">👩🏽</div><span>Starter profile</span></div>
-      <h3>Meera Krishnan</h3><p class="ss-community-location">📍 Chennai, Tamil Nadu</p>
-      <p class="ss-community-category">Music & Dance</p>
-      <div class="ss-community-skills"><div><b>Can teach</b><span>Bharatanatyam · Carnatic Music</span></div><div><b>Wants to learn</b><span>Graphic Design · Photography</span></div></div>
-      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
-    </article>
-    <article class="ss-community-card">
-      <div class="ss-community-top"><div class="ss-community-avatar">👨🏽</div><span>Starter profile</span></div>
-      <h3>Rohan Patel</h3><p class="ss-community-location">📍 Pune, Maharashtra</p>
-      <p class="ss-community-category">Technology</p>
-      <div class="ss-community-skills"><div><b>Can teach</b><span>Python · AI · Machine Learning</span></div><div><b>Wants to learn</b><span>Web Design · Video Editing</span></div></div>
-      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
-    </article>
-    <article class="ss-community-card">
-      <div class="ss-community-top"><div class="ss-community-avatar">👩🏼</div><span>Starter profile</span></div>
-      <h3>Saanvi Gupta</h3><p class="ss-community-location">📍 Delhi, India</p>
-      <p class="ss-community-category">Academics</p>
-      <div class="ss-community-skills"><div><b>Can teach</b><span>Mathematics · Study Planning</span></div><div><b>Wants to learn</b><span>Spanish · Guitar</span></div></div>
-      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
-    </article>
-    <article class="ss-community-card">
-      <div class="ss-community-top"><div class="ss-community-avatar">👨🏽</div><span>Starter profile</span></div>
-      <h3>Vikram Rao</h3><p class="ss-community-location">📍 Vijayawada, Andhra Pradesh</p>
-      <p class="ss-community-category">Sports</p>
-      <div class="ss-community-skills"><div><b>Can teach</b><span>Cricket · Chess</span></div><div><b>Wants to learn</b><span>Python · Photography</span></div></div>
-      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
-    </article>
-    <article class="ss-community-card">
-      <div class="ss-community-top"><div class="ss-community-avatar">👩🏽</div><span>Starter profile</span></div>
-      <h3>Ishita Singh</h3><p class="ss-community-location">📍 Jaipur, Rajasthan</p>
-      <p class="ss-community-category">Indian Arts</p>
-      <div class="ss-community-skills"><div><b>Can teach</b><span>Rangoli · Mehendi · Drawing</span></div><div><b>Wants to learn</b><span>Coding · Photography</span></div></div>
-      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
-    </article>
-    <article class="ss-community-card">
-      <div class="ss-community-top"><div class="ss-community-avatar">👨🏽</div><span>Starter profile</span></div>
-      <h3>Aditya Nair</h3><p class="ss-community-location">📍 Kochi, Kerala</p>
-      <p class="ss-community-category">Academics</p>
-      <div class="ss-community-skills"><div><b>Can teach</b><span>Physics · Science Projects</span></div><div><b>Wants to learn</b><span>Video Editing · Guitar</span></div></div>
-      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
-    </article>
-    <article class="ss-community-card">
-      <div class="ss-community-top"><div class="ss-community-avatar">👩🏽</div><span>Starter profile</span></div>
-      <h3>Kavya Das</h3><p class="ss-community-location">📍 Kolkata, West Bengal</p>
-      <p class="ss-community-category">Languages</p>
-      <div class="ss-community-skills"><div><b>Can teach</b><span>Bengali · Creative Writing</span></div><div><b>Wants to learn</b><span>Python · Public Speaking</span></div></div>
-      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
-    </article>
-    <article class="ss-community-card">
-      <div class="ss-community-top"><div class="ss-community-avatar">👨🏻</div><span>Starter profile</span></div>
-      <h3>Dev Malhotra</h3><p class="ss-community-location">📍 Mumbai, Maharashtra</p>
-      <p class="ss-community-category">Indian Arts</p>
-      <div class="ss-community-skills"><div><b>Can teach</b><span>Guitar · Video Editing</span></div><div><b>Wants to learn</b><span>Tabla · Cricket</span></div></div>
-      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
-    </article>
-    <article class="ss-community-card">
-      <div class="ss-community-top"><div class="ss-community-avatar">👩🏾</div><span>Starter profile</span></div>
-      <h3>Priya Sharma</h3><p class="ss-community-location">📍 Hyderabad, Telangana</p>
-      <p class="ss-community-category">Indian Arts</p>
-      <div class="ss-community-skills"><div><b>Can teach</b><span>Indian Cooking · Biryani</span></div><div><b>Wants to learn</b><span>Baking · Photography</span></div></div>
-      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
-    </article>
-    <article class="ss-community-card">
-      <div class="ss-community-top"><div class="ss-community-avatar">👨🏽</div><span>Starter profile</span></div>
-      <h3>Arjun Mehta</h3><p class="ss-community-location">📍 Ahmedabad, Gujarat</p>
-      <p class="ss-community-category">Sports</p>
-      <div class="ss-community-skills"><div><b>Can teach</b><span>Cricket · Football</span></div><div><b>Wants to learn</b><span>Coding · Guitar</span></div></div>
-      <button type="button" class="ss-community-btn" onclick="ssStarterInfo()">View profile</button>
-    </article>
-  </div>
-</div>
 
+  <div id="ssOtherGrid" class="ss-other-grid">
+    <article class="ss-other-card">
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👩🏽</div><span class="ss-other-badge">Community profile</span></div>
+      <h3>Ananya Reddy</h3><p class="ss-other-location">📍 Hyderabad, Telangana</p><span class="ss-other-category">Languages</span>
+      <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Telugu · Hindi</strong></div><div><small>WANTS TO LEARN</small><strong>Python · AI</strong></div></div>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-other-card">
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👨🏽</div><span class="ss-other-badge">Community profile</span></div>
+      <h3>Aarav Sharma</h3><p class="ss-other-location">📍 Bengaluru, Karnataka</p><span class="ss-other-category">Technology</span>
+      <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Python · Robotics</strong></div><div><small>WANTS TO LEARN</small><strong>Guitar · Speaking</strong></div></div>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-other-card">
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👩🏽</div><span class="ss-other-badge">Community profile</span></div>
+      <h3>Meera Krishnan</h3><p class="ss-other-location">📍 Chennai, Tamil Nadu</p><span class="ss-other-category">Music &amp; Dance</span>
+      <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Bharatanatyam · Music</strong></div><div><small>WANTS TO LEARN</small><strong>Design · Photography</strong></div></div>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-other-card">
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👨🏽</div><span class="ss-other-badge">Community profile</span></div>
+      <h3>Rohan Patel</h3><p class="ss-other-location">📍 Pune, Maharashtra</p><span class="ss-other-category">Technology</span>
+      <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Python · AI · ML</strong></div><div><small>WANTS TO LEARN</small><strong>Web Design · Editing</strong></div></div>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-other-card">
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👩🏼</div><span class="ss-other-badge">Community profile</span></div>
+      <h3>Saanvi Gupta</h3><p class="ss-other-location">📍 Delhi, India</p><span class="ss-other-category">Academics</span>
+      <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Maths · Study Planning</strong></div><div><small>WANTS TO LEARN</small><strong>Spanish · Guitar</strong></div></div>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-other-card">
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👨🏽</div><span class="ss-other-badge">Community profile</span></div>
+      <h3>Vikram Rao</h3><p class="ss-other-location">📍 Vijayawada, Andhra Pradesh</p><span class="ss-other-category">Sports</span>
+      <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Cricket · Chess</strong></div><div><small>WANTS TO LEARN</small><strong>Python · Photography</strong></div></div>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-other-card">
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👩🏽</div><span class="ss-other-badge">Community profile</span></div>
+      <h3>Ishita Singh</h3><p class="ss-other-location">📍 Jaipur, Rajasthan</p><span class="ss-other-category">Indian Arts</span>
+      <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Rangoli · Mehendi</strong></div><div><small>WANTS TO LEARN</small><strong>Coding · Photography</strong></div></div>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-other-card">
+      <div class="ss-other-card-head"><div class="ss-other-avatar">🧑🏽‍🎓</div><span class="ss-other-badge">Community profile</span></div>
+      <h3>Aditya Nair</h3><p class="ss-other-location">📍 Kochi, Kerala</p><span class="ss-other-category">Academics</span>
+      <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Physics · Science</strong></div><div><small>WANTS TO LEARN</small><strong>Web Development</strong></div></div>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-other-card">
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👩🏻‍🎤</div><span class="ss-other-badge">Community profile</span></div>
+      <h3>Kavya Das</h3><p class="ss-other-location">📍 Kolkata, West Bengal</p><span class="ss-other-category">Music</span>
+      <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Music · Guitar</strong></div><div><small>WANTS TO LEARN</small><strong>Photography · Python</strong></div></div>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-other-card">
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👨🏻‍💼</div><span class="ss-other-badge">Community profile</span></div>
+      <h3>Dev Malhotra</h3><p class="ss-other-location">📍 Mumbai, Maharashtra</p><span class="ss-other-category">Career Skills</span>
+      <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Presentation · Interviews</strong></div><div><small>WANTS TO LEARN</small><strong>Coding · Design</strong></div></div>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-other-card">
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👩🏻‍🏫</div><span class="ss-other-badge">Community profile</span></div>
+      <h3>Priya Sharma</h3><p class="ss-other-location">📍 Hyderabad, Telangana</p><span class="ss-other-category">Languages</span>
+      <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Hindi · English</strong></div><div><small>WANTS TO LEARN</small><strong>Digital Marketing</strong></div></div>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+    <article class="ss-other-card">
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👨🏻‍🔬</div><span class="ss-other-badge">Community profile</span></div>
+      <h3>Arjun Mehta</h3><p class="ss-other-location">📍 Ahmedabad, Gujarat</p><span class="ss-other-category">Science</span>
+      <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Chemistry · Research</strong></div><div><small>WANTS TO LEARN</small><strong>Programming · Guitar</strong></div></div>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
+    </article>
+  </div>
 </section>
 
 <!-- =========================
@@ -7365,9 +7352,6 @@ window.addEventListener("keydown",e=>{
 })();
 </script>
 
-<style id="skillswap-virtual-members-style">
-.virtual-chat-note{font-size:12px;color:#647772;margin-top:2px}.virtual-pill{display:inline-flex;align-items:center;gap:5px;margin-top:5px;padding:4px 8px;border-radius:999px;background:#e8f7f1;color:#087f5b;font-size:11px;font-weight:800}
-</style>
 <style id="ss-static-members-css">
 .ss-static-members-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:0 0 22px}
 .ss-static-members-head h2{font-size:clamp(1.7rem,3vw,2.4rem);margin:0;font-weight:900;color:#102e27}
@@ -7540,5 +7524,72 @@ body.ss4-ready{background:linear-gradient(180deg,#f7fbf9 0,#f5f9f7 100%)}
   window.addEventListener('load',()=>setTimeout(load,250));
   // If the existing profile editor saves successfully, refresh this command center automatically.
   window.addEventListener('skillswap:profile-updated',e=>{if(e.detail)syncCompletion(e.detail);load()});
+})();
+</script>
+
+<style id="ss-other-community-css">
+#ssCommunityMembers.ss-other-community{max-width:1220px;margin:58px auto 70px;padding:0 6%}
+.ss-other-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:24px}
+.ss-other-kicker{font-size:.72rem;font-weight:900;letter-spacing:.14em;color:var(--green,#176b57)}
+.ss-other-head h2{font-size:clamp(1.8rem,3.5vw,2.55rem);line-height:1.1;margin:5px 0 7px;letter-spacing:-.03em}
+.ss-other-head p{color:var(--muted,#6d7b76);font-size:.92rem;max-width:720px}
+.ss-other-count{flex:none;background:#fff;border:1px solid var(--border,#e1e9e5);color:var(--green,#176b57);padding:9px 13px;border-radius:999px;font-size:.75rem;font-weight:850;box-shadow:0 5px 18px rgba(23,54,45,.05)}
+.ss-other-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.ss-other-card{position:relative;background:#fff;border:1px solid var(--border,#e1e9e5);border-radius:22px;padding:21px;box-shadow:0 10px 32px rgba(23,54,45,.07);overflow:hidden;display:flex;flex-direction:column;min-height:330px}
+.ss-other-card:before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#176b57,#31a884,transparent)}
+.ss-other-card:hover{transform:translateY(-3px);box-shadow:0 18px 42px rgba(23,54,45,.11);border-color:#cbded7}
+.ss-other-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.ss-other-avatar{width:58px;height:58px;border-radius:17px;background:#e8f7f1;display:grid;place-items:center;font-size:28px;flex:none}
+.ss-other-badge{font-size:.64rem;font-weight:850;color:#176b57;background:#eaf7f2;border:1px solid #d6ebe3;padding:6px 8px;border-radius:999px;text-align:center}
+.ss-other-card h3{font-size:1.1rem;margin:0 0 2px;color:var(--text,#17221f)}
+.ss-other-location{font-size:.76rem;color:var(--muted,#6d7b76);margin:0 0 9px}
+.ss-other-category{align-self:flex-start;font-size:.66rem;font-weight:850;color:#176b57;background:#f1f8f5;border:1px solid #e0eee9;border-radius:999px;padding:5px 8px;margin-bottom:13px}
+.ss-other-skills{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px}
+.ss-other-skills>div{background:#f7faf9;border:1px solid #e4ece9;border-radius:13px;padding:10px;min-height:69px}
+.ss-other-skills small{display:block;font-size:.58rem;letter-spacing:.07em;color:#71817c;font-weight:850;margin-bottom:4px}
+.ss-other-skills strong{font-size:.74rem;line-height:1.35;color:#294039}
+.ss-other-btn{width:100%;margin-top:auto;border:1px solid #176b57;background:#fff;color:#176b57;border-radius:11px;padding:11px;font-weight:850}
+.ss-other-btn:hover{background:#eaf7f2}
+body.dark-mode .ss-other-card,body.dark-mode .ss-other-count{background:#10211c;color:#e8f4f0;border-color:#28483f}
+body.dark-mode .ss-other-card h3{color:#e8f4f0}
+body.dark-mode .ss-other-head p,body.dark-mode .ss-other-location{color:#a2b5ae}
+body.dark-mode .ss-other-skills>div{background:#0c1c17;border-color:#28483f}
+body.dark-mode .ss-other-skills strong{color:#dceae6}
+@media(max-width:950px){.ss-other-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){#ssCommunityMembers.ss-other-community{padding:0 14px}.ss-other-head{align-items:flex-start;flex-direction:column}.ss-other-count{align-self:flex-start}.ss-other-grid{grid-template-columns:1fr}}
+</style>
+
+
+<script id="ss-other-community-live-js">
+(function(){
+  const gridId='ssOtherGrid',countId='ssOtherCount';
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  window.ssStarterInfo=window.ssStarterInfo||function(){if(typeof showToast==='function')showToast('This is a community profile. Create your own profile to appear as a real SkillSwap member.');};
+  function card(m){
+    const uid=String(m.uid||m.id||'');
+    const teach=Array.isArray(m.teach)?m.teach:(Array.isArray(m.skills)?m.skills:[]);
+    const want=Array.isArray(m.want)?m.want:(Array.isArray(m.wantedSkills)?m.wantedSkills:[]);
+    const category=m.type||m.category||'Skill Exchange';
+    const avatar=m.avatar||'🧑🏻';
+    return `<article class="ss-other-card ss-other-live"><div class="ss-other-card-head"><div class="ss-other-avatar">${esc(avatar)}</div><span class="ss-other-badge">✓ Real member</span></div><h3>${esc(m.name||'SkillSwap Member')}</h3><p class="ss-other-location">📍 ${esc(m.location||'India')}</p><span class="ss-other-category">${esc(category)}</span><div class="ss-other-skills"><div><small>CAN TEACH</small><strong>${esc(teach.slice(0,3).join(' · ')||'Skills shared')}</strong></div><div><small>WANTS TO LEARN</small><strong>${esc(want.slice(0,3).join(' · ')||'Open to learning')}</strong></div></div><button type="button" class="ss-other-btn" onclick="ssOtherView('${esc(uid)}')">View profile</button></article>`;
+  }
+  async function load(){
+    const grid=document.getElementById(gridId),count=document.getElementById(countId);if(!grid)return;
+    grid.querySelectorAll('.ss-other-live').forEach(x=>x.remove());
+    const db=window.ssFirebase&&window.ssFirebase.db;if(!db)return;
+    try{
+      const snap=await db.ref('users').once('value');
+      const raw=snap.exists()?snap.val():{};
+      const current=window.ssFirebaseAuth?.currentUser?.uid||null;
+      const seen=new Set();
+      const people=Object.entries(raw||{}).map(([uid,m])=>({...m,uid,id:uid})).filter(m=>m&&m.name&&String(m.uid)!==String(current)).filter(m=>{
+        const keys=[String(m.uid||''),String(m.email||'').trim().toLowerCase(),String(m.name||'').trim().toLowerCase()].filter(Boolean);
+        if(keys.some(k=>seen.has(k)))return false;keys.forEach(k=>seen.add(k));return true;
+      });
+      if(people.length){grid.insertAdjacentHTML('beforeend',people.map(card).join(''));if(count)count.textContent=(12+people.length)+' profiles';}
+    }catch(e){console.warn('Other community members:',e)}
+  }
+  window.ssOtherView=async function(uid){if(typeof openOtherProfile==='function'){try{await openOtherProfile(uid);return}catch(e){console.warn(e)}}if(typeof showToast==='function')showToast('Please sign in to view this member.');};
+  document.addEventListener('DOMContentLoaded',()=>{load();setTimeout(load,1200);setTimeout(load,3000);});
 })();
 </script>
