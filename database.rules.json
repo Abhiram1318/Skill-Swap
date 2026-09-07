@@ -6,37 +6,27 @@
       "$uid": {
         ".read": true,
         ".write": "auth != null && auth.uid === $uid"
-      },
-      ".read": true
-    },
-    "presence": {
-      "$uid": {
-        ".read": true,
-        ".write": "auth != null && auth.uid === $uid"
-      },
-      ".read": true
+      }
     },
     "requests": {
       "$id": {
-        ".read": "auth != null && (data.child('senderUid').val() === auth.uid || data.child('receiverUid').val() === auth.uid)",
-        ".write": "auth != null && (newData.child('senderUid').val() === auth.uid || data.child('senderUid').val() === auth.uid || data.child('receiverUid').val() === auth.uid)"
-      },
-      ".read": "auth != null"
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
     },
-    "notifications": {
+    "connections": {
       "$id": {
-        ".read": "auth != null && data.child('uid').val() === auth.uid",
-        ".write": "auth != null && (newData.child('uid').val() === auth.uid || data.child('uid').val() === auth.uid)"
-      },
-      ".read": "auth != null",
-      ".write": "auth != null"
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
     },
     "chats": {
       "$pair": {
-        ".read": "auth != null && $pair.matches('.*' + auth.uid + '.*')",
+        ".read": "auth != null",
         "messages": {
           "$id": {
-            ".write": "auth != null && newData.child('senderUid').val() === auth.uid && $pair.matches('.*' + auth.uid + '.*')"
+            ".read": "auth != null",
+            ".write": "auth != null && newData.child('senderUid').val() === auth.uid"
           }
         }
       }
@@ -45,13 +35,54 @@
       "$id": {
         ".read": "auth != null && data.child('participantUids').child(auth.uid).exists()",
         ".write": "auth != null && (newData.child('host_uid').val() === auth.uid || newData.child('guest_uid').val() === auth.uid || data.child('host_uid').val() === auth.uid || data.child('guest_uid').val() === auth.uid)"
-      },
-      ".read": "auth != null"
+      }
     },
     "reviews": {
       "$id": {
-        ".read": true,
+        ".read": "auth != null",
         ".write": "auth != null && newData.child('reviewerUid').val() === auth.uid"
+      }
+    },
+    "notifications": {
+      "$id": {
+        ".read": "auth != null && data.child('uid').val() === auth.uid",
+        ".write": "auth != null && newData.child('uid').val() === auth.uid"
+      }
+    },
+    "favorites": {
+      "$id": {
+        ".read": "auth != null",
+        ".write": "auth != null && newData.child('uid').val() === auth.uid"
+      }
+    },
+    "listings": {
+      "$id": {
+        ".read": true,
+        ".write": "auth != null && newData.child('uid').val() === auth.uid"
+      }
+    },
+    "posts": {
+      "$id": {
+        ".read": true,
+        ".write": "auth != null && (newData.child('uid').val() === auth.uid || data.child('uid').val() === auth.uid)"
+      }
+    },
+    "groups": {
+      "$id": {
+        ".read": true,
+        ".write": "auth != null"
+      }
+    },
+    "groupMembers": {
+      "$id": {
+        ".read": true,
+        ".write": "auth != null"
+      }
+    },
+    "learningPlans": {
+      "$id": {
+        ".read": "auth != null && data.child('uid').val() === auth.uid",
+        ".write": "auth != null && newData.child('uid').val() === auth.uid"
       }
     },
     "gamification": {
@@ -60,77 +91,16 @@
         ".write": "auth != null && auth.uid === $uid"
       }
     },
-    "learningPlans": {
-      "$uid": {
-        ".read": "auth != null && auth.uid === $uid",
-        ".write": "auth != null && auth.uid === $uid"
-      }
-    },
-    "groups": {
-      "$id": {
-        ".read": true,
-        ".write": "auth != null"
-      },
-      ".read": true
-    },
-    "groupMembers": {
-      "$group": {
-        "$uid": {
-          ".read": true,
-          ".write": "auth != null && auth.uid === $uid"
-        }
-      }
-    },
-    "posts": {
-      "$id": {
-        ".read": true,
-        ".write": "auth != null && (newData.child('authorUid').val() === auth.uid || data.child('authorUid').val() === auth.uid)"
-      },
-      ".read": true
-    },
-    "postLikes": {
-      "$post": {
-        "$uid": {
-          ".read": true,
-          ".write": "auth != null && auth.uid === $uid"
-        }
-      },
-      ".read": "auth != null"
-    },
-    "listings": {
-      "$id": {
-        ".read": true,
-        ".write": "auth != null && (newData.child('uid').val() === auth.uid || data.child('uid').val() === auth.uid)"
-      },
-      ".read": true
-    },
-    "favorites": {
-      "$id": {
-        ".read": "auth != null && data.child('uid').val() === auth.uid",
-        ".write": "auth != null && (newData.child('uid').val() === auth.uid || data.child('uid').val() === auth.uid)"
-      },
-      ".read": "auth != null"
-    },
-    "profileViews": {
-      "$id": {
-        ".read": "auth != null && (data.child('viewerUid').val() === auth.uid || data.child('personId').val() === auth.uid)",
-        ".write": "auth != null && newData.child('viewerUid').val() === auth.uid"
-      },
-      ".read": "auth != null"
-    },
     "reports": {
       "$id": {
-        ".read": "auth != null && data.child('reporterUid').val() === auth.uid",
         ".write": "auth != null && newData.child('reporterUid').val() === auth.uid"
-      },
-      ".read": "auth != null"
+      }
     },
     "blocks": {
       "$id": {
-        ".read": "auth != null && data.child('uid').val() === auth.uid",
-        ".write": "auth != null && newData.child('uid').val() === auth.uid"
-      },
-      ".read": "auth != null"
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
     }
   }
 }
