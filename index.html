@@ -8548,4 +8548,376 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
   };
 })();
 </script>
+<style id="ss-skill-community-v2">
+.ss-community-shell{margin-top:18px}
+.ss-community-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 18px}
+.ss-community-toolbar input{flex:1;min-width:220px}
+.ss-community-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ss-community-card{background:#fff;border:1px solid var(--ss-border,#e2ebe8);border-radius:18px;padding:20px;box-shadow:0 8px 28px rgba(23,49,43,.06)}
+.ss-community-card:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(23,49,43,.1)}
+.ss-community-icon{font-size:32px;margin-bottom:8px}
+.ss-community-card h4{font-size:1.08rem;margin:0 0 5px}
+.ss-community-card p{color:var(--ss-muted,#6b7d77);font-size:.86rem;margin:6px 0 12px}
+.ss-community-meta{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px}
+.ss-community-pill{display:inline-flex;align-items:center;padding:5px 9px;border-radius:999px;background:#eef7f4;color:#176b57;font-size:.72rem;font-weight:800}
+.ss-community-actions{display:flex;gap:8px;flex-wrap:wrap}
+.ss-community-actions button,.ss-community-back{border:1px solid var(--ss-border,#e2ebe8);background:#fff;color:var(--ss-primary,#176b57);padding:9px 12px;border-radius:10px;font-weight:800}
+.ss-community-actions .primary{background:#176b57;color:#fff;border-color:#176b57}
+.ss-community-actions .danger{color:#a33b3b;border-color:#efd2d2;background:#fff7f7}
+.ss-community-detail-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:18px}
+.ss-community-detail-icon{width:60px;height:60px;border-radius:16px;background:#edf7f3;display:grid;place-items:center;font-size:30px;flex:0 0 auto}
+.ss-community-detail-head h3{margin:0 0 4px}
+.ss-community-detail-head p{margin:0;color:var(--ss-muted,#6b7d77)}
+.ss-community-status{margin-left:auto;white-space:nowrap}
+.ss-community-composer{background:#f7faf9;border:1px solid var(--ss-border,#e2ebe8);border-radius:16px;padding:15px;margin:16px 0}
+.ss-community-composer textarea{width:100%;min-height:90px;resize:vertical}
+.ss-community-composer-row{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:10px}
+.ss-community-ideas{display:flex;flex-direction:column;gap:12px}
+.ss-community-idea{background:#fff;border:1px solid var(--ss-border,#e2ebe8);border-radius:15px;padding:15px}
+.ss-community-idea-top{display:flex;justify-content:space-between;gap:10px}
+.ss-community-idea-author{font-weight:850;color:#17312b}
+.ss-community-idea-time{font-size:.7rem;color:#84918d}
+.ss-community-idea-text{white-space:pre-wrap;margin:9px 0 0;color:#30413c}
+.ss-community-empty{padding:24px;text-align:center;border:1px dashed #cbdad5;border-radius:15px;color:#71807b;background:#fbfdfc}
+.ss-community-note{font-size:.78rem;color:#71807b}
+@media(max-width:760px){
+  .ss-community-grid{grid-template-columns:1fr}
+  .ss-community-detail-head{flex-wrap:wrap}
+  .ss-community-status{margin-left:0}
+}
+</style>
 
+<script id="ss-skill-community-v2-js">
+(function(){
+  'use strict';
+
+  const GROUPS=[
+    {id:'python',name:'Python & AI',icon:'🐍',description:'Coding, automation, data, machine learning and AI.'},
+    {id:'web',name:'Web Development',icon:'🌐',description:'HTML, CSS, JavaScript, frontend, backend and web projects.'},
+    {id:'languages',name:'Languages',icon:'🗣️',description:'Practice English, Hindi, Telugu and other languages together.'},
+    {id:'creative',name:'Creative Skills',icon:'🎨',description:'Music, art, photography, video, writing and design.'},
+    {id:'career',name:'Career Skills',icon:'🚀',description:'Interviews, presentations, CVs, communication and professional growth.'},
+    {id:'business',name:'Business & Entrepreneurship',icon:'💼',description:'Ideas, startups, marketing, sales and entrepreneurship.'},
+    {id:'study',name:'Study & Academics',icon:'📚',description:'Study techniques, exams, research and academic support.'},
+    {id:'fitness',name:'Fitness & Lifestyle',icon:'🏃',description:'Healthy routines, sports, productivity and lifestyle skills.'}
+  ];
+
+  const E=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const D=()=>window.ssFirebase&&window.ssFirebase.db?window.ssFirebase.db:null;
+  const U=()=>window.ssFirebaseAuth&&window.ssFirebaseAuth.currentUser?window.ssFirebaseAuth.currentUser.uid:null;
+  const ME=()=>window.ssFirebaseProfile||{};
+  const T=m=>typeof window.showToast==='function'?window.showToast(m):alert(m);
+  const P=()=>document.getElementById('ssHubPanel');
+
+  function show(html){
+    const p=P();
+    if(!p)return;
+    p.innerHTML=html;
+    p.classList.add('active');
+    try{p.scrollIntoView({behavior:'smooth',block:'nearest'})}catch(_){}
+  }
+
+  function safeGroupName(id){
+    const g=GROUPS.find(x=>x.id===id);
+    return g?g.name:'SkillSwap Community';
+  }
+
+  async function isMember(id){
+    const d=D(),u=U();
+    if(!d||!u)return false;
+    try{
+      const s=await d.ref('groupMembers/'+id+'/'+u).once('value');
+      return s.exists();
+    }catch(e){
+      console.warn('Membership check failed:',e);
+      return false;
+    }
+  }
+
+  async function getGroups(){
+    const map=new Map(GROUPS.map(g=>[g.id,{...g,members:0}]));
+    const d=D();
+    if(!d)return [...map.values()];
+
+    // Remote /groups is optional. The built-in catalog always remains usable.
+    try{
+      const s=await d.ref('groups').once('value');
+      Object.entries(s.val()||{}).forEach(([id,g])=>{
+        if(g&&typeof g==='object')map.set(id,{...(map.get(id)||{id}),...g,id});
+      });
+    }catch(e){
+      console.warn('Optional /groups read denied or unavailable:',e);
+    }
+    return [...map.values()];
+  }
+
+  async function memberCount(id){
+    const d=D();
+    if(!d)return 0;
+    try{
+      const s=await d.ref('groupMembers/'+id).once('value');
+      return Object.keys(s.val()||{}).length;
+    }catch(e){
+      return 0;
+    }
+  }
+
+  async function renderGroups(){
+    const groups=await getGroups();
+    const states={};
+    await Promise.all(groups.map(async g=>{states[g.id]=await isMember(g.id)}));
+
+    show('<div class="ss-community-shell">'+
+      '<div class="ss-community-toolbar">'+
+        '<input id="ssCommunitySearch" type="search" autocomplete="off" placeholder="Search communities...">'+
+        '<button class="ss-community-back" id="ssCommunityRefresh">↻ Refresh</button>'+
+      '</div>'+
+      '<div id="ssCommunityGrid" class="ss-community-grid"></div>'+
+    '</div>');
+
+    const grid=document.getElementById('ssCommunityGrid');
+    const search=document.getElementById('ssCommunitySearch');
+    if(!grid)return;
+
+    async function draw(){
+      const q=(search?.value||'').trim().toLowerCase();
+      const shown=groups.filter(g=>(String(g.name||'')+' '+String(g.description||'')).toLowerCase().includes(q));
+      if(!shown.length){
+        grid.innerHTML='<div class="ss-community-empty">No communities match your search.</div>';
+        return;
+      }
+
+      grid.innerHTML=shown.map(g=>{
+        const joined=!!states[g.id];
+        const count=Number(g.members||0);
+        return '<article class="ss-community-card">'+
+          '<div class="ss-community-icon">'+E(g.icon||'👥')+'</div>'+
+          '<h4>'+E(g.name||g.id)+'</h4>'+
+          '<p>'+E(g.description||'SkillSwap community')+'</p>'+
+          '<div class="ss-community-meta">'+
+            '<span class="ss-community-pill">'+(joined?'✓ Joined':'Open community')+'</span>'+
+            '<span class="ss-community-pill">'+count+' '+(count===1?'member':'members')+'</span>'+
+          '</div>'+
+          '<div class="ss-community-actions">'+
+            (U()?
+              '<button class="'+(joined?'danger':'primary')+'" data-action="toggle" data-id="'+E(g.id)+'" data-name="'+E(g.name||g.id)+'">'+(joined?'Leave group':'Join group')+'</button>':
+              '<button class="primary" data-action="signin">Sign in to join</button>')+
+            '<button data-action="open" data-id="'+E(g.id)+'">Open community</button>'+
+          '</div>'+
+        '</article>';
+      }).join('');
+    }
+
+    await draw();
+
+    if(search)search.oninput=draw;
+    const refresh=document.getElementById('ssCommunityRefresh');
+    if(refresh)refresh.onclick=()=>renderGroups();
+
+    grid.onclick=async ev=>{
+      const b=ev.target.closest('button');
+      if(!b)return;
+      const action=b.dataset.action;
+      if(action==='signin'){
+        T('Please sign in to join a community.');
+        if(typeof window.openAuth==='function')window.openAuth('signin');
+        return;
+      }
+      if(action==='toggle'){
+        await toggleGroup(b.dataset.id,b.dataset.name);
+        return;
+      }
+      if(action==='open'){
+        await openGroup(b.dataset.id);
+      }
+    };
+  }
+
+  async function toggleGroup(id,name){
+    const u=U(),d=D();
+    if(!u){
+      T('Please sign in to join a community.');
+      if(typeof window.openAuth==='function')window.openAuth('signin');
+      return;
+    }
+    if(!d)return T('Firebase is not ready. Please try again.');
+
+    const ref=d.ref('groupMembers/'+id+'/'+u);
+    try{
+      const old=await ref.once('value');
+
+      if(old.exists()){
+        await ref.remove();
+        T('👋 You left '+name+'.');
+      }else{
+        await ref.set({
+          uid:u,
+          groupId:id,
+          groupName:name,
+          joined_at:new Date().toISOString()
+        });
+        T('👥 You joined '+name+'!');
+      }
+
+      // Counter is informational only; never allow it to break membership.
+      try{
+        const gr=d.ref('groups/'+id);
+        const s=await gr.once('value');
+        if(s.exists()){
+          const current=Math.max(0,Number(s.val().members||0));
+          const next=old.exists()?Math.max(0,current-1):current+1;
+          await gr.update({members:next});
+        }
+      }catch(e){
+        console.warn('Optional group counter update skipped:',e);
+      }
+
+      await openGroup(id);
+    }catch(e){
+      console.error('Group membership update failed:',e);
+      T('Could not update your membership. Please check Firebase Rules for groupMembers.');
+    }
+  }
+
+  async function openGroup(id){
+    const base=GROUPS.find(g=>g.id===id)||{id,name:safeGroupName(id),icon:'👥',description:'SkillSwap community'};
+    let group={...base};
+
+    try{
+      const d=D();
+      if(d){
+        const s=await d.ref('groups/'+id).once('value');
+        if(s.exists())group={...group,...s.val()};
+      }
+    }catch(e){
+      console.warn('Optional group detail read skipped:',e);
+    }
+
+    const joined=await isMember(id);
+
+    show('<div class="ss-community-shell">'+
+      '<button class="ss-community-back" id="ssCommunityBack">← All communities</button>'+
+      '<div class="ss-community-detail-head" style="margin-top:16px">'+
+        '<div class="ss-community-detail-icon">'+E(group.icon||'👥')+'</div>'+
+        '<div><h3>'+E(group.name)+'</h3><p>'+E(group.description||'SkillSwap community')+'</p></div>'+
+        '<div class="ss-community-status"><span class="ss-community-pill">'+(joined?'✓ You are a member':'Not joined')+'</span></div>'+
+      '</div>'+
+      '<div class="ss-community-actions">'+
+        '<button class="'+(joined?'danger':'primary')+'" id="ssCommunityMembership">'+(joined?'Leave group':'Join group')+'</button>'+
+      '</div>'+
+      '<div class="ss-community-composer">'+
+        '<strong>💡 Share your idea</strong>'+
+        '<p class="ss-community-note" style="margin:4px 0 10px">'+(joined?'Every member can share an idea with this community.':'Join the group to share an idea with its members.')+'</p>'+
+        '<textarea id="ssCommunityIdea" maxlength="1500" '+(joined?'':'disabled')+' placeholder="'+(joined?'Share an idea, tip, question, project concept or learning resource...':'Join the group first to share an idea.')+'"></textarea>'+
+        '<div class="ss-community-composer-row">'+
+          '<span class="ss-community-note">Up to 1,500 characters</span>'+
+          '<button class="primary" id="ssCommunityIdeaBtn" '+(joined?'':'disabled')+'>Share idea</button>'+
+        '</div>'+
+      '</div>'+
+      '<div><h4 style="margin-bottom:10px">💬 Community ideas</h4><div id="ssCommunityIdeas" class="ss-community-ideas"><div class="ss-community-empty">Loading ideas…</div></div></div>'+
+    '</div>');
+
+    document.getElementById('ssCommunityBack')?.addEventListener('click',renderGroups);
+    document.getElementById('ssCommunityMembership')?.addEventListener('click',()=>toggleGroup(id,group.name));
+    document.getElementById('ssCommunityIdeaBtn')?.addEventListener('click',()=>shareIdea(id,group.name));
+
+    await renderIdeas(id);
+  }
+
+  async function renderIdeas(id){
+    const box=document.getElementById('ssCommunityIdeas');
+    if(!box)return;
+
+    try{
+      const d=D();
+      if(!d)throw new Error('Firebase unavailable');
+
+      const s=await d.ref('groupIdeas/'+id).once('value');
+      const ideas=Object.entries(s.val()||{}).map(([key,v])=>({...v,key}))
+        .sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
+
+      box.innerHTML=ideas.length?ideas.map(x=>
+        '<article class="ss-community-idea">'+
+          '<div class="ss-community-idea-top">'+
+            '<span class="ss-community-idea-author">💡 '+E(x.authorName||'SkillSwap Member')+'</span>'+
+            '<span class="ss-community-idea-time">'+E(x.created_at||'')+'</span>'+
+          '</div>'+
+          '<div class="ss-community-idea-text">'+E(x.text||'')+'</div>'+
+          (x.authorUid===U()?'<div style="margin-top:9px"><button class="ss-community-back" data-delete-idea="'+E(x.key)+'">Delete</button></div>':'')+
+        '</article>'
+      ).join(''):'<div class="ss-community-empty">No ideas yet. Be the first member to share one!</div>';
+
+      box.onclick=async ev=>{
+        const b=ev.target.closest('[data-delete-idea]');
+        if(!b)return;
+        await deleteIdea(id,b.dataset.deleteIdea);
+      };
+    }catch(e){
+      console.error('Community ideas load failed:',e);
+      box.innerHTML='<div class="ss-community-empty">Ideas are temporarily unavailable. Your membership still works. If this persists, allow read access to groupIdeas in Firebase Rules.</div>';
+    }
+  }
+
+  async function shareIdea(id,name){
+    const u=U(),d=D();
+    if(!u)return T('Please sign in first.');
+    if(!(await isMember(id)))return T('Join the group before sharing an idea.');
+
+    const input=document.getElementById('ssCommunityIdea');
+    const text=(input?.value||'').trim();
+    if(!text)return T('Write your idea first.');
+    if(text.length>1500)return T('Please keep your idea under 1,500 characters.');
+    if(!d)return T('Firebase is not ready. Please try again.');
+
+    try{
+      await d.ref('groupIdeas/'+id).push().set({
+        authorUid:u,
+        authorName:ME().name||'SkillSwap Member',
+        groupId:id,
+        groupName:name,
+        text,
+        created_at:new Date().toISOString()
+      });
+      if(input)input.value='';
+      T('💡 Your idea was shared with '+name+'!');
+      await renderIdeas(id);
+    }catch(e){
+      console.error('Share idea failed:',e);
+      T('Could not share the idea. Please check Firebase Rules for groupIdeas.');
+    }
+  }
+
+  async function deleteIdea(groupId,ideaId){
+    const d=D(),u=U();
+    if(!d||!u)return;
+    try{
+      const ref=d.ref('groupIdeas/'+groupId+'/'+ideaId);
+      const s=await ref.once('value');
+      if(!s.exists())return;
+      if(s.val().authorUid!==u)return T('You can only delete your own idea.');
+      await ref.remove();
+      T('Idea deleted.');
+      await renderIdeas(groupId);
+    }catch(e){
+      console.error(e);
+      T('Could not delete the idea.');
+    }
+  }
+
+  window.ssCommunityToggle=toggleGroup;
+  window.ssCommunityOpen=openGroup;
+  window.ssCommunityDeleteIdea=deleteIdea;
+
+  // Final override: the skill-group feature never depends on /groups being readable.
+  const previousOpen=window.ssHubOpen;
+  window.ssHubOpen=function(which){
+    if(which==='groups'){
+      return renderGroups().catch(e=>{
+        console.error('Skill communities:',e);
+        show('<div class="ss-hub-error"><strong>⚠️ Communities could not open</strong><p>Please refresh and try again.</p><button onclick="ssHubOpen(\'groups\')">Try again</button></div>');
+      });
+    }
+    return typeof previousOpen==='function'?previousOpen(which):undefined;
+  };
+})();
+</script>
