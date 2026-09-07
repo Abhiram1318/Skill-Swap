@@ -3652,16 +3652,7 @@ const demoPeople = [
    These are conversational virtual members, clearly identified
    so users are never misled about who they are chatting with.
 ========================================================= */
-const virtualMembers = [
-  {id:"virtual-anaya",name:"Anaya Kapoor",avatar:"👩🏻‍💻",location:"Bengaluru, Karnataka",category:"Technology",type:"Virtual Practice Partner",languages:["English","Hindi"],teach:["Python","JavaScript","AI basics"],want:["Public Speaking","Product Design"],availability:["Evenings","Flexible"],rating:4.9,reviews:148,bio:"A friendly virtual practice partner who enjoys breaking difficult coding ideas into simple, practical steps.",virtual:true,persona:"anaya"},
-  {id:"virtual-rohan",name:"Rohan Mehta",avatar:"👨🏽‍🎨",location:"Mumbai, Maharashtra",category:"Creative Skills",type:"Virtual Practice Partner",languages:["English","Hindi","Marathi"],teach:["Drawing","Design Thinking","Photography"],want:["Coding","Cricket"],availability:["Weekends","Evenings"],rating:4.8,reviews:121,bio:"A relaxed, encouraging virtual practice partner for creative projects, feedback and brainstorming.",virtual:true,persona:"rohan"},
-  {id:"virtual-meera",name:"Meera Iyer",avatar:"👩🏽‍🏫",location:"Chennai, Tamil Nadu",category:"Languages",type:"Virtual Practice Partner",languages:["English","Tamil","Hindi"],teach:["Tamil","English Conversation","Public Speaking"],want:["Python","Guitar"],availability:["After school","Weekends"],rating:5,reviews:203,bio:"A patient virtual conversation partner who loves language practice, storytelling and confidence-building.",virtual:true,persona:"meera"},
-  {id:"virtual-vihaan",name:"Vihaan Rao",avatar:"🧑🏽‍🎓",location:"Hyderabad, Telangana",category:"Academics",type:"Virtual Practice Partner",languages:["English","Telugu","Hindi"],teach:["Maths","Physics","Chess"],want:["Web Development","Guitar"],availability:["Evenings","Flexible"],rating:4.9,reviews:176,bio:"A focused virtual study partner who likes solving problems step by step and keeping practice sessions fun.",virtual:true,persona:"vihaan"},
-  {id:"virtual-sana",name:"Sana Khan",avatar:"👩🏽‍🎤",location:"Pune, Maharashtra",category:"Arts & Music",type:"Virtual Practice Partner",languages:["English","Hindi","Urdu"],teach:["Guitar","Music Theory","Creative Writing"],want:["Python","Drawing"],availability:["Evenings","Weekends"],rating:4.9,reviews:167,bio:"A warm virtual practice partner for music, creativity and casual skill-building conversations.",virtual:true,persona:"sana"},
-  {id:"virtual-aryan",name:"Aryan Nair",avatar:"👨🏽‍💼",location:"Kochi, Kerala",category:"Career Skills",type:"Virtual Practice Partner",languages:["English","Malayalam","Hindi"],teach:["Interview Skills","Communication","Presentation"],want:["JavaScript","Photography"],availability:["Evenings","Flexible"],rating:4.8,reviews:134,bio:"A supportive virtual practice partner for interviews, communication and professional confidence.",virtual:true,persona:"aryan"}
-];
 
-demoPeople.push(...virtualMembers);
 
 /* =========================
    STATE
@@ -4316,7 +4307,7 @@ function renderMatches(people=demoPeople){
             </div>
 
             <div class="member-badge">
-                ${person.virtual ? "✨ Virtual Practice Partner" : "🧑‍🎓 SkillSwap Member"}
+                🧑‍🎓 SkillSwap Member
             </div>
 
             <div class="profile">
@@ -7377,76 +7368,6 @@ window.addEventListener("keydown",e=>{
 <style id="skillswap-virtual-members-style">
 .virtual-chat-note{font-size:12px;color:#647772;margin-top:2px}.virtual-pill{display:inline-flex;align-items:center;gap:5px;margin-top:5px;padding:4px 8px;border-radius:999px;background:#e8f7f1;color:#087f5b;font-size:11px;font-weight:800}
 </style>
-<script id="skillswap-virtual-members">
-(function(){
-  const virtualMap=Object.fromEntries((typeof virtualMembers!=="undefined"?virtualMembers:[]).map(p=>[String(p.id),p]));
-  const oldOpenChat=window.openChat;
-  const oldSendMessage=window.sendMessage;
-  function vReply(person,text){
-    const t=String(text||"").toLowerCase();
-    if(person.persona==="anaya") {
-      if(/hello|hi|hey/.test(t)) return "Hey! 😊 Good to meet you. What are you working on today?";
-      if(/python|code|coding|javascript|ai/.test(t)) return "Absolutely. Tell me what you already know and I'll help you build it step by step. We can even make a tiny project together.";
-      if(/project|idea/.test(t)) return "I like that idea. Start small: define the goal, list the inputs and outputs, then build the simplest version first.";
-      return "That makes sense. Tell me a little more and let's figure it out together.";
-    }
-    if(person.persona==="rohan") {
-      if(/hello|hi|hey/.test(t)) return "Hey! 👋 What are you creating lately?";
-      if(/draw|design|photo|creative/.test(t)) return "Nice! Show me the idea in words and I'll help you turn it into a simple practice plan.";
-      return "I like where you're going with that. What part feels hardest right now?";
-    }
-    if(person.persona==="meera") {
-      if(/hello|hi|hey/.test(t)) return "Hi! 🌼 Let's practise together. Do you want casual conversation or focused language practice?";
-      if(/tamil|english|language|speak|conversation/.test(t)) return "Great. Try writing one sentence and I'll reply naturally, then gently correct anything that could sound more natural.";
-      return "Tell me what you'd like to practise, and we'll take it one small step at a time.";
-    }
-    if(person.persona==="vihaan") {
-      if(/hello|hi|hey/.test(t)) return "Hey! 📚 Ready for a quick challenge? What topic are you studying?";
-      if(/math|physics|chess|study|problem/.test(t)) return "Sure. Send me the question or topic. I'll help you reason through it instead of just giving you the answer.";
-      return "Let's break that down. What do you already understand, and where do you get stuck?";
-    }
-    if(person.persona==="sana") {
-      if(/hello|hi|hey/.test(t)) return "Hey! 🎸 What are you in the mood to practise today?";
-      if(/guitar|music|song|write|creative/.test(t)) return "Love it. We can make the practice short and fun. What level are you at right now?";
-      return "That sounds interesting. Tell me more and we'll turn it into something you can practise.";
-    }
-    if(person.persona==="aryan") {
-      if(/hello|hi|hey/.test(t)) return "Hey! 👋 What would you like to get better at?";
-      if(/interview|job|career|presentation|communication/.test(t)) return "Absolutely. Give me the situation and I'll role-play the other side, then give you practical feedback.";
-      return "Got it. Let's make this practical. What's the real situation you're preparing for?";
-    }
-    return "Sounds good! Tell me more and we'll work through it together.";
-  }
-  window.openChat=async function(personId){
-    const person=virtualMap[String(personId)];
-    if(!person){return oldOpenChat?oldOpenChat(personId):undefined}
-    if(!getCurrentUser()){openAuth("signin");return}
-    currentChatPerson={id:person.id,name:person.name,avatar:person.avatar,virtual:true};
-    document.getElementById("chatName").textContent=person.name;
-    document.getElementById("chatAvatar").textContent=person.avatar;
-    const sub=document.querySelector("#chatModal .chat-person p");
-    if(sub)sub.innerHTML='<span class="virtual-chat-note">✨ Virtual Practice Partner</span>';
-    document.getElementById("chatModal").classList.add("show");
-    loadMessages();
-  };
-  const baseLoad=window.loadMessages;
-  window.loadMessages=function(){
-    if(!currentChatPerson?.virtual){return baseLoad?baseLoad():undefined}
-    const user=getCurrentUser(); if(!user||!currentChatPerson)return;
-    const messages=getMessages(),key=chatKey(user.id,currentChatPerson.id);
-    if(!messages[key]) messages[key]=[{type:"them",text:"Hi! 👋 I'm here to practise with you. What would you like to work on?"}];
-    const c=document.getElementById("chatMessages"); if(!c)return; c.innerHTML=""; messages[key].forEach(m=>{const d=document.createElement("div");d.className="message "+m.type;d.textContent=m.text;c.appendChild(d)});c.scrollTop=c.scrollHeight;saveMessages(messages);
-  };
-  window.sendMessage=function(){
-    if(!currentChatPerson?.virtual){return oldSendMessage?oldSendMessage():undefined}
-    const user=getCurrentUser(),input=document.getElementById("chatInput"),text=input?.value.trim(); if(!user||!text)return;
-    const messages=getMessages(),key=chatKey(user.id,currentChatPerson.id); if(!messages[key])messages[key]=[]; messages[key].push({type:"me",text}); saveMessages(messages); input.value=""; loadMessages();
-    setTimeout(()=>{const now=getMessages(); if(!now[key])now[key]=[]; now[key].push({type:"them",text:vReply(virtualMap[String(currentChatPerson.id)],text)}); saveMessages(now); loadMessages()},700+Math.random()*800);
-  };
-})();
-</script>
-<style id="skillswap-always-visible-members">#matches.ss-force-members{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:22px}@media(max-width:900px){#matches.ss-force-members{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){#matches.ss-force-members{grid-template-columns:1fr}}.ss-direct-member{background:#fff;border:1px solid #e1e9e5;border-radius:20px;padding:22px;box-shadow:0 8px 28px rgba(23,49,43,.07)}.ss-direct-member .ss-dm-top{display:flex;gap:13px;align-items:center;margin-bottom:14px}.ss-direct-member .ss-dm-avatar{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;background:#e7f5ef;font-size:28px}.ss-direct-member h3{font-size:1rem;margin:0}.ss-direct-member p{color:#6d7b76;font-size:.78rem;margin:2px 0}.ss-dm-badge{display:inline-block;background:#eef7f4;color:#176b57;border-radius:999px;padding:5px 9px;font-size:.68rem;font-weight:800;margin-bottom:12px}.ss-dm-skills{font-size:.82rem;line-height:1.7;margin:8px 0 14px}.ss-dm-chat{width:100%;border:0;background:#176b57;color:#fff;padding:11px;border-radius:11px;font-weight:800;cursor:pointer}.ss-direct-title{grid-column:1/-1;font-size:1.25rem;font-weight:850;margin-bottom:-5px}</style><script id="skillswap-always-visible-members">(function(){const members=[{id:'virtual-anaya',name:'Anaya Kapoor',avatar:'👩🏻‍💻',location:'Bengaluru, Karnataka',teach:'Python • JavaScript • AI basics',want:'Public Speaking • Product Design',intro:'Friendly, practical and great for coding practice.'},{id:'virtual-rohan',name:'Rohan Mehta',avatar:'👨🏽‍🎨',location:'Mumbai, Maharashtra',teach:'Drawing • Design • Photography',want:'Coding • Cricket',intro:'Relaxed and encouraging for creative projects.'},{id:'virtual-meera',name:'Meera Iyer',avatar:'👩🏽‍🏫',location:'Chennai, Tamil Nadu',teach:'Tamil • English Conversation • Speaking',want:'Python • Guitar',intro:'Patient and conversational for language practice.'},{id:'virtual-vihaan',name:'Vihaan Rao',avatar:'🧑🏽‍🎓',location:'Hyderabad, Telangana',teach:'Maths • Physics • Chess',want:'Web Development • Guitar',intro:'Focused study partner who enjoys problem solving.'},{id:'virtual-sana',name:'Sana Khan',avatar:'👩🏽‍🎤',location:'Pune, Maharashtra',teach:'Guitar • Music Theory • Writing',want:'Python • Drawing',intro:'Warm and creative for music and brainstorming.'},{id:'virtual-aryan',name:'Aryan Nair',avatar:'👨🏽‍💼',location:'Kochi, Kerala',teach:'Interview Skills • Communication • Presentation',want:'JavaScript • Photography',intro:'Supportive practice partner for confidence and careers.'}];function show(){const box=document.getElementById('matches');if(!box)return;box.classList.add('ss-force-members');box.innerHTML='<div class="ss-direct-title">👥 Members you can connect with</div>'+members.map(m=>'<article class="ss-direct-member"><span class="ss-dm-badge">✨ Virtual Practice Partner</span><div class="ss-dm-top"><div class="ss-dm-avatar">'+m.avatar+'</div><div><h3>'+m.name+'</h3><p>📍 '+m.location+'</p><p>⭐ 4.9 • Available now</p></div></div><div class="ss-dm-skills"><b>Can teach:</b> '+m.teach+'<br><b>Wants to learn:</b> '+m.want+'</div><p>'+m.intro+'</p><br><button class="ss-dm-chat" onclick="window.ssOpenVirtualChat && window.ssOpenVirtualChat(\''+m.id+'\')">💬 Chat now</button></article>').join('')}window.ssOpenVirtualChat=function(id){const auth=(window.ssFirebaseAuth || (window.firebase && firebase.auth ? firebase.auth() : null));if(!(auth && auth.currentUser)){if(typeof window.openAuth==='function')window.openAuth('signin');else alert('Please sign in to chat with members.');return;}const m=members.find(x=>x.id===id);if(!m)return;let old=document.getElementById('ss-direct-chat');if(old)old.remove();const el=document.createElement('div');el.id='ss-direct-chat';el.style.cssText='position:fixed;inset:0;background:rgba(10,30,25,.58);z-index:10000;display:flex;align-items:center;justify-content:center;padding:18px';el.innerHTML='<div style="background:#fff;width:min(520px,100%);border-radius:22px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.25)"><div style="padding:18px 20px;background:#176b57;color:#fff;display:flex;justify-content:space-between;align-items:center"><b>'+m.avatar+' '+m.name+'</b><button onclick="document.getElementById(\'ss-direct-chat\').remove()" style="background:none;border:0;color:#fff;font-size:22px">×</button></div><div id="ss-dm-msgs" style="height:320px;overflow:auto;padding:16px"><div style="background:#eef7f4;padding:10px 13px;border-radius:14px;max-width:82%;margin-bottom:10px">Hey! 👋 I’m '+m.name+'. Want to practise '+m.teach.split(' • ')[0]+' together?</div></div><div style="display:flex;gap:8px;padding:12px;border-top:1px solid #e1e9e5"><input id="ss-dm-input" placeholder="Type a message…" style="flex:1;border:1px solid #dce7e2;border-radius:11px;padding:11px"><button onclick="window.ssSendVirtualMessage()" style="border:0;background:#176b57;color:#fff;border-radius:11px;padding:11px 15px;font-weight:800">Send</button></div></div>';document.body.appendChild(el);document.getElementById('ss-dm-input').focus()};window.ssSendVirtualMessage=function(){const input=document.getElementById('ss-dm-input'),msgs=document.getElementById('ss-dm-msgs');if(!input||!input.value.trim())return;const text=input.value.trim();msgs.insertAdjacentHTML('beforeend','<div style="background:#176b57;color:#fff;padding:10px 13px;border-radius:14px;max-width:82%;margin:10px 0 10px auto">'+text.replace(/[&<>]/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[x]))+'</div>');input.value='';setTimeout(()=>{msgs.insertAdjacentHTML('beforeend','<div style="background:#eef7f4;padding:10px 13px;border-radius:14px;max-width:82%;margin-bottom:10px">That sounds good! Tell me what you’re working on, and we can practise it step by step. 😊</div>');msgs.scrollTop=msgs.scrollHeight},650);msgs.scrollTop=msgs.scrollHeight};document.addEventListener('DOMContentLoaded',()=>{show();setTimeout(show,700);setTimeout(show,1800);setTimeout(show,3500)})})();</script>
-
 <style id="ss-static-members-css">
 .ss-static-members-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:0 0 22px}
 .ss-static-members-head h2{font-size:clamp(1.7rem,3vw,2.4rem);margin:0;font-weight:900;color:#102e27}
@@ -7489,137 +7410,7 @@ body.dark-mode .ss-static-skills div{color:#dceae6}
 .ss-static-chat-input{display:flex;gap:8px;padding:13px;border-top:1px solid #dce9e4}.ss-static-chat-input input{flex:1;border:1px solid #dce9e4;border-radius:11px;padding:11px}.ss-static-chat-input button{border:0;background:#087f5b;color:#fff;border-radius:11px;padding:0 17px;font-weight:800}
 </style>
 
-<script id="ss-static-chat-js">
-(function(){
-  const people={
-    anaya:{name:"Anaya Kapoor",avatar:"👩🏻‍💻",place:"Bengaluru",intro:"Hey! Great to meet you. Want to practise Python, JavaScript or AI basics together?",topics:["python","javascript","ai","coding"]},
-    rohan:{name:"Rohan Mehta",avatar:"👨🏽‍🎨",place:"Mumbai",intro:"Hey! What are you creating lately? I can help with drawing, design and photography practice.",topics:["draw","design","photo","creative"]},
-    meera:{name:"Meera Iyer",avatar:"👩🏽‍🏫",place:"Chennai",intro:"Hi! 😊 We can practise Tamil, English conversation or public speaking. What would you like to work on?",topics:["tamil","english","speaking","language"]},
-    vihaan:{name:"Vihaan Rao",avatar:"🧑🏽‍🎓",place:"Hyderabad",intro:"Hey! Ready for a quick maths, physics or chess challenge?",topics:["math","maths","physics","chess"]},
-    sana:{name:"Sana Khan",avatar:"👩🏽‍🎤",place:"Pune",intro:"Hi! 🎸 Want to talk guitar, music theory or creative writing?",topics:["guitar","music","writing","creative"]},
-    aryan:{name:"Aryan Nair",avatar:"👨🏽‍💼",place:"Kochi",intro:"Hey! I can help you practise interviews, communication or presentations. What are you preparing for?",topics:["interview","communication","presentation","career"]}
-  };
-  let active=null;
-  function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
-  window.ssStaticChat=function(id){
-    const auth=(window.ssFirebaseAuth || (window.firebase && firebase.auth ? firebase.auth() : null));
-    const loggedIn=!!(auth && auth.currentUser);
-    if(!loggedIn){
-      if(typeof window.openAuth==='function') window.openAuth("signin");
-      else alert("Please sign in to chat with members.");
-      return;
-    }
-    const p=people[id]; if(!p)return;
-    active=p;
-    let old=document.getElementById("ssStaticChatOverlay"); if(old)old.remove();
-    const ov=document.createElement("div");ov.id="ssStaticChatOverlay";
-    ov.innerHTML=`<div class="ss-static-chat-box" role="dialog" aria-modal="true">
-      <div class="ss-static-chat-head"><div class="ss-static-chat-person"><div style="font-size:30px">${p.avatar}</div><div><strong>${p.name}</strong><small>✨ Virtual Practice Partner · ${p.place}</small></div></div><button class="ss-static-chat-close" onclick="ssStaticCloseChat()">×</button></div>
-      <div id="ssStaticChatMessages"><div class="ss-static-msg them">${p.intro}</div></div>
-      <div class="ss-static-chat-input"><input id="ssStaticChatInput" placeholder="Write a message..." onkeydown="if(event.key==='Enter')ssStaticSend()"><button onclick="ssStaticSend()">Send</button></div>
-    </div>`;
-    document.body.appendChild(ov);
-    ov.addEventListener("click",e=>{if(e.target===ov)ssStaticCloseChat()});
-    setTimeout(()=>document.getElementById("ssStaticChatInput")?.focus(),50);
-  };
-  window.ssStaticCloseChat=function(){document.getElementById("ssStaticChatOverlay")?.remove();active=null};
-  window.ssStaticSend=function(){
-    const input=document.getElementById("ssStaticChatInput"),box=document.getElementById("ssStaticChatMessages");
-    if(!input||!box||!active)return;
-    const t=input.value.trim();if(!t)return;
-    box.insertAdjacentHTML("beforeend",`<div class="ss-static-msg me">${esc(t)}</div>`);
-    input.value="";box.scrollTop=box.scrollHeight;
-    setTimeout(()=>{
-      const low=t.toLowerCase();let reply;
-      if(active.topics.some(x=>low.includes(x))) reply="Absolutely! Let's practise that together. Tell me your current level and what you'd like to achieve, and we'll take it step by step.";
-      else if(/hello|hi|hey/.test(low)) reply="Hey! 😊 Nice to hear from you. What skill would you like to practise today?";
-      else if(/help|stuck|problem/.test(low)) reply="No worries. Explain what you're trying to do and where you got stuck. We'll break it into smaller steps.";
-      else reply="That sounds interesting! Tell me a little more and let's turn it into a useful practice session.";
-      box.insertAdjacentHTML("beforeend",`<div class="ss-static-msg them">${reply}</div>`);box.scrollTop=box.scrollHeight;
-    },500);
-  };
-  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&document.getElementById("ssStaticChatOverlay"))ssStaticCloseChat()});
-})();
-</script>
-
 <style id="ss-static-members-observer-css"></style>
-<script id="ss-static-members-rescue">
-(function(){
-  const staticMarkup=`
-<div class="ss-static-members-head">
-  <div>
-    <h2>👥 Members you can connect with</h2>
-    <p>Explore skill partners and start a conversation.</p>
-  </div>
-  <span>6 practice partners</span>
-</div>
-<div class="ss-static-member-grid">
-  <article class="ss-static-card">
-    <div class="ss-static-top"><div class="ss-static-avatar">👩🏻‍💻</div><span>✨ Virtual Practice Partner</span></div>
-    <h3>Anaya Kapoor</h3><p class="ss-static-location">📍 Bengaluru, Karnataka</p>
-    <p class="ss-static-bio">A friendly practice partner who enjoys breaking difficult coding ideas into simple, practical steps.</p>
-    <div class="ss-static-skills"><b>Can teach</b><div>Python · JavaScript · AI basics</div><b>Wants to learn</b><div>Public Speaking · Product Design</div></div>
-    <button class="ss-static-chat" onclick="ssStaticChat('anaya')">💬 Chat now</button>
-  </article>
-  <article class="ss-static-card">
-    <div class="ss-static-top"><div class="ss-static-avatar">👨🏽‍🎨</div><span>✨ Virtual Practice Partner</span></div>
-    <h3>Rohan Mehta</h3><p class="ss-static-location">📍 Mumbai, Maharashtra</p>
-    <p class="ss-static-bio">A relaxed practice partner for creative projects, feedback and brainstorming.</p>
-    <div class="ss-static-skills"><b>Can teach</b><div>Drawing · Design Thinking · Photography</div><b>Wants to learn</b><div>Coding · Cricket</div></div>
-    <button class="ss-static-chat" onclick="ssStaticChat('rohan')">💬 Chat now</button>
-  </article>
-  <article class="ss-static-card">
-    <div class="ss-static-top"><div class="ss-static-avatar">👩🏽‍🏫</div><span>✨ Virtual Practice Partner</span></div>
-    <h3>Meera Iyer</h3><p class="ss-static-location">📍 Chennai, Tamil Nadu</p>
-    <p class="ss-static-bio">A patient conversation partner for language practice, storytelling and confidence-building.</p>
-    <div class="ss-static-skills"><b>Can teach</b><div>Tamil · English Conversation · Public Speaking</div><b>Wants to learn</b><div>Python · Guitar</div></div>
-    <button class="ss-static-chat" onclick="ssStaticChat('meera')">💬 Chat now</button>
-  </article>
-  <article class="ss-static-card">
-    <div class="ss-static-top"><div class="ss-static-avatar">🧑🏽‍🎓</div><span>✨ Virtual Practice Partner</span></div>
-    <h3>Vihaan Rao</h3><p class="ss-static-location">📍 Hyderabad, Telangana</p>
-    <p class="ss-static-bio">A focused study partner who likes solving problems step by step and keeping practice fun.</p>
-    <div class="ss-static-skills"><b>Can teach</b><div>Maths · Physics · Chess</div><b>Wants to learn</b><div>Web Development · Guitar</div></div>
-    <button class="ss-static-chat" onclick="ssStaticChat('vihaan')">💬 Chat now</button>
-  </article>
-  <article class="ss-static-card">
-    <div class="ss-static-top"><div class="ss-static-avatar">👩🏽‍🎤</div><span>✨ Virtual Practice Partner</span></div>
-    <h3>Sana Khan</h3><p class="ss-static-location">📍 Pune, Maharashtra</p>
-    <p class="ss-static-bio">A warm practice partner for music, creativity and casual skill-building conversations.</p>
-    <div class="ss-static-skills"><b>Can teach</b><div>Guitar · Music Theory · Creative Writing</div><b>Wants to learn</b><div>Python · Drawing</div></div>
-    <button class="ss-static-chat" onclick="ssStaticChat('sana')">💬 Chat now</button>
-  </article>
-  <article class="ss-static-card">
-    <div class="ss-static-top"><div class="ss-static-avatar">👨🏽‍💼</div><span>✨ Virtual Practice Partner</span></div>
-    <h3>Aryan Nair</h3><p class="ss-static-location">📍 Kochi, Kerala</p>
-    <p class="ss-static-bio">A supportive practice partner for interviews, communication and professional confidence.</p>
-    <div class="ss-static-skills"><b>Can teach</b><div>Interview Skills · Communication · Presentation</div><b>Wants to learn</b><div>JavaScript · Photography</div></div>
-    <button class="ss-static-chat" onclick="ssStaticChat('aryan')">💬 Chat now</button>
-  </article>
-</div>
-`;
-  function rescue(){
-    const box=document.getElementById("matches");
-    if(!box)return;
-    const bad=!box.children.length || /No matching members found/i.test((box.textContent||"").trim());
-    if(bad){
-      box.innerHTML=staticMarkup;
-      box.dataset.staticFallback="1";
-    }
-  }
-  function boot(){
-    rescue();
-    const box=document.getElementById("matches");
-    if(!box)return;
-    new MutationObserver(function(){
-      if(!box.children.length || /No matching members found/i.test((box.textContent||"").trim())) rescue();
-    }).observe(box,{childList:true});
-    [500,1200,2500,5000,9000].forEach(t=>setTimeout(rescue,t));
-  }
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
-})();
-</script>
-
 <!-- SKILLSWAP COMMUNITY MEMBERS: 12 STARTER PROFILES + LIVE FIREBASE MEMBERS -->
 <style id="ss-community-members-style">
 #ssCommunityMembers{margin-top:56px;padding:0 0 20px}
@@ -7767,11 +7558,38 @@ body.dark-mode .ss-community-location,body.dark-mode .ss-community-head p{color:
   async function refresh(){
     const grid=document.getElementById('ssCommunityGrid'),count=document.getElementById('ssCommunityCount');
     if(!grid)return;
+
+    // Remove previously rendered live members first so retries never duplicate them.
+    grid.querySelectorAll('.ss-live-member').forEach(el=>el.remove());
+
     const live=await loadLive();
-    let current=null;try{current=(window.ssFirebaseAuth&&window.ssFirebaseAuth.currentUser)?window.ssFirebaseAuth.currentUser.uid:null}catch(e){}
-    const others=live.filter(m=>String(m.uid)!==String(current));
-    if(others.length){grid.insertAdjacentHTML('beforeend',others.map(card).join(''));if(count)count.textContent=(starters.length+others.length)+' members';}
-    else if(count)count.textContent=starters.length+' starter profiles';
+    let current=null;
+    try{
+      current=(window.ssFirebaseAuth&&window.ssFirebaseAuth.currentUser)?window.ssFirebaseAuth.currentUser.uid:null;
+    }catch(e){}
+
+    // Deduplicate by Firebase UID first, then email, then normalized name.
+    const seenUid=new Set(), seenEmail=new Set(), seenName=new Set();
+    const others=live.filter(m=>{
+      if(!m || String(m.uid)===String(current))return false;
+      const uid=String(m.uid||'').trim();
+      const email=String(m.email||'').trim().toLowerCase();
+      const name=String(m.name||'').trim().toLowerCase();
+      if(uid && seenUid.has(uid))return false;
+      if(email && seenEmail.has(email))return false;
+      if(name && seenName.has(name))return false;
+      if(uid)seenUid.add(uid);
+      if(email)seenEmail.add(email);
+      if(name)seenName.add(name);
+      return true;
+    });
+
+    if(others.length){
+      grid.insertAdjacentHTML('beforeend',others.map(card).join(''));
+      if(count)count.textContent=(starters.length+others.length)+' members';
+    }else if(count){
+      count.textContent=starters.length+' starter profiles';
+    }
   }
   document.addEventListener('DOMContentLoaded',function(){refresh();setTimeout(refresh,1000);setTimeout(refresh,2500);setTimeout(refresh,5000);});
 })();
@@ -7815,35 +7633,7 @@ body.ss4-ready{background:linear-gradient(180deg,#f7fbf9 0,#f5f9f7 100%)}
 @media(max-width:600px){.ss4-shell{padding:15px 12px 90px}.ss4-top{align-items:flex-start;flex-direction:column}.ss4-hero-inner{align-items:flex-start;flex-direction:column}.ss4-actions{width:100%}.ss4-actions .ss4-btn{flex:1}.ss4-nav{position:sticky;bottom:8px;z-index:1000;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);padding:7px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.12)}.ss4-nav button{padding:9px 4px}.ss4-statgrid{gap:7px}}
 </style>
 
-<section id="skillswap4Dashboard" class="ss4-shell" aria-label="SkillSwap 4.0 dashboard">
-  <div class="ss4-top">
-    <div><div class="ss4-kicker">SkillSwap 4.0</div><div class="ss4-title">Your learning command center</div><div class="ss4-sub" id="ss4Greeting">Your personal space to discover, learn, teach and grow.</div></div>
-    <div class="ss4-actions"><button class="ss4-btn" onclick="ss4Refresh()">↻ Refresh</button><button class="ss4-btn primary" onclick="ss4Discover()">+ Find a skill partner</button></div>
-  </div>
 
-  <div class="ss4-grid">
-    <main>
-      <div class="ss4-card ss4-hero">
-        <div class="ss4-hero-inner"><div class="ss4-profile"><div class="ss4-avatar" id="ss4Avatar">S</div><div><h2 id="ss4Name">Welcome to SkillSwap</h2><p id="ss4Headline">Your personalized student learning dashboard</p></div></div><button class="ss4-btn" onclick="ss4Profile()">View profile →</button></div>
-        <div class="ss4-progress"><div class="ss4-progress-row"><span>Profile strength</span><span id="ss4ProfilePct">0%</span></div><div class="ss4-track"><div class="ss4-fill" id="ss4ProfileFill"></div></div></div>
-        <div class="ss4-statgrid"><div class="ss4-stat"><b id="ss4XP">0</b><span>XP earned</span></div><div class="ss4-stat"><b id="ss4Level">1</b><span>Level</span></div><div class="ss4-stat"><b id="ss4Matches">0</b><span>Best matches</span></div><div class="ss4-stat"><b id="ss4Streak">0</b><span>Day streak</span></div></div>
-      </div>
-
-      <div class="ss4-nav"><button onclick="ss4Discover()">🔎 Discover</button><button onclick="ss4Chat()">💬 Messages</button><button onclick="ss4Sessions()">📅 Sessions</button><button onclick="ss4Requests()">🤝 Requests</button><button onclick="ss4Profile()">👤 Profile</button></div>
-
-      <div class="ss4-card"><div class="ss4-section-head"><h3>Recommended for you</h3><span class="ss4-link" onclick="ss4Discover()">See all</span></div><div class="ss4-list" id="ss4Recommendations"><div class="ss4-row"><div class="ss4-mini">★</div><div class="ss4-row-main"><b>Finding your best matches…</b><p>Personalized recommendations will appear here.</p></div><span class="ss4-pill">Smart match</span></div></div></div>
-
-      <div class="ss4-card" style="margin-top:18px"><div class="ss4-section-head"><h3>Weekly activity</h3><span class="ss4-link">Last 7 days</span></div><div class="ss4-chart" aria-label="Weekly activity chart"><div class="ss4-bar" style="--h:35%"></div><div class="ss4-bar" style="--h:52%"></div><div class="ss4-bar" style="--h:42%"></div><div class="ss4-bar" style="--h:74%"></div><div class="ss4-bar" style="--h:62%"></div><div class="ss4-bar" style="--h:88%"></div><div class="ss4-bar" style="--h:68%"></div></div><div style="display:flex;justify-content:space-between;color:var(--ss4-muted);font-size:10px"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div></div>
-    </main>
-
-    <aside class="ss4-right">
-      <div class="ss4-card"><div class="ss4-center"><div class="ss4-ring" id="ss4CompletionRing"><span id="ss4Completion">0%</span></div><h3>Profile completion</h3><p>Complete your profile to get better matches.</p></div><div class="ss4-steps" style="margin-top:16px"><div class="ss4-step pending"><span class="ss4-check">+</span><span>Add your skills</span></div><div class="ss4-step pending"><span class="ss4-check">+</span><span>Add what you want to learn</span></div><div class="ss4-step pending"><span class="ss4-check">+</span><span>Add a profile headline</span></div><div class="ss4-step pending"><span class="ss4-check">+</span><span>Verify your profile</span></div></div></div>
-      <div class="ss4-card"><div class="ss4-section-head"><h3>Momentum</h3><span class="ss4-pill">This week</span></div><div class="ss4-list"><div class="ss4-row"><div class="ss4-mini">🔥</div><div class="ss4-row-main"><b>Keep your streak alive</b><p>Make one meaningful learning action today.</p></div></div><div class="ss4-row"><div class="ss4-mini">⚡</div><div class="ss4-row-main"><b>Earn more XP</b><p>Connect, teach, learn and complete sessions.</p></div></div><div class="ss4-row"><div class="ss4-mini">🏆</div><div class="ss4-row-main"><b>Unlock achievements</b><p>Build your reputation through helpful exchanges.</p></div></div></div></div>
-      <div class="ss4-card"><div class="ss4-section-head"><h3>Quick actions</h3></div><div class="ss4-list"><button class="ss4-btn" onclick="ss4EditProfile()">✏️ Improve my profile</button><button class="ss4-btn" onclick="ss4Discover()">🎯 Find best matches</button><button class="ss4-btn" onclick="ss4Sessions()">📅 Plan a session</button></div></div>
-    </aside>
-  </div>
-</section>
-<div id="ss4Toast" class="ss4-toast"></div>
 
 <script id="skillswap-4-js">
 (function(){
