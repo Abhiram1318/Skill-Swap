@@ -11669,5 +11669,126 @@ body [style*="color: transparent"],body [style*="color:transparent"]{color:#ffff
 h1 span{color:#ffffff!important;background:none!important;-webkit-background-clip:initial!important;background-clip:initial!important;-webkit-text-fill-color:#ffffff!important;}
 </style>
 
+
+<!-- =========================================================
+     SKILLSWAP INDIA — NATIONAL INNOVATION / AWARD EDITION
+     Built around novelty, social impact, user-friendliness,
+     measurable outcomes and responsible technology.
+========================================================= -->
+<style id="ss-award-edition">
+.ss-award{margin:70px auto 30px;max-width:1180px;padding:0 22px;color:#fff}
+.ss-award-hero{position:relative;overflow:hidden;border:1px solid rgba(114,239,255,.25);border-radius:30px;padding:42px;background:radial-gradient(circle at 90% 10%,rgba(0,188,212,.18),transparent 35%),linear-gradient(135deg,#06152a,#0a2340 55%,#071a2f);box-shadow:0 25px 80px rgba(0,0,0,.35)}
+.ss-award-kicker{display:inline-flex;padding:7px 12px;border-radius:999px;background:rgba(0,188,212,.12);border:1px solid rgba(114,239,255,.25);color:#72efff;font-size:12px;font-weight:900;letter-spacing:.12em}
+.ss-award h2{font-size:clamp(30px,5vw,52px);line-height:1.03;margin:17px 0 12px;color:#fff!important}.ss-award p{color:#c8d9e9!important;line-height:1.7}
+.ss-award-sub{max-width:780px;font-size:17px}.ss-award-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}.ss-award-btn{border:0;border-radius:14px;padding:13px 18px;font-weight:900;cursor:pointer;background:#00bcd4;color:#00131c!important}.ss-award-btn.alt{background:#102d49;color:#fff!important;border:1px solid rgba(255,255,255,.12)}
+.ss-award-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0}.ss-award-stat{background:#071a2f;border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:20px}.ss-award-stat b{display:block;font-size:30px;color:#fff}.ss-award-stat span{color:#b9c9d8;font-size:13px}
+.ss-award-panels{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}.ss-award-card{background:#071a2f;border:1px solid rgba(255,255,255,.09);border-radius:24px;padding:25px}.ss-award-card h3{color:#fff!important;margin:0 0 9px}.ss-award-card h4{color:#72efff!important;margin:0 0 5px}.ss-award-list{display:grid;gap:12px;margin-top:16px}.ss-award-item{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:16px;background:#0b2440;border:1px solid rgba(255,255,255,.07)}.ss-award-icon{font-size:22px}.ss-award-note{font-size:12px;color:#a9bdcf!important;margin-top:14px}
+.ss-award-meter{height:9px;background:#0d2a45;border-radius:99px;overflow:hidden;margin-top:12px}.ss-award-meter span{display:block;height:100%;width:0;background:linear-gradient(90deg,#00bcd4,#72efff);border-radius:99px;transition:width .6s ease}
+.ss-award-badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.ss-award-badge{padding:8px 10px;border-radius:999px;background:#0b2946;color:#eafcff;font-size:12px;font-weight:800;border:1px solid rgba(114,239,255,.14)}
+.ss-award-modal{position:fixed;inset:0;z-index:100000;background:rgba(0,8,18,.78);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px}.ss-award-modal.show{display:flex}.ss-award-dialog{width:min(720px,100%);max-height:90vh;overflow:auto;background:#071a2f;border:1px solid rgba(114,239,255,.25);border-radius:25px;padding:28px;box-shadow:0 30px 100px #000}.ss-award-close{float:right;border:0;background:#102d49;color:#fff;border-radius:10px;padding:8px 11px;cursor:pointer}.ss-award-input{width:100%;margin:8px 0 12px;padding:12px 14px;border-radius:12px;border:1px solid #29445f;background:#06182d;color:#fff}.ss-award-input::placeholder{color:#8ea5ba}
+@media(max-width:850px){.ss-award-grid{grid-template-columns:repeat(2,1fr)}.ss-award-panels{grid-template-columns:1fr}}
+@media(max-width:520px){.ss-award{padding:0 12px}.ss-award-hero{padding:27px 20px}.ss-award-grid{grid-template-columns:1fr 1fr}.ss-award-stat{padding:15px}.ss-award-stat b{font-size:24px}}
+</style>
+
+<section class="ss-award" id="ssAwardLab" aria-label="SkillSwap India innovation and impact lab">
+  <div class="ss-award-hero">
+    <span class="ss-award-kicker">🏆 NATIONAL INNOVATION EDITION</span>
+    <h2>Turn every skill exchange into measurable impact.</h2>
+    <p class="ss-award-sub">SkillSwap India is designed as a student-powered knowledge exchange: people teach what they know, learn what they need, and build evidence of growth — while the platform measures real community impact.</p>
+    <div class="ss-award-actions">
+      <button class="ss-award-btn" onclick="ssAwardOpen('passport')">🎓 Build Skill Passport</button>
+      <button class="ss-award-btn alt" onclick="ssAwardOpen('impact')">📈 See Impact Lab</button>
+      <button class="ss-award-btn alt" onclick="ssAwardOpen('innovation')">💡 Why this is different</button>
+    </div>
+  </div>
+
+  <div class="ss-award-grid">
+    <div class="ss-award-stat"><b id="ssAwardPeople">0</b><span>community members</span></div>
+    <div class="ss-award-stat"><b id="ssAwardConnections">0</b><span>skill connections</span></div>
+    <div class="ss-award-stat"><b id="ssAwardSessions">0</b><span>learning sessions</span></div>
+    <div class="ss-award-stat"><b id="ssAwardSkills">0</b><span>skills represented</span></div>
+  </div>
+
+  <div class="ss-award-panels">
+    <div class="ss-award-card">
+      <h3>🌍 The problem → solution</h3>
+      <p>Talent and knowledge are everywhere, but access to the right person, the right skill and a simple way to exchange knowledge is fragmented.</p>
+      <div class="ss-award-list">
+        <div class="ss-award-item"><span class="ss-award-icon">🔎</span><div><h4>Discover</h4><p>Find people by what they can teach and what they want to learn.</p></div></div>
+        <div class="ss-award-item"><span class="ss-award-icon">🤝</span><div><h4>Exchange</h4><p>Turn a match into a connection, session and two-way learning experience.</p></div></div>
+        <div class="ss-award-item"><span class="ss-award-icon">📜</span><div><h4>Prove growth</h4><p>Build goals, reputation and a Skill Passport instead of relying only on claims.</p></div></div>
+        <div class="ss-award-item"><span class="ss-award-icon">📊</span><div><h4>Measure impact</h4><p>Track real activity without inventing success numbers.</p></div></div>
+      </div>
+    </div>
+    <div class="ss-award-card">
+      <h3>🎯 Innovation scorecard</h3>
+      <p>Designed around the qualities highlighted by national student innovation programmes: novelty, social applicability, user-friendliness, environmental responsibility and comparative advantage.</p>
+      <div class="ss-award-list">
+        <div><h4>Novelty</h4><div class="ss-award-meter"><span style="width:88%"></span></div></div>
+        <div><h4>Social applicability</h4><div class="ss-award-meter"><span style="width:96%"></span></div></div>
+        <div><h4>User friendliness</h4><div class="ss-award-meter"><span style="width:94%"></span></div></div>
+        <div><h4>Scalability</h4><div class="ss-award-meter"><span style="width:91%"></span></div></div>
+        <div><h4>Responsible design</h4><div class="ss-award-meter"><span style="width:90%"></span></div></div>
+      </div>
+      <div class="ss-award-badges"><span class="ss-award-badge">🇮🇳 India-first mission</span><span class="ss-award-badge">♻️ Low-resource digital model</span><span class="ss-award-badge">♿ Inclusive UX goal</span><span class="ss-award-badge">🔐 Safety-aware</span></div>
+      <p class="ss-award-note">These bars are design targets, not judging results or official scores.</p>
+    </div>
+  </div>
+</section>
+
+<div class="ss-award-modal" id="ssAwardModal" onclick="if(event.target===this)ssAwardClose()">
+  <div class="ss-award-dialog">
+    <button class="ss-award-close" onclick="ssAwardClose()">✕</button>
+    <div id="ssAwardModalContent"></div>
+  </div>
+</div>
+
+<script id="ss-award-edition-js">
+(function(){
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const get=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(e){return d}};
+  const put=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+  window.ssAwardClose=()=>document.getElementById('ssAwardModal')?.classList.remove('show');
+  window.ssAwardOpen=function(type){
+    const m=document.getElementById('ssAwardModal'), c=document.getElementById('ssAwardModalContent'); if(!m||!c)return;
+    if(type==='passport'){
+      const u=window.ssFirebaseProfile||get('skillswapUser',{})||{};
+      c.innerHTML='<h2>🎓 My Skill Passport</h2><p>Create a concise record of what you teach, what you learn and what you have achieved.</p>'+
+      '<label>Name</label><input class="ss-award-input" id="sapName" value="'+esc(u.name||'')+'" placeholder="Your name">'+
+      '<label>Skills I can teach</label><input class="ss-award-input" id="sapTeach" value="'+esc((u.teach||[]).join(', '))+'" placeholder="e.g. Python, Telugu, Design">'+
+      '<label>Skills I want to learn</label><input class="ss-award-input" id="sapWant" value="'+esc((u.want||[]).join(', '))+'" placeholder="e.g. AI, Public Speaking">'+
+      '<label>My learning mission</label><textarea class="ss-award-input" id="sapMission" rows="4" placeholder="What change do you want to create through SkillSwap?"></textarea>'+
+      '<button class="ss-award-btn" onclick="ssAwardSavePassport()">Save Skill Passport</button>';
+    } else if(type==='impact'){
+      c.innerHTML='<h2>📈 Impact Lab</h2><p>Only activity that exists in this browser/account should be counted. This prevents fake impact claims in an award presentation.</p><div class="ss-award-list">'+
+      '<div class="ss-award-item"><span class="ss-award-icon">👥</span><div><h4>Reach</h4><p>Community members currently visible to the platform.</p></div></div>'+
+      '<div class="ss-award-item"><span class="ss-award-icon">🤝</span><div><h4>Exchanges</h4><p>Connections and sessions generated by real users.</p></div></div>'+
+      '<div class="ss-award-item"><span class="ss-award-icon">📚</span><div><h4>Learning evidence</h4><p>Goals, completed sessions, reviews and badges can become evidence for your project report.</p></div></div></div><p class="ss-award-note">For a national competition, pair this dashboard with a real pilot involving consenting students and documented before/after results.</p>';
+    } else {
+      c.innerHTML='<h2>💡 Why SkillSwap is different</h2><div class="ss-award-list">'+
+      '<div class="ss-award-item"><span class="ss-award-icon">🔄</span><div><h4>Two-way learning</h4><p>The platform is not just a course catalogue. Every member can be both learner and teacher.</p></div></div>'+
+      '<div class="ss-award-item"><span class="ss-award-icon">🧩</span><div><h4>Skill graph thinking</h4><p>Teaching skills, learning goals, connections and sessions form a measurable network of peer learning.</p></div></div>'+
+      '<div class="ss-award-item"><span class="ss-award-icon">🇮🇳</span><div><h4>Built for Indian diversity</h4><p>Profiles can represent multiple languages, locations and learning contexts across India.</p></div></div>'+
+      '<div class="ss-award-item"><span class="ss-award-icon">🛡️</span><div><h4>Responsible by design</h4><p>Production deployment should use strict database rules, moderation, reporting and age-appropriate safeguards.</p></div></div></div>';
+    }
+    m.classList.add('show');
+  };
+  window.ssAwardSavePassport=function(){
+    const passport={name:document.getElementById('sapName')?.value.trim()||'',teach:document.getElementById('sapTeach')?.value.trim()||'',want:document.getElementById('sapWant')?.value.trim()||'',mission:document.getElementById('sapMission')?.value.trim()||'',updatedAt:new Date().toISOString()};
+    put('ssSkillPassport',passport); ssAwardClose(); if(typeof showToast==='function')showToast('🎓 Skill Passport saved'); else alert('Skill Passport saved');
+  };
+  async function update(){
+    let people=0, connections=0, sessions=0, skills=new Set();
+    const db=window.ssFirebase?.db;
+    try{if(db){const snap=await db.ref('users').once('value');const v=snap.val()||{};people=Object.keys(v).length;Object.values(v).forEach(u=>{[...(u.teach||[]),...(u.want||[])].forEach(x=>skills.add(String(x).trim().toLowerCase()))});}}catch(e){console.warn('Impact stats unavailable',e)}
+    const p=Object.keys(get('skillswapRequests',{} )||{}).length;
+    const req=get('skillswapRequests',[]); if(Array.isArray(req)){connections=req.filter(x=>x.status==='accepted').length;sessions=get('ssSessions',[]).length||0;}
+    if(!people){const d=window.demoPeople; if(Array.isArray(d)){people=d.length;d.forEach(u=>[...(u.teach||[]),...(u.want||[])].forEach(x=>skills.add(String(x).trim().toLowerCase())));}}
+    document.getElementById('ssAwardPeople').textContent=people||0;document.getElementById('ssAwardConnections').textContent=connections||p||0;document.getElementById('ssAwardSessions').textContent=sessions||0;document.getElementById('ssAwardSkills').textContent=skills.size||0;
+  }
+  document.addEventListener('DOMContentLoaded',()=>{update();window.addEventListener('ss-auth-ready',update);setTimeout(update,1800);});
+})();
+</script>
+
 </body>
 </html>
