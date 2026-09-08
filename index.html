@@ -2582,6 +2582,91 @@ body.dark-mode .small-btn.primary{
 }
 </style>
 
+
+<style id="skillswap-force-light-blue-mode">
+/* SkillSwap — light-blue mode */
+html,
+body{
+  background:
+    radial-gradient(circle at 10% 5%, rgba(0,229,255,.28), transparent 30rem),
+    radial-gradient(circle at 90% 12%, rgba(65,180,255,.22), transparent 28rem),
+    linear-gradient(135deg,#e9fcff 0%,#d8f7ff 35%,#c4efff 68%,#e5f8ff 100%) !important;
+  color:#06233f !important;
+}
+
+/* Keep the interface light rather than switching to dark mode */
+body.dark-mode,
+body.dark,
+html.dark,
+body[data-theme="dark"]{
+  background:
+    radial-gradient(circle at 10% 5%, rgba(0,210,255,.24), transparent 30rem),
+    radial-gradient(circle at 90% 12%, rgba(55,150,240,.18), transparent 28rem),
+    linear-gradient(135deg,#f2fdff 0%,#e1f8ff 35%,#cfefff 68%,#edfaff 100%) !important;
+  color:#06233f !important;
+}
+
+/* Light glass cards */
+.card,.profile-card,.feature-card,.ss-hub-card,.modal-content,
+section,.panel,.dashboard-card,.skill-card,.community-card{
+  background:rgba(255,255,255,.76) !important;
+  color:#06233f !important;
+  border-color:rgba(0,128,180,.18) !important;
+  box-shadow:0 12px 30px rgba(0,70,110,.10) !important;
+}
+
+input,textarea,select{
+  background:rgba(255,255,255,.88) !important;
+  color:#06233f !important;
+  border-color:rgba(0,130,180,.25) !important;
+}
+
+label,p,.description,.bio,.muted,.secondary-text{
+  color:#244b68 !important;
+}
+
+/* Dark-blue buttons */
+button,.btn,.join,.search-btn,.match-btn,.connect,.modal-submit,
+.cta button,.small-btn.primary,.chat-input button,.ss-btn,.primary{
+  background:linear-gradient(135deg,#052b5b,#0a4d8f) !important;
+  color:#f2fcff !important;
+  border-color:#0b4d88 !important;
+}
+button:hover,.btn:hover,.join:hover,.search-btn:hover,.match-btn:hover,
+.connect:hover,.modal-submit:hover,.cta button:hover,.small-btn.primary:hover,
+.chat-input button:hover,.ss-btn:hover,.primary:hover{
+  background:linear-gradient(135deg,#07366f,#0d61a9) !important;
+  color:#fff !important;
+}
+
+/* Cyan highlights */
+a,.link,.nav-link{color:#007f9f !important;}
+.skill-tag,.tag,.badge{
+  background:rgba(0,190,220,.12) !important;
+  color:#006b83 !important;
+  border-color:rgba(0,160,190,.25) !important;
+}
+
+/* Availability choices remain clearly visible */
+.checkbox-grid .check-option,
+.check-grid .check-option{
+  color:#123c58 !important;
+  background:linear-gradient(135deg,rgba(0,188,212,.10),rgba(0,150,220,.06)) !important;
+  border-color:rgba(0,130,180,.22) !important;
+  opacity:1 !important;
+}
+.checkbox-grid .check-option input,
+.check-grid .check-option input{
+  accent-color:#006fb2 !important;
+}
+
+/* Footer */
+footer{
+  background:rgba(230,250,255,.78) !important;
+  color:#244b68 !important;
+}
+</style>
+
 </head>
 
 <body>
