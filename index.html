@@ -2897,6 +2897,27 @@ body.dark-mode .theme-btn{color:#e7f1ff!important}
 .logout-btn{background:#082448!important;color:#e7f1ff!important}
 </style>
 
+<style id="skillswap-final-hard-fix">
+html,body{background:#061a36!important;color:#f4f8ff!important}
+body{background:linear-gradient(145deg,#020b1b 0%,#061a36 48%,#0a2b56 100%)!important;background-attachment:fixed!important}
+body:before,body:after{background:none!important}
+header,nav,.navbar,.topbar,.top-nav{background:rgba(2,11,27,.96)!important;color:#f4f8ff!important}
+.hero{background:linear-gradient(145deg,#020b1b 0%,#061a36 50%,#0a2b56 100%)!important;color:#f4f8ff!important}
+.card,.profile-card,.feature-card,.ss-hub-card,.modal-content,section,.panel,.dashboard-card,.skill-card,.community-card,.ss-hub-item,.person-card,.modal,.dialog,.request-item,.connection-item,.filter-bar,.search-container,.filters,.teen-banner{background:linear-gradient(145deg,rgba(8,30,61,.96),rgba(5,22,47,.98))!important;color:#eaf4ff!important;border-color:rgba(110,158,213,.22)!important}
+h1,h2,h3,h4,h5,h6,strong,b{color:#f7fbff!important}
+p,li,label,span,small,div{color:inherit}
+a{color:#7fc0ff!important}
+input,textarea,select{background:#061a36!important;color:#f5f9ff!important;border-color:#2a5a91!important}
+input::placeholder,textarea::placeholder{color:#9db5d0!important;opacity:1!important}
+button,.btn,.join,.signin,.connect,.primary,.ss-btn,.logout-btn{background:linear-gradient(145deg,#061d3d,#0a376d)!important;color:#f7fbff!important;border-color:#164b86!important}
+.logout-btn{cursor:pointer!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;opacity:1!important;visibility:visible!important}
+#ssLogoutConfirmModal{position:fixed!important;inset:0!important;display:none!important;align-items:center!important;justify-content:center!important;z-index:2147483647!important;background:rgba(0,4,14,.90)!important;backdrop-filter:blur(10px)!important;padding:20px!important}
+#ssLogoutConfirmModal.show{display:flex!important}
+#ssLogoutConfirmModal .ss-logout-dialog{display:block!important;width:min(440px,100%)!important;background:linear-gradient(145deg,#0b2b56,#061a36)!important;color:#f7fbff!important;border:1px solid #2b6098!important;border-radius:20px!important;padding:28px!important;box-shadow:0 24px 80px rgba(0,0,0,.65)!important}
+#ssLogoutConfirmModal h2{color:#fff!important;margin:0 0 10px!important}
+#ssLogoutConfirmModal p{color:#d7e7f8!important;margin:0 0 22px!important}
+#ssLogoutConfirmModal button{min-width:110px!important}
+</style>
 </head>
 
 <body>
@@ -2945,7 +2966,7 @@ body.dark-mode .theme-btn{color:#e7f1ff!important}
     <button
         class="logout-btn"
         type="button"
-        onclick="return confirmLogout(event)">
+        onclick="return confirmLogout(event)" onclick="return confirmLogout(event)">
         Log out
     </button>
 
@@ -5921,23 +5942,12 @@ async function logout(){
 }
 
 function confirmLogout(event){
-    if(event){
-        event.preventDefault();
-        event.stopPropagation();
-    }
-
+    if(event){ event.preventDefault(); event.stopPropagation(); }
     const modal=document.getElementById("ssLogoutConfirmModal");
-    if(!modal){
-        return false;
-    }
-
+    if(!modal){ return window.confirm("Are you sure you want to log out of SkillSwap India?") ? logout() : false; }
     modal.classList.add("show");
     modal.setAttribute("aria-hidden","false");
     document.body.style.overflow="hidden";
-
-    const cancel=document.getElementById("ssLogoutCancelBtn");
-    if(cancel)setTimeout(()=>cancel.focus(),50);
-
     return false;
 }
 
@@ -7254,37 +7264,9 @@ document.addEventListener("DOMContentLoaded",()=>{
 <style>.ss-mobile-cta{display:none}@media(max-width:680px){.ss-mobile-cta{display:block;position:fixed;left:12px;right:12px;bottom:12px;z-index:9999}.ss-mobile-cta button{width:100%;height:50px;border:0;border-radius:15px;background:#126b57;color:white;font-weight:850;box-shadow:0 12px 35px #092e2530}}</style><div class="ss-mobile-cta"><button onclick="ssOpenAuth('signup');return false">Join SkillSwap — Free →</button></div>
 <script id="skillswap-elite-js">
 (function(){
-  const applyTheme=(dark)=>{
-    document.body.classList.toggle("dark-mode",dark);
-    ["themeToggle","themeToggleLogged"].forEach(id=>{
-      const b=document.getElementById(id);
-      if(b) b.textContent=dark?"☀":"☾";
-    });
-  };
-  const saved=ssMemoryStorage.getItem("skillswapTheme");
-  applyTheme(saved==="dark");
-  ["themeToggle","themeToggleLogged"].forEach(id=>{
-    const b=document.getElementById(id);
-    if(b) b.addEventListener("click",()=>{
-      const dark=!document.body.classList.contains("dark-mode");
-      ssMemoryStorage.setItem("skillswapTheme",dark?"dark":"light");
-      applyTheme(dark);
-    });
-  });
-  const observer=new IntersectionObserver((entries)=>{
-    entries.forEach(e=>{
-      if(e.isIntersecting){
-        e.target.style.opacity="1";
-        e.target.style.transform="translateY(0)";
-        observer.unobserve(e.target);
-      }
-    });
-  },{threshold:.08});
-  document.querySelectorAll(".feature-card,.person-card,.dashboard-card,.ss-feature,.ss-quote").forEach(el=>{
-    el.style.opacity="0";el.style.transform="translateY(12px)";
-    el.style.transition="opacity .45s ease,transform .45s ease";
-    observer.observe(el);
-  });
+  document.documentElement.classList.remove("light-mode");
+  document.body.classList.remove("light-mode","light","theme-light");
+  document.body.classList.add("dark-mode");
 })();
 window.addEventListener("keydown",e=>{
     if(e.key==="Escape"){
@@ -7678,7 +7660,7 @@ window.addEventListener("keydown",e=>{
       ['🤝','Open requests & connections',()=>goTo('#requestsSection','Opening requests & connections')],
       ['🔔','Open notifications',()=>goTo('#notificationsList','Opening notifications')],
       ['🏆','Open achievements',()=>goTo('#skillswap2','Opening your progress')],
-      ['🌙','Dark blue theme',()=>{const b=document.getElementById('themeToggleLogged')||document.getElementById('themeToggle');b?.click()}],
+      
       ['↻','Refresh dashboard',()=>window.ss4Refresh?.()]
     ];
     const box=document.getElementById('ss3Commands');
@@ -11492,3 +11474,13 @@ input::placeholder,textarea::placeholder{
   setTimeout(killMenus,1000);
 })();
 </script>
+<div id="ssLogoutConfirmModal" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="ss-logout-dialog">
+    <h2>Log out?</h2>
+    <p>Are you sure you want to log out of SkillSwap India?</p>
+    <div style="display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap">
+      <button id="ssLogoutCancelBtn" type="button" onclick="closeLogoutConfirm()">Cancel</button>
+      <button id="ssLogoutConfirmBtn" type="button" onclick="closeLogoutConfirm();logout()">Log out</button>
+    </div>
+  </div>
+</div>
