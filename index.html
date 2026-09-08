@@ -4433,252 +4433,110 @@ function renderMatches(people=demoPeople){
 ========================================================= */
 
 async function signUp(){
+    const button=document.querySelector('#signupForm .modal-submit');
+    const get=id=>document.getElementById(id);
+    const name=(get('signupName')?.value||'').trim();
+    const email=(get('signupEmail')?.value||'').trim().toLowerCase();
+    const password=get('signupPassword')?.value||'';
+    const type=get('signupType')?.value||'Other Learner';
+    const location=(get('signupLocation')?.value||'').trim();
+    const languages=(get('signupLanguages')?.value||'').trim();
+    const bio=(get('signupBio')?.value||'').trim();
+    const teach=(get('signupSkill')?.value||'').trim();
+    const want=(get('signupWanted')?.value||'').trim();
+    const availability=[...document.querySelectorAll('#signupForm input[name="availability"]:checked')].map(x=>x.value);
 
-    const name=
-        document
-        .getElementById("signupName")
-        .value
-        .trim();
-
-    const email=
-        document
-        .getElementById("signupEmail")
-        .value
-        .trim()
-        .toLowerCase();
-
-    const password=
-        document
-        .getElementById("signupPassword")
-        .value;
-
-    const type=
-        document
-        .getElementById("signupType")
-        .value;
-
-    const location=
-        document
-        .getElementById("signupLocation")
-        .value
-        .trim();
-
-    const languages=
-        document
-        .getElementById("signupLanguages")
-        .value
-        .trim();
-
-    const bio=
-        document
-        .getElementById("signupBio")
-        .value
-        .trim();
-
-    const teach=
-        document
-        .getElementById("signupSkill")
-        .value
-        .trim();
-
-    const want=
-        document
-        .getElementById("signupWanted")
-        .value
-        .trim();
-
-
-    const availability=[
-        ...document.querySelectorAll(
-            'input[name="availability"]:checked'
-        )
-    ].map(x=>x.value);
-
-
-    if(!name || !email || !password){
-
-        showToast(
-            "Please fill in your name, email and password."
-        );
-
-        return;
-    }
-
-
-    if(password.length<6){
-
-        showToast(
-            "Password must be at least 6 characters."
-        );
-
-        return;
-    }
-
-
-    /* Try Flask backend first */
-
-    try{
-
-        const data=await api(
-            "/api/signup",
-            {
-                method:"POST",
-                body:JSON.stringify({
-
-                    name,
-                    email,
-                    password,
-                    type,
-                    location,
-                    languages,
-                    bio,
-                    teach,
-                    want,
-                    availability
-
-                })
-            }
-        );
-
-
-        if(data.success){
-
-            ssMemoryStorage.setItem("skillswapUser", JSON.stringify(data.user));
-
-            closeModal("authModal");
-
-            updateUserUI();
-
-            renderEverything();
-
-            showToast(
-                "🎉 Welcome to SkillSwap India, "+name+"!"
-            );
-
-            return;
-
+    const show=(msg,kind='error')=>{
+        let box=document.getElementById('ssSignupStatus');
+        if(!box){
+            box=document.createElement('div');
+            box.id='ssSignupStatus';
+            box.setAttribute('role','alert');
+            const form=get('signupForm');
+            form?.insertBefore(box,form.querySelector('.modal-submit'));
         }
-
-    }catch(error){
-
-        console.warn(
-            "Backend signup unavailable. Using local fallback.",
-            error
-        );
-
-    }
-
-
-    /* Local fallback */
-
-    let users={};
-
-    try{
-
-        users=
-            JSON.parse(
-                ssMemoryStorage.getItem(
-                    "skillswapUsers"
-                ) || "{}"
-            );
-
-    }catch{
-
-        users={};
-
-    }
-
-
-    if(users[email]){
-
-        showToast(
-            "An account with this email already exists."
-        );
-
-        return;
-    }
-
-
-    const user={
-
-        id:"user_"+Date.now(),
-
-        name,
-        email,
-        password,
-        type,
-
-        location:
-            location || "Online",
-
-        languages:
-            languages
-                ? languages
-                    .split(",")
-                    .map(x=>x.trim())
-                : ["English"],
-
-        bio:
-            bio ||
-            "Learning and sharing skills.",
-
-        teach:
-            teach
-                ? teach
-                    .split(",")
-                    .map(x=>x.trim())
-                    .filter(Boolean)
-                : ["Knowledge Sharing"],
-
-        want:
-            want
-                ? want
-                    .split(",")
-                    .map(x=>x.trim())
-                    .filter(Boolean)
-                : ["Something New"],
-
-        availability:
-            availability.length
-                ? availability
-                : ["Flexible"],
-
-        avatar:"🧑🏻",
-
-        rating:0,
-
-        reviews:0
-
+        box.className='ss-signup-status '+kind;
+        box.textContent=msg;
+        box.scrollIntoView({behavior:'smooth',block:'nearest'});
     };
 
+    if(!name){show('Please enter your name.');get('signupName')?.focus();return;}
+    if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){show('Please enter a valid email address.');get('signupEmail')?.focus();return;}
+    if(password.length<6){show('Your password must be at least 6 characters.');get('signupPassword')?.focus();return;}
+    if(password.length>128){show('Your password is too long. Please use 128 characters or fewer.');return;}
+    if(!window.ssFirebaseReady || !window.ssFirebaseAuth || !window.ssFirebase){
+        show('Firebase is not ready. Please refresh the page and try again.');
+        console.error('SkillSwap signup: Firebase unavailable',window.ssFirebaseError);
+        return;
+    }
 
-    users[email]=user;
+    if(button){
+        button.disabled=true;
+        button.dataset.originalText=button.textContent;
+        button.textContent='Creating your account…';
+    }
+    show('Creating your secure SkillSwap account…','loading');
 
+    try{
+        // Use Firebase Auth directly. This avoids depending on any old Flask/local-demo fallback.
+        const cred=await window.ssFirebaseAuth.createUserWithEmailAndPassword(email,password);
+        const uid=cred.user.uid;
+        const legacyId=Date.now()+Math.floor(Math.random()*1000);
+        const profile={
+            uid,
+            id:legacyId,
+            legacyId,
+            name,
+            email:cred.user.email||email,
+            type,
+            location:location||'Online',
+            languages:languages.split(',').map(x=>x.trim()).filter(Boolean).slice(0,12),
+            bio:bio||'Learning and sharing skills.',
+            teach:teach.split(',').map(x=>x.trim()).filter(Boolean).slice(0,20),
+            want:want.split(',').map(x=>x.trim()).filter(Boolean).slice(0,20),
+            availability:availability.length?availability:['Flexible'],
+            avatar:'🧑🏻',
+            rating:0,
+            reviews:0,
+            created_at:new Date().toISOString()
+        };
+        if(!profile.languages.length)profile.languages=['English'];
+        if(!profile.teach.length)profile.teach=['Knowledge Sharing'];
+        if(!profile.want.length)profile.want=['Something New'];
 
-    ssMemoryStorage.setItem(
-        "skillswapUsers",
-        JSON.stringify(users)
-    );
+        await window.ssFirebase.db.ref('users/'+uid).set(profile);
+        window.ssFirebaseProfile=profile;
+        try{window.ssMemoryStorage.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
 
-
-    ssMemoryStorage.setItem(
-        "skillswapUser",
-        JSON.stringify(user)
-    );
-
-
-    closeModal("authModal");
-
-    updateUserUI();
-
-    renderEverything();
-
-    showToast(
-        "🎉 Welcome to SkillSwap India, "+name+"!"
-    );
-
+        // Firebase LOCAL persistence keeps the authenticated session across reloads.
+        document.body.classList.add('ss-authenticated');
+        if(typeof setAppState==='function')setAppState(true);
+        closeModal('authModal');
+        updateUserUI();
+        if(typeof renderEverything==='function')await renderEverything();
+        if(typeof refreshProDashboard==='function')refreshProDashboard();
+        showToast('🎉 Welcome to SkillSwap India, '+name+'! Your account is ready.');
+    }catch(error){
+        console.error('SkillSwap Firebase signup error:',error);
+        const code=String(error?.code||'');
+        const message=String(error?.message||'');
+        let friendly='We could not create your account. Please try again.';
+        if(code==='auth/email-already-in-use')friendly='An account with this email already exists. Please sign in instead.';
+        else if(code==='auth/invalid-email')friendly='Please enter a valid email address.';
+        else if(code==='auth/weak-password')friendly='Choose a stronger password with at least 6 characters.';
+        else if(code==='auth/operation-not-allowed')friendly='Email/password sign-up is not enabled in Firebase. Enable Email/Password under Firebase Authentication → Sign-in method.';
+        else if(code==='auth/network-request-failed')friendly='Network connection failed. Check your internet connection and try again.';
+        else if(code==='auth/too-many-requests')friendly='Too many attempts were made. Please wait a few minutes and try again.';
+        else if(message.toLowerCase().includes('permission_denied'))friendly='Firebase Database permission was denied. Please publish the SkillSwap Realtime Database rules.';
+        else if(message)friendly=message.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,'');
+        show(friendly);
+    }finally{
+        if(button){
+            button.disabled=false;
+            button.textContent=button.dataset.originalText||'Create my profile';
+        }
+    }
 }
-
 
 /* =========================================================
    SIGN IN
@@ -10413,5 +10271,183 @@ body.dark-mode .ss-rating-box textarea{background:#0d211c;color:#eaf7f2;border-c
   // Keep the authenticated app hidden until Firebase restores a real session.
   // This prevents the public home from reappearing after a reload.
   setTimeout(function(){setAppState(!!user());},1200);
+})();
+</script>
+
+
+<style id="ssSignupPremiumUpgrade">
+#signupForm{position:relative}
+#signupForm .modal-submit{width:100%;min-height:52px;background:linear-gradient(135deg,#168cff,#36c7ff)!important;color:#fff!important;border:1px solid rgba(111,208,255,.35)!important;box-shadow:0 12px 35px rgba(20,130,255,.28)!important}
+#signupForm .modal-submit:disabled{opacity:.72;cursor:wait;transform:none}
+#signupForm input,#signupForm select,#signupForm textarea{border:1px solid rgba(102,190,255,.25)!important;background:rgba(4,18,43,.82)!important;color:#edf8ff!important}
+#signupForm input:focus,#signupForm select:focus,#signupForm textarea:focus{border-color:#48c5ff!important;box-shadow:0 0 0 4px rgba(56,179,255,.12),0 8px 25px rgba(0,0,0,.15)!important}
+#signupForm label{color:#bcd2e9}
+#signupForm h2{font-size:clamp(26px,4vw,34px);background:linear-gradient(90deg,#f3fbff,#65ccff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ss-signup-status{margin:12px 0;padding:12px 14px;border-radius:13px;font-size:13px;line-height:1.45;border:1px solid rgba(255,255,255,.10)}
+.ss-signup-status.error{background:rgba(255,80,105,.10);color:#ffd1d9;border-color:rgba(255,100,120,.24)}
+.ss-signup-status.loading{background:rgba(54,183,255,.10);color:#bceaff;border-color:rgba(74,194,255,.22)}
+.ss-signup-status.success{background:rgba(54,220,151,.10);color:#c9ffe8;border-color:rgba(54,220,151,.22)}
+#signupForm .safety-note{background:rgba(54,183,255,.08)!important;color:#b7d8ef!important;border:1px solid rgba(74,194,255,.15);border-radius:14px}
+</style>
+
+<!-- SKILLSWAP DARK BLUE FADE VISUAL UPGRADE -->
+<style id="ssDarkBlueFadeUpgrade">
+:root{
+  --ss-navy:#06142f;
+  --ss-blue:#0b2a63;
+  --ss-blue2:#123f87;
+  --ss-cyan:#39b9ff;
+  --ss-ice:#eaf5ff;
+}
+html,body{
+  background:#06142f !important;
+}
+body{
+  background:
+    radial-gradient(circle at 12% 8%,rgba(35,139,255,.30),transparent 28%),
+    radial-gradient(circle at 88% 12%,rgba(0,201,255,.18),transparent 25%),
+    radial-gradient(circle at 52% 100%,rgba(18,63,135,.45),transparent 38%),
+    linear-gradient(135deg,#030b1d 0%,#06142f 38%,#0a2454 72%,#07152f 100%) !important;
+  background-attachment:fixed !important;
+  color:#eaf5ff;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:-1;
+  background:
+    linear-gradient(115deg,transparent 0%,rgba(76,177,255,.05) 35%,transparent 65%),
+    radial-gradient(circle at 50% 0%,rgba(61,169,255,.10),transparent 42%);
+}
+header,.navbar,.topbar,.site-header,.app-header{
+  background:rgba(3,12,32,.78) !important;
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(108,190,255,.16) !important;
+  box-shadow:0 10px 35px rgba(0,0,0,.22);
+}
+.card,.panel,.modal-content,.feature-card,.profile-card,.ss-hub-card,
+.ss-other-community,.ss-land-card,.dashboard-card,.community-card{
+  background:linear-gradient(145deg,rgba(11,39,86,.88),rgba(5,20,48,.92)) !important;
+  border:1px solid rgba(104,183,255,.18) !important;
+  box-shadow:0 20px 55px rgba(0,0,0,.30),inset 0 1px rgba(255,255,255,.04);
+}
+button,.btn,.ss-primary-btn{
+  transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;
+}
+button:hover,.btn:hover,.ss-primary-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 28px rgba(21,137,255,.25);
+}
+a{
+  color:#69c7ff;
+}
+input,textarea,select{
+  background:rgba(2,14,35,.72) !important;
+  color:#edf8ff !important;
+  border-color:rgba(100,183,255,.22) !important;
+}
+input::placeholder,textarea::placeholder{
+  color:#8faac7 !important;
+}
+.ss-land-wrap{
+  background:transparent !important;
+}
+#ssPublicLanding{
+  background:
+    radial-gradient(circle at 15% 12%,rgba(37,126,255,.32),transparent 30%),
+    radial-gradient(circle at 85% 18%,rgba(0,194,255,.20),transparent 28%),
+    linear-gradient(135deg,#020817 0%,#06142f 38%,#0c2e6b 68%,#06142f 100%) !important;
+  color:#edf8ff !important;
+}
+.ss-land-hero h1{
+  color:#f4fbff !important;
+  text-shadow:0 10px 35px rgba(0,0,0,.35);
+}
+.ss-land-hero h1 span{
+  background:linear-gradient(90deg,#55c7ff,#8ee4ff);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent !important;
+}
+.ss-land-hero p,.ss-land-section>p{
+  color:#b4cbe4 !important;
+}
+.ss-land-kicker{
+  background:rgba(34,145,255,.13) !important;
+  color:#69caff !important;
+  border:1px solid rgba(85,190,255,.18);
+}
+.ss-land-card{
+  background:linear-gradient(145deg,rgba(11,42,94,.90),rgba(4,18,43,.94)) !important;
+  border-color:rgba(102,190,255,.20) !important;
+}
+.ss-land-person{
+  background:rgba(6,24,55,.82) !important;
+  border-color:rgba(104,183,255,.13) !important;
+}
+.ss-land-avatar{
+  background:linear-gradient(145deg,#103b7d,#09244f) !important;
+}
+.ss-land-match{
+  background:rgba(45,176,255,.13) !important;
+  color:#6dd0ff !important;
+}
+.ss-land-trust{
+  color:#a8c0da !important;
+}
+.ss-land-feature,.ss-land-step{
+  background:rgba(8,31,69,.76) !important;
+  border-color:rgba(100,183,255,.15) !important;
+  box-shadow:0 16px 40px rgba(0,0,0,.18);
+}
+.ss-land-feature p,.ss-land-step p{
+  color:#9db6d1 !important;
+}
+.ss-land-footer{
+  color:#7895b5 !important;
+}
+#ssRatingModal{
+  background:rgba(1,7,20,.78) !important;
+  backdrop-filter:blur(10px);
+}
+.ss-rating-box{
+  background:linear-gradient(145deg,#0c2d63,#06162f) !important;
+  color:#edf8ff !important;
+  border:1px solid rgba(99,189,255,.18);
+}
+.ss-rating-box p{
+  color:#9db7d2 !important;
+}
+.ss-rating-star{
+  background:#0a244d !important;
+  color:#d9efff !important;
+}
+.ss-rating-star.selected{
+  background:rgba(255,198,56,.18) !important;
+  color:#ffd35c !important;
+}
+.ss-rating-box textarea{
+  background:#06162f !important;
+  color:#edf8ff !important;
+}
+.ss-real-rating{
+  color:#ffd35c !important;
+}
+.ss-rated-badge{
+  background:rgba(255,204,64,.13) !important;
+  color:#ffd45f !important;
+}
+@media(max-width:700px){
+  body{background-attachment:scroll !important}
+  .ss-land-hero{gap:28px}
+}
+</style>
+<script>
+(function(){
+  // Apply the dark-blue fade consistently, including dynamically rendered panels.
+  document.documentElement.style.backgroundColor='#06142f';
+  document.body.classList.add('ss-dark-blue-fade');
 })();
 </script>
