@@ -8921,3 +8921,107 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
   };
 })();
 </script>
+<style id="ss-enhancement-styles">
+.ss-enhanced-wrap{margin-top:18px;padding:18px;border:1px solid rgba(23,107,87,.14);border-radius:18px;background:linear-gradient(180deg,rgba(23,107,87,.035),rgba(255,255,255,.92))}
+.ss-enhanced-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}
+.ss-enhanced-stat{padding:15px;border:1px solid rgba(0,0,0,.07);border-radius:14px;background:#fff}
+.ss-enhanced-stat b{display:block;font-size:24px;margin-top:5px}
+.ss-enhanced-muted{color:#68747b;font-size:13px}
+.ss-enhanced-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
+.ss-enhanced-btn{border:0;border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:700;background:var(--ss-green,#176b57);color:#fff}
+.ss-enhanced-btn.alt{background:#eef5f2;color:#176b57}
+.ss-enhanced-profile{display:grid;grid-template-columns:80px 1fr;gap:15px;align-items:center}
+.ss-enhanced-avatar{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;background:#eef5f2;font-size:35px;border:1px solid rgba(23,107,87,.15)}
+.ss-enhanced-progress{height:9px;background:#e9eeee;border-radius:99px;overflow:hidden;margin-top:9px}.ss-enhanced-progress span{display:block;height:100%;width:0;background:var(--ss-green,#176b57);border-radius:99px}
+.ss-enhanced-list{display:grid;gap:9px;margin-top:14px}.ss-enhanced-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid rgba(0,0,0,.07);border-radius:12px;background:#fff}
+.ss-enhanced-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:999px;background:#f1f6f4;color:#176b57;font-size:12px;font-weight:700}
+@media(max-width:850px){.ss-enhanced-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:520px){.ss-enhanced-grid{grid-template-columns:1fr}.ss-enhanced-profile{grid-template-columns:1fr;text-align:center}}
+</style>
+<script id="ss-enhanced-platform-fix-and-upgrades">
+(function(){
+'use strict';
+const A=()=>window.ssFirebaseAuth||window.ssFirebase?.auth||null;
+const D=()=>window.ssFirebase?.db||null;
+const UID=()=>A()?.currentUser?.uid||null;
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const arr=v=>Array.isArray(v)?v:(v?String(v).split(',').map(x=>x.trim()).filter(Boolean):[]);
+const toast=m=>{if(typeof window.showToast==='function')window.showToast(m);else if(typeof window.toast==='function')window.toast(m);};
+async function val(path){const d=D();if(!d)throw Error('Firebase is still loading.');return (await d.ref(path).once('value')).val()}
+async function profile(){const u=A()?.currentUser;if(!u||!D())return null;const s=await D().ref('users/'+u.uid).once('value');return s.exists()?s.val():null}
+function setText(id,text){const e=document.getElementById(id);if(e)e.textContent=text}
+function setAvatar(p){const e=document.getElementById('navAvatar');if(e)e.textContent=p?.avatar||'👤'}
+function completion(p){if(!p)return 0;let n=0;const checks=[p.name,p.bio,p.location,arr(p.teach).length,arr(p.want).length,arr(p.languages).length,p.avatar];checks.forEach(x=>{if(x)n++});return Math.round(n/checks.length*100)}
+async function syncProfileUI(){
+ const u=A()?.currentUser;if(!u)return;
+ let p=null;
+ try{p=await profile()}catch(e){console.warn('Profile restore:',e)}
+ if(!p){
+   const fallback={uid:u.uid,name:u.displayName||((u.email||'').split('@')[0])||'SkillSwap Member',email:u.email||'',avatar:'🧑🏻',type:'University Student',location:'Online',languages:['English'],teach:['Knowledge Sharing'],want:['Something New'],availability:['Flexible'],bio:'Welcome to SkillSwap India! Complete your profile to start learning and teaching.',rating:0,reviews:0,created_at:new Date().toISOString()};
+   try{await D().ref('users/'+u.uid).set(fallback);p=fallback}catch(e){p=fallback}
+ }
+ window.ssFirebaseProfile=p;
+ setText('navProfileName',p.name||u.displayName||'Profile');setAvatar(p);
+ window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(p));
+ document.documentElement.dataset.ssProfileReady='true';
+}
+function authSync(){const a=A();if(!a){setTimeout(authSync,250);return}a.onAuthStateChanged(u=>{if(u){syncProfileUI().catch(console.warn)}else{setText('navProfileName','Profile');setAvatar({avatar:'👤'});document.documentElement.dataset.ssProfileReady='false'}})}
+
+async function smartMatches(){
+ if(!UID())return toast('Please sign in to see smart matches.');
+ const me=await profile();const users=await val('users')||{};const mineTeach=new Set(arr(me?.teach).map(x=>x.toLowerCase()));const mineWant=new Set(arr(me?.want).map(x=>x.toLowerCase()));
+ const scored=Object.values(users).filter(p=>p&&p.uid!==UID()).map(p=>{
+   const teach=new Set(arr(p.teach).map(x=>x.toLowerCase()));const want=new Set(arr(p.want).map(x=>x.toLowerCase()));
+   let score=0;mineWant.forEach(x=>{if(teach.has(x))score+=4});mineTeach.forEach(x=>{if(want.has(x))score+=4});
+   if(p.location&&me?.location&&String(p.location).toLowerCase()===String(me.location).toLowerCase())score+=1;
+   if(Number(p.rating||0)>=4)score+=1;return {...p,_score:score};
+ }).sort((a,b)=>b._score-a._score).slice(0,12);
+ const p=document.getElementById('ssHubPanel');if(!p)return;
+ p.innerHTML='<div class="ss-enhanced-wrap"><h3>🎯 Smart matches</h3><p class="ss-enhanced-muted">People ranked by how well their teaching skills complement what you want to learn.</p><div class="ss-enhanced-list">'+(scored.length?scored.map(x=>'<div class="ss-enhanced-row"><div><strong>'+esc(x.name||'Member')+'</strong><div class="ss-enhanced-muted">Teaches: '+esc(arr(x.teach).slice(0,3).join(' · ')||'—')+'</div><div class="ss-enhanced-muted">Wants: '+esc(arr(x.want).slice(0,3).join(' · ')||'—')+'</div></div><div><span class="ss-enhanced-chip">'+x._score+' match</span><button class="ss-enhanced-btn" style="margin-left:6px" onclick="ssUltimateConnect(\''+esc(x.uid)+'\')">Connect</button></div></div>').join(''):'<div class="ss-enhanced-muted">Add teaching and learning skills to your profile to improve matches.</div>')+'</div></div>';
+}
+
+async function enhancedDashboard(){
+ if(!UID())return;
+ const mep=await profile()||{};const requests=await val('requests')||{};const sessions=await val('sessions')||{};const notes=await val('notifications')||{};const groups=await val('groupMembers')||{};const xp=await val('gamification/'+UID())||{};const views=await val('profileViews')||{};
+ const accepted=Object.values(requests).filter(r=>r.status==='accepted'&&(r.senderUid===UID()||r.receiverUid===UID())).length;
+ const pending=Object.values(requests).filter(r=>r.status==='pending'&&r.receiverUid===UID()).length;
+ const mySessions=Object.values(sessions).filter(r=>arr(r.participantUids).includes(UID())).length;
+ const unread=Object.values(notes).filter(r=>r.uid===UID()&&!r.is_read).length;
+ const joined=Object.values(groups).reduce((n,g)=>n+(g&&g[UID()]?1:0),0);
+ const profileViews=Object.values(views).filter(r=>String(r.personId)===String(mep.id)||r.personId===UID()).length;
+ const complete=completion(mep);
+ const p=document.getElementById('ssUltimatePanel');if(!p)return;
+ p.innerHTML='<h3>📊 Your SkillSwap dashboard</h3><p class="ss-privacy-note">A quick view of your learning, teaching and community activity.</p><div class="ss-enhanced-profile"><div class="ss-enhanced-avatar">'+esc(mep.avatar||'🧑🏻')+'</div><div><strong>'+esc(mep.name||'SkillSwap Member')+'</strong><div class="ss-enhanced-muted">'+esc(mep.location||'Online')+' · '+esc(mep.type||'Member')+'</div><div class="ss-enhanced-progress"><span style="width:'+complete+'%"></span></div><div class="ss-enhanced-muted">Profile completion: '+complete+'%</div></div></div><div class="ss-enhanced-grid"><div class="ss-enhanced-stat">🤝<b>'+accepted+'</b><span class="ss-enhanced-muted">Connections</span></div><div class="ss-enhanced-stat">📨<b>'+pending+'</b><span class="ss-enhanced-muted">Pending requests</span></div><div class="ss-enhanced-stat">📅<b>'+mySessions+'</b><span class="ss-enhanced-muted">Sessions</span></div><div class="ss-enhanced-stat">🔔<b>'+unread+'</b><span class="ss-enhanced-muted">Unread alerts</span></div><div class="ss-enhanced-stat">👥<b>'+joined+'</b><span class="ss-enhanced-muted">Groups joined</span></div><div class="ss-enhanced-stat">👀<b>'+profileViews+'</b><span class="ss-enhanced-muted">Profile views</span></div><div class="ss-enhanced-stat">🏆<b>'+Number(xp.xp||0)+'</b><span class="ss-enhanced-muted">XP</span></div><div class="ss-enhanced-stat">⭐<b>'+Number(mep.rating||0).toFixed(1)+'</b><span class="ss-enhanced-muted">Rating</span></div></div><div class="ss-enhanced-actions"><button class="ss-enhanced-btn" onclick="openProfile()">👤 Edit profile</button><button class="ss-enhanced-btn alt" onclick="ssHubOpen(\'matches\')">🎯 Find matches</button><button class="ss-enhanced-btn alt" onclick="ssHubOpen(\'groups\')">👥 Communities</button></div></div>';
+}
+
+async function enhancedNotifications(){
+ if(!UID())return toast('Please sign in to view notifications.');
+ const all=await val('notifications')||{};const rows=Object.entries(all).filter(([id,x])=>x.uid===UID()).map(([id,x])=>({...x,id})).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,50);
+ const p=document.getElementById('ssHubPanel');if(!p)return;p.innerHTML='<div class="ss-enhanced-wrap"><h3>🔔 Notifications</h3><div class="ss-enhanced-actions"><button class="ss-enhanced-btn" onclick="ssMarkNotificationsRead()">Mark all as read</button></div><div class="ss-enhanced-list">'+(rows.length?rows.map(x=>'<div class="ss-enhanced-row"><div><strong>'+esc(x.title||'SkillSwap update')+'</strong><div class="ss-enhanced-muted">'+esc(x.body||'')+'</div></div><span class="ss-enhanced-chip">'+(x.is_read?'Read':'New')+'</span></div>').join(''):'<div class="ss-enhanced-muted">You are all caught up 🎉</div>')+'</div></div>';
+}
+
+function overrideHub(){
+ const old=window.ssHubOpen;
+ window.ssHubOpen=function(which){
+   if(which==='matches')return smartMatches().catch(e=>toast(e.message||'Could not load matches.'));
+   if(which==='notifications')return enhancedNotifications().catch(e=>toast(e.message||'Could not load notifications.'));
+   if(which==='dashboard')return enhancedDashboard().catch(e=>toast(e.message||'Could not load dashboard.'));
+   return typeof old==='function'?old(which):undefined;
+ };
+}
+
+function addProfileShortcut(){
+ const nav=document.getElementById('loggedInNav');if(!nav)return;
+ nav.setAttribute('title','Open your SkillSwap profile');
+ const name=document.getElementById('navProfileName');if(name)name.addEventListener('dblclick',()=>{if(typeof openProfile==='function')openProfile()});
+}
+
+function boot(){
+ authSync();
+ addProfileShortcut();
+ setTimeout(()=>syncProfileUI().catch(()=>{}),500);
+ setTimeout(()=>syncProfileUI().catch(()=>{}),1800);
+ overrideHub();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
