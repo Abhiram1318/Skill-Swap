@@ -2048,11 +2048,11 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
 <button class="theme-btn" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">☾</button>
 
 <div class="nav-actions" id="loggedOutNav">
-    <button class="signin" onclick="openAuth('signin')">
+    <button class="signin" onclick="ssOpenAuth('signin');return false">
         Sign in
     </button>
 
-    <button class="join" onclick="openAuth('signup')">
+    <button class="join" onclick="ssOpenAuth('signup');return false">
         Join free
     </button>
 </div>
@@ -2365,7 +2365,7 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
       <div class="quick-title">Quick actions</div>
       <div class="quick-actions">
         <button class="quick-action" onclick="document.getElementById('searchInput').focus();document.getElementById('discover').scrollIntoView({behavior:'smooth'})">🔎 Find a skill</button>
-        <button class="quick-action" onclick="openAuth('signup')">✨ Create profile</button>
+        <button class="quick-action" onclick="ssOpenAuth('signup');return false">✨ Create profile</button>
         <button class="quick-action" onclick="document.getElementById('studentSkills').scrollIntoView({behavior:'smooth'})">🧠 Browse skills</button>
         <button class="quick-action" onclick="document.getElementById('requestsSection').scrollIntoView({behavior:'smooth'})">🤝 My requests</button>
       </div>
@@ -2560,7 +2560,7 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
     cricket tips or art — someone may want to learn it.
 </p>
 
-<button onclick="openAuth('signup')">
+<button onclick="ssOpenAuth('signup');return false">
     Create your free student profile →
 </button>
 
@@ -6357,7 +6357,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 });
 </script>
 
-<style>.ss-mobile-cta{display:none}@media(max-width:680px){.ss-mobile-cta{display:block;position:fixed;left:12px;right:12px;bottom:12px;z-index:9999}.ss-mobile-cta button{width:100%;height:50px;border:0;border-radius:15px;background:#126b57;color:white;font-weight:850;box-shadow:0 12px 35px #092e2530}}</style><div class="ss-mobile-cta"><button onclick="openAuth('signup')">Join SkillSwap — Free →</button></div>
+<style>.ss-mobile-cta{display:none}@media(max-width:680px){.ss-mobile-cta{display:block;position:fixed;left:12px;right:12px;bottom:12px;z-index:9999}.ss-mobile-cta button{width:100%;height:50px;border:0;border-radius:15px;background:#126b57;color:white;font-weight:850;box-shadow:0 12px 35px #092e2530}}</style><div class="ss-mobile-cta"><button onclick="ssOpenAuth('signup');return false">Join SkillSwap — Free →</button></div>
 <script id="skillswap-elite-js">
 (function(){
   const applyTheme=(dark)=>{
@@ -7896,14 +7896,6 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
 }
 .ss-ultimate-stat b{display:block;font-size:27px;color:var(--ss-green)}
 .ss-ultimate-stat span{font-size:13px;color:var(--ss-muted)}
-.ss-ultimate-nav{
-  display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 12px
-}
-.ss-ultimate-tab{
-  border:1px solid var(--ss-border);background:#fff;border-radius:999px;
-  padding:9px 14px;cursor:pointer;font-weight:700;color:var(--ss-ink)
-}
-.ss-ultimate-tab.active{background:var(--ss-green);color:#fff;border-color:var(--ss-green)}
 .ss-ultimate-panel{
   background:#fff;border:1px solid var(--ss-border);border-radius:22px;
   padding:25px;box-shadow:0 10px 35px rgba(0,0,0,.05);min-height:180px
@@ -7999,18 +7991,6 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
     <div class="ss-ultimate-stat"><b id="ssUStatSessions">—</b><span>My sessions</span></div>
     <div class="ss-ultimate-stat"><b id="ssUStatXP">—</b><span>My XP</span></div>
   </div>
-
-  <div class="ss-ultimate-nav" role="tablist">
-    <button class="ss-ultimate-tab active" onclick="ssUltimateOpen('discover',this)">🔎 Discover</button>
-    <button class="ss-ultimate-tab" onclick="ssUltimateOpen('dashboard',this)">📊 Dashboard</button>
-    <button class="ss-ultimate-tab" onclick="ssUltimateOpen('skills',this)">🧠 Skills</button>
-    <button class="ss-ultimate-tab" onclick="ssUltimateOpen('goals',this)">🎯 Goals</button>
-    <button class="ss-ultimate-tab" onclick="ssUltimateOpen('events',this)">📅 Sessions</button>
-    <button class="ss-ultimate-tab" onclick="ssUltimateOpen('community',this)">💬 Community</button>
-    <button class="ss-ultimate-tab" onclick="ssUltimateOpen('reputation',this)">🏆 Reputation</button>
-    <button class="ss-ultimate-tab" onclick="ssUltimateOpen('help',this)">❓ Help</button>
-  </div>
-
   <div id="ssUltimatePanel" class="ss-ultimate-panel">
     <div class="ss-skeleton"></div>
   </div>
@@ -9996,8 +9976,8 @@ body.dark-mode .ss-rating-box textarea{background:#0d211c;color:#eaf7f2;border-c
     <div class="ss-land-nav">
       <div class="ss-land-brand"><span class="ss-land-brand-mark">↔</span><span>SkillSwap <b style="color:#087f5b">INDIA</b></span></div>
       <div class="ss-land-actions">
-        <button class="ss-land-btn secondary" type="button" onclick="openAuth('signin')">Sign in</button>
-        <button class="ss-land-btn primary" type="button" onclick="openAuth('signup')">Join free</button>
+        <button class="ss-land-btn secondary" type="button" onclick="ssOpenAuth('signin');return false">Sign in</button>
+        <button class="ss-land-btn primary" type="button" onclick="ssOpenAuth('signup');return false">Join free</button>
       </div>
     </div>
 
@@ -10007,7 +9987,7 @@ body.dark-mode .ss-rating-box textarea{background:#0d211c;color:#eaf7f2;border-c
         <h1>Learn from people.<br><span>Teach what you know.</span></h1>
         <p>SkillSwap India helps learners meet real people, exchange practical skills, build trusted connections and grow together through meaningful skill swaps.</p>
         <div class="ss-land-hero-actions">
-          <button class="ss-land-btn primary" type="button" onclick="openAuth('signup')">✨ Create my free profile</button>
+          <button class="ss-land-btn primary" type="button" onclick="ssOpenAuth('signup');return false">✨ Create my free profile</button>
           <button class="ss-land-btn secondary" type="button" onclick="document.getElementById('ssLandHow').scrollIntoView({behavior:'smooth'})">See how it works ↓</button>
         </div>
         <div class="ss-land-trust">
@@ -10406,7 +10386,7 @@ input::placeholder,textarea::placeholder{
 })();
 </script>
 
-<style id="ssFinalFixes">#ssSeparateMenuButton,#ssMenuOverlay,#ssMenuPanel{display:none!important}#authModal .modal{background:linear-gradient(145deg,rgba(7,22,52,.98),rgba(10,42,91,.98))!important;color:#eef7ff!important;border:1px solid rgba(80,180,255,.25)!important;box-shadow:0 30px 80px rgba(0,0,0,.45)!important}#authModal .modal h2,#authModal .modal label{color:#f4fbff!important}#authModal .modal-subtitle,#authModal .modal p{color:#b9d4ee!important}#authModal input,#authModal select,#authModal textarea{background:#071a38!important;color:#f4fbff!important;border:1px solid rgba(89,174,255,.28)!important}#authModal input::placeholder,#authModal textarea::placeholder{color:#7895b5!important}#authModal input:focus,#authModal select:focus,#authModal textarea:focus{border-color:#39b9ff!important;box-shadow:0 0 0 3px rgba(57,185,255,.12)!important;outline:none}</style>
+<style id="ssFinalFixes">#ssSeparateMenuButton,#ssMenuOverlay,#ssMenuPanel,.ss-menu-btn,.ss-menu-overlay,.ss-menu-panel{display:none!important}#authModal .modal{background:linear-gradient(145deg,rgba(7,22,52,.98),rgba(10,42,91,.98))!important;color:#eef7ff!important;border:1px solid rgba(80,180,255,.25)!important;box-shadow:0 30px 80px rgba(0,0,0,.45)!important}#authModal .modal h2,#authModal .modal label{color:#f4fbff!important}#authModal .modal-subtitle,#authModal .modal p{color:#b9d4ee!important}#authModal input,#authModal select,#authModal textarea{background:#071a38!important;color:#f4fbff!important;border:1px solid rgba(89,174,255,.28)!important}#authModal input::placeholder,#authModal textarea::placeholder{color:#7895b5!important}#authModal input:focus,#authModal select:focus,#authModal textarea:focus{border-color:#39b9ff!important;box-shadow:0 0 0 3px rgba(57,185,255,.12)!important;outline:none}</style>
 <script id="ssFinalSignupFix">
 (function(){function v(id){const e=document.getElementById(id);return e?String(e.value||'').trim():''}function t(m){if(typeof showToast==='function')showToast(m);else alert(m)}window.signUp=async function(){const name=v('signupName'),email=v('signupEmail').toLowerCase(),password=document.getElementById('signupPassword')?.value||'',type=v('signupType')||'College Student',location=v('signupLocation')||'Online',languages=v('signupLanguages'),bio=v('signupBio')||'Learning and sharing skills.',teach=v('signupSkill'),want=v('signupWanted'),availability=[...document.querySelectorAll('#signupForm input[name="availability"]:checked')].map(x=>x.value);if(!name)return t('Please enter your name.');if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return t('Please enter a valid email address.');if(password.length<6)return t('Password must be at least 6 characters.');const auth=window.ssFirebaseAuth||window.ssFirebase?.auth,db=window.ssFirebase?.db;if(!auth||!db)return t('Firebase is not ready. Check firebase-config.js and refresh.');const btn=document.querySelector('#signupForm .modal-submit');if(btn){btn.disabled=true;btn.textContent='Creating your account…'}try{await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);const cred=await auth.createUserWithEmailAndPassword(email,password);try{await cred.user.updateProfile({displayName:name})}catch(_){}const id=Date.now()+Math.floor(Math.random()*1000);const profile={uid:cred.user.uid,legacyId:id,id,name,email,type,location,languages:languages?languages.split(',').map(x=>x.trim()).filter(Boolean):['English'],bio,teach:teach?teach.split(',').map(x=>x.trim()).filter(Boolean):['Knowledge Sharing'],want:want?want.split(',').map(x=>x.trim()).filter(Boolean):['Something New'],availability:availability.length?availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()};await db.ref('users/'+cred.user.uid).set(profile);window.ssFirebaseProfile=profile;if(window.ssMemoryStorage)window.ssMemoryStorage.setItem('skillswapUser',JSON.stringify(profile));if(typeof setAppState==='function')setAppState(true);if(typeof closeModal==='function')closeModal('authModal');if(typeof updateUserUI==='function')updateUserUI();if(typeof renderEverything==='function')await renderEverything();t('🎉 Welcome to SkillSwap India, '+name+'!')}catch(e){console.error(e);const c=e?.code||'',m=c==='auth/email-already-in-use'?'This email is already registered. Please sign in.':c==='auth/invalid-email'?'Please enter a valid email address.':c==='auth/weak-password'?'Password must be at least 6 characters.':c==='auth/network-request-failed'?'Network error. Check your internet connection.':e?.message||'Account creation failed.';t('❌ '+m)}finally{if(btn){btn.disabled=false;btn.textContent='Create my profile'}}};})();
 </script>
@@ -10494,5 +10474,127 @@ input::placeholder,textarea::placeholder{
       toast('❌ '+String(m).replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
     }finally{if(btn){btn.disabled=false;btn.textContent=btn.dataset.oldText||'Create my profile';}}
   };
+})();
+</script>
+\n<style id="ssAbsoluteFinalFix">
+/* SkillSwap: no slide bar / no slide-out menu. Keep only the main top navigation. */
+#ssSeparateMenuButton,#ssMenuOverlay,#ssMenuPanel,.ss-menu-btn,.ss-menu-overlay,.ss-menu-panel{display:none!important;width:0!important;height:0!important;overflow:hidden!important}
+#ssUltimatePlatform .ss-ultimate-nav{display:none!important;height:0!important;margin:0!important;padding:0!important;border:0!important}
+#authModal{z-index:2147483000!important}
+#authModal.show{display:flex!important}
+#authModal .modal{position:relative;z-index:2147483001;max-height:90vh;overflow:auto}
+#authModal .modal-submit{pointer-events:auto!important;position:relative;z-index:2147483002}
+</style>
+<script id="ssAbsoluteFinalAuth">
+(function(){
+  'use strict';
+  const $=id=>document.getElementById(id);
+  const val=id=>String($(id)?.value||'').trim();
+  const toast=m=>{if(typeof window.showToast==='function')window.showToast(m);else alert(m)};
+  const auth=()=>window.ssFirebaseAuth||window.ssFirebase?.auth||null;
+  const db=()=>window.ssFirebase?.db||null;
+
+  window.ssOpenAuth=function(type){
+    const modal=$('authModal');
+    if(!modal){toast('Authentication window is missing from the page.');return false;}
+    modal.classList.add('show');
+    if(typeof window.switchAuth==='function')window.switchAuth(type==='signup'?'signup':'signin');
+    else {
+      if($('signinForm'))$('signinForm').style.display=type==='signup'?'none':'block';
+      if($('signupForm'))$('signupForm').style.display=type==='signup'?'block':'none';
+    }
+    setTimeout(()=>$(type==='signup'?'signupName':'signinEmail')?.focus(),50);
+    return false;
+  };
+
+  window.signIn=async function(){
+    const email=val('signinEmail').toLowerCase();
+    const password=$('signinPassword')?.value||'';
+    const btn=document.querySelector('#signinForm .modal-submit');
+    if(!email){toast('Please enter your email address.');return;}
+    if(!password){toast('Please enter your password.');return;}
+    const a=auth(),d=db();
+    if(!a||!d){toast('Firebase is not ready. Make sure firebase-config.js is beside this HTML file, then refresh.');return;}
+    if(btn){btn.disabled=true;btn.textContent='Signing in…';}
+    try{
+      if(window.firebase?.auth?.Auth?.Persistence)await a.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);
+      const cred=await a.signInWithEmailAndPassword(email,password);
+      let snap=await d.ref('users/'+cred.user.uid).once('value');
+      if(!snap.exists()){
+        const now=new Date().toISOString(), id=Date.now();
+        await d.ref('users/'+cred.user.uid).set({uid:cred.user.uid,id,legacyId:id,name:cred.user.displayName||email.split('@')[0]||'SkillSwap Member',email:cred.user.email||email,type:'College Student',location:'Online',languages:['English'],bio:'Welcome to SkillSwap India! Complete your profile to start learning and teaching.',teach:['Knowledge Sharing'],want:['Something New'],availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:now});
+        snap=await d.ref('users/'+cred.user.uid).once('value');
+      }
+      const profile=snap.val()||{uid:cred.user.uid,name:cred.user.displayName||email.split('@')[0],email};
+      window.ssFirebaseProfile=profile;
+      try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
+      document.body.classList.add('ss-authenticated');
+      if(typeof window.setAppState==='function')window.setAppState(true);
+      if(typeof window.updateUserUI==='function')window.updateUserUI();
+      if(typeof window.closeModal==='function')window.closeModal('authModal');
+      toast('👋 Welcome back, '+(profile.name||'SkillSwap member')+'!');
+      if(typeof window.renderEverything==='function'){try{await window.renderEverything();}catch(e){console.warn(e);}}
+    }catch(e){
+      console.error(e);
+      const c=String(e?.code||''), raw=String(e?.message||'');
+      let m=raw||'Sign in failed.';
+      if(c==='auth/user-not-found'||c==='auth/invalid-credential')m='No matching SkillSwap account was found, or the password is incorrect.';
+      else if(c==='auth/wrong-password')m='The email or password is incorrect.';
+      else if(c==='auth/invalid-email')m='Please enter a valid email address.';
+      else if(c==='auth/too-many-requests')m='Too many attempts. Please wait a few minutes and try again.';
+      else if(c==='auth/network-request-failed')m='Network error. Check your internet connection.';
+      else if(raw.toLowerCase().includes('permission_denied'))m='Firebase Database permission was denied. Please publish your Realtime Database rules.';
+      toast('❌ '+m.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
+    }finally{if(btn){btn.disabled=false;btn.textContent='Sign in';}}
+  };
+
+  window.signUp=async function(){
+    const name=val('signupName'),email=val('signupEmail').toLowerCase(),password=$('signupPassword')?.value||'';
+    const type=val('signupType')||'College Student',location=val('signupLocation')||'Online',languages=val('signupLanguages'),bio=val('signupBio')||'Learning and sharing skills.',teach=val('signupSkill'),want=val('signupWanted');
+    const availability=[...document.querySelectorAll('#signupForm input[name="availability"]:checked')].map(x=>x.value);
+    if(!name){toast('Please enter your name.');return;}
+    if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('Please enter a valid email address.');return;}
+    if(password.length<6){toast('Your password must be at least 6 characters.');return;}
+    const a=auth(),d=db();
+    if(!a||!d){toast('Firebase is not ready. Make sure firebase-config.js is beside this HTML file, then refresh.');return;}
+    const btn=document.querySelector('#signupForm .modal-submit');
+    if(btn){btn.disabled=true;btn.textContent='Creating your account…';}
+    try{
+      if(window.firebase?.auth?.Auth?.Persistence)await a.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);
+      const cred=await a.createUserWithEmailAndPassword(email,password);
+      try{await cred.user.updateProfile({displayName:name});}catch(e){console.warn(e);}
+      const id=Date.now();
+      const profile={uid:cred.user.uid,id,legacyId:id,name,email:cred.user.email||email,type,location,languages:languages?languages.split(',').map(x=>x.trim()).filter(Boolean):['English'],bio,teach:teach?teach.split(',').map(x=>x.trim()).filter(Boolean):['Knowledge Sharing'],want:want?want.split(',').map(x=>x.trim()).filter(Boolean):['Something New'],availability:availability.length?availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()};
+      await d.ref('users/'+cred.user.uid).set(profile);
+      window.ssFirebaseProfile=profile;
+      try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
+      document.body.classList.add('ss-authenticated');
+      if(typeof window.setAppState==='function')window.setAppState(true);
+      if(typeof window.updateUserUI==='function')window.updateUserUI();
+      if(typeof window.closeModal==='function')window.closeModal('authModal');
+      toast('🎉 Welcome to SkillSwap India, '+name+'!');
+      if(typeof window.renderEverything==='function'){try{await window.renderEverything();}catch(e){console.warn(e);}}
+    }catch(e){
+      console.error(e);
+      const c=String(e?.code||''),raw=String(e?.message||'');
+      let m=raw||'Account creation failed.';
+      if(c==='auth/email-already-in-use')m='This email is already registered. Please use Sign in.';
+      else if(c==='auth/invalid-email')m='Please enter a valid email address.';
+      else if(c==='auth/weak-password')m='Your password must be at least 6 characters.';
+      else if(c==='auth/operation-not-allowed')m='Email/password sign-up is not enabled in Firebase Authentication.';
+      else if(c==='auth/network-request-failed')m='Network error. Check your internet connection.';
+      else if(raw.toLowerCase().includes('permission_denied'))m='The account was created, but Firebase Database rules blocked profile creation. Please publish the Realtime Database rules.';
+      toast('❌ '+m.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
+    }finally{if(btn){btn.disabled=false;btn.textContent='Create my profile';}}
+  };
+
+  // Prevent any remaining legacy menu from ever becoming visible.
+  function killMenus(){
+    document.querySelectorAll('#ssSeparateMenuButton,#ssMenuOverlay,#ssMenuPanel,.ss-menu-btn,.ss-menu-overlay,.ss-menu-panel').forEach(el=>el.remove());
+    document.querySelectorAll('#ssUltimatePlatform .ss-ultimate-nav').forEach(el=>el.remove());
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',killMenus);else killMenus();
+  setTimeout(killMenus,100);
+  setTimeout(killMenus,1000);
 })();
 </script>
