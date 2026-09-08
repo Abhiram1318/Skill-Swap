@@ -2895,7 +2895,8 @@ footer,.ss-footer{
 
     <button
         class="logout-btn"
-        onclick="logout()">
+        type="button"
+        onclick="return confirmLogout(event)">
         Log out
     </button>
 
@@ -5846,34 +5847,57 @@ async function saveEditedProfile(){
 /* =========================
    LOGOUT
 ========================= */
-
 async function logout(){
-
     try{
-
-        await api(
-            "/api/logout",
-            {
-                method:"POST"
-            }
-        );
-
+        if(window.ssFirebaseAuth){
+            await window.ssFirebaseAuth.signOut();
+        }
     }catch(error){
-
-        console.warn(
-            "Backend logout unavailable.",
-            error
-        );
-
+        console.warn("Firebase logout:",error);
     }
 
+    try{
+        if(typeof api==="function"){
+            await api("/api/logout",{method:"POST"});
+        }
+    }catch(error){
+        console.warn("Backend logout unavailable.",error);
+    }
 
-    ssMemoryStorage.removeItem(
-        "skillswapUser"
-    );
+    try{
+        if(window.ssMemoryStorage)window.ssMemoryStorage.removeItem("skillswapUser");
+    }catch(error){}
 
     location.reload();
+}
 
+function confirmLogout(event){
+    if(event){
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    const modal=document.getElementById("ssLogoutConfirmModal");
+    if(!modal){
+        return false;
+    }
+
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden","false");
+    document.body.style.overflow="hidden";
+
+    const cancel=document.getElementById("ssLogoutCancelBtn");
+    if(cancel)setTimeout(()=>cancel.focus(),50);
+
+    return false;
+}
+
+function closeLogoutConfirm(){
+    const modal=document.getElementById("ssLogoutConfirmModal");
+    if(!modal)return;
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden","true");
+    document.body.style.overflow="";
 }
 
 
