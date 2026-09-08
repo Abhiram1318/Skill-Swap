@@ -2866,7 +2866,7 @@ footer,.ss-footer{
 
 
 
-<button class="theme-btn" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">☾</button>
+
 
 <div class="nav-actions" id="loggedOutNav">
     <button class="signin" onclick="ssOpenAuth('signin');return false">
@@ -2878,7 +2878,7 @@ footer,.ss-footer{
     </button>
 </div>
 
-<button class="theme-btn" id="themeToggleLogged" title="Toggle dark mode" aria-label="Toggle dark mode">☾</button>
+
 
 <div class="user-nav" id="loggedInNav">
 
@@ -7605,7 +7605,7 @@ window.addEventListener("keydown",e=>{
       ['🤝','Open requests & connections',()=>goTo('#requestsSection','Opening requests & connections')],
       ['🔔','Open notifications',()=>goTo('#notificationsList','Opening notifications')],
       ['🏆','Open achievements',()=>goTo('#skillswap2','Opening your progress')],
-      ['🌙','Toggle dark mode',()=>{const b=document.getElementById('themeToggleLogged')||document.getElementById('themeToggle');b?.click()}],
+      ['🌙','Dark blue theme',()=>{const b=document.getElementById('themeToggleLogged')||document.getElementById('themeToggle');b?.click()}],
       ['↻','Refresh dashboard',()=>window.ss4Refresh?.()]
     ];
     const box=document.getElementById('ss3Commands');
