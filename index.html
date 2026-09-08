@@ -2667,6 +2667,187 @@ footer{
 }
 </style>
 
+
+<style id="skillswap-light-blue-polish-and-self-filter">
+/* Remove the white-box look: use translucent blue/cyan surfaces */
+.card,.profile-card,.feature-card,.ss-hub-card,.modal-content,
+section,.panel,.dashboard-card,.skill-card,.community-card,
+.ss-hub-item,.person-card,.modal{
+  background:linear-gradient(145deg,rgba(214,248,255,.82),rgba(179,231,255,.68)) !important;
+  color:#062b4d !important;
+  border-color:rgba(0,111,170,.22) !important;
+  box-shadow:0 12px 30px rgba(0,72,120,.12) !important;
+}
+header,nav,.navbar,.top-nav{
+  background:linear-gradient(135deg,rgba(213,249,255,.88),rgba(157,220,250,.78)) !important;
+  color:#062b4d !important;
+  border-color:rgba(0,111,170,.18) !important;
+}
+input,textarea,select{
+  background:rgba(226,250,255,.86) !important;
+  color:#062b4d !important;
+}
+
+/* Keep dark-blue buttons */
+button,.btn,.join,.search-btn,.match-btn,.connect,.modal-submit,
+.cta button,.small-btn.primary,.chat-input button,.ss-btn,.primary{
+  background:linear-gradient(135deg,#052b5b,#0a4d8f) !important;
+  color:#effcff !important;
+}
+
+/* Strong self-profile exclusion in every member list */
+</style>
+<script id="skillswap-self-profile-filter-fix">
+(function(){
+  function samePerson(a,b){
+    if(!a || !b) return false;
+    const ids=[
+      [a.uid,b.uid],[a.id,b.id],[a.legacyId,b.legacyId]
+    ];
+    return ids.some(([x,y])=>x!=null && y!=null && String(x)===String(y))
+      || (!!a.name && !!b.name && String(a.name).trim().toLowerCase()===String(b.name).trim().toLowerCase()
+          && !!a.email && !!b.email && String(a.email).trim().toLowerCase()===String(b.email).trim().toLowerCase());
+  }
+
+  const originalRenderMatches = window.renderMatches;
+  if(typeof originalRenderMatches==='function'){
+    window.renderMatches = function(people){
+      const me = (typeof getCurrentUser==='function') ? getCurrentUser() : null;
+      let list = Array.isArray(people) ? people : [];
+      if(me) list = list.filter(p=>!samePerson(p,me));
+      return originalRenderMatches.call(this,list);
+    };
+  }
+
+  const originalLoadPeople = window.skillswapLoadPeople;
+  if(typeof originalLoadPeople==='function'){
+    window.skillswapLoadPeople = async function(q){
+      const result = await originalLoadPeople.call(this,q);
+      const me = (typeof getCurrentUser==='function') ? getCurrentUser() : null;
+      return Array.isArray(result) && me ? result.filter(p=>!samePerson(p,me)) : result;
+    };
+  }
+
+  /* Firebase Feature Hub: Request Skill Swap / Smart Matches */
+  const originalGetUsers = window.getUsers;
+  if(typeof originalGetUsers==='function'){
+    window.getUsers = async function(){
+      const result = await originalGetUsers.call(this);
+      const me = (typeof profile==='function') ? profile() : null;
+      return Array.isArray(result) && me ? result.filter(p=>!samePerson(p,me)) : result;
+    };
+  }
+
+  /* Final DOM guard for any list rendered by older code */
+  function removeSelfCards(){
+    const me = (typeof getCurrentUser==='function') ? getCurrentUser() : ((typeof profile==='function') ? profile() : null);
+    if(!me) return;
+    const people = Array.isArray(window.skillswapPeople) ? window.skillswapPeople : [];
+    document.querySelectorAll('#matches .person-card, #ssMatchResults .ss-hub-item').forEach(card=>{
+      const name = card.querySelector('h3,strong')?.textContent?.trim() || '';
+      const match = people.find(p=>String(p.name||'').trim()===name);
+      if(match && samePerson(match,me)) card.remove();
+    });
+  }
+  const observer = new MutationObserver(removeSelfCards);
+  if(document.body) observer.observe(document.body,{childList:true,subtree:true});
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(removeSelfCards,500));
+})();
+</script>
+
+
+<style id="skillswap-single-dark-blue-fade">
+/* SINGLE DARK-BLUE FADE — no cyan/light-blue multi-colour background */
+html,body{
+  background:#061a36 !important;
+}
+
+body{
+  background:
+    linear-gradient(145deg,#020b1b 0%,#061a36 45%,#0a2b56 100%) !important;
+  background-attachment:fixed !important;
+  color:#e9f4ff !important;
+}
+
+body:before{
+  background:
+    radial-gradient(circle at 15% 10%,rgba(31,78,140,.22),transparent 32%),
+    radial-gradient(circle at 85% 85%,rgba(12,52,103,.20),transparent 35%) !important;
+}
+
+header,nav,.navbar,.topbar,.top-nav{
+  background:rgba(3,15,34,.90) !important;
+  border-color:rgba(111,158,211,.16) !important;
+}
+
+.hero{
+  background:linear-gradient(145deg,#030d20 0%,#071f40 52%,#0b315f 100%) !important;
+}
+
+.card,.profile-card,.feature-card,.ss-hub-card,.modal-content,
+section,.panel,.dashboard-card,.skill-card,.community-card,
+.ss-hub-item,.person-card,.modal{
+  background:linear-gradient(145deg,rgba(8,30,61,.94),rgba(5,22,47,.96)) !important;
+  color:#e9f4ff !important;
+  border-color:rgba(110,158,213,.17) !important;
+  box-shadow:0 14px 38px rgba(0,0,0,.30) !important;
+}
+
+input,textarea,select{
+  background:#071b37 !important;
+  color:#e9f4ff !important;
+  border-color:rgba(110,158,213,.22) !important;
+}
+
+input::placeholder,textarea::placeholder{
+  color:#7893b3 !important;
+}
+
+/* Dark-blue buttons */
+button,.btn,.join,.search-btn,.match-btn,.connect,.modal-submit,
+.cta button,.small-btn.primary,.chat-input button,.ss-btn,.primary{
+  background:linear-gradient(145deg,#061d3d,#0a376d) !important;
+  color:#f0f7ff !important;
+  border-color:#164b86 !important;
+  box-shadow:0 8px 22px rgba(0,0,0,.30) !important;
+}
+
+button:hover,.btn:hover,.join:hover,.search-btn:hover,.match-btn:hover,
+.connect:hover,.modal-submit:hover,.cta button:hover,.small-btn.primary:hover,
+.chat-input button:hover,.ss-btn:hover,.primary:hover{
+  background:linear-gradient(145deg,#092653,#0d4788) !important;
+}
+
+.category,.filter-chip,.quick-action,.logout-btn{
+  background:#082448 !important;
+  color:#dcecff !important;
+  border-color:rgba(110,158,213,.18) !important;
+}
+
+.skill,.skill-tag,.member-badge{
+  background:#0a2a52 !important;
+  color:#b9d9ff !important;
+  border-color:rgba(110,158,213,.18) !important;
+}
+
+.availability{
+  color:#c5dcf5 !important;
+}
+
+.checkbox-grid .check-option,
+.check-grid .check-option{
+  background:#09274d !important;
+  color:#e0edfc !important;
+  border-color:rgba(110,158,213,.20) !important;
+}
+
+footer,.ss-footer{
+  background:#030f24 !important;
+  color:#b9cde5 !important;
+  border-color:rgba(110,158,213,.16) !important;
+}
+</style>
+
 </head>
 
 <body>
