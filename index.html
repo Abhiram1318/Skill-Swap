@@ -11790,5 +11790,31 @@ h1 span{color:#ffffff!important;background:none!important;-webkit-background-cli
 })();
 </script>
 
+
+<style id="ss-fix-white-background-text">
+/* Fix contrast on light/white surfaces without changing dark theme */
+body,body *{color-scheme:dark;}
+/* Explicit light surfaces must use dark readable text */
+.white,.white-bg,.light,.light-bg,.bg-white,[class*="white"],[class*="light"],
+.card.light,.card.white,.modal.light,.modal.white,
+.ss-light,.ss-light-card,.ss-white-card,
+#signinForm,#signupForm{color:#102033!important;}
+.white *, .white-bg *, .light *, .light-bg *, .bg-white *,
+[class*="white"] *,[class*="light"] *,
+.card.light *, .card.white *, .ss-light *, .ss-light-card *, .ss-white-card *,
+#signinForm *,#signupForm *{color:#102033!important;-webkit-text-fill-color:#102033!important;}
+/* Common existing white UI surfaces */
+body .modal:not(.ss-award-dialog), body .modal-content:not(.ss-award-dialog),
+body .dialog, body .auth-modal, body .auth-card,
+body .signin-card, body .signup-card{background:#fff!important;color:#102033!important;}
+body .modal:not(.ss-award-dialog) *, body .modal-content:not(.ss-award-dialog) *,
+body .dialog *, body .auth-modal *, body .auth-card *,
+body .signin-card *, body .signup-card *{color:#102033!important;-webkit-text-fill-color:#102033!important;}
+/* Keep inputs readable on white forms */
+body input:not(.ss-award-input),body textarea,body select{background:#fff!important;color:#102033!important;-webkit-text-fill-color:#102033!important;}
+body input:not(.ss-award-input)::placeholder,body textarea::placeholder{color:#65758a!important;-webkit-text-fill-color:#65758a!important;}
+/* Keep dark components white text */
+.ss-award,.ss-award *,#ssUltimatePlatform,#ssUltimatePlatform *{color:inherit;}
+</style>
 </body>
 </html>
