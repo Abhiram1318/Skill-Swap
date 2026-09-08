@@ -2848,130 +2848,6 @@ footer,.ss-footer{
 }
 </style>
 
-
-<style id="ss-final-text-color-fix">
-/* TEXT ONLY: preserve every existing background color. */
-html,body{color:#f4f8ff!important}
-h1,h2,h3,h4,h5,h6,strong,b{color:#f7fbff!important}
-p,li,label,span,small,.muted,.secondary-text,.description,.bio{color:#c9d9eb!important}
-a{color:#79bfff!important}
-a:hover{color:#a9d7ff!important}
-input,textarea,select{color:#f5f9ff!important;caret-color:#fff!important}
-input::placeholder,textarea::placeholder{color:#9db5d0!important;opacity:1!important}
-button,.btn,.join,.signin,.connect,.primary,.ss-btn,.logout-btn{color:#f7fbff!important}
-.nav-links a,.logout-btn,.theme-btn{color:#eaf4ff!important}
-.badge,.pill,.tag,.category,.filter-chip,.quick-action,.ss-pill{color:#dcecff!important}
-table th,table td{color:#eef6ff!important}
-</style>
-
-<style id="skillswap-final-hard-fix">
-/* LOGOUT MODAL ONLY: no page/background theme changes here. */
-.logout-btn{cursor:pointer!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;opacity:1!important;visibility:visible!important}
-#ssLogoutConfirmModal{position:fixed!important;inset:0!important;display:none!important;align-items:center!important;justify-content:center!important;z-index:2147483647!important;background:rgba(0,4,14,.90)!important;backdrop-filter:blur(10px)!important;padding:20px!important}
-#ssLogoutConfirmModal.show{display:flex!important}
-#ssLogoutConfirmModal .ss-logout-dialog{display:block!important;width:min(440px,100%)!important;background:linear-gradient(145deg,#0b2b56,#061a36)!important;color:#f7fbff!important;border:1px solid #2b6098!important;border-radius:20px!important;padding:28px!important;box-shadow:0 24px 80px rgba(0,0,0,.65)!important}
-#ssLogoutConfirmModal h2{color:#fff!important;margin:0 0 10px!important}
-#ssLogoutConfirmModal p{color:#d7e7f8!important;margin:0 0 22px!important}
-#ssLogoutConfirmModal button{min-width:110px!important;color:#f7fbff!important}
-</style>
-
-<style id="ss-main-page-remove-white-box">
-/* MAIN PAGE ONLY: remove white box/card backgrounds.
-   Sign Up/auth pages are intentionally untouched. */
-#ssPublicLanding,
-#ssPublicLanding .ss-land-wrap,
-#ssPublicLanding .ss-land-section,
-#ssPublicLanding .ss-land-content,
-#ssPublicLanding .ss-land-main {
-  background: transparent !important;
-}
-
-#ssPublicLanding .ss-land-card,
-#ssPublicLanding .ss-feature-card,
-#ssPublicLanding .feature-card,
-#ssPublicLanding .benefit-card,
-#ssPublicLanding .hero-card,
-#ssPublicLanding .info-card,
-#ssPublicLanding .landing-card,
-#ssPublicLanding .card,
-#ssPublicLanding .box,
-#ssPublicLanding .panel,
-#ssPublicLanding .section-card,
-#ssPublicLanding .content-card {
-  background: rgba(6,26,54,.72) !important;
-  border-color: rgba(120,170,220,.20) !important;
-  box-shadow: none !important;
-}
-
-#ssPublicLanding .hero,
-#ssPublicLanding .ss-land-hero {
-  background: transparent !important;
-}
-
-#ssPublicLanding h1,
-#ssPublicLanding h2,
-#ssPublicLanding h3,
-#ssPublicLanding h4 {
-  color: #f7fbff !important;
-}
-
-#ssPublicLanding p,
-#ssPublicLanding li,
-#ssPublicLanding span {
-  color: #c9d9eb !important;
-}
-</style>
-
-
-<style id="ss-main-home-white-box-final-fix">
-/* MAIN HOME PAGE ONLY — remove remaining white surfaces. Sign Up/auth UI is untouched. */
-#top, #top .hero-content, #discover {
-  background: transparent !important;
-}
-#top .search-box,
-#top .india-strip span,
-#top .ss-stats,
-#top .ss-hero-card,
-#top .hero-card,
-#discover .filter-bar,
-#discover .search-container,
-#discover .filters,
-#discover .category,
-#discover .person-card,
-#discover .card,
-#discover .feature-card,
-#discover .dashboard-card,
-#discover .request-item,
-#discover .connection-item,
-#ssCommunityMembers .ss-other-card,
-#ssCommunityMembers .ss-other-count {
-  background: linear-gradient(145deg, rgba(11,42,94,.92), rgba(4,18,43,.96)) !important;
-  color: #eef6ff !important;
-  border-color: rgba(102,190,255,.20) !important;
-  box-shadow: 0 18px 50px rgba(0,0,0,.28) !important;
-}
-#top .search-box input,
-#discover input,
-#discover select,
-#discover textarea {
-  background: rgba(6,24,55,.88) !important;
-  color: #f5f9ff !important;
-  border-color: rgba(102,190,255,.20) !important;
-}
-#top .india-strip span,
-#discover .category { color: #dcecff !important; }
-#discover .category:hover,
-#discover .category.active {
-  background: linear-gradient(135deg,#0b3b78,#1263ad) !important;
-  color: #fff !important;
-}
-#discover .person-card h1,#discover .person-card h2,#discover .person-card h3,#discover .person-card h4,
-#discover .card h1,#discover .card h2,#discover .card h3,#discover .card h4,
-#ssCommunityMembers h1,#ssCommunityMembers h2,#ssCommunityMembers h3,#ssCommunityMembers h4 { color:#f7fbff !important; }
-#discover .person-card p,#discover .person-card small,#discover .card p,#discover .card small,
-#ssCommunityMembers p,#ssCommunityMembers small { color:#bcd0e6 !important; }
-#top .hero-subtitle,#top .india-strip,#discover .section-header p { color:#c9d9eb !important; }
-</style>
 </head>
 
 <body>
@@ -3019,8 +2895,7 @@ table th,table td{color:#eef6ff!important}
 
     <button
         class="logout-btn"
-        type="button"
-        onclick="return confirmLogout(event)" onclick="return confirmLogout(event)">
+        onclick="logout()">
         Log out
     </button>
 
@@ -5971,46 +5846,34 @@ async function saveEditedProfile(){
 /* =========================
    LOGOUT
 ========================= */
+
 async function logout(){
-    try{
-        if(window.ssFirebaseAuth){
-            await window.ssFirebaseAuth.signOut();
-        }
-    }catch(error){
-        console.warn("Firebase logout:",error);
-    }
 
     try{
-        if(typeof api==="function"){
-            await api("/api/logout",{method:"POST"});
-        }
+
+        await api(
+            "/api/logout",
+            {
+                method:"POST"
+            }
+        );
+
     }catch(error){
-        console.warn("Backend logout unavailable.",error);
+
+        console.warn(
+            "Backend logout unavailable.",
+            error
+        );
+
     }
 
-    try{
-        if(window.ssMemoryStorage)window.ssMemoryStorage.removeItem("skillswapUser");
-    }catch(error){}
+
+    ssMemoryStorage.removeItem(
+        "skillswapUser"
+    );
 
     location.reload();
-}
 
-function confirmLogout(event){
-    if(event){ event.preventDefault(); event.stopPropagation(); }
-    const modal=document.getElementById("ssLogoutConfirmModal");
-    if(!modal){ return window.confirm("Are you sure you want to log out of SkillSwap India?") ? logout() : false; }
-    modal.classList.add("show");
-    modal.setAttribute("aria-hidden","false");
-    document.body.style.overflow="hidden";
-    return false;
-}
-
-function closeLogoutConfirm(){
-    const modal=document.getElementById("ssLogoutConfirmModal");
-    if(!modal)return;
-    modal.classList.remove("show");
-    modal.setAttribute("aria-hidden","true");
-    document.body.style.overflow="";
 }
 
 
@@ -7318,9 +7181,37 @@ document.addEventListener("DOMContentLoaded",()=>{
 <style>.ss-mobile-cta{display:none}@media(max-width:680px){.ss-mobile-cta{display:block;position:fixed;left:12px;right:12px;bottom:12px;z-index:9999}.ss-mobile-cta button{width:100%;height:50px;border:0;border-radius:15px;background:#126b57;color:white;font-weight:850;box-shadow:0 12px 35px #092e2530}}</style><div class="ss-mobile-cta"><button onclick="ssOpenAuth('signup');return false">Join SkillSwap — Free →</button></div>
 <script id="skillswap-elite-js">
 (function(){
-  document.documentElement.classList.remove("light-mode");
-  document.body.classList.remove("light-mode","light","theme-light");
-  document.body.classList.add("dark-mode");
+  const applyTheme=(dark)=>{
+    document.body.classList.toggle("dark-mode",dark);
+    ["themeToggle","themeToggleLogged"].forEach(id=>{
+      const b=document.getElementById(id);
+      if(b) b.textContent=dark?"☀":"☾";
+    });
+  };
+  const saved=ssMemoryStorage.getItem("skillswapTheme");
+  applyTheme(saved==="dark");
+  ["themeToggle","themeToggleLogged"].forEach(id=>{
+    const b=document.getElementById(id);
+    if(b) b.addEventListener("click",()=>{
+      const dark=!document.body.classList.contains("dark-mode");
+      ssMemoryStorage.setItem("skillswapTheme",dark?"dark":"light");
+      applyTheme(dark);
+    });
+  });
+  const observer=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.style.opacity="1";
+        e.target.style.transform="translateY(0)";
+        observer.unobserve(e.target);
+      }
+    });
+  },{threshold:.08});
+  document.querySelectorAll(".feature-card,.person-card,.dashboard-card,.ss-feature,.ss-quote").forEach(el=>{
+    el.style.opacity="0";el.style.transform="translateY(12px)";
+    el.style.transition="opacity .45s ease,transform .45s ease";
+    observer.observe(el);
+  });
 })();
 window.addEventListener("keydown",e=>{
     if(e.key==="Escape"){
@@ -7714,7 +7605,7 @@ window.addEventListener("keydown",e=>{
       ['🤝','Open requests & connections',()=>goTo('#requestsSection','Opening requests & connections')],
       ['🔔','Open notifications',()=>goTo('#notificationsList','Opening notifications')],
       ['🏆','Open achievements',()=>goTo('#skillswap2','Opening your progress')],
-      
+      ['🌙','Dark blue theme',()=>{const b=document.getElementById('themeToggleLogged')||document.getElementById('themeToggle');b?.click()}],
       ['↻','Refresh dashboard',()=>window.ss4Refresh?.()]
     ];
     const box=document.getElementById('ss3Commands');
@@ -11528,98 +11419,3 @@ input::placeholder,textarea::placeholder{
   setTimeout(killMenus,1000);
 })();
 </script>
-<div id="ssLogoutConfirmModal" aria-hidden="true" role="dialog" aria-modal="true">
-  <div class="ss-logout-dialog">
-    <h2>Log out?</h2>
-    <p>Are you sure you want to log out of SkillSwap India?</p>
-    <div style="display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap">
-      <button id="ssLogoutCancelBtn" type="button" onclick="closeLogoutConfirm()">Cancel</button>
-      <button id="ssLogoutConfirmBtn" type="button" onclick="closeLogoutConfirm();logout()">Log out</button>
-    </div>
-  </div>
-</div>
-
-<style id="ss-main-home-white-box-structural-fix">
-/* MAIN HOME PAGE ONLY — remove white surfaces. Sign Up/auth UI is untouched. */
-#top,
-#top .hero-content,
-#discover {
-  background: transparent !important;
-}
-
-#top .search-box,
-#top .india-strip span,
-#top .ss-stats,
-#top .ss-hero-card,
-#top .hero-card,
-#discover .filter-bar,
-#discover .search-container,
-#discover .filters,
-#discover .category,
-#discover .person-card,
-#discover .card,
-#discover .feature-card,
-#discover .dashboard-card,
-#discover .request-item,
-#discover .connection-item,
-#ssCommunityMembers .ss-other-card,
-#ssCommunityMembers .ss-other-count {
-  background: linear-gradient(145deg, rgba(11,42,94,.92), rgba(4,18,43,.96)) !important;
-  color: #eef6ff !important;
-  border-color: rgba(102,190,255,.20) !important;
-  box-shadow: 0 18px 50px rgba(0,0,0,.28) !important;
-}
-
-#top .search-box input,
-#discover input,
-#discover select,
-#discover textarea {
-  background: rgba(6,24,55,.88) !important;
-  color: #f5f9ff !important;
-  border-color: rgba(102,190,255,.20) !important;
-}
-
-#top .india-strip span,
-#discover .category {
-  color: #dcecff !important;
-}
-
-#discover .category:hover,
-#discover .category.active {
-  background: linear-gradient(135deg,#0b3b78,#1263ad) !important;
-  color: #fff !important;
-}
-
-#discover .person-card h1,
-#discover .person-card h2,
-#discover .person-card h3,
-#discover .person-card h4,
-#discover .card h1,
-#discover .card h2,
-#discover .card h3,
-#discover .card h4,
-#ssCommunityMembers h1,
-#ssCommunityMembers h2,
-#ssCommunityMembers h3,
-#ssCommunityMembers h4 {
-  color: #f7fbff !important;
-}
-
-#discover .person-card p,
-#discover .person-card small,
-#discover .card p,
-#discover .card small,
-#ssCommunityMembers p,
-#ssCommunityMembers small {
-  color: #bcd0e6 !important;
-}
-
-#top .hero-subtitle,
-#top .india-strip,
-#discover .section-header p {
-  color: #c9d9eb !important;
-}
-</style>
-
-</body>
-</html>
