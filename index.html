@@ -2849,74 +2849,30 @@ footer,.ss-footer{
 </style>
 
 
-<style id="ss-final-text-contrast-fix">
-/* Final dark-blue contrast pass: keep the single dark-blue theme, but make text readable. */
-html,body{color:#f2f7ff!important}
-body *{border-color:rgba(112,157,207,.20)}
-h1,h2,h3,h4,h5,h6,
-.hero h1,.hero h2,.hero h3,
-.card h1,.card h2,.card h3,.card h4,
-.profile-card h1,.profile-card h2,.profile-card h3,
-.ss-hub-card h1,.ss-hub-card h2,.ss-hub-card h3,
-.ss-feature-tile h1,.ss-feature-tile h2,.ss-feature-tile h3,
-.modal h1,.modal h2,.modal h3,
-strong,b{color:#f4f8ff!important}
-p,li,label,span,small,
-.hero p,.card p,.profile-card p,
-.ss-hub-card p,.ss-feature-tile p,
-.modal p,.muted,.secondary-text{
-  color:#c5d6ea!important;
-}
-a{color:#75b8ff!important}
-a:hover{color:#a8d4ff!important}
-input,textarea,select{
-  color:#f1f7ff!important;
-  background:#061a36!important;
-  caret-color:#fff!important;
-}
-input::placeholder,textarea::placeholder{color:#8fa8c3!important;opacity:1!important}
-option{background:#061a36!important;color:#f1f7ff!important}
-button,.btn,.join,.connect,.primary,.ss-btn{
-  color:#f7fbff!important;
-}
-.nav-links a,.logout-btn,.theme-btn{
-  color:#e7f1ff!important;
-}
-.badge,.pill,.tag,.category,.filter-chip,.quick-action,.ss-pill{
-  color:#dcecff!important;
-}
-table th{color:#eef6ff!important;background:#0a2549!important}
-table td{color:#c8d8eb!important}
-hr{border-color:rgba(112,157,207,.20)!important}
-::selection{background:#1e5b92!important;color:#fff!important}
-
-/* Override legacy green/white text declarations that reduce contrast. */
-body.dark-mode .nav-links a,
-body.dark-mode .logout-btn,
-body.dark-mode .theme-btn{color:#e7f1ff!important}
-.logout-btn{background:#082448!important;color:#e7f1ff!important}
+<style id="ss-final-text-color-fix">
+/* TEXT ONLY: preserve every existing background color. */
+html,body{color:#f4f8ff!important}
+h1,h2,h3,h4,h5,h6,strong,b{color:#f7fbff!important}
+p,li,label,span,small,.muted,.secondary-text,.description,.bio{color:#c9d9eb!important}
+a{color:#79bfff!important}
+a:hover{color:#a9d7ff!important}
+input,textarea,select{color:#f5f9ff!important;caret-color:#fff!important}
+input::placeholder,textarea::placeholder{color:#9db5d0!important;opacity:1!important}
+button,.btn,.join,.signin,.connect,.primary,.ss-btn,.logout-btn{color:#f7fbff!important}
+.nav-links a,.logout-btn,.theme-btn{color:#eaf4ff!important}
+.badge,.pill,.tag,.category,.filter-chip,.quick-action,.ss-pill{color:#dcecff!important}
+table th,table td{color:#eef6ff!important}
 </style>
 
 <style id="skillswap-final-hard-fix">
-html,body{background:#061a36!important;color:#f4f8ff!important}
-body{background:linear-gradient(145deg,#020b1b 0%,#061a36 48%,#0a2b56 100%)!important;background-attachment:fixed!important}
-body:before,body:after{background:none!important}
-header,nav,.navbar,.topbar,.top-nav{background:rgba(2,11,27,.96)!important;color:#f4f8ff!important}
-.hero{background:linear-gradient(145deg,#020b1b 0%,#061a36 50%,#0a2b56 100%)!important;color:#f4f8ff!important}
-.card,.profile-card,.feature-card,.ss-hub-card,.modal-content,section,.panel,.dashboard-card,.skill-card,.community-card,.ss-hub-item,.person-card,.modal,.dialog,.request-item,.connection-item,.filter-bar,.search-container,.filters,.teen-banner{background:linear-gradient(145deg,rgba(8,30,61,.96),rgba(5,22,47,.98))!important;color:#eaf4ff!important;border-color:rgba(110,158,213,.22)!important}
-h1,h2,h3,h4,h5,h6,strong,b{color:#f7fbff!important}
-p,li,label,span,small,div{color:inherit}
-a{color:#7fc0ff!important}
-input,textarea,select{background:#061a36!important;color:#f5f9ff!important;border-color:#2a5a91!important}
-input::placeholder,textarea::placeholder{color:#9db5d0!important;opacity:1!important}
-button,.btn,.join,.signin,.connect,.primary,.ss-btn,.logout-btn{background:linear-gradient(145deg,#061d3d,#0a376d)!important;color:#f7fbff!important;border-color:#164b86!important}
+/* LOGOUT MODAL ONLY: no page/background theme changes here. */
 .logout-btn{cursor:pointer!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;opacity:1!important;visibility:visible!important}
 #ssLogoutConfirmModal{position:fixed!important;inset:0!important;display:none!important;align-items:center!important;justify-content:center!important;z-index:2147483647!important;background:rgba(0,4,14,.90)!important;backdrop-filter:blur(10px)!important;padding:20px!important}
 #ssLogoutConfirmModal.show{display:flex!important}
 #ssLogoutConfirmModal .ss-logout-dialog{display:block!important;width:min(440px,100%)!important;background:linear-gradient(145deg,#0b2b56,#061a36)!important;color:#f7fbff!important;border:1px solid #2b6098!important;border-radius:20px!important;padding:28px!important;box-shadow:0 24px 80px rgba(0,0,0,.65)!important}
 #ssLogoutConfirmModal h2{color:#fff!important;margin:0 0 10px!important}
 #ssLogoutConfirmModal p{color:#d7e7f8!important;margin:0 0 22px!important}
-#ssLogoutConfirmModal button{min-width:110px!important}
+#ssLogoutConfirmModal button{min-width:110px!important;color:#f7fbff!important}
 </style>
 </head>
 
