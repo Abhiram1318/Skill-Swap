@@ -11816,5 +11816,64 @@ body input:not(.ss-award-input)::placeholder,body textarea::placeholder{color:#6
 /* Keep dark components white text */
 .ss-award,.ss-award *,#ssUltimatePlatform,#ssUltimatePlatform *{color:inherit;}
 </style>
+
+<style id="ss-final-white-surface-contrast">
+/* FINAL CONTRAST OVERRIDE: dark text on every intentionally light/white UI surface */
+.ss4-btn:not(.primary), .ss4-row, .ss4-right, .ss4-center,
+.ss-other-card, .ss-other-btn, .ss-hub-card, .ss-hub-panel, .ss-hub-item,
+.ss-hub-toolbar input, .ss-hub-toolbar select, .ss-hub-toolbar textarea,
+.ss-hub-form input, .ss-hub-form select, .ss-hub-form textarea, .ss-post,
+.ss-community-card, .ss-community-idea, .ss-community-actions button:not(.primary),
+.ss-community-back, .ss-like, .ss-enhanced-stat, .ss-enhanced-row,
+.ss-mini-card, .ss-searchbar input, .ss-skeleton,
+.ss-land-person, .ss-land-feature, .ss-rating-box,
+#signinForm, #signupForm, #signinForm .modal-body, #signupForm .modal-body {
+  color:#102033 !important;
+  -webkit-text-fill-color:#102033 !important;
+}
+
+.ss4-btn:not(.primary) *, .ss4-row *, .ss-other-card *, .ss-other-btn *,
+.ss-hub-card *, .ss-hub-panel *, .ss-hub-item *, .ss-post *,
+.ss-community-card *, .ss-community-idea *, .ss-enhanced-stat *, .ss-enhanced-row *,
+.ss-mini-card *, .ss-land-person *, .ss-land-feature *, .ss-rating-box *,
+#signinForm *, #signupForm * {
+  color:#102033 !important;
+  -webkit-text-fill-color:#102033 !important;
+}
+
+/* Secondary/muted text on light surfaces */
+.ss4-row-main p, .ss4-center p, .ss-hub-head p, .ss-hub-card p,
+.ss-hub-item small, .ss-hub-item p, .ss-post-meta, .ss-community-idea-text,
+.ss-empty, .ss-land-feature p, .ss-rating-box p {
+  color:#526477 !important;
+  -webkit-text-fill-color:#526477 !important;
+}
+
+/* Light-surface controls */
+.ss4-row button:not(.primary), .ss-other-card button:not(.primary),
+.ss-hub-card button.secondary, .ss-community-actions button:not(.primary),
+.ss-like, .ss-enhanced-btn.alt {
+  color:#102033 !important;
+  -webkit-text-fill-color:#102033 !important;
+}
+
+/* Keep buttons that intentionally have dark/colored backgrounds readable */
+.ss4-btn.primary, .ss-hub-card button:not(.secondary), .ss-community-actions .primary,
+.ss-land-btn.primary, .ss-enhanced-btn, #signupForm .modal-submit,
+.ss4-toast, .ss-ultimate-btn, .ss-searchbar button {
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+
+/* Explicitly fix common white-background headings/labels */
+.white-bg h1,.white-bg h2,.white-bg h3,.white-bg h4,.white-bg h5,.white-bg h6,
+.bg-white h1,.bg-white h2,.bg-white h3,.bg-white h4,.bg-white h5,.bg-white h6,
+.light-bg h1,.light-bg h2,.light-bg h3,.light-bg h4,.light-bg h5,.light-bg h6,
+.card.white h1,.card.white h2,.card.white h3,.card.white h4,.card.white h5,.card.white h6,
+.card.light h1,.card.light h2,.card.light h3,.card.light h4,.card.light h5,.card.light h6 {
+  color:#102033 !important;
+  -webkit-text-fill-color:#102033 !important;
+}
+</style>
 </body>
 </html>
