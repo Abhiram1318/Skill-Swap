@@ -2044,10 +2044,6 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
 </div>
 
 
-<button id="ssSeparateMenuButton" class="ss-menu-btn" type="button"
-        onclick="ssOpenMenu()" aria-label="Open menu" aria-controls="ssMenuPanel">
-  <span aria-hidden="true">☰</span><span class="ss-menu-label">Menu</span>
-</button>
 
 <button class="theme-btn" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">☾</button>
 
@@ -6889,48 +6885,6 @@ window.addEventListener("keydown",e=>{
 })();
 </script>
 
-<div id="ssMenuOverlay" class="ss-menu-overlay" onclick="ssCloseMenu()" aria-hidden="true"></div>
-<aside id="ssMenuPanel" class="ss-menu-panel" aria-label="SkillSwap menu">
-  <div class="ss-menu-head">
-    <h3>SkillSwap Menu</h3>
-    <button class="ss-menu-close" type="button" onclick="ssCloseMenu()" aria-label="Close menu">×</button>
-  </div>
-  <nav class="ss-menu-items">
-    <a href="#top" onclick="ssMenuGo(event,'top')">⌂ <span>Home</span></a>
-    <a href="#discover" onclick="ssMenuGo(event,'discover')">🔎 <span>Discover</span></a>
-    <a href="#sessions" onclick="ssMenuGo(event,'sessions')">📅 <span>Sessions</span></a>
-    <button type="button" onclick="ssNavMessages(event)">💬 <span>Messages</span></button>
-    <button type="button" onclick="ssNavProfile(event)">👤 <span>Profile</span></button>
-    <button type="button" onclick="ssCloseMenu();openAuth('signin')">🔐 <span>Sign in</span></button>
-    <button type="button" onclick="ssCloseMenu();openAuth('signup')">✨ <span>Join free</span></button>
-  </nav>
-</aside>
-
-<script id="skillswap-separate-menu-js">
-(function(){
-  function openMenu(){
-    const o=document.getElementById('ssMenuOverlay'), p=document.getElementById('ssMenuPanel');
-    if(o)o.classList.add('open');
-    if(p)p.classList.add('open');
-    document.body.style.overflow='hidden';
-  }
-  function closeMenu(){
-    const o=document.getElementById('ssMenuOverlay'), p=document.getElementById('ssMenuPanel');
-    if(o)o.classList.remove('open');
-    if(p)p.classList.remove('open');
-    document.body.style.overflow='';
-  }
-  function menuGo(e,id){
-    e.preventDefault(); closeMenu();
-    const el=document.getElementById(id);
-    if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
-  }
-  window.ssOpenMenu=openMenu;
-  window.ssCloseMenu=closeMenu;
-  window.ssMenuGo=menuGo;
-  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMenu();});
-})();
-</script>
 
 
 <style id="skillswap-dashboard-working-fix">
@@ -10449,5 +10403,96 @@ input::placeholder,textarea::placeholder{
   // Apply the dark-blue fade consistently, including dynamically rendered panels.
   document.documentElement.style.backgroundColor='#06142f';
   document.body.classList.add('ss-dark-blue-fade');
+})();
+</script>
+
+<style id="ssFinalFixes">#ssSeparateMenuButton,#ssMenuOverlay,#ssMenuPanel{display:none!important}#authModal .modal{background:linear-gradient(145deg,rgba(7,22,52,.98),rgba(10,42,91,.98))!important;color:#eef7ff!important;border:1px solid rgba(80,180,255,.25)!important;box-shadow:0 30px 80px rgba(0,0,0,.45)!important}#authModal .modal h2,#authModal .modal label{color:#f4fbff!important}#authModal .modal-subtitle,#authModal .modal p{color:#b9d4ee!important}#authModal input,#authModal select,#authModal textarea{background:#071a38!important;color:#f4fbff!important;border:1px solid rgba(89,174,255,.28)!important}#authModal input::placeholder,#authModal textarea::placeholder{color:#7895b5!important}#authModal input:focus,#authModal select:focus,#authModal textarea:focus{border-color:#39b9ff!important;box-shadow:0 0 0 3px rgba(57,185,255,.12)!important;outline:none}</style>
+<script id="ssFinalSignupFix">
+(function(){function v(id){const e=document.getElementById(id);return e?String(e.value||'').trim():''}function t(m){if(typeof showToast==='function')showToast(m);else alert(m)}window.signUp=async function(){const name=v('signupName'),email=v('signupEmail').toLowerCase(),password=document.getElementById('signupPassword')?.value||'',type=v('signupType')||'College Student',location=v('signupLocation')||'Online',languages=v('signupLanguages'),bio=v('signupBio')||'Learning and sharing skills.',teach=v('signupSkill'),want=v('signupWanted'),availability=[...document.querySelectorAll('#signupForm input[name="availability"]:checked')].map(x=>x.value);if(!name)return t('Please enter your name.');if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return t('Please enter a valid email address.');if(password.length<6)return t('Password must be at least 6 characters.');const auth=window.ssFirebaseAuth||window.ssFirebase?.auth,db=window.ssFirebase?.db;if(!auth||!db)return t('Firebase is not ready. Check firebase-config.js and refresh.');const btn=document.querySelector('#signupForm .modal-submit');if(btn){btn.disabled=true;btn.textContent='Creating your account…'}try{await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);const cred=await auth.createUserWithEmailAndPassword(email,password);try{await cred.user.updateProfile({displayName:name})}catch(_){}const id=Date.now()+Math.floor(Math.random()*1000);const profile={uid:cred.user.uid,legacyId:id,id,name,email,type,location,languages:languages?languages.split(',').map(x=>x.trim()).filter(Boolean):['English'],bio,teach:teach?teach.split(',').map(x=>x.trim()).filter(Boolean):['Knowledge Sharing'],want:want?want.split(',').map(x=>x.trim()).filter(Boolean):['Something New'],availability:availability.length?availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()};await db.ref('users/'+cred.user.uid).set(profile);window.ssFirebaseProfile=profile;if(window.ssMemoryStorage)window.ssMemoryStorage.setItem('skillswapUser',JSON.stringify(profile));if(typeof setAppState==='function')setAppState(true);if(typeof closeModal==='function')closeModal('authModal');if(typeof updateUserUI==='function')updateUserUI();if(typeof renderEverything==='function')await renderEverything();t('🎉 Welcome to SkillSwap India, '+name+'!')}catch(e){console.error(e);const c=e?.code||'',m=c==='auth/email-already-in-use'?'This email is already registered. Please sign in.':c==='auth/invalid-email'?'Please enter a valid email address.':c==='auth/weak-password'?'Password must be at least 6 characters.':c==='auth/network-request-failed'?'Network error. Check your internet connection.':e?.message||'Account creation failed.';t('❌ '+m)}finally{if(btn){btn.disabled=false;btn.textContent='Create my profile'}}};})();
+</script>
+
+
+<style id="ssFinalWorkingFix">
+/* Remove every legacy slide-out menu system and keep the main navigation only. */
+#ssSeparateMenuButton,#ssMenuOverlay,#ssMenuPanel,.ss-menu-btn,.ss-menu-overlay,.ss-menu-panel{display:none!important}
+/* Keep exactly one feature/tab bar if an older duplicate was injected. */
+.ss-ultimate-nav + .ss-ultimate-nav{display:none!important}
+</style>
+<script id="ssFinalWorkingFixJS">
+(function(){
+  function toast(m){ if(typeof showToast==='function') showToast(m); else alert(m); }
+  function val(id){const e=document.getElementById(id);return e?String(e.value||'').trim():'';}
+  function removeDuplicateBars(){
+    const bars=[...document.querySelectorAll('.ss-ultimate-nav')];
+    bars.slice(1).forEach(x=>x.remove());
+    document.querySelectorAll('#ssSeparateMenuButton,#ssMenuOverlay,#ssMenuPanel,.ss-menu-btn,.ss-menu-overlay,.ss-menu-panel').forEach(x=>x.remove());
+  }
+  window.addEventListener('DOMContentLoaded',removeDuplicateBars);
+  setTimeout(removeDuplicateBars,100);
+  setTimeout(removeDuplicateBars,1000);
+
+  window.signIn=async function(){
+    const email=val('signinEmail').toLowerCase();
+    const password=document.getElementById('signinPassword')?.value||'';
+    const btn=document.querySelector('#signinForm .modal-submit');
+    if(!email||!password){toast('Please enter your email and password.');return;}
+    const auth=window.ssFirebaseAuth||window.ssFirebase?.auth;
+    const db=window.ssFirebase?.db;
+    if(!auth||!db){toast('Firebase is not ready. Please refresh the page.');return;}
+    if(btn){btn.disabled=true;btn.dataset.oldText=btn.textContent;btn.textContent='Signing in…';}
+    try{
+      if(window.firebase?.auth?.Auth?.Persistence) await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+      const cred=await auth.signInWithEmailAndPassword(email,password);
+      let snap=await db.ref('users/'+cred.user.uid).get();
+      if(!snap.exists()){
+        const profile={uid:cred.user.uid,legacyId:Date.now()+Math.floor(Math.random()*1000),id:Date.now(),name:cred.user.displayName||email.split('@')[0]||'SkillSwap Member',email:cred.user.email||email,type:'College Student',location:'Online',languages:['English'],bio:'Welcome to SkillSwap India! Complete your profile to start learning and teaching.',teach:['Knowledge Sharing'],want:['Something New'],availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()};
+        await db.ref('users/'+cred.user.uid).set(profile); snap=await db.ref('users/'+cred.user.uid).get();
+      }
+      const profile=snap.val();
+      window.ssFirebaseProfile=profile;
+      try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
+      document.body.classList.add('ss-authenticated');
+      if(typeof setAppState==='function')setAppState(true);
+      if(typeof updateUserUI==='function')updateUserUI();
+      if(typeof closeModal==='function')closeModal('authModal');
+      if(typeof renderEverything==='function')await renderEverything();
+      toast('👋 Welcome back, '+(profile.name||'')+'!');
+    }catch(e){
+      console.error('SkillSwap Firebase sign-in error:',e);
+      const c=String(e?.code||'');
+      let m=e?.message||'Sign in failed.';
+      if(c==='auth/user-not-found')m='No SkillSwap account was found with this email.';
+      else if(c==='auth/wrong-password'||c==='auth/invalid-credential')m='The email or password is incorrect.';
+      else if(c==='auth/invalid-email')m='Please enter a valid email address.';
+      else if(c==='auth/too-many-requests')m='Too many attempts. Please wait a few minutes and try again.';
+      else if(c==='auth/network-request-failed')m='Network error. Check your internet connection.';
+      toast('❌ '+m.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
+    }finally{if(btn){btn.disabled=false;btn.textContent=btn.dataset.oldText||'Sign in';}}
+  };
+
+  window.signUp=async function(){
+    const name=val('signupName'),email=val('signupEmail').toLowerCase(),password=document.getElementById('signupPassword')?.value||'';
+    const type=val('signupType')||'College Student',location=val('signupLocation')||'Online',languages=val('signupLanguages'),bio=val('signupBio')||'Learning and sharing skills.',teach=val('signupSkill'),want=val('signupWanted');
+    const availability=[...document.querySelectorAll('#signupForm input[name="availability"]:checked')].map(x=>x.value);
+    if(!name){toast('Please enter your name.');return;} if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('Please enter a valid email address.');return;} if(password.length<6){toast('Password must be at least 6 characters.');return;}
+    const auth=window.ssFirebaseAuth||window.ssFirebase?.auth,db=window.ssFirebase?.db;
+    if(!auth||!db){toast('Firebase is not ready. Please refresh the page.');return;}
+    const btn=document.querySelector('#signupForm .modal-submit'); if(btn){btn.disabled=true;btn.dataset.oldText=btn.textContent;btn.textContent='Creating your account…';}
+    try{
+      if(window.firebase?.auth?.Auth?.Persistence) await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+      const cred=await auth.createUserWithEmailAndPassword(email,password);
+      try{await cred.user.updateProfile({displayName:name});}catch(e){}
+      const id=Date.now()+Math.floor(Math.random()*1000);
+      const profile={uid:cred.user.uid,id,legacyId:id,name,email:cred.user.email||email,type,location,languages:languages?languages.split(',').map(x=>x.trim()).filter(Boolean):['English'],bio,teach:teach?teach.split(',').map(x=>x.trim()).filter(Boolean):['Knowledge Sharing'],want:want?want.split(',').map(x=>x.trim()).filter(Boolean):['Something New'],availability:availability.length?availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()};
+      await db.ref('users/'+cred.user.uid).set(profile);
+      window.ssFirebaseProfile=profile; try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
+      document.body.classList.add('ss-authenticated'); if(typeof setAppState==='function')setAppState(true); if(typeof updateUserUI==='function')updateUserUI(); if(typeof closeModal==='function')closeModal('authModal'); if(typeof renderEverything==='function')await renderEverything();
+      toast('🎉 Welcome to SkillSwap India, '+name+'!');
+    }catch(e){
+      console.error('SkillSwap Firebase sign-up error:',e); const c=String(e?.code||''); let m=e?.message||'Account creation failed.';
+      if(c==='auth/email-already-in-use')m='This email is already registered. Please sign in instead.'; else if(c==='auth/invalid-email')m='Please enter a valid email address.'; else if(c==='auth/weak-password')m='Password must be at least 6 characters.'; else if(c==='auth/operation-not-allowed')m='Email/password sign-up is not enabled in Firebase Authentication.'; else if(c==='auth/network-request-failed')m='Network error. Check your internet connection.'; else if(String(m).toLowerCase().includes('permission_denied'))m='Firebase Database permission was denied. Please publish your Realtime Database rules.';
+      toast('❌ '+String(m).replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
+    }finally{if(btn){btn.disabled=false;btn.textContent=btn.dataset.oldText||'Create my profile';}}
+  };
 })();
 </script>
