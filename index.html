@@ -2027,6 +2027,561 @@ body.dark-mode .theme-btn{background:var(--surface)!important;color:#fff!importa
 .ss-hub-help{color:#687a73;margin:6px 0 16px}
 @keyframes ssHubSpin{to{transform:rotate(360deg)}}
 </style>
+
+<style id="skillswap-cyan-fade-final">
+/* =========================================================
+   SKILLSWAP INDIA — CYAN FADE VISUAL OVERRIDE
+   Keeps the existing functionality intact.
+   ========================================================= */
+:root{
+  --green:#00bcd4!important;
+  --green-dark:#008fa3!important;
+  --green-light:#dffaff!important;
+  --brand:#00bcd4!important;
+  --brand-dark:#008fa3!important;
+  --brand-deep:#005b6b!important;
+  --brand-2:#38e8ff!important;
+  --mint:#dffaff!important;
+  --mint-2:#c8f7ff!important;
+  --e-green:#00bcd4!important;
+  --e-green-2:#36e7ff!important;
+  --e-green-dark:#006b7a!important;
+  --e-mint:#dffaff!important;
+  --e-text:#082b35!important;
+  --e-muted:#55757e!important;
+  --e-line:#c7e9ef!important;
+}
+
+html{
+  background:#03151d!important;
+}
+
+body{
+  background:
+    radial-gradient(circle at 8% 5%,rgba(0,229,255,.30),transparent 27rem),
+    radial-gradient(circle at 92% 10%,rgba(0,188,212,.24),transparent 25rem),
+    radial-gradient(circle at 52% 92%,rgba(31,126,255,.22),transparent 34rem),
+    linear-gradient(135deg,#020b14 0%,#05202d 34%,#063e52 68%,#031a2a 100%)!important;
+  color:#e9fcff!important;
+  background-attachment:fixed!important;
+}
+
+body:after{
+  opacity:.16!important;
+  background-image:
+    linear-gradient(rgba(0,229,255,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,229,255,.035) 1px,transparent 1px)!important;
+}
+
+nav,header,.navbar,.nav,.topbar{
+  background:rgba(3,20,31,.78)!important;
+  border-bottom:1px solid rgba(95,235,255,.20)!important;
+  box-shadow:0 8px 30px rgba(0,0,0,.28)!important;
+}
+
+.logo,.brand,.site-logo,
+.nav-links a,.signin,.profile-nav-btn{
+  color:#72f3ff!important;
+}
+
+.logo-mark{
+  background:linear-gradient(135deg,#00bcd4,#36e7ff)!important;
+  box-shadow:0 10px 28px rgba(0,229,255,.25)!important;
+}
+
+.join,.search-btn,.match-btn,.small-btn.primary,
+.modal-submit,.chat-input button{
+  background:linear-gradient(135deg,#0097b2,#20dff5)!important;
+  color:#00151b!important;
+  box-shadow:0 10px 26px rgba(0,229,255,.20)!important;
+}
+
+.hero{
+  background:
+    radial-gradient(circle at 15% 18%,rgba(0,229,255,.18),transparent 25rem),
+    radial-gradient(circle at 84% 10%,rgba(32,120,255,.20),transparent 22rem),
+    linear-gradient(135deg,#04131f 0%,#063246 55%,#07516a 100%)!important;
+  border-bottom:1px solid rgba(95,235,255,.18)!important;
+}
+
+.hero h1,
+.ss-hero h1,
+h1 span{
+  color:#eaffff!important;
+  background:linear-gradient(135deg,#dffcff 10%,#5deeff 48%,#00bcd4 100%)!important;
+  -webkit-background-clip:text!important;
+  -webkit-text-fill-color:transparent!important;
+}
+
+.hero-subtitle,
+.section-header p,
+.teen-banner p,
+.dashboard-card>p,
+.profile-bio,
+.profile-location,
+.availability{
+  color:#a9cbd2!important;
+}
+
+.eyebrow,
+.india-strip span,
+.search-box,
+.category,
+.person-card,
+.dashboard-card,
+.request-item,
+.connection-item,
+.filter-bar,
+.search-container,
+.filters,
+.quick-panel,
+.progress-panel,
+.modal,
+.modal-content,
+.dialog{
+  background:rgba(7,31,43,.82)!important;
+  border-color:rgba(95,235,255,.18)!important;
+  color:#e8fbff!important;
+  box-shadow:0 14px 40px rgba(0,0,0,.24)!important;
+  backdrop-filter:blur(14px);
+}
+
+.category:hover,
+.category.active,
+.filter-chip:hover,
+.filter-chip.active{
+  background:linear-gradient(135deg,#0097b2,#00d5ec)!important;
+  color:#00151b!important;
+  border-color:#5deeff!important;
+}
+
+.filter-chip,
+.quick-action,
+.logout-btn{
+  background:rgba(7,31,43,.86)!important;
+  color:#b9f6ff!important;
+  border-color:rgba(95,235,255,.20)!important;
+}
+
+.skill,
+.skill-tag,
+.member-badge{
+  background:rgba(0,188,212,.10)!important;
+  color:#70efff!important;
+  border-color:rgba(95,235,255,.22)!important;
+}
+
+.match-score{
+  background:rgba(0,229,255,.12)!important;
+  color:#6ff2ff!important;
+  border:1px solid rgba(95,235,255,.20)!important;
+}
+
+.person-card:before{
+  background:linear-gradient(90deg,#00bcd4,#55efff,transparent)!important;
+}
+
+.connect{
+  border-color:#00c9df!important;
+  color:#76f3ff!important;
+  background:rgba(0,188,212,.08)!important;
+}
+
+.connect:hover{
+  background:rgba(0,229,255,.15)!important;
+}
+
+.connect.connected{
+  background:rgba(0,188,212,.16)!important;
+}
+
+.teen-banner{
+  background:linear-gradient(135deg,rgba(5,44,60,.92),rgba(4,91,112,.80))!important;
+  border-color:rgba(95,235,255,.22)!important;
+  color:#eaffff!important;
+}
+
+.how{
+  background:
+    radial-gradient(circle at 85% 15%,rgba(0,229,255,.18),transparent 20rem),
+    linear-gradient(135deg,#03232f,#07556b 58%,#07354b)!important;
+}
+
+.how-card,.step,.how-step{
+  background:rgba(5,29,40,.72)!important;
+  border-color:rgba(95,235,255,.18)!important;
+  color:#e8fbff!important;
+}
+
+.status.accepted{
+  background:rgba(0,229,255,.14)!important;
+  color:#72f3ff!important;
+}
+
+.profile-large-avatar,.avatar,.nav-avatar,.mini-avatar{
+  background:rgba(0,188,212,.12)!important;
+  border-color:rgba(95,235,255,.22)!important;
+}
+
+.profile-info,.request-item,.connection-item{
+  background:rgba(5,29,40,.70)!important;
+}
+
+.chat-header{
+  background:linear-gradient(135deg,#00566a,#00bcd4)!important;
+  color:#00151b!important;
+}
+
+.chat-messages{
+  background:#041922!important;
+}
+
+.message.them{
+  background:#082936!important;
+  border-color:rgba(95,235,255,.16)!important;
+  color:#dffaff!important;
+}
+
+.message.me,.message.sent{
+  background:linear-gradient(135deg,#008fa3,#16d8ef)!important;
+  color:#00151b!important;
+}
+
+input,select,textarea,
+.form-group input,.form-group textarea,.form-group select{
+  background:rgba(2,19,28,.86)!important;
+  color:#eaffff!important;
+  border-color:rgba(95,235,255,.22)!important;
+}
+
+input::placeholder,textarea::placeholder{
+  color:#7699a2!important;
+}
+
+input:focus,select:focus,textarea:focus{
+  border-color:#35e8ff!important;
+  box-shadow:0 0 0 4px rgba(0,229,255,.13)!important;
+}
+
+.check-option{
+  background:rgba(0,188,212,.08)!important;
+  color:#dffaff!important;
+  border:1px solid rgba(95,235,255,.12)!important;
+}
+
+.profile-health-action{
+  background:rgba(0,188,212,.10)!important;
+  color:#6ff2ff!important;
+  border-color:#00bcd4!important;
+}
+
+.progress-track{
+  background:#123541!important;
+}
+
+.progress-fill{
+  background:linear-gradient(90deg,#00bcd4,#5deeff)!important;
+}
+
+footer,.ss-footer{
+  background:linear-gradient(145deg,#02121c,#04394b)!important;
+  color:#bdebf2!important;
+  border-top-color:rgba(95,235,255,.18)!important;
+}
+
+.toast{
+  background:linear-gradient(135deg,#063747,#008fa3)!important;
+  color:#eaffff!important;
+}
+
+/* Dark-mode button compatibility */
+body.dark-mode{
+  --e-bg:#06151d!important;
+  --e-surface:#0a2530!important;
+  --e-surface-2:#0d2d39!important;
+  --e-text:#e8fbff!important;
+  --e-muted:#9fc0c8!important;
+  --e-line:#22505e!important;
+  --e-green:#00bcd4!important;
+  --e-green-2:#36e7ff!important;
+  --e-mint:#0a3440!important;
+  background:
+    radial-gradient(circle at 0 0,rgba(0,229,255,.18),transparent 30rem),
+    linear-gradient(180deg,#020b12,#061923)!important;
+  color:#e8fbff!important;
+}
+
+body.dark-mode nav{
+  background:rgba(2,13,20,.84)!important;
+}
+
+body.dark-mode .hero{
+  background:linear-gradient(135deg,#03131d,#063547 58%,#073c52)!important;
+}
+
+body.dark-mode .india-strip span,
+body.dark-mode .search-box,
+body.dark-mode .person-card,
+body.dark-mode .dashboard-card,
+body.dark-mode .request-item,
+body.dark-mode .connection-item,
+body.dark-mode .filter-bar,
+body.dark-mode .search-container,
+body.dark-mode .filters,
+body.dark-mode .category,
+body.dark-mode .modal,
+body.dark-mode .modal-content,
+body.dark-mode .dialog,
+body.dark-mode .teen-banner{
+  background:#08222d!important;
+  border-color:#22505e!important;
+  color:#e8fbff!important;
+}
+
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select{
+  background:#041821!important;
+  color:#e8fbff!important;
+  border-color:#22505e!important;
+}
+
+body.dark-mode .skill,
+body.dark-mode .skill-tag,
+body.dark-mode .member-badge{
+  background:#0a3440!important;
+  border-color:#286171!important;
+}
+
+body.dark-mode .theme-btn{
+  background:#08222d!important;
+  color:#eaffff!important;
+  border-color:#22505e!important;
+}
+
+/* Make availability choices clearly visible */
+.checkbox-grid .check-option,
+.check-grid .check-option{
+  color:#dffaff!important;
+  background:linear-gradient(135deg,rgba(0,188,212,.10),rgba(0,229,255,.04))!important;
+  border:1px solid rgba(95,235,255,.22)!important;
+  opacity:1!important;
+}
+
+.checkbox-grid .check-option input,
+.check-grid .check-option input{
+  accent-color:#00d5ec!important;
+}
+
+.checkbox-grid .check-option:hover,
+.check-grid .check-option:hover{
+  border-color:#49ecff!important;
+  background:rgba(0,229,255,.13)!important;
+}
+
+/* Cyan availability text in profile/cards */
+.availability,
+#profileAvailability{
+  color:#72efff!important;
+  font-weight:700!important;
+}
+</style>
+
+
+<style id="skillswap-cyan-background-dark-blue-buttons">
+/* CYAN FADE BACKGROUND + DARK BLUE BUTTONS */
+:root{
+  --ss-dark-blue:#06244a!important;
+  --ss-dark-blue-2:#0a376d!important;
+  --ss-cyan:#00d9f5!important;
+  --ss-cyan-soft:#bff8ff!important;
+}
+
+html{background:#03152d!important}
+
+body{
+  background:
+    radial-gradient(circle at 12% 8%,rgba(0,238,255,.34),transparent 28%),
+    radial-gradient(circle at 88% 18%,rgba(0,198,255,.28),transparent 26%),
+    radial-gradient(circle at 50% 100%,rgba(20,111,220,.30),transparent 38%),
+    linear-gradient(135deg,#021426 0%,#043653 38%,#08758b 67%,#062b55 100%)!important;
+  background-attachment:fixed!important;
+  color:#ecfdff!important;
+}
+
+body:before{
+  background-image:
+    linear-gradient(rgba(0,240,255,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,240,255,.035) 1px,transparent 1px)!important;
+}
+
+/* Dark-blue buttons */
+button,
+.btn,
+.join,
+.search-btn,
+.match-btn,
+.connect,
+.modal-submit,
+.cta button,
+.small-btn.primary,
+.chat-input button,
+.ss-btn,
+.primary{
+  background:linear-gradient(135deg,#041d42,#0a3d78)!important;
+  color:#e8fbff!important;
+  border-color:#155493!important;
+  box-shadow:0 8px 22px rgba(1,19,48,.35)!important;
+}
+
+button:hover,
+.btn:hover,
+.join:hover,
+.search-btn:hover,
+.match-btn:hover,
+.connect:hover,
+.modal-submit:hover,
+.cta button:hover,
+.small-btn.primary:hover,
+.chat-input button:hover,
+.ss-btn:hover,
+.primary:hover{
+  background:linear-gradient(135deg,#082c5b,#0d4d91)!important;
+  color:#fff!important;
+  box-shadow:0 12px 28px rgba(0,35,82,.45)!important;
+}
+
+nav,header,.navbar,.nav,.topbar{
+  background:rgba(2,20,39,.78)!important;
+  border-bottom:1px solid rgba(82,236,255,.22)!important;
+}
+
+.logo,.brand,.site-logo,.nav-links a,.signin,.profile-nav-btn{
+  color:#73efff!important;
+}
+
+.logo-mark{
+  background:linear-gradient(135deg,#006a91,#00d9f5)!important;
+}
+
+.hero{
+  background:
+    radial-gradient(circle at 15% 18%,rgba(0,238,255,.22),transparent 27%),
+    radial-gradient(circle at 85% 12%,rgba(0,140,255,.20),transparent 24%),
+    linear-gradient(135deg,#03172b,#07506a 58%,#07869b 100%)!important;
+}
+
+.hero h1,
+.ss-hero h1,
+h1 span{
+  background:linear-gradient(135deg,#efffff,#65f3ff,#00c9e8)!important;
+  -webkit-background-clip:text!important;
+  -webkit-text-fill-color:transparent!important;
+}
+
+.hero-subtitle,
+.section-header p,
+.teen-banner p,
+.dashboard-card>p,
+.profile-bio,
+.profile-location,
+.availability{
+  color:#b4dbe3!important;
+}
+
+.card,.person-card,.feature-card,.stat-card,.dashboard-card,
+.request-item,.connection-item,.category,.filter-bar,
+.search-container,.filters,.quick-panel,.progress-panel{
+  background:rgba(4,27,48,.78)!important;
+  border-color:rgba(90,232,255,.18)!important;
+  color:#e9fcff!important;
+  box-shadow:0 12px 35px rgba(0,8,22,.30)!important;
+  backdrop-filter:blur(12px);
+}
+
+.category:hover,.category.active,
+.filter-chip:hover,.filter-chip.active{
+  background:linear-gradient(135deg,#06244a,#0a376d)!important;
+  color:#eaffff!important;
+  border-color:#43eaff!important;
+}
+
+.filter-chip,.quick-action,.logout-btn{
+  background:rgba(3,25,46,.82)!important;
+  color:#bff7ff!important;
+  border-color:rgba(90,232,255,.20)!important;
+}
+
+.skill,.skill-tag,.member-badge{
+  background:rgba(0,217,245,.09)!important;
+  color:#73efff!important;
+  border-color:rgba(90,232,255,.20)!important;
+}
+
+.person-card:before{
+  background:linear-gradient(90deg,#00d9f5,#62f3ff,transparent)!important;
+}
+
+input,select,textarea,
+.form-group input,.form-group textarea,.form-group select{
+  background:rgba(2,18,34,.88)!important;
+  color:#ecfdff!important;
+  border-color:rgba(90,232,255,.22)!important;
+}
+
+input:focus,select:focus,textarea:focus{
+  border-color:#39e9ff!important;
+  box-shadow:0 0 0 4px rgba(0,217,245,.13)!important;
+}
+
+.availability{
+  color:#72efff!important;
+  font-weight:750!important;
+}
+
+.checkbox-grid .check-option,
+.check-grid .check-option{
+  background:linear-gradient(135deg,rgba(0,217,245,.11),rgba(4,45,75,.45))!important;
+  color:#e5fcff!important;
+  border-color:rgba(90,232,255,.24)!important;
+}
+
+.how{
+  background:
+    radial-gradient(circle at 85% 15%,rgba(0,229,255,.20),transparent 22rem),
+    linear-gradient(135deg,#031d38,#064d73 58%,#087b8d)!important;
+}
+
+.chat-header{
+  background:linear-gradient(135deg,#041d42,#0a3d78)!important;
+}
+
+.message.me,.message.sent{
+  background:linear-gradient(135deg,#06244a,#0a376d)!important;
+  color:#ecfdff!important;
+}
+
+footer,.ss-footer{
+  background:linear-gradient(145deg,#020f25,#062d58,#074d67)!important;
+}
+
+/* Dark mode remains cyan/blue rather than green */
+body.dark-mode{
+  background:
+    radial-gradient(circle at 5% 0%,rgba(0,229,255,.20),transparent 30rem),
+    linear-gradient(180deg,#020b16,#031d32)!important;
+}
+
+body.dark-mode .join,
+body.dark-mode .search-btn,
+body.dark-mode .match-btn,
+body.dark-mode .connect,
+body.dark-mode .modal-submit,
+body.dark-mode .small-btn.primary{
+  background:linear-gradient(135deg,#041d42,#0a3d78)!important;
+}
+</style>
+
 </head>
 
 <body>
