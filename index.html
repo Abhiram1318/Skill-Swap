@@ -6,9 +6,9 @@
 <style id="skillswap-modern-format">
 /* =========================================================
    SKILLSWAP INDIA — MODERN UI FORMAT
-   Presentation layer only: existing Flask/API functionality
-   remains intact.
+   Clean text-visible version
    ========================================================= */
+
 :root{
   --ss-primary:#176b57;
   --ss-primary-2:#0f5747;
@@ -21,157 +21,654 @@
   --ss-shadow:0 14px 40px rgba(23,49,43,.09);
   --ss-radius:20px;
 }
-html{scroll-behavior:smooth}
+
+/* =========================================================
+   BASE
+   ========================================================= */
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
 body{
   background:
-    radial-gradient(circle at 5% 0%,rgba(23,107,87,.08),transparent 28rem),
-    radial-gradient(circle at 95% 8%,rgba(242,169,0,.07),transparent 24rem),
+    radial-gradient(
+      circle at 5% 0%,
+      rgba(23,107,87,.08),
+      transparent 28rem
+    ),
+    radial-gradient(
+      circle at 95% 8%,
+      rgba(242,169,0,.07),
+      transparent 24rem
+    ),
     var(--ss-bg);
+
   color:var(--ss-ink);
-  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
   line-height:1.55;
+  min-height:100vh;
 }
-button,input,select,textarea{font:inherit}
-button{cursor:pointer}
-header,.navbar,.nav,.topbar{
+
+/* =========================================================
+   IMPORTANT — TEXT VISIBILITY
+   ========================================================= */
+
+body,
+main,
+section,
+article,
+div,
+p,
+span,
+strong,
+small,
+label,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+a,
+button{
+  -webkit-text-fill-color:currentColor;
+}
+
+/* Never use transparent text */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+strong,
+small,
+label,
+a{
+  background-clip:initial;
+  -webkit-background-clip:initial;
+}
+
+/* =========================================================
+   TYPOGRAPHY
+   ========================================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6{
+  color:var(--ss-ink);
+}
+
+p{
+  color:var(--ss-ink);
+}
+
+a{
+  color:var(--ss-primary);
+}
+
+button,
+input,
+select,
+textarea{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+header,
+.navbar,
+.nav,
+.topbar{
   position:sticky;
   top:0;
   z-index:100;
+
   backdrop-filter:blur(16px);
-  background:rgba(255,255,255,.91)!important;
-  border-bottom:1px solid var(--ss-border)!important;
-  box-shadow:0 5px 24px rgba(23,49,43,.05);
+
+  background:rgba(255,255,255,.94)!important;
+
+  border-bottom:
+    1px solid var(--ss-border)!important;
+
+  box-shadow:
+    0 5px 24px rgba(23,49,43,.05);
 }
-.logo,.brand,.site-logo{
+
+.logo,
+.brand,
+.site-logo{
   color:var(--ss-primary)!important;
+  -webkit-text-fill-color:var(--ss-primary)!important;
+
   font-weight:850!important;
   letter-spacing:-.03em;
 }
-a{color:var(--ss-primary)}
-.hero,.hero-section{
+
+.nav-links a{
+  color:#52615c!important;
+  -webkit-text-fill-color:#52615c!important;
+
+  text-decoration:none;
+}
+
+.nav-links a:hover{
+  color:var(--ss-primary)!important;
+  -webkit-text-fill-color:var(--ss-primary)!important;
+}
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.hero,
+.hero-section{
   border-radius:30px!important;
   overflow:hidden;
   box-shadow:var(--ss-shadow);
 }
-.card,.person-card,.feature-card,.stat-card,.dashboard-card,.request-item,.connection-item{
-  background:var(--ss-card)!important;
-  border:1px solid var(--ss-border)!important;
-  border-radius:var(--ss-radius)!important;
-  box-shadow:0 8px 28px rgba(23,49,43,.06);
-  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+
+.hero h1,
+.ss-hero h1{
+  color:var(--ss-ink)!important;
+  -webkit-text-fill-color:var(--ss-ink)!important;
+
+  background:none!important;
+  background-image:none!important;
+
+  font-weight:850;
 }
-.card:hover,.person-card:hover,.feature-card:hover,.stat-card:hover{
+
+.hero h1 span,
+.ss-hero h1 span{
+  color:var(--ss-primary)!important;
+  -webkit-text-fill-color:var(--ss-primary)!important;
+
+  background:none!important;
+  background-image:none!important;
+}
+
+.hero-subtitle,
+.ss-hero-copy{
+  color:var(--ss-muted)!important;
+  -webkit-text-fill-color:var(--ss-muted)!important;
+}
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+.card,
+.person-card,
+.feature-card,
+.stat-card,
+.dashboard-card,
+.request-item,
+.connection-item{
+  background:var(--ss-card)!important;
+
+  border:
+    1px solid var(--ss-border)!important;
+
+  border-radius:var(--ss-radius)!important;
+
+  box-shadow:
+    0 8px 28px rgba(23,49,43,.06);
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease,
+    border-color .2s ease;
+
+  color:var(--ss-ink)!important;
+}
+
+.card:hover,
+.person-card:hover,
+.feature-card:hover,
+.stat-card:hover{
   transform:translateY(-3px);
+
   box-shadow:var(--ss-shadow);
+
   border-color:#cdded8!important;
 }
-button,.btn,.connect,.modal-submit,.primary,.cta{
+
+.card h3,
+.person-card h3,
+.feature-card h3,
+.stat-card h3,
+.dashboard-card h3{
+  color:var(--ss-ink)!important;
+  -webkit-text-fill-color:var(--ss-ink)!important;
+}
+
+.card p,
+.person-card p,
+.feature-card p,
+.stat-card p,
+.dashboard-card p{
+  color:var(--ss-muted)!important;
+  -webkit-text-fill-color:var(--ss-muted)!important;
+}
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+button,
+.btn,
+.connect,
+.modal-submit,
+.primary,
+.cta{
   border-radius:12px!important;
   font-weight:750!important;
-  transition:transform .15s ease,box-shadow .15s ease,filter .15s ease;
+
+  transition:
+    transform .15s ease,
+    box-shadow .15s ease,
+    filter .15s ease;
 }
-button:hover,.btn:hover,.connect:hover,.modal-submit:hover,.primary:hover,.cta:hover{
+
+button:hover,
+.btn:hover,
+.connect:hover,
+.modal-submit:hover,
+.primary:hover,
+.cta:hover{
   transform:translateY(-1px);
   filter:brightness(.98);
 }
-input,select,textarea{
-  border:1px solid var(--ss-border)!important;
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+input,
+select,
+textarea{
+  border:
+    1px solid var(--ss-border)!important;
+
   border-radius:12px!important;
+
   background:#fff!important;
+
   color:var(--ss-ink)!important;
+  -webkit-text-fill-color:var(--ss-ink)!important;
+
   padding:12px 14px!important;
+
   outline:none;
-  transition:border-color .15s ease,box-shadow .15s ease;
+
+  transition:
+    border-color .15s ease,
+    box-shadow .15s ease;
 }
-input:focus,select:focus,textarea:focus{
+
+input::placeholder,
+textarea::placeholder{
+  color:#84928d!important;
+  -webkit-text-fill-color:#84928d!important;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
   border-color:var(--ss-primary)!important;
-  box-shadow:0 0 0 4px rgba(23,107,87,.11)!important;
+
+  box-shadow:
+    0 0 0 4px rgba(23,107,87,.11)!important;
 }
-.modal-overlay{
-  background:rgba(8,31,26,.58)!important;
-  backdrop-filter:blur(5px);
-}
-.modal,.modal-content,.dialog{
-  border:1px solid var(--ss-border)!important;
-  border-radius:24px!important;
-  box-shadow:0 30px 80px rgba(8,31,26,.24)!important;
-}
+
+/* =========================================================
+   MATCH SCORE
+   ========================================================= */
+
 .match-score{
   background:rgba(23,107,87,.10)!important;
+
   color:var(--ss-primary)!important;
+  -webkit-text-fill-color:var(--ss-primary)!important;
+
   border-radius:999px!important;
+
   font-weight:800;
 }
-.skill-tag,.filter-chip,.category{
-  border-radius:999px!important;
-}
+
+/* =========================================================
+   SKILL TAGS
+   ========================================================= */
+
 .skill-tag{
   background:#edf6f2!important;
+
   color:var(--ss-primary)!important;
-  border:1px solid #d7eae3!important;
+  -webkit-text-fill-color:var(--ss-primary)!important;
+
+  border:
+    1px solid #d7eae3!important;
+
+  border-radius:999px!important;
 }
-.filter-chip,.category{
+
+.filter-chip,
+.category{
   background:#fff!important;
-  border:1px solid var(--ss-border)!important;
+
+  color:var(--ss-ink)!important;
+  -webkit-text-fill-color:var(--ss-ink)!important;
+
+  border:
+    1px solid var(--ss-border)!important;
+
+  border-radius:999px!important;
 }
-.filter-chip:hover,.category:hover,.category.active{
+
+.filter-chip:hover,
+.category:hover,
+.category.active{
   background:var(--ss-primary)!important;
+
   color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+
   border-color:var(--ss-primary)!important;
 }
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
 .empty-state{
   border:1px dashed #cbdad5;
-  background:rgba(255,255,255,.72);
+
+  background:#fff;
+
   border-radius:16px;
+
   padding:28px;
+
   color:var(--ss-muted);
+  -webkit-text-fill-color:var(--ss-muted);
+
   text-align:center;
 }
-.status.pending{background:#fff5d8!important;color:#8a6100!important}
-.status.accepted{background:#e6f5ee!important;color:#176b57!important}
-.status.declined{background:#fdecec!important;color:#a33b3b!important}
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+.status.pending{
+  background:#fff5d8!important;
+
+  color:#8a6100!important;
+  -webkit-text-fill-color:#8a6100!important;
+}
+
+.status.accepted{
+  background:#e6f5ee!important;
+
+  color:#176b57!important;
+  -webkit-text-fill-color:#176b57!important;
+}
+
+.status.declined{
+  background:#fdecec!important;
+
+  color:#a33b3b!important;
+  -webkit-text-fill-color:#a33b3b!important;
+}
+
+/* =========================================================
+   MESSAGES
+   ========================================================= */
+
 .message{
   border-radius:16px!important;
+
   padding:10px 14px!important;
+
   margin:7px 0!important;
+
   max-width:78%;
+
+  color:var(--ss-ink);
 }
-.message.sent{margin-left:auto}
+
+.message.sent{
+  margin-left:auto;
+}
+
+/* =========================================================
+   MEMBER BADGE
+   ========================================================= */
+
 .member-badge{
   display:inline-flex;
+
   align-items:center;
+
   gap:6px;
+
   border-radius:999px!important;
+
   background:#eef7f4!important;
+
   color:var(--ss-primary)!important;
+  -webkit-text-fill-color:var(--ss-primary)!important;
+
   font-size:.78rem;
+
   font-weight:750;
 }
-.rating{color:#8a6500!important}
-footer{
-  border-top:1px solid var(--ss-border)!important;
-  background:#102d26!important;
-  color:#dceae6!important;
+
+/* =========================================================
+   RATING
+   ========================================================= */
+
+.rating{
+  color:#8a6500!important;
+  -webkit-text-fill-color:#8a6500!important;
 }
+
+/* =========================================================
+   MODALS
+   ========================================================= */
+
+.modal-overlay{
+  background:rgba(8,31,26,.58)!important;
+
+  backdrop-filter:blur(5px);
+}
+
+.modal,
+.modal-content,
+.dialog{
+  background:#fff!important;
+
+  color:var(--ss-ink)!important;
+
+  border:
+    1px solid var(--ss-border)!important;
+
+  border-radius:24px!important;
+
+  box-shadow:
+    0 30px 80px rgba(8,31,26,.24)!important;
+}
+
+.modal h1,
+.modal h2,
+.modal h3,
+.modal h4{
+  color:var(--ss-ink)!important;
+  -webkit-text-fill-color:var(--ss-ink)!important;
+}
+
+.modal p,
+.modal label{
+  color:var(--ss-muted)!important;
+  -webkit-text-fill-color:var(--ss-muted)!important;
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+footer{
+  border-top:
+    1px solid var(--ss-border)!important;
+
+  background:#102d26!important;
+
+  color:#dceae6!important;
+  -webkit-text-fill-color:#dceae6!important;
+}
+
+footer p,
+footer span,
+footer a{
+  color:#dceae6!important;
+  -webkit-text-fill-color:#dceae6!important;
+}
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+
 .toast{
   border-radius:14px!important;
-  box-shadow:0 16px 40px rgba(0,0,0,.16)!important;
+
+  box-shadow:
+    0 16px 40px rgba(0,0,0,.16)!important;
+
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
 }
+
+/* =========================================================
+   MAIN PAGE SAFETY OVERRIDE
+   ========================================================= */
+
+/*
+   This prevents older CSS blocks in the file from making
+   normal page text transparent.
+*/
+
+main h1,
+main h2,
+main h3,
+main h4,
+main h5,
+main h6{
+  color:var(--ss-ink)!important;
+  -webkit-text-fill-color:var(--ss-ink)!important;
+
+  background:none!important;
+  background-image:none!important;
+}
+
+main p{
+  color:var(--ss-ink)!important;
+  -webkit-text-fill-color:var(--ss-ink)!important;
+}
+
+main .hero-subtitle,
+main .section-header p{
+  color:var(--ss-muted)!important;
+  -webkit-text-fill-color:var(--ss-muted)!important;
+}
+
+main a{
+  color:var(--ss-primary)!important;
+  -webkit-text-fill-color:var(--ss-primary)!important;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
 @media(max-width:760px){
-  body{font-size:15px}
-  .hero,.hero-section{border-radius:20px!important}
-  .person-card,.card{border-radius:16px!important}
-  .message{max-width:88%}
-  header,.navbar,.nav,.topbar{position:sticky}
+
+  body{
+    font-size:15px;
+  }
+
+  .hero,
+  .hero-section{
+    border-radius:20px!important;
+  }
+
+  .person-card,
+  .card{
+    border-radius:16px!important;
+  }
+
+  .message{
+    max-width:88%;
+  }
+
+  header,
+  .navbar,
+  .nav,
+  .topbar{
+    position:sticky;
+  }
+
 }
+
+/* =========================================================
+   FINAL GUARANTEE:
+   NO TRANSPARENT TEXT
+   ========================================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+strong,
+small,
+label,
+a,
+button{
+  text-shadow:none;
+}
+
 </style>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="SkillSwap India — Learn. Teach. Connect.">
-<title>SkillSwap India — Learn. Teach. Connect.</title>
-
-<style>
 *{
     box-sizing:border-box;
     margin:0;
