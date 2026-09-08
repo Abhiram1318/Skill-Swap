@@ -6,9 +6,9 @@
 <style id="skillswap-modern-format">
 /* =========================================================
    SKILLSWAP INDIA — MODERN UI FORMAT
-   Clean text-visible version
+   Presentation layer only: existing Flask/API functionality
+   remains intact.
    ========================================================= */
-
 :root{
   --ss-primary:#176b57;
   --ss-primary-2:#0f5747;
@@ -21,653 +21,1369 @@
   --ss-shadow:0 14px 40px rgba(23,49,43,.09);
   --ss-radius:20px;
 }
-
-/* =========================================================
-   BASE
-   ========================================================= */
-
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-html{
-  scroll-behavior:smooth;
-}
-
+html{scroll-behavior:smooth}
 body{
   background:
-    radial-gradient(
-      circle at 5% 0%,
-      rgba(23,107,87,.08),
-      transparent 28rem
-    ),
-    radial-gradient(
-      circle at 95% 8%,
-      rgba(242,169,0,.07),
-      transparent 24rem
-    ),
+    radial-gradient(circle at 5% 0%,rgba(23,107,87,.08),transparent 28rem),
+    radial-gradient(circle at 95% 8%,rgba(242,169,0,.07),transparent 24rem),
     var(--ss-bg);
-
   color:var(--ss-ink);
-
-  font-family:
-    Inter,
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   line-height:1.55;
-  min-height:100vh;
 }
-
-/* =========================================================
-   IMPORTANT — TEXT VISIBILITY
-   ========================================================= */
-
-body,
-main,
-section,
-article,
-div,
-p,
-span,
-strong,
-small,
-label,
-li,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-a,
-button{
-  -webkit-text-fill-color:currentColor;
-}
-
-/* Never use transparent text */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-span,
-strong,
-small,
-label,
-a{
-  background-clip:initial;
-  -webkit-background-clip:initial;
-}
-
-/* =========================================================
-   TYPOGRAPHY
-   ========================================================= */
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6{
-  color:var(--ss-ink);
-}
-
-p{
-  color:var(--ss-ink);
-}
-
-a{
-  color:var(--ss-primary);
-}
-
-button,
-input,
-select,
-textarea{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-}
-
-/* =========================================================
-   NAVIGATION
-   ========================================================= */
-
-header,
-.navbar,
-.nav,
-.topbar{
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+header,.navbar,.nav,.topbar{
   position:sticky;
   top:0;
   z-index:100;
-
   backdrop-filter:blur(16px);
-
-  background:rgba(255,255,255,.94)!important;
-
-  border-bottom:
-    1px solid var(--ss-border)!important;
-
-  box-shadow:
-    0 5px 24px rgba(23,49,43,.05);
+  background:rgba(255,255,255,.91)!important;
+  border-bottom:1px solid var(--ss-border)!important;
+  box-shadow:0 5px 24px rgba(23,49,43,.05);
 }
-
-.logo,
-.brand,
-.site-logo{
+.logo,.brand,.site-logo{
   color:var(--ss-primary)!important;
-  -webkit-text-fill-color:var(--ss-primary)!important;
-
   font-weight:850!important;
   letter-spacing:-.03em;
 }
-
-.nav-links a{
-  color:#52615c!important;
-  -webkit-text-fill-color:#52615c!important;
-
-  text-decoration:none;
-}
-
-.nav-links a:hover{
-  color:var(--ss-primary)!important;
-  -webkit-text-fill-color:var(--ss-primary)!important;
-}
-
-/* =========================================================
-   HERO
-   ========================================================= */
-
-.hero,
-.hero-section{
+a{color:var(--ss-primary)}
+.hero,.hero-section{
   border-radius:30px!important;
   overflow:hidden;
   box-shadow:var(--ss-shadow);
 }
-
-.hero h1,
-.ss-hero h1{
-  color:var(--ss-ink)!important;
-  -webkit-text-fill-color:var(--ss-ink)!important;
-
-  background:none!important;
-  background-image:none!important;
-
-  font-weight:850;
-}
-
-.hero h1 span,
-.ss-hero h1 span{
-  color:var(--ss-primary)!important;
-  -webkit-text-fill-color:var(--ss-primary)!important;
-
-  background:none!important;
-  background-image:none!important;
-}
-
-.hero-subtitle,
-.ss-hero-copy{
-  color:var(--ss-muted)!important;
-  -webkit-text-fill-color:var(--ss-muted)!important;
-}
-
-/* =========================================================
-   CARDS
-   ========================================================= */
-
-.card,
-.person-card,
-.feature-card,
-.stat-card,
-.dashboard-card,
-.request-item,
-.connection-item{
+.card,.person-card,.feature-card,.stat-card,.dashboard-card,.request-item,.connection-item{
   background:var(--ss-card)!important;
-
-  border:
-    1px solid var(--ss-border)!important;
-
+  border:1px solid var(--ss-border)!important;
   border-radius:var(--ss-radius)!important;
-
-  box-shadow:
-    0 8px 28px rgba(23,49,43,.06);
-
-  transition:
-    transform .2s ease,
-    box-shadow .2s ease,
-    border-color .2s ease;
-
-  color:var(--ss-ink)!important;
+  box-shadow:0 8px 28px rgba(23,49,43,.06);
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
 }
-
-.card:hover,
-.person-card:hover,
-.feature-card:hover,
-.stat-card:hover{
+.card:hover,.person-card:hover,.feature-card:hover,.stat-card:hover{
   transform:translateY(-3px);
-
   box-shadow:var(--ss-shadow);
-
   border-color:#cdded8!important;
 }
-
-.card h3,
-.person-card h3,
-.feature-card h3,
-.stat-card h3,
-.dashboard-card h3{
-  color:var(--ss-ink)!important;
-  -webkit-text-fill-color:var(--ss-ink)!important;
-}
-
-.card p,
-.person-card p,
-.feature-card p,
-.stat-card p,
-.dashboard-card p{
-  color:var(--ss-muted)!important;
-  -webkit-text-fill-color:var(--ss-muted)!important;
-}
-
-/* =========================================================
-   BUTTONS
-   ========================================================= */
-
-button,
-.btn,
-.connect,
-.modal-submit,
-.primary,
-.cta{
+button,.btn,.connect,.modal-submit,.primary,.cta{
   border-radius:12px!important;
   font-weight:750!important;
-
-  transition:
-    transform .15s ease,
-    box-shadow .15s ease,
-    filter .15s ease;
+  transition:transform .15s ease,box-shadow .15s ease,filter .15s ease;
 }
-
-button:hover,
-.btn:hover,
-.connect:hover,
-.modal-submit:hover,
-.primary:hover,
-.cta:hover{
+button:hover,.btn:hover,.connect:hover,.modal-submit:hover,.primary:hover,.cta:hover{
   transform:translateY(-1px);
   filter:brightness(.98);
 }
-
-/* =========================================================
-   INPUTS
-   ========================================================= */
-
-input,
-select,
-textarea{
-  border:
-    1px solid var(--ss-border)!important;
-
+input,select,textarea{
+  border:1px solid var(--ss-border)!important;
   border-radius:12px!important;
-
   background:#fff!important;
-
   color:var(--ss-ink)!important;
-  -webkit-text-fill-color:var(--ss-ink)!important;
-
   padding:12px 14px!important;
-
   outline:none;
-
-  transition:
-    border-color .15s ease,
-    box-shadow .15s ease;
+  transition:border-color .15s ease,box-shadow .15s ease;
 }
-
-input::placeholder,
-textarea::placeholder{
-  color:#84928d!important;
-  -webkit-text-fill-color:#84928d!important;
-}
-
-input:focus,
-select:focus,
-textarea:focus{
+input:focus,select:focus,textarea:focus{
   border-color:var(--ss-primary)!important;
-
-  box-shadow:
-    0 0 0 4px rgba(23,107,87,.11)!important;
+  box-shadow:0 0 0 4px rgba(23,107,87,.11)!important;
 }
-
-/* =========================================================
-   MATCH SCORE
-   ========================================================= */
-
+.modal-overlay{
+  background:rgba(8,31,26,.58)!important;
+  backdrop-filter:blur(5px);
+}
+.modal,.modal-content,.dialog{
+  border:1px solid var(--ss-border)!important;
+  border-radius:24px!important;
+  box-shadow:0 30px 80px rgba(8,31,26,.24)!important;
+}
 .match-score{
   background:rgba(23,107,87,.10)!important;
-
   color:var(--ss-primary)!important;
-  -webkit-text-fill-color:var(--ss-primary)!important;
-
   border-radius:999px!important;
-
   font-weight:800;
 }
-
-/* =========================================================
-   SKILL TAGS
-   ========================================================= */
-
+.skill-tag,.filter-chip,.category{
+  border-radius:999px!important;
+}
 .skill-tag{
   background:#edf6f2!important;
-
   color:var(--ss-primary)!important;
-  -webkit-text-fill-color:var(--ss-primary)!important;
-
-  border:
-    1px solid #d7eae3!important;
-
-  border-radius:999px!important;
+  border:1px solid #d7eae3!important;
 }
-
-.filter-chip,
-.category{
+.filter-chip,.category{
   background:#fff!important;
-
-  color:var(--ss-ink)!important;
-  -webkit-text-fill-color:var(--ss-ink)!important;
-
-  border:
-    1px solid var(--ss-border)!important;
-
-  border-radius:999px!important;
+  border:1px solid var(--ss-border)!important;
 }
-
-.filter-chip:hover,
-.category:hover,
-.category.active{
+.filter-chip:hover,.category:hover,.category.active{
   background:var(--ss-primary)!important;
-
   color:#fff!important;
-  -webkit-text-fill-color:#fff!important;
-
   border-color:var(--ss-primary)!important;
 }
-
-/* =========================================================
-   EMPTY STATE
-   ========================================================= */
-
 .empty-state{
   border:1px dashed #cbdad5;
-
-  background:#fff;
-
+  background:rgba(255,255,255,.72);
   border-radius:16px;
-
   padding:28px;
-
   color:var(--ss-muted);
-  -webkit-text-fill-color:var(--ss-muted);
-
   text-align:center;
 }
+.status.pending{background:#fff5d8!important;color:#8a6100!important}
+.status.accepted{background:#e6f5ee!important;color:#176b57!important}
+.status.declined{background:#fdecec!important;color:#a33b3b!important}
+.message{
+  border-radius:16px!important;
+  padding:10px 14px!important;
+  margin:7px 0!important;
+  max-width:78%;
+}
+.message.sent{margin-left:auto}
+.member-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  border-radius:999px!important;
+  background:#eef7f4!important;
+  color:var(--ss-primary)!important;
+  font-size:.78rem;
+  font-weight:750;
+}
+.rating{color:#8a6500!important}
+footer{
+  border-top:1px solid var(--ss-border)!important;
+  background:#102d26!important;
+  color:#dceae6!important;
+}
+.toast{
+  border-radius:14px!important;
+  box-shadow:0 16px 40px rgba(0,0,0,.16)!important;
+}
+@media(max-width:760px){
+  body{font-size:15px}
+  .hero,.hero-section{border-radius:20px!important}
+  .person-card,.card{border-radius:16px!important}
+  .message{max-width:88%}
+  header,.navbar,.nav,.topbar{position:sticky}
+}
+</style>
 
-/* =========================================================
-   STATUS
-   ========================================================= */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="SkillSwap India — Learn. Teach. Connect.">
+<title>SkillSwap India — Learn. Teach. Connect.</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+:root{
+    --green:#176b57;
+    --green-dark:#0d4d3e;
+    --green-light:#e7f5ef;
+    --coral:#ff8066;
+    --yellow:#ffd166;
+    --cream:#f8faf8;
+    --white:#fff;
+    --text:#17221f;
+    --muted:#6d7b76;
+    --border:#e1e9e5;
+    --danger:#d9534f;
+    --shadow:0 15px 45px rgba(23,54,45,.08);
+    --shadow-lg:0 25px 80px rgba(23,54,45,.15);
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:
+        radial-gradient(circle at 10% 10%,#e7f5ef,transparent 28%),
+        radial-gradient(circle at 90% 20%,rgba(255,209,102,.15),transparent 25%),
+        var(--cream);
+    color:var(--text);
+    line-height:1.5;
+    min-height:100vh;
+}
+
+body:before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:-1;
+    background-image:
+        linear-gradient(rgba(23,107,87,.025) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(23,107,87,.025) 1px,transparent 1px);
+    background-size:40px 40px;
+}
+
+button,input,textarea,select{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+.hidden{
+    display:none!important;
+}
+
+/* =========================
+   NAVIGATION
+========================= */
+
+nav{
+    height:76px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 6%;
+    background:rgba(248,250,248,.92);
+    border-bottom:1px solid var(--border);
+    position:sticky;
+    top:0;
+    z-index:100;
+    backdrop-filter:blur(18px);
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:var(--green);
+    font-size:1.35rem;
+    font-weight:850;
+}
+
+.logo-mark{
+    width:40px;
+    height:40px;
+    border-radius:13px;
+    display:grid;
+    place-items:center;
+    color:#fff;
+    background:linear-gradient(135deg,var(--green),#229477);
+    font-size:21px;
+}
+
+.india-badge{
+    font-size:.7rem;
+    background:linear-gradient(
+        90deg,
+        #ff9933 0 33%,
+        #fff 33% 66%,
+        #138808 66%
+    );
+    padding:3px 7px;
+    border-radius:8px;
+    font-weight:900;
+    color:#222;
+}
+
+.nav-links{
+    display:flex;
+    gap:25px;
+}
+
+.nav-links a{
+    text-decoration:none;
+    color:#52615c;
+    font-size:.88rem;
+    font-weight:650;
+}
+
+.nav-links a:hover{
+    color:var(--green);
+}
+
+.nav-actions,
+.user-nav{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.signin,
+.profile-nav-btn{
+    border:0;
+    background:transparent;
+    color:var(--green);
+    font-weight:750;
+    padding:10px 14px;
+}
+
+.join{
+    border:0;
+    background:var(--green);
+    color:#fff;
+    padding:11px 19px;
+    border-radius:11px;
+    font-weight:750;
+}
+
+.user-nav{
+    display:none;
+}
+
+.user-nav.show{
+    display:flex;
+}
+
+.nav-avatar{
+    width:38px;
+    height:38px;
+    border-radius:12px;
+    display:grid;
+    place-items:center;
+    background:var(--green-light);
+    font-size:20px;
+}
+
+.logout-btn{
+    border:1px solid var(--border);
+    background:#fff;
+    color:var(--green);
+    padding:9px 13px;
+    border-radius:10px;
+    font-weight:750;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero{
+    padding:75px 6% 70px;
+    text-align:center;
+}
+
+.hero-content{
+    max-width:980px;
+    margin:auto;
+}
+
+.eyebrow{
+    display:inline-flex;
+    padding:8px 14px;
+    border-radius:100px;
+    background:var(--green-light);
+    color:var(--green);
+    font-size:.82rem;
+    font-weight:800;
+    margin-bottom:22px;
+}
+
+h1{
+    font-size:clamp(3rem,7vw,6rem);
+    line-height:.96;
+    letter-spacing:-5px;
+}
+
+h1 span{
+    color:var(--green);
+    background:linear-gradient(135deg,var(--green),#32a783);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.hero-subtitle{
+    max-width:700px;
+    margin:25px auto 30px;
+    color:var(--muted);
+    font-size:1.08rem;
+}
+
+.india-strip{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:8px;
+    margin-bottom:25px;
+}
+
+.india-strip span{
+    padding:7px 11px;
+    border-radius:100px;
+    background:#fff;
+    border:1px solid var(--border);
+    font-size:.75rem;
+    font-weight:750;
+}
+
+.search-box{
+    max-width:720px;
+    margin:auto;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:8px;
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:17px;
+    box-shadow:var(--shadow);
+}
+
+.search-icon{
+    padding-left:15px;
+    font-size:20px;
+}
+
+.search-box input{
+    flex:1;
+    min-width:0;
+    border:0;
+    outline:0;
+    padding:14px 5px;
+}
+
+.search-btn,
+.match-btn{
+    border:0;
+    color:#fff;
+    border-radius:11px;
+    padding:13px 23px;
+    font-weight:800;
+}
+
+.search-btn{
+    background:var(--green);
+}
+
+.match-btn{
+    margin-top:18px;
+    background:linear-gradient(135deg,var(--coral),#ff977f);
+    box-shadow:0 10px 25px rgba(255,128,102,.22);
+}
+
+/* =========================
+   MAIN
+========================= */
+
+main{
+    max-width:1280px;
+    margin:auto;
+    padding:10px 6% 90px;
+}
+
+.section{
+    margin-top:50px;
+}
+
+.section-header{
+    display:flex;
+    align-items:end;
+    justify-content:space-between;
+    gap:20px;
+    margin-bottom:22px;
+}
+
+.section-header h2{
+    font-size:1.65rem;
+}
+
+.section-header p{
+    color:var(--muted);
+    font-size:.92rem;
+    margin-top:4px;
+}
+
+/* =========================
+   STUDENT BANNER
+========================= */
+
+.teen-banner{
+    background:linear-gradient(135deg,#173f72,#2875a8);
+    color:#fff;
+    border-radius:24px;
+    padding:28px;
+    margin-top:45px;
+}
+
+.teen-banner p{
+    max-width:780px;
+    color:rgba(255,255,255,.78);
+}
+
+.safety-note{
+    margin-top:14px;
+    display:inline-block;
+    background:rgba(255,255,255,.1);
+    border:1px solid rgba(255,255,255,.18);
+    padding:9px 12px;
+    border-radius:10px;
+    font-size:.78rem;
+}
+
+/* =========================
+   CATEGORIES
+========================= */
+
+.categories{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:12px;
+}
+
+.category{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:18px 12px;
+    text-align:center;
+    transition:.2s;
+}
+
+.category:hover,
+.category.active{
+    border-color:var(--green);
+    transform:translateY(-3px);
+    box-shadow:var(--shadow);
+}
+
+.category-icon{
+    font-size:27px;
+    margin-bottom:7px;
+}
+
+.category strong{
+    display:block;
+    font-size:.82rem;
+}
+
+/* =========================
+   MATCH CARDS
+========================= */
+
+.matches{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+    margin-top:22px;
+}
+
+.person-card{
+    position:relative;
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:22px;
+    transition:.25s;
+}
+
+.person-card:hover{
+    transform:translateY(-5px);
+    box-shadow:var(--shadow);
+}
+
+.match-score{
+    position:absolute;
+    top:17px;
+    right:17px;
+    background:#e7f7ef;
+    color:var(--green);
+    padding:6px 9px;
+    border-radius:8px;
+    font-size:.72rem;
+    font-weight:850;
+}
+
+.member-badge{
+    display:inline-block;
+    margin-bottom:12px;
+    padding:5px 8px;
+    background:#eef5ff;
+    color:#37649a;
+    border-radius:7px;
+    font-size:.65rem;
+    font-weight:850;
+}
+
+.profile{
+    display:flex;
+    align-items:center;
+    gap:13px;
+    margin-bottom:18px;
+}
+
+.avatar{
+    width:54px;
+    height:54px;
+    border-radius:16px;
+    display:grid;
+    place-items:center;
+    background:#f1ece7;
+    font-size:25px;
+}
+
+.profile h3{
+    font-size:1rem;
+}
+
+.profile p{
+    color:var(--muted);
+    font-size:.78rem;
+}
+
+.rating{
+    color:#e29b18;
+    font-size:.75rem;
+    font-weight:750;
+}
+
+.skill-row{
+    display:grid;
+    grid-template-columns:1fr 30px 1fr;
+    align-items:center;
+    gap:8px;
+}
+
+.skill{
+    padding:12px;
+    border-radius:12px;
+    background:#f6f8f7;
+    min-height:72px;
+}
+
+.skill small{
+    display:block;
+    color:var(--muted);
+    font-size:.65rem;
+    margin-bottom:3px;
+    text-transform:uppercase;
+}
+
+.skill strong{
+    font-size:.8rem;
+}
+
+.swap{
+    color:var(--coral);
+    font-size:18px;
+    text-align:center;
+}
+
+.availability{
+    color:var(--muted);
+    font-size:.72rem;
+    margin:12px 0;
+}
+
+.match-reason{
+    font-size:.72rem;
+    color:var(--green);
+    background:var(--green-light);
+    padding:8px 10px;
+    border-radius:9px;
+    margin-bottom:10px;
+}
+
+.connect{
+    width:100%;
+    padding:11px;
+    border:1px solid var(--green);
+    border-radius:10px;
+    color:var(--green);
+    background:#fff;
+    font-weight:750;
+}
+
+.connect:hover{
+    background:var(--green-light);
+}
+
+.connect.pending{
+    border-color:#e3a43b;
+    color:#a96a00;
+    background:#fff8e9;
+}
+
+.connect.connected{
+    background:var(--green-light);
+}
+
+/* =========================
+   FILTERS
+========================= */
+
+.filter-bar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin:20px 0;
+}
+
+.filter-chip{
+    border:1px solid var(--border);
+    background:#fff;
+    color:var(--muted);
+    border-radius:100px;
+    padding:8px 13px;
+    font-size:.78rem;
+    font-weight:700;
+}
+
+.filter-chip:hover{
+    border-color:var(--green);
+    color:var(--green);
+}
+
+/* =========================
+   HOW IT WORKS
+========================= */
+
+.how{
+    color:#fff;
+    border-radius:30px;
+    padding:48px;
+    margin-top:80px;
+    background:linear-gradient(
+        135deg,
+        #0d4d3e,
+        #176b57 55%,
+        #22896f
+    );
+}
+
+.how-intro{
+    max-width:700px;
+    color:rgba(255,255,255,.72);
+    margin:7px 0 30px;
+}
+
+.how h2{
+    font-size:2.2rem;
+}
+
+.steps{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+}
+
+.step{
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.12);
+    padding:25px;
+    border-radius:20px;
+}
+
+.step-number{
+    width:40px;
+    height:40px;
+    border-radius:12px;
+    display:grid;
+    place-items:center;
+    background:var(--yellow);
+    color:var(--text);
+    font-weight:900;
+    margin-bottom:18px;
+}
+
+.step-icon{
+    font-size:28px;
+    margin-bottom:10px;
+}
+
+.step p{
+    color:rgba(255,255,255,.72);
+    font-size:.88rem;
+}
+
+/* =========================
+   DASHBOARD
+========================= */
+
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+}
+
+.dashboard-card{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:20px;
+}
+
+.dashboard-card>p{
+    color:var(--muted);
+    font-size:.8rem;
+    margin-bottom:16px;
+}
+
+.request-list,
+.connection-list,
+.review-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.request-item,
+.connection-item,
+.review-item{
+    padding:13px;
+    background:#f7f9f8;
+    border-radius:13px;
+    border:1px solid var(--border);
+}
+
+.request-top,
+.connection-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+}
+
+.request-person{
+    display:flex;
+    align-items:center;
+    gap:9px;
+}
+
+.mini-avatar{
+    width:38px;
+    height:38px;
+    display:grid;
+    place-items:center;
+    border-radius:11px;
+    background:var(--green-light);
+}
+
+.request-item small,
+.connection-item small{
+    display:block;
+    color:var(--muted);
+    margin-top:3px;
+    font-size:.72rem;
+}
+
+.request-actions{
+    display:flex;
+    gap:6px;
+    margin-top:10px;
+}
+
+.small-btn{
+    border:0;
+    border-radius:8px;
+    padding:7px 10px;
+    font-size:.72rem;
+    font-weight:750;
+}
+
+.small-btn.primary{
+    background:var(--green);
+    color:#fff;
+}
+
+.status{
+    display:inline-block;
+    padding:4px 7px;
+    border-radius:7px;
+    font-size:.65rem;
+    font-weight:800;
+    text-transform:uppercase;
+}
 
 .status.pending{
-  background:#fff5d8!important;
-
-  color:#8a6100!important;
-  -webkit-text-fill-color:#8a6100!important;
+    background:#fff3d7;
+    color:#9a6800;
 }
 
 .status.accepted{
-  background:#e6f5ee!important;
-
-  color:#176b57!important;
-  -webkit-text-fill-color:#176b57!important;
+    background:#e5f7ed;
+    color:var(--green);
 }
 
-.status.declined{
-  background:#fdecec!important;
-
-  color:#a33b3b!important;
-  -webkit-text-fill-color:#a33b3b!important;
+.empty-state{
+    padding:25px 10px;
+    text-align:center;
+    color:var(--muted);
+    font-size:.82rem;
 }
 
-/* =========================================================
-   MESSAGES
-   ========================================================= */
+/* =========================
+   CTA
+========================= */
 
-.message{
-  border-radius:16px!important;
-
-  padding:10px 14px!important;
-
-  margin:7px 0!important;
-
-  max-width:78%;
-
-  color:var(--ss-ink);
+.cta{
+    text-align:center;
+    padding:85px 20px 40px;
 }
 
-.message.sent{
-  margin-left:auto;
+.cta h2{
+    font-size:clamp(2.2rem,4vw,3.2rem);
+    margin-bottom:10px;
 }
 
-/* =========================================================
-   MEMBER BADGE
-   ========================================================= */
-
-.member-badge{
-  display:inline-flex;
-
-  align-items:center;
-
-  gap:6px;
-
-  border-radius:999px!important;
-
-  background:#eef7f4!important;
-
-  color:var(--ss-primary)!important;
-  -webkit-text-fill-color:var(--ss-primary)!important;
-
-  font-size:.78rem;
-
-  font-weight:750;
+.cta p{
+    color:var(--muted);
+    margin-bottom:24px;
 }
 
-/* =========================================================
-   RATING
-   ========================================================= */
-
-.rating{
-  color:#8a6500!important;
-  -webkit-text-fill-color:#8a6500!important;
+.cta button{
+    border:0;
+    background:var(--green);
+    color:#fff;
+    padding:14px 26px;
+    border-radius:12px;
+    font-weight:800;
 }
 
-/* =========================================================
-   MODALS
-   ========================================================= */
-
-.modal-overlay{
-  background:rgba(8,31,26,.58)!important;
-
-  backdrop-filter:blur(5px);
-}
-
-.modal,
-.modal-content,
-.dialog{
-  background:#fff!important;
-
-  color:var(--ss-ink)!important;
-
-  border:
-    1px solid var(--ss-border)!important;
-
-  border-radius:24px!important;
-
-  box-shadow:
-    0 30px 80px rgba(8,31,26,.24)!important;
-}
-
-.modal h1,
-.modal h2,
-.modal h3,
-.modal h4{
-  color:var(--ss-ink)!important;
-  -webkit-text-fill-color:var(--ss-ink)!important;
-}
-
-.modal p,
-.modal label{
-  color:var(--ss-muted)!important;
-  -webkit-text-fill-color:var(--ss-muted)!important;
-}
-
-/* =========================================================
+/* =========================
    FOOTER
-   ========================================================= */
+========================= */
 
 footer{
-  border-top:
-    1px solid var(--ss-border)!important;
-
-  background:#102d26!important;
-
-  color:#dceae6!important;
-  -webkit-text-fill-color:#dceae6!important;
+    border-top:1px solid var(--border);
+    padding:30px 6%;
+    display:flex;
+    justify-content:space-between;
+    color:var(--muted);
+    font-size:.82rem;
 }
 
-footer p,
-footer span,
-footer a{
-  color:#dceae6!important;
-  -webkit-text-fill-color:#dceae6!important;
-}
-
-/* =========================================================
+/* =========================
    TOAST
-   ========================================================= */
+========================= */
 
 .toast{
-  border-radius:14px!important;
-
-  box-shadow:
-    0 16px 40px rgba(0,0,0,.16)!important;
-
-  color:#fff!important;
-  -webkit-text-fill-color:#fff!important;
+    position:fixed;
+    bottom:25px;
+    right:25px;
+    max-width:350px;
+    background:var(--text);
+    color:#fff;
+    padding:14px 19px;
+    border-radius:12px;
+    box-shadow:var(--shadow);
+    transform:translateY(100px);
+    opacity:0;
+    transition:.3s;
+    z-index:500;
 }
 
-/* =========================================================
-   MAIN PAGE SAFETY OVERRIDE
-   ========================================================= */
-
-/*
-   This prevents older CSS blocks in the file from making
-   normal page text transparent.
-*/
-
-main h1,
-main h2,
-main h3,
-main h4,
-main h5,
-main h6{
-  color:var(--ss-ink)!important;
-  -webkit-text-fill-color:var(--ss-ink)!important;
-
-  background:none!important;
-  background-image:none!important;
+.toast.show{
+    transform:translateY(0);
+    opacity:1;
 }
 
-main p{
-  color:var(--ss-ink)!important;
-  -webkit-text-fill-color:var(--ss-ink)!important;
+/* =========================
+   MODALS
+========================= */
+
+.modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(15,30,26,.58);
+    backdrop-filter:blur(7px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:400;
 }
 
-main .hero-subtitle,
-main .section-header p{
-  color:var(--ss-muted)!important;
-  -webkit-text-fill-color:var(--ss-muted)!important;
+.modal-overlay.show{
+    display:flex;
 }
 
-main a{
-  color:var(--ss-primary)!important;
-  -webkit-text-fill-color:var(--ss-primary)!important;
+.modal{
+    width:100%;
+    max-width:520px;
+    max-height:92vh;
+    overflow-y:auto;
+    background:#fff;
+    border-radius:24px;
+    padding:30px;
+    position:relative;
+    box-shadow:var(--shadow-lg);
 }
 
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media(max-width:760px){
-
-  body{
-    font-size:15px;
-  }
-
-  .hero,
-  .hero-section{
-    border-radius:20px!important;
-  }
-
-  .person-card,
-  .card{
-    border-radius:16px!important;
-  }
-
-  .message{
-    max-width:88%;
-  }
-
-  header,
-  .navbar,
-  .nav,
-  .topbar{
-    position:sticky;
-  }
-
+.modal-close{
+    position:absolute;
+    right:18px;
+    top:18px;
+    border:0;
+    background:#f4f6f5;
+    width:34px;
+    height:34px;
+    border-radius:10px;
+    font-size:18px;
 }
 
-/* =========================================================
-   FINAL GUARANTEE:
-   NO TRANSPARENT TEXT
-   ========================================================= */
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-span,
-strong,
-small,
-label,
-a,
-button{
-  text-shadow:none;
+.modal h2{
+    color:var(--green);
+    margin-bottom:6px;
 }
 
+.modal-subtitle{
+    color:var(--muted);
+    font-size:.9rem;
+    margin-bottom:22px;
+}
+
+.form-group{
+    margin-bottom:15px;
+}
+
+.form-group label{
+    display:block;
+    font-size:.82rem;
+    font-weight:750;
+    margin-bottom:6px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select{
+    width:100%;
+    border:1px solid var(--border);
+    border-radius:11px;
+    padding:12px 13px;
+    outline:none;
+    background:#fbfcfb;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus{
+    border-color:var(--green);
+}
+
+.form-group textarea{
+    resize:vertical;
+    min-height:90px;
+}
+
+.checkbox-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:8px;
+}
+
+.check-option{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:10px;
+    background:#f6f8f7;
+    border-radius:10px;
+    font-size:.78rem;
+}
+
+.modal-submit{
+    width:100%;
+    border:0;
+    border-radius:11px;
+    padding:13px;
+    background:var(--green);
+    color:#fff;
+    font-weight:800;
+    margin-top:5px;
+}
+
+.modal-submit:hover{
+    background:var(--green-dark);
+}
+
+.password-wrap{
+    position:relative;
+}
+
+.password-wrap input{
+    padding-right:45px;
+}
+
+.password-toggle{
+    position:absolute;
+    right:8px;
+    top:50%;
+    transform:translateY(-50%);
+    border:0;
+    background:transparent;
+    padding:6px;
+}
+
+/* =========================
+   PROFILE
+========================= */
+
+.profile-large{
+    text-align:center;
+}
+
+.profile-large-avatar{
+    width:80px;
+    height:80px;
+    border-radius:24px;
+    background:var(--green-light);
+    display:grid;
+    place-items:center;
+    font-size:40px;
+    margin:0 auto 15px;
+}
+
+.profile-location,
+.profile-bio{
+    color:var(--muted);
+    font-size:.85rem;
+}
+
+.profile-bio{
+    margin-top:8px;
+}
+
+.profile-info{
+    background:#f6f8f7;
+    padding:16px;
+    border-radius:15px;
+    margin-top:20px;
+}
+
+.profile-info strong{
+    color:var(--green);
+}
+
+.profile-skills{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    margin-top:9px;
+}
+
+.skill-tag{
+    background:#fff;
+    border:1px solid var(--border);
+    padding:6px 9px;
+    border-radius:8px;
+    font-size:.72rem;
+}
+
+/* =========================
+   CHAT
+========================= */
+
+.chat-modal{
+    max-width:650px;
+    padding:0;
+    overflow:hidden;
+}
+
+.chat-header{
+    background:var(--green);
+    color:#fff;
+    padding:20px 22px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.chat-person{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.chat-avatar{
+    width:45px;
+    height:45px;
+    border-radius:13px;
+    background:rgba(255,255,255,.15);
+    display:grid;
+    place-items:center;
+    font-size:23px;
+}
+
+.chat-close{
+    border:0;
+    background:rgba(255,255,255,.12);
+    color:#fff;
+    width:34px;
+    height:34px;
+    border-radius:9px;
+}
+
+.chat-messages{
+    height:350px;
+    overflow-y:auto;
+    padding:20px;
+    background:#f7f9f8;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.message{
+    max-width:75%;
+    padding:10px 13px;
+    border-radius:14px;
+    font-size:.88rem;
+}
+
+.message.them{
+    background:#fff;
+    border:1px solid var(--border);
+    align-self:flex-start;
+}
+
+.message.me{
+    background:var(--green);
+    color:#fff;
+    align-self:flex-end;
+}
+
+.chat-input{
+    display:flex;
+    gap:8px;
+    padding:15px;
+    border-top:1px solid var(--border);
+}
+
+.chat-input input{
+    flex:1;
+    border:1px solid var(--border);
+    border-radius:11px;
+    padding:11px 13px;
+    outline:none;
+}
+
+.chat-input button{
+    border:0;
+    background:var(--green);
+    color:#fff;
+    border-radius:11px;
+    padding:0 18px;
+    font-weight:800;
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.loading{
+    text-align:center;
+    padding:35px;
+    color:var(--muted);
+}
+
+.spinner{
+    width:32px;
+    height:32px;
+    border:3px solid var(--border);
+    border-top-color:var(--green);
+    border-radius:50%;
+    animation:spin .8s linear infinite;
+    margin:0 auto 12px;
+}
+
+@keyframes spin{
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:1000px){
+
+    .nav-links{
+        display:none;
+    }
+
+    .categories{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+    .matches{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .dashboard-grid{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .steps{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:650px){
+
+    nav{
+        padding:0 20px;
+    }
+
+    .signin{
+        display:none;
+    }
+
+    .hero{
+        padding:55px 20px;
+    }
+
+    h1{
+        letter-spacing:-3px;
+    }
+
+    .search-box{
+        flex-wrap:wrap;
+    }
+
+    .search-btn{
+        width:100%;
+    }
+
+    main{
+        padding-left:20px;
+        padding-right:20px;
+    }
+
+    .categories,
+    .matches,
+    .dashboard-grid{
+        grid-template-columns:1fr;
+    }
+
+    .how{
+        padding:30px 22px;
+    }
+
+    .how h2{
+        font-size:1.8rem;
+    }
+
+    footer{
+        flex-direction:column;
+        gap:8px;
+    }
+
+    .checkbox-grid{
+        grid-template-columns:1fr;
+    }
+
+    .user-nav .profile-nav-btn{
+        display:none;
+    }
+
+    .logo{
+        font-size:1.05rem;
+    }
+
+    .india-badge{
+        display:none;
+    }
+}
 </style>
 
 <style id="premium-format">
@@ -2132,6 +2848,130 @@ footer,.ss-footer{
 }
 </style>
 
+
+<style id="ss-final-text-color-fix">
+/* TEXT ONLY: preserve every existing background color. */
+html,body{color:#f4f8ff!important}
+h1,h2,h3,h4,h5,h6,strong,b{color:#f7fbff!important}
+p,li,label,span,small,.muted,.secondary-text,.description,.bio{color:#c9d9eb!important}
+a{color:#79bfff!important}
+a:hover{color:#a9d7ff!important}
+input,textarea,select{color:#f5f9ff!important;caret-color:#fff!important}
+input::placeholder,textarea::placeholder{color:#9db5d0!important;opacity:1!important}
+button,.btn,.join,.signin,.connect,.primary,.ss-btn,.logout-btn{color:#f7fbff!important}
+.nav-links a,.logout-btn,.theme-btn{color:#eaf4ff!important}
+.badge,.pill,.tag,.category,.filter-chip,.quick-action,.ss-pill{color:#dcecff!important}
+table th,table td{color:#eef6ff!important}
+</style>
+
+<style id="skillswap-final-hard-fix">
+/* LOGOUT MODAL ONLY: no page/background theme changes here. */
+.logout-btn{cursor:pointer!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;opacity:1!important;visibility:visible!important}
+#ssLogoutConfirmModal{position:fixed!important;inset:0!important;display:none!important;align-items:center!important;justify-content:center!important;z-index:2147483647!important;background:rgba(0,4,14,.90)!important;backdrop-filter:blur(10px)!important;padding:20px!important}
+#ssLogoutConfirmModal.show{display:flex!important}
+#ssLogoutConfirmModal .ss-logout-dialog{display:block!important;width:min(440px,100%)!important;background:linear-gradient(145deg,#0b2b56,#061a36)!important;color:#f7fbff!important;border:1px solid #2b6098!important;border-radius:20px!important;padding:28px!important;box-shadow:0 24px 80px rgba(0,0,0,.65)!important}
+#ssLogoutConfirmModal h2{color:#fff!important;margin:0 0 10px!important}
+#ssLogoutConfirmModal p{color:#d7e7f8!important;margin:0 0 22px!important}
+#ssLogoutConfirmModal button{min-width:110px!important;color:#f7fbff!important}
+</style>
+
+<style id="ss-main-page-remove-white-box">
+/* MAIN PAGE ONLY: remove white box/card backgrounds.
+   Sign Up/auth pages are intentionally untouched. */
+#ssPublicLanding,
+#ssPublicLanding .ss-land-wrap,
+#ssPublicLanding .ss-land-section,
+#ssPublicLanding .ss-land-content,
+#ssPublicLanding .ss-land-main {
+  background: transparent !important;
+}
+
+#ssPublicLanding .ss-land-card,
+#ssPublicLanding .ss-feature-card,
+#ssPublicLanding .feature-card,
+#ssPublicLanding .benefit-card,
+#ssPublicLanding .hero-card,
+#ssPublicLanding .info-card,
+#ssPublicLanding .landing-card,
+#ssPublicLanding .card,
+#ssPublicLanding .box,
+#ssPublicLanding .panel,
+#ssPublicLanding .section-card,
+#ssPublicLanding .content-card {
+  background: rgba(6,26,54,.72) !important;
+  border-color: rgba(120,170,220,.20) !important;
+  box-shadow: none !important;
+}
+
+#ssPublicLanding .hero,
+#ssPublicLanding .ss-land-hero {
+  background: transparent !important;
+}
+
+#ssPublicLanding h1,
+#ssPublicLanding h2,
+#ssPublicLanding h3,
+#ssPublicLanding h4 {
+  color: #f7fbff !important;
+}
+
+#ssPublicLanding p,
+#ssPublicLanding li,
+#ssPublicLanding span {
+  color: #c9d9eb !important;
+}
+</style>
+
+
+<style id="ss-main-home-white-box-final-fix">
+/* MAIN HOME PAGE ONLY — remove remaining white surfaces. Sign Up/auth UI is untouched. */
+#top, #top .hero-content, #discover {
+  background: transparent !important;
+}
+#top .search-box,
+#top .india-strip span,
+#top .ss-stats,
+#top .ss-hero-card,
+#top .hero-card,
+#discover .filter-bar,
+#discover .search-container,
+#discover .filters,
+#discover .category,
+#discover .person-card,
+#discover .card,
+#discover .feature-card,
+#discover .dashboard-card,
+#discover .request-item,
+#discover .connection-item,
+#ssCommunityMembers .ss-other-card,
+#ssCommunityMembers .ss-other-count {
+  background: linear-gradient(145deg, rgba(11,42,94,.92), rgba(4,18,43,.96)) !important;
+  color: #eef6ff !important;
+  border-color: rgba(102,190,255,.20) !important;
+  box-shadow: 0 18px 50px rgba(0,0,0,.28) !important;
+}
+#top .search-box input,
+#discover input,
+#discover select,
+#discover textarea {
+  background: rgba(6,24,55,.88) !important;
+  color: #f5f9ff !important;
+  border-color: rgba(102,190,255,.20) !important;
+}
+#top .india-strip span,
+#discover .category { color: #dcecff !important; }
+#discover .category:hover,
+#discover .category.active {
+  background: linear-gradient(135deg,#0b3b78,#1263ad) !important;
+  color: #fff !important;
+}
+#discover .person-card h1,#discover .person-card h2,#discover .person-card h3,#discover .person-card h4,
+#discover .card h1,#discover .card h2,#discover .card h3,#discover .card h4,
+#ssCommunityMembers h1,#ssCommunityMembers h2,#ssCommunityMembers h3,#ssCommunityMembers h4 { color:#f7fbff !important; }
+#discover .person-card p,#discover .person-card small,#discover .card p,#discover .card small,
+#ssCommunityMembers p,#ssCommunityMembers small { color:#bcd0e6 !important; }
+#top .hero-subtitle,#top .india-strip,#discover .section-header p { color:#c9d9eb !important; }
+</style>
 </head>
 
 <body>
@@ -2179,7 +3019,8 @@ footer,.ss-footer{
 
     <button
         class="logout-btn"
-        onclick="logout()">
+        type="button"
+        onclick="return confirmLogout(event)" onclick="return confirmLogout(event)">
         Log out
     </button>
 
@@ -5130,34 +5971,46 @@ async function saveEditedProfile(){
 /* =========================
    LOGOUT
 ========================= */
-
 async function logout(){
-
     try{
-
-        await api(
-            "/api/logout",
-            {
-                method:"POST"
-            }
-        );
-
+        if(window.ssFirebaseAuth){
+            await window.ssFirebaseAuth.signOut();
+        }
     }catch(error){
-
-        console.warn(
-            "Backend logout unavailable.",
-            error
-        );
-
+        console.warn("Firebase logout:",error);
     }
 
+    try{
+        if(typeof api==="function"){
+            await api("/api/logout",{method:"POST"});
+        }
+    }catch(error){
+        console.warn("Backend logout unavailable.",error);
+    }
 
-    ssMemoryStorage.removeItem(
-        "skillswapUser"
-    );
+    try{
+        if(window.ssMemoryStorage)window.ssMemoryStorage.removeItem("skillswapUser");
+    }catch(error){}
 
     location.reload();
+}
 
+function confirmLogout(event){
+    if(event){ event.preventDefault(); event.stopPropagation(); }
+    const modal=document.getElementById("ssLogoutConfirmModal");
+    if(!modal){ return window.confirm("Are you sure you want to log out of SkillSwap India?") ? logout() : false; }
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden","false");
+    document.body.style.overflow="hidden";
+    return false;
+}
+
+function closeLogoutConfirm(){
+    const modal=document.getElementById("ssLogoutConfirmModal");
+    if(!modal)return;
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden","true");
+    document.body.style.overflow="";
 }
 
 
@@ -6465,37 +7318,9 @@ document.addEventListener("DOMContentLoaded",()=>{
 <style>.ss-mobile-cta{display:none}@media(max-width:680px){.ss-mobile-cta{display:block;position:fixed;left:12px;right:12px;bottom:12px;z-index:9999}.ss-mobile-cta button{width:100%;height:50px;border:0;border-radius:15px;background:#126b57;color:white;font-weight:850;box-shadow:0 12px 35px #092e2530}}</style><div class="ss-mobile-cta"><button onclick="ssOpenAuth('signup');return false">Join SkillSwap — Free →</button></div>
 <script id="skillswap-elite-js">
 (function(){
-  const applyTheme=(dark)=>{
-    document.body.classList.toggle("dark-mode",dark);
-    ["themeToggle","themeToggleLogged"].forEach(id=>{
-      const b=document.getElementById(id);
-      if(b) b.textContent=dark?"☀":"☾";
-    });
-  };
-  const saved=ssMemoryStorage.getItem("skillswapTheme");
-  applyTheme(saved==="dark");
-  ["themeToggle","themeToggleLogged"].forEach(id=>{
-    const b=document.getElementById(id);
-    if(b) b.addEventListener("click",()=>{
-      const dark=!document.body.classList.contains("dark-mode");
-      ssMemoryStorage.setItem("skillswapTheme",dark?"dark":"light");
-      applyTheme(dark);
-    });
-  });
-  const observer=new IntersectionObserver((entries)=>{
-    entries.forEach(e=>{
-      if(e.isIntersecting){
-        e.target.style.opacity="1";
-        e.target.style.transform="translateY(0)";
-        observer.unobserve(e.target);
-      }
-    });
-  },{threshold:.08});
-  document.querySelectorAll(".feature-card,.person-card,.dashboard-card,.ss-feature,.ss-quote").forEach(el=>{
-    el.style.opacity="0";el.style.transform="translateY(12px)";
-    el.style.transition="opacity .45s ease,transform .45s ease";
-    observer.observe(el);
-  });
+  document.documentElement.classList.remove("light-mode");
+  document.body.classList.remove("light-mode","light","theme-light");
+  document.body.classList.add("dark-mode");
 })();
 window.addEventListener("keydown",e=>{
     if(e.key==="Escape"){
@@ -6889,7 +7714,7 @@ window.addEventListener("keydown",e=>{
       ['🤝','Open requests & connections',()=>goTo('#requestsSection','Opening requests & connections')],
       ['🔔','Open notifications',()=>goTo('#notificationsList','Opening notifications')],
       ['🏆','Open achievements',()=>goTo('#skillswap2','Opening your progress')],
-      ['🌙','Dark blue theme',()=>{const b=document.getElementById('themeToggleLogged')||document.getElementById('themeToggle');b?.click()}],
+      
       ['↻','Refresh dashboard',()=>window.ss4Refresh?.()]
     ];
     const box=document.getElementById('ss3Commands');
@@ -10703,3 +11528,98 @@ input::placeholder,textarea::placeholder{
   setTimeout(killMenus,1000);
 })();
 </script>
+<div id="ssLogoutConfirmModal" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="ss-logout-dialog">
+    <h2>Log out?</h2>
+    <p>Are you sure you want to log out of SkillSwap India?</p>
+    <div style="display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap">
+      <button id="ssLogoutCancelBtn" type="button" onclick="closeLogoutConfirm()">Cancel</button>
+      <button id="ssLogoutConfirmBtn" type="button" onclick="closeLogoutConfirm();logout()">Log out</button>
+    </div>
+  </div>
+</div>
+
+<style id="ss-main-home-white-box-structural-fix">
+/* MAIN HOME PAGE ONLY — remove white surfaces. Sign Up/auth UI is untouched. */
+#top,
+#top .hero-content,
+#discover {
+  background: transparent !important;
+}
+
+#top .search-box,
+#top .india-strip span,
+#top .ss-stats,
+#top .ss-hero-card,
+#top .hero-card,
+#discover .filter-bar,
+#discover .search-container,
+#discover .filters,
+#discover .category,
+#discover .person-card,
+#discover .card,
+#discover .feature-card,
+#discover .dashboard-card,
+#discover .request-item,
+#discover .connection-item,
+#ssCommunityMembers .ss-other-card,
+#ssCommunityMembers .ss-other-count {
+  background: linear-gradient(145deg, rgba(11,42,94,.92), rgba(4,18,43,.96)) !important;
+  color: #eef6ff !important;
+  border-color: rgba(102,190,255,.20) !important;
+  box-shadow: 0 18px 50px rgba(0,0,0,.28) !important;
+}
+
+#top .search-box input,
+#discover input,
+#discover select,
+#discover textarea {
+  background: rgba(6,24,55,.88) !important;
+  color: #f5f9ff !important;
+  border-color: rgba(102,190,255,.20) !important;
+}
+
+#top .india-strip span,
+#discover .category {
+  color: #dcecff !important;
+}
+
+#discover .category:hover,
+#discover .category.active {
+  background: linear-gradient(135deg,#0b3b78,#1263ad) !important;
+  color: #fff !important;
+}
+
+#discover .person-card h1,
+#discover .person-card h2,
+#discover .person-card h3,
+#discover .person-card h4,
+#discover .card h1,
+#discover .card h2,
+#discover .card h3,
+#discover .card h4,
+#ssCommunityMembers h1,
+#ssCommunityMembers h2,
+#ssCommunityMembers h3,
+#ssCommunityMembers h4 {
+  color: #f7fbff !important;
+}
+
+#discover .person-card p,
+#discover .person-card small,
+#discover .card p,
+#discover .card small,
+#ssCommunityMembers p,
+#ssCommunityMembers small {
+  color: #bcd0e6 !important;
+}
+
+#top .hero-subtitle,
+#top .india-strip,
+#discover .section-header p {
+  color: #c9d9eb !important;
+}
+</style>
+
+</body>
+</html>
