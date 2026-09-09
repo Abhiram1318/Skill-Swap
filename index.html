@@ -12107,6 +12107,40 @@ body:has(#signup) #signup * ,
   color:#102033 !important; -webkit-text-fill-color:#102033 !important;
 }
 </style>
+
+<style id="ss-auth-entered-text-white-final">
+/* Sign In / Sign Up: text entered by the user must appear white */
+#signin input[type="email"], #signin input[type="password"], #signin input[type="text"],
+#signup input[type="email"], #signup input[type="password"], #signup input[type="text"],
+#signInPage input[type="email"], #signInPage input[type="password"], #signInPage input[type="text"],
+#signUpPage input[type="email"], #signUpPage input[type="password"], #signUpPage input[type="text"],
+.signin-page input[type="email"], .signin-page input[type="password"], .signin-page input[type="text"],
+.signup-page input[type="email"], .signup-page input[type="password"], .signup-page input[type="text"] {
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+  caret-color:#fff !important;
+}
+#signin input::placeholder, #signup input::placeholder,
+#signInPage input::placeholder, #signUpPage input::placeholder,
+.signin-page input::placeholder, .signup-page input::placeholder {
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+  opacity:1 !important;
+}
+</style>
+
+<style id="ss-signin-signup-white-bg-final">
+/* Sign In + Sign Up pages: white backgrounds */
+#signin, #signInPage, #signinPage, .signin-page,
+#signup, #signUpPage, #signupPage, .signup-page {
+  background:#fff !important;
+  background-color:#fff !important;
+}
+#signin::before, #signin::after, #signInPage::before, #signInPage::after,
+#signup::before, #signup::after, #signUpPage::before, #signUpPage::after {
+  background:#fff !important;
+}
+</style>
 </body>
 </html>
 
@@ -12163,5 +12197,32 @@ body:has(#signup) #signup * ,
   color:#fff !important;
   -webkit-text-fill-color:#fff !important;
   opacity:1 !important;
+}
+</style>
+
+<style id="ss-auth-white-background-final">
+/* SIGN IN / SIGN UP: force the entire authentication screen to white */
+#authModal,
+#authModal.modal-overlay {
+  background:#fff !important;
+  background-image:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+#authModal .modal,
+#authModal .modal-content,
+#authModal .auth-card,
+#authModal .signin-card,
+#authModal .signup-card {
+  background:#fff !important;
+  background-image:none !important;
+  color:#102033 !important;
+  border-color:#e5e7eb !important;
+  box-shadow:0 20px 60px rgba(0,0,0,.15) !important;
+}
+#authModal #signinForm,
+#authModal #signupForm {
+  background:#fff !important;
+  background-image:none !important;
 }
 </style>
