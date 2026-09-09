@@ -3623,18 +3623,6 @@ html:not(.ss-starting) #authModal.show { display:flex !important; }
 
     </div>
 
-    <div class="dashboard-card">
-        <h3>
-            ✅ Completed exchanges
-        </h3>
-        <p>
-            Your finished SkillSwap sessions.
-        </p>
-        <div class="review-list" id="completedList">
-            <div class="ss-dash-empty">Sign in to see completed exchanges.</div>
-        </div>
-    </div>
-
 </div>
 
 </section>
@@ -4829,9 +4817,6 @@ const demoPeople = [
 }
 
 ];
-
-// Make the built-in demo member list available to all modules.
-window.demoPeople = demoPeople;
 
 /* =========================================================
    VIRTUAL PRACTICE MEMBERS
@@ -12714,50 +12699,6 @@ button,a,input,select,textarea{touch-action:manipulation}
 }
 </style>
 
-
-<style id="ss-dashboard-fully-working-css">
-#requestList,#connectionList,#reviewList,#completedList{display:flex;flex-direction:column;gap:10px}
-.ss-dash-item{padding:13px;border:1px solid rgba(89,174,255,.20);border-radius:14px;background:rgba(7,26,56,.72);color:#eef6ff}
-.ss-dash-item strong{color:#fff}.ss-dash-item small,.ss-dash-item p{color:#b9d4ee;font-size:.82rem;line-height:1.45}.ss-dash-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.ss-dash-btn{border:0;border-radius:9px;padding:8px 11px;font-weight:800;cursor:pointer}.ss-dash-primary{background:#12a879;color:#fff}.ss-dash-secondary{background:#17385f;color:#dcecff;border:1px solid rgba(102,190,255,.2)}.ss-dash-danger{background:#7f2632;color:#fff}.ss-dash-status{display:inline-block;border-radius:999px;padding:3px 8px;font-size:11px;font-weight:800;margin-left:5px}.ss-dash-pending{background:#493817;color:#ffd36b}.ss-dash-accepted{background:#123f31;color:#7ee5bd}.ss-dash-completed{background:#183d68;color:#9fd3ff}.ss-dash-declined{background:#48242a;color:#ff9ba5}.ss-dash-empty{padding:15px 4px;color:#b9d4ee;font-size:.84rem}
-#requestList .ss-dash-item,#connectionList .ss-dash-item,#reviewList .ss-dash-item,#completedList .ss-dash-item{color:#eef6ff}
-</style>
-<script id="ss-dashboard-fully-working-js">
-(function(){
- 'use strict';
- const escD=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const demoIds=new Set(['ananya','aarav','meera','rohan','saanvi','vikram','ishita','aditya','kavya','dev','priya','arjun']);
- function D(){return window.ssFirebase?.db||null}
- function A(){return window.ssFirebaseAuth||window.ssFirebase?.auth||null}
- function me(){return window.ssFirebaseProfile||A()?.currentUser||window.currentUser||null}
- function uid(){return me()?.uid||me()?.id||null}
- function localUsers(){try{return Object.values(JSON.parse(window.ssMemoryStorage?.getItem('skillswapUsers')||'{}'))}catch(e){return []}}
- function person(id){const all=(window.skillswapPeople||[]).concat(window.demoPeople||[],localUsers());return all.find(x=>String(x.id)===String(id)||String(x.uid)===String(id)||String(x.userId)===String(id))||null}
- function empty(id,msg){const e=document.getElementById(id);if(e)e.innerHTML='<div class="ss-dash-empty">'+msg+'</div>'}
- function btn(text,fn,cls='ss-dash-secondary'){return '<button type="button" class="ss-dash-btn '+cls+'" onclick="'+fn+'">'+text+'</button>'}
- function status(s){const map={pending:['Pending','ss-dash-pending'],accepted:['Connected','ss-dash-accepted'],completed:['Completed','ss-dash-completed'],declined:['Declined','ss-dash-declined'],cancelled:['Cancelled','ss-dash-declined']};const m=map[s]||[s||'Unknown','ss-dash-pending'];return '<span class="ss-dash-status '+m[1]+'">'+escD(m[0])+'</span>'}
- async function read(path){const d=D();if(!d)return null;const s=await d.ref(path).get();return s.exists()?s.val():null}
- async function render(){
-   const rbox=document.getElementById('requestList'),cbox=document.getElementById('connectionList'),vbox=document.getElementById('reviewList');if(!rbox&&!cbox&&!vbox)return;
-   const u=me();if(!u){empty('requestList','🔐 Sign in to manage your requests.');empty('connectionList','🔐 Sign in to see your connections.');empty('reviewList','🔐 Sign in to see reviews.');let cb=document.getElementById('completedList');if(cb)empty('completedList','🔐 Sign in to see completed exchanges.');return}
-   const id=String(uid());let reqs={};
-   try{reqs=await read('requests')||{}}catch(e){reqs={}}
-   const mine=Object.entries(reqs).map(([key,r])=>({...r,_key:key})).filter(r=>String(r.senderUid||r.senderId)===id||String(r.receiverUid||r.receiverId)===id);
-   const outgoing=mine.filter(r=>String(r.senderUid||r.senderId)===id);
-   const incoming=mine.filter(r=>String(r.receiverUid||r.receiverId)===id);
-   if(rbox){rbox.innerHTML=outgoing.length?outgoing.slice().reverse().map(r=>{const pid=r.receiverUid||r.receiverId;const p=person(pid);const name=r.receiverName||p?.name||'SkillSwap member';let actions='';if(r.status==='accepted')actions=btn('💬 Chat','openChat(\''+escD(pid)+'\')','ss-dash-primary')+btn('📅 Schedule','openScheduleModal()');else if(r.status==='pending')actions=btn('✕ Cancel','dashboardRequestAction(\''+escD(r._key)+'\',\'cancel\')','ss-dash-danger');return '<div class="ss-dash-item"><strong>🤝 '+escD(name)+'</strong>'+status(r.status)+'<p>Learn: <b>'+escD(r.wanted||r.skillWanted||'—')+'</b> · Teach: <b>'+escD(r.offered||r.skillOffered||'—')+'</b></p>'+actions+'</div>'}).join(''):'<div class="ss-dash-empty">No outgoing requests yet. Find a member and send a skill-swap request.</div>'}
-   if(cbox){const accepted=mine.filter(r=>r.status==='accepted');cbox.innerHTML=accepted.length?accepted.map(r=>{const incomingSide=String(r.receiverUid||r.receiverId)===id;const pid=incomingSide?(r.senderUid||r.senderId):(r.receiverUid||r.receiverId);const p=person(pid);const name=incomingSide?(r.senderName||p?.name):(r.receiverName||p?.name)||'SkillSwap member';return '<div class="ss-dash-item"><strong>💬 '+escD(name)+'</strong>'+status('accepted')+'<p>'+escD(r.wanted||r.skillWanted||'Skill exchange')+' ↔ '+escD(r.offered||r.skillOffered||'Skill exchange')+'</p><div class="ss-dash-actions">'+btn('💬 Chat','openChat(\''+escD(pid)+'\')','ss-dash-primary')+btn('📞 Call','openChat(\''+escD(pid)+'\');setTimeout(()=>window.startVoiceCall&&window.startVoiceCall(\''+escD(pid)+'\'),300)')+btn('📅 Schedule','openScheduleModal()')+'</div></div>'}).join(''):'<div class="ss-dash-empty">No active connections yet. Accepted requests will appear here.</div>'}
-   if(vbox){let reviews=await read('reviews')||{};const arr=Object.values(reviews).filter(x=>String(x.targetUid||x.targetId)===id).slice(-8).reverse();vbox.innerHTML=arr.length?arr.map(x=>'<div class="ss-dash-item"><strong>⭐ '+escD(x.reviewerName||'Member')+'</strong><p>'+('★'.repeat(Math.max(0,Math.min(5,Number(x.rating)||0))))+' · '+escD(x.text||'No written feedback.')+'</p></div>').join(''):'<div class="ss-dash-empty">No reviews yet. Complete an exchange and ask your partner to leave feedback.</div>'}
-   const cb=document.getElementById('completedList');if(cb){let sessions=await read('sessions')||{};const done=Object.entries(sessions).map(([key,x])=>({...x,_key:key})).filter(x=>Array.isArray(x.participantUids)&&x.participantUids.map(String).includes(id)&&(x.status==='completed'||x.status==='complete'));cb.innerHTML=done.length?done.slice().reverse().map(x=>'<div class="ss-dash-item"><strong>✅ '+escD(x.title||'SkillSwap exchange')+'</strong>'+status('completed')+'<p>'+escD(x.starts_at||x.startsAt||'Completed exchange')+' · '+escD(x.notes||'Skill exchange completed successfully.')+'</p></div>').join(''):'<div class="ss-dash-empty">No completed exchanges yet. Finish a scheduled session to build your exchange history.</div>'}
- }
- window.dashboardRequestAction=async function(key,action){try{const d=D();if(!d||!uid())return;if(action==='cancel'){await d.ref('requests/'+key).update({status:'cancelled',updated_at:new Date().toISOString()});showToast?.('Request cancelled.')}await render();if(typeof refreshProDashboard==='function')refreshProDashboard()}catch(e){showToast?.('Could not update request: '+e.message)}};
- window.renderDashboard=render;
- window.ssRefreshMainDashboard=render;
- document.addEventListener('DOMContentLoaded',()=>setTimeout(render,900));
- const auth=A();if(auth)auth.onAuthStateChanged(()=>setTimeout(render,300));
- setInterval(()=>{if(uid())render().catch(()=>{})},5000);
-})();
-</script>
-
 </html>
 
 <style id="ss-signin-signup-email-password-white-final">
@@ -12853,58 +12794,255 @@ button,a,input,select,textarea{touch-action:manipulation}
 }
 </style>
 <style id="ss-voice-call-css">
-.ss-voice-btn{background:#0f766e!important;color:#fff!important;border:1px solid rgba(255,255,255,.24)!important;border-radius:10px!important;padding:9px 12px!important;cursor:pointer!important;font-weight:800!important;margin-right:8px}.ss-voice-btn:hover{filter:brightness(1.12)}
-#ssVoiceCallModal{position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.76);display:none;align-items:center;justify-content:center;padding:20px}#ssVoiceCallModal.show{display:flex}.ss-voice-card{width:min(440px,96vw);background:#0b1f2a;color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:24px;padding:26px;text-align:center;box-shadow:0 25px 80px rgba(0,0,0,.48)}.ss-voice-avatar{width:82px;height:82px;border-radius:50%;display:grid;place-items:center;background:#123746;font-size:40px;margin:0 auto 13px}.ss-voice-status{color:#dbeafe;margin:8px 0 18px}.ss-voice-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.ss-voice-actions button{border:0;border-radius:12px;padding:11px 17px;font-weight:800;cursor:pointer}.ss-call-answer{background:#16a34a;color:#fff}.ss-call-end{background:#dc2626;color:#fff}.ss-call-mute{background:#334155;color:#fff}.ss-voice-note{font-size:12px;color:#a9c0ca;margin-top:14px;line-height:1.5}.ss-voice-timer{font-variant-numeric:tabular-nums;font-size:18px;margin:5px 0 10px;font-weight:800}
-@media(max-width:560px){.ss-voice-btn{padding:8px 9px;font-size:12px;margin-right:4px}.ss-voice-card{padding:22px}}
+.ss-voice-btn{background:#0f766e!important;color:#fff!important;border:1px solid rgba(255,255,255,.22)!important;border-radius:10px!important;padding:9px 12px!important;cursor:pointer!important;font-weight:700!important;margin-right:8px}.ss-voice-btn:hover{filter:brightness(1.12)}
+#ssVoiceCallModal{position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:20px}#ssVoiceCallModal.show{display:flex}.ss-voice-card{width:min(420px,96vw);background:#0b1f2a;color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:22px;padding:24px;text-align:center;box-shadow:0 25px 80px rgba(0,0,0,.45)}.ss-voice-avatar{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:#123746;font-size:38px;margin:0 auto 12px}.ss-voice-status{color:#dbeafe;margin:8px 0 18px}.ss-voice-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.ss-voice-actions button{border:0;border-radius:12px;padding:11px 16px;font-weight:700;cursor:pointer}.ss-call-answer{background:#16a34a;color:#fff}.ss-call-end{background:#dc2626;color:#fff}.ss-call-mute{background:#334155;color:#fff}.ss-voice-note{font-size:12px;color:#a9c0ca;margin-top:14px;line-height:1.45}.ss-voice-timer{font-variant-numeric:tabular-nums;font-size:18px;margin:5px 0 10px}
 </style>
 
 <div id="ssVoiceCallModal" aria-hidden="true">
-  <div class="ss-voice-card" role="dialog" aria-modal="true" aria-label="Voice call">
+  <div class="ss-voice-card">
     <div class="ss-voice-avatar" id="ssVoiceAvatar">📞</div>
     <h3 id="ssVoiceTitle">Voice call</h3>
     <div class="ss-voice-status" id="ssVoiceStatus">Ready</div>
     <div class="ss-voice-timer" id="ssVoiceTimer">00:00</div>
     <div class="ss-voice-actions" id="ssVoiceActions"></div>
-    <div class="ss-voice-note" id="ssVoiceNote">Real member calls use your browser microphone and a secure peer-to-peer audio connection.</div>
+    <div class="ss-voice-note" id="ssVoiceNote">Microphone access is required for real member calls.</div>
   </div>
 </div>
 <script id="ss-voice-call-js">
 (function(){
   'use strict';
-  const DEMO_IDS=new Set(['ananya','aarav','meera','rohan','saanvi','vikram','ishita','aditya','kavya','dev','priya','arjun']);
-  const state={pc:null,stream:null,callRef:null,remoteId:null,remoteName:'Member',muted:false,timer:null,started:0,incoming:false,connected:false,candidateKeys:new Set(),incomingQuery:null,incomingUid:null,incomingHandler:null,answerHandler:null,statusHandler:null,candidateHandler:null,ending:false};
-  const ice={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'},{urls:'stun:stun2.l.google.com:19302'}]};
-  const el=id=>document.getElementById(id);
+  const state={pc:null,stream:null,callRef:null,candidateRef:null,listener:null,remoteId:null,remoteName:'Member',muted:false,timer:null,started:0,incoming:false,connected:false};
+  const ice={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]};
+  function el(id){return document.getElementById(id)}
   function db(){return window.ssFirebase&&window.ssFirebase.db?window.ssFirebase.db:null}
-  function authUser(){return window.ssFirebaseProfile||window.ssFirebaseAuth?.currentUser||window.ssFirebase?.auth?.currentUser||window.currentUser||null}
-  function uid(){const u=authUser();return u&&(u.uid||u.id)||null}
-  function meName(){const u=authUser()||{};return u.displayName||u.name||u.email||'SkillSwap member'}
+  function uid(){const u=window.ssFirebaseProfile||window.ssFirebaseAuth?.currentUser||window.ssFirebase?.auth?.currentUser||window.currentUser;return u&&(u.uid||u.id)||null}
+  function meName(){const u=window.ssFirebaseProfile||window.ssFirebaseAuth?.currentUser||window.ssFirebase?.auth?.currentUser||{};return u.displayName||u.name||u.email||'SkillSwap member'}
   function personId(p){return String(p?.uid||p?.id||p?.userId||'')}
-  function isDemo(p){return !!p&&(p.virtual===true||DEMO_IDS.has(String(p.id)))}
-  function show(title,status,avatar){el('ssVoiceTitle').textContent=title;el('ssVoiceStatus').textContent=status;el('ssVoiceAvatar').textContent=avatar||'📞';el('ssVoiceTimer').textContent='00:00';el('ssVoiceCallModal').classList.add('show');el('ssVoiceCallModal').setAttribute('aria-hidden','false')}
-  function hide(){el('ssVoiceCallModal').classList.remove('show');el('ssVoiceCallModal').setAttribute('aria-hidden','true');el('ssVoiceActions').innerHTML=''}
+  function show(title,status,name,avatar){el('ssVoiceTitle').textContent=title;el('ssVoiceStatus').textContent=status;el('ssVoiceAvatar').textContent=avatar||'📞';el('ssVoiceNote').textContent='Microphone access is required for real member calls.';el('ssVoiceCallModal').classList.add('show')}
+  function hide(){el('ssVoiceCallModal').classList.remove('show');el('ssVoiceActions').innerHTML=''}
   function actions(html){el('ssVoiceActions').innerHTML=html}
   function stopTimer(){if(state.timer){clearInterval(state.timer);state.timer=null}}
-  function timerStart(){stopTimer();state.started=Date.now();el('ssVoiceTimer').textContent='00:00';state.timer=setInterval(()=>{const n=Math.floor((Date.now()-state.started)/1000);el('ssVoiceTimer').textContent=String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0')},1000)}
-  function detachCallListeners(ref){if(!ref)return;try{if(state.answerHandler)ref.child('answer').off('value',state.answerHandler);if(state.statusHandler)ref.child('status').off('value',state.statusHandler)}catch(e){};state.answerHandler=null;state.statusHandler=null}
-  function detachCandidateListener(){if(state.candidateRef&&state.candidateHandler){try{state.candidateRef.off('child_added',state.candidateHandler)}catch(e){}}state.candidateRef=null;state.candidateHandler=null}
-  function cleanupLocal(){stopTimer();detachCallListeners(state.callRef);detachCandidateListener();if(state.pc){try{state.pc.onicecandidate=null;state.pc.ontrack=null;state.pc.onconnectionstatechange=null;state.pc.close()}catch(e){}}if(state.stream)state.stream.getTracks().forEach(t=>{try{t.stop()}catch(e){}});const a=el('ssVoiceAudio');if(a){try{a.pause();a.srcObject=null}catch(e){}a.remove()}state.pc=null;state.stream=null;state.callRef=null;state.remoteId=null;state.remoteName='Member';state.incoming=false;state.connected=false;state.muted=false;state.candidateKeys.clear();state.ending=false;el('ssVoiceTimer').textContent='00:00'}
-  async function finishCall(status,remove){const ref=state.callRef;if(ref&&status){try{await ref.update({status,endedAt:firebase.database.ServerValue.TIMESTAMP})}catch(e){}}if(ref&&remove&&status!=='ended'){try{await ref.remove()}catch(e){}}cleanupLocal();hide()}
-  async function mic(){if(!window.isSecureContext&&location.hostname!=='localhost')throw new Error('Voice calls require HTTPS. Open the site with https:// and allow microphone access.');if(!navigator.mediaDevices?.getUserMedia)throw new Error('Your browser does not support microphone calls.');return navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false})}
-  async function startPC(){const pc=new RTCPeerConnection(ice);state.pc=pc;state.stream=await mic();state.stream.getTracks().forEach(t=>pc.addTrack(t,state.stream));pc.ontrack=e=>{let a=el('ssVoiceAudio');if(!a){a=document.createElement('audio');a.id='ssVoiceAudio';a.autoplay=true;a.playsInline=true;a.setAttribute('aria-hidden','true');document.body.appendChild(a)}if(e.streams&&e.streams[0])a.srcObject=e.streams[0];a.play().catch(()=>{})};pc.onconnectionstatechange=()=>{const c=pc.connectionState;if(c==='connected'){state.connected=true;el('ssVoiceStatus').textContent='Connected • voice call active';timerStart()}else if(['failed','closed'].includes(c)&&!state.ending){finishCall('ended',false)}else if(c==='disconnected'){el('ssVoiceStatus').textContent='Connection interrupted…'}};return pc}
-  function listenCandidates(ref,pc){detachCandidateListener();state.candidateRef=ref;state.candidateHandler=snap=>{const key=snap.key;if(!key||state.candidateKeys.has(key))return;state.candidateKeys.add(key);const c=snap.val();if(c)pc.addIceCandidate(new RTCIceCandidate(c)).catch(()=>{})};ref.on('child_added',state.candidateHandler)}
-  async function waitForIce(pc){if(pc.iceGatheringState==='complete')return;await new Promise(resolve=>{let done=false;const finish=()=>{if(done)return;done=true;pc.removeEventListener('icegatheringstatechange',check);resolve()};const check=()=>{if(pc.iceGatheringState==='complete')finish()};pc.addEventListener('icegatheringstatechange',check);setTimeout(finish,5000)})}
-  async function callReal(person){const my=uid(),other=personId(person);if(!my||!other){showToast?.('Please sign in before making a voice call.');return}if(String(my)===String(other)){showToast?.('You cannot call yourself.');return}const d=db();if(!d){showToast?.('Firebase is not ready. Please try again in a moment.');return}cleanupLocal();state.remoteId=other;state.remoteName=person.name||person.displayName||'Member';show('Calling '+state.remoteName,'Requesting microphone…',person.avatar||'👤');actions('<button class="ss-call-end" id="ssEndBtn">Cancel call</button>');el('ssEndBtn').onclick=()=>finishCall('ended',true);try{const ref=d.ref('voiceCalls').push();state.callRef=ref;const pc=await startPC();pc.onicecandidate=e=>{if(e.candidate)ref.child('callerCandidates').push(e.candidate.toJSON()).catch(()=>{})};el('ssVoiceStatus').textContent='Calling '+state.remoteName+'…';const offer=await pc.createOffer({offerToReceiveAudio:true});await pc.setLocalDescription(offer);await waitForIce(pc);await ref.set({callerId:String(my),calleeId:String(other),callerName:meName(),calleeName:state.remoteName,offer:{type:offer.type,sdp:offer.sdp},status:'ringing',createdAt:firebase.database.ServerValue.TIMESTAMP});state.answerHandler=async snap=>{const a=snap.val();if(!a||!state.pc)return;if(a.type&&a.sdp&&state.pc.signalingState==='have-local-offer'){try{await state.pc.setRemoteDescription(new RTCSessionDescription(a));el('ssVoiceStatus').textContent='Connecting…'}catch(e){console.warn('Voice answer:',e)}}};ref.child('answer').on('value',state.answerHandler);state.statusHandler=snap=>{const v=snap.val();if(v==='rejected'){el('ssVoiceStatus').textContent='Call declined';setTimeout(()=>finishCall(null,false),700)}else if(v==='ended'&&!state.ending){finishCall(null,false)}};ref.child('status').on('value',state.statusHandler);listenCandidates(ref.child('calleeCandidates'),pc)}catch(e){console.error('Voice call:',e);await finishCall(null,true);showToast?.('Could not start the voice call: '+(e.message||'Please try again.'))}}
-  async function acceptReal(ref,data){if(state.callRef)return;cleanupLocal();state.callRef=ref;state.remoteId=String(data.callerId||'');state.remoteName=data.callerName||'Member';state.incoming=true;show(state.remoteName,'Incoming voice call',data.callerAvatar||'📞');actions('<button class="ss-call-answer">Answer</button><button class="ss-call-end">Decline</button>');const btns=el('ssVoiceActions').querySelectorAll('button');btns[0].onclick=async()=>{try{actions('<button class="ss-call-mute">Mute</button><button class="ss-call-end">End call</button>');const mb=el('ssVoiceActions').querySelector('.ss-call-mute');const eb=el('ssVoiceActions').querySelector('.ss-call-end');mb.onclick=()=>toggleMute(mb);eb.onclick=()=>finishCall('ended',false);const pc=await startPC();pc.onicecandidate=e=>{if(e.candidate)ref.child('calleeCandidates').push(e.candidate.toJSON()).catch(()=>{})};await pc.setRemoteDescription(new RTCSessionDescription(data.offer));listenCandidates(ref.child('callerCandidates'),pc);const answer=await pc.createAnswer();await pc.setLocalDescription(answer);await waitForIce(pc);await ref.update({answer:{type:answer.type,sdp:answer.sdp},status:'accepted'});state.incoming=false;el('ssVoiceStatus').textContent='Connecting…'}catch(e){console.error('Answer call:',e);await finishCall('ended',false);showToast?.('Could not answer the call: '+(e.message||'Please try again.'))}};btns[1].onclick=()=>finishCall('rejected',false)}
-  function toggleMute(btn){if(!state.stream)return;state.muted=!state.muted;state.stream.getAudioTracks().forEach(t=>t.enabled=!state.muted);btn.textContent=state.muted?'Unmute microphone':'Mute microphone';el('ssVoiceStatus').textContent=state.muted?'Muted':'Connected • voice call active'}
-  function listenIncoming(){const my=uid(),d=db();if(!my||!d)return;if(state.incomingQuery&&state.incomingUid===String(my))return;if(state.incomingQuery&&state.incomingHandler){try{state.incomingQuery.off('child_added',state.incomingHandler)}catch(e){}}const q=d.ref('voiceCalls').orderByChild('calleeId').equalTo(String(my));state.incomingUid=String(my);state.incomingQuery=q;state.incomingHandler=snap=>{const data=snap.val();if(data&&data.status==='ringing'&&!state.callRef&&String(data.callerId)!==String(my)){acceptReal(snap.ref,data)}};q.on('child_added',state.incomingHandler)}
-  function demoCall(person){cleanupLocal();state.remoteName=person.name||'Demo member';show('Calling '+state.remoteName,'Demo member • simulated voice call',person.avatar||'👤');actions('<button class="ss-call-mute">Mute</button><button class="ss-call-end">End call</button>');const mb=el('ssVoiceActions').querySelector('.ss-call-mute');const eb=el('ssVoiceActions').querySelector('.ss-call-end');mb.onclick=()=>{state.muted=!state.muted;mb.textContent=state.muted?'Unmute':'Mute';el('ssVoiceStatus').textContent=state.muted?'Muted':'Demo call connected'};eb.onclick=()=>{cleanupLocal();hide()};el('ssVoiceNote').textContent='Demo members are virtual profiles, so this is a safe local call simulation. Real members use live browser-to-browser audio.';setTimeout(()=>{if(!el('ssVoiceCallModal').classList.contains('show'))return;el('ssVoiceStatus').textContent='Demo call connected';timerStart();const AC=window.AudioContext||window.webkitAudioContext;if(AC){try{const ac=new AC();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=520;g.gain.value=.012;o.connect(g);g.connect(ac.destination);o.start();setTimeout(()=>{o.stop();ac.close()},350)}catch(e){}}},900)}
-  window.startVoiceCall=async function(id){const key=String(id||'');let p=(Array.isArray(window.skillswapPeople)?window.skillswapPeople:[]).find(x=>String(x.id||x.uid||x.userId)===key);if(!p&&Array.isArray(window.demoPeople))p=window.demoPeople.find(x=>String(x.id||x.uid||x.userId)===key);if(!p){try{const u=JSON.parse(window.ssMemoryStorage?.getItem('skillswapUsers')||'{}');p=Object.values(u).find(x=>String(x.id||x.uid||x.userId)===key)}catch(e){}}if(!p){showToast?.('Member not found. Please open the member chat again.');return}if(isDemo(p))return demoCall(p);return callReal(p)};
-  window.endVoiceCall=()=>finishCall('ended',true);
-  function currentChat(){return window.currentChatPerson||window.__currentChatPerson||(typeof currentChatPerson!=='undefined'?currentChatPerson:null)}
-  function addButtons(){document.querySelectorAll('.chat-header').forEach(h=>{if(h.querySelector('.ss-voice-btn'))return;const b=document.createElement('button');b.className='ss-voice-btn';b.type='button';b.textContent='📞 Call';b.title='Start a voice call';b.onclick=()=>{const cp=currentChat();const id=cp?.id||cp?.uid;if(id)window.startVoiceCall(id);else showToast?.('Open a member chat first.')};const close=h.querySelector('.chat-close');if(close)h.insertBefore(b,close);else h.appendChild(b)})}
-  setTimeout(()=>{addButtons();listenIncoming()},800);
-  document.addEventListener('DOMContentLoaded',()=>{addButtons();listenIncoming()});
-  setInterval(()=>{addButtons();if(uid())listenIncoming()},5000);
+  function timerStart(){stopTimer();state.started=Date.now();state.timer=setInterval(()=>{let n=Math.floor((Date.now()-state.started)/1000),m=String(Math.floor(n/60)).padStart(2,'0'),s=String(n%60).padStart(2,'0');el('ssVoiceTimer').textContent=m+':'+s},1000)}
+  function clean(){stopTimer();if(state.pc){try{state.pc.onicecandidate=null;state.pc.ontrack=null;state.pc.close()}catch(e){}}if(state.stream)state.stream.getTracks().forEach(t=>t.stop());state.pc=null;state.stream=null;state.callRef=null;state.candidateRef=null;state.listener=null;state.remoteId=null;state.incoming=false;state.connected=false;state.muted=false;el('ssVoiceTimer').textContent='00:00'}
+  function endCall(remove){const ref=state.callRef;if(ref&&remove){try{ref.remove()}catch(e){}}clean();hide()}
+  async function mic(){if(!navigator.mediaDevices?.getUserMedia)throw new Error('Your browser does not support microphone calls.');return navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false})}
+  async function startPC(){const pc=new RTCPeerConnection(ice);state.pc=pc;state.stream=await mic();state.stream.getTracks().forEach(t=>pc.addTrack(t,state.stream));pc.ontrack=e=>{let a=el('ssVoiceAudio');if(!a){a=document.createElement('audio');a.id='ssVoiceAudio';a.autoplay=true;a.playsInline=true;document.body.appendChild(a)}a.srcObject=e.streams[0];a.play().catch(()=>{})};pc.onconnectionstatechange=()=>{const c=pc.connectionState;if(c==='connected'){state.connected=true;el('ssVoiceStatus').textContent='Connected';timerStart()}if(['failed','disconnected','closed'].includes(c)&&state.connected)endCall(true)};return pc}
+  async function addCandidates(ref,pc){const snap=await ref.once('value');snap.forEach(x=>{const c=x.val();if(c)pc.addIceCandidate(new RTCIceCandidate(c)).catch(()=>{})});ref.on('child_added',x=>{const c=x.val();if(c)pc.addIceCandidate(new RTCIceCandidate(c)).catch(()=>{})});state.candidateRef=ref}
+  async function callReal(person){const my=uid(),other=personId(person);if(!my||!other)return alert('Please sign in before making a voice call.');if(location.protocol!=='https:'&&location.hostname!=='localhost')return alert('Voice calls require HTTPS (or localhost) so the browser can use your microphone.');clean();state.remoteId=other;state.remoteName=person.name||person.displayName||'Member';show('Calling '+state.remoteName,'Requesting microphone…',state.remoteName,person.avatar||'👤');actions('<button class="ss-call-end" id="ssEndBtn">Cancel call</button>');el('ssEndBtn').onclick=()=>endCall(true);
+    try{const d=db();if(!d)throw new Error('Firebase Database is not available.');const ref=d.ref('voiceCalls').push();state.callRef=ref;const pc=await startPC();const cand=ref.child('callerCandidates');pc.onicecandidate=e=>{if(e.candidate)cand.push(e.candidate.toJSON())};const offer=await pc.createOffer({offerToReceiveAudio:true});await pc.setLocalDescription(offer);await ref.set({callerId:my,calleeId:other,callerName:meName(),calleeName:state.remoteName,offer:{type:offer.type,sdp:offer.sdp},status:'ringing',createdAt:firebase.database.ServerValue.TIMESTAMP});ref.child('status').on('value',snap=>{const v=snap.val();if(v==='accepted'&&pc.signalingState!=='stable'&&ref){}});ref.child('answer').on('value',async snap=>{const a=snap.val();if(a&&pc.signalingState==='have-local-offer')await pc.setRemoteDescription(new RTCSessionDescription(a))});ref.child('status').on('value',snap=>{if(snap.val()==='rejected'||snap.val()==='ended')endCall(false)});await new Promise(r=>setTimeout(r,1));addCandidates(ref.child('calleeCandidates'),pc);
+    }catch(e){console.error(e);clean();hide();alert('Could not start the voice call: '+e.message)}}
+  async function acceptReal(ref,data){try{clean();state.callRef=ref;state.remoteId=data.callerId;state.remoteName=data.callerName||'Member';state.incoming=true;show(state.remoteName,'Incoming voice call',state.remoteName,'📞');actions('<button class="ss-call-answer">Answer</button><button class="ss-call-end">Decline</button>');const btns=el('ssVoiceActions').querySelectorAll('button');btns[0].onclick=async()=>{try{actions('<button class="ss-call-mute">Mute</button><button class="ss-call-end">End call</button>');const mb=el('ssVoiceActions').querySelector('.ss-call-mute');mb.onclick=()=>toggleMute(mb);const eb=el('ssVoiceActions').querySelector('.ss-call-end');eb.onclick=()=>endCall(true);const pc=await startPC();const cand=ref.child('calleeCandidates');pc.onicecandidate=e=>{if(e.candidate)cand.push(e.candidate.toJSON())};await pc.setRemoteDescription(new RTCSessionDescription(data.offer));const answer=await pc.createAnswer();await pc.setLocalDescription(answer);await ref.update({answer:{type:answer.type,sdp:answer.sdp},status:'accepted'});addCandidates(ref.child('callerCandidates'),pc)}catch(e){console.error(e);endCall(true)}};btns[1].onclick=()=>{ref.update({status:'rejected'}).catch(()=>{});endCall(false)}}catch(e){console.error(e);endCall(false)}}
+  function toggleMute(btn){if(!state.stream)return;state.muted=!state.muted;state.stream.getAudioTracks().forEach(t=>t.enabled=!state.muted);btn.textContent=state.muted?'Unmute':'Mute'}
+  function listenIncoming(){const my=uid(),d=db();if(!my||!d)return;if(state.incomingQuery&&state.incomingUid===String(my))return;try{if(state.incomingQuery&&state.listener){state.incomingQuery.off('child_added',state.listener)}const q=d.ref('voiceCalls').orderByChild('calleeId').equalTo(String(my));state.incomingUid=String(my);state.incomingQuery=q;state.listener=snap=>{const data=snap.val();if(data&&data.status==='ringing'&&!state.callRef)acceptReal(snap.ref,data)};q.on('child_added',state.listener)}catch(e){console.warn('Voice call listener:',e)}}
+  function demoCall(person){clean();state.remoteName=person.name||'Demo member';show('Calling '+state.remoteName,'Demo member — simulated voice call','',person.avatar||'👤');actions('<button class="ss-call-mute">Mute</button><button class="ss-call-end">End call</button>');const mb=el('ssVoiceActions').querySelector('.ss-call-mute');mb.onclick=()=>toggleDemo(mb);el('ssVoiceActions').querySelector('.ss-call-end').onclick=()=>endCall(false);timerStart();const AC=window.AudioContext||window.webkitAudioContext;if(AC){try{const ac=new AC();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=520;g.gain.value=.015;o.connect(g);g.connect(ac.destination);o.start();setTimeout(()=>{o.stop();ac.close()},500)}catch(e){}}el('ssVoiceNote').textContent='This demo member is virtual, so the call is simulated locally. Real members use a live browser-to-browser voice connection.'}
+  function toggleDemo(btn){state.muted=!state.muted;btn.textContent=state.muted?'Unmute':'Mute'}
+  window.startVoiceCall=async function(id){const all=(window.skillswapPeople||[]).concat(window.demoPeople||[]);let p=all.find(x=>String(x.id)===String(id));if(!p){try{const u=JSON.parse(ssMemoryStorage.getItem('skillswapUsers')||'{}');p=Object.values(u).find(x=>String(x.id)===String(id)||String(x.uid)===String(id))}catch(e){}}if(!p){showToast?.('Member not found.');return}if(p.virtual===true||['ananya','aarav','meera','rohan','saanvi','vikram','ishita','aditya','kavya','dev','priya','arjun'].includes(String(p.id)))demoCall(p);else await callReal(p)};
+  window.endVoiceCall=()=>endCall(true);
+  function addButtons(){document.querySelectorAll('.chat-header').forEach(h=>{if(h.querySelector('.ss-voice-btn'))return;const b=document.createElement('button');b.className='ss-voice-btn';b.type='button';b.textContent='📞 Call';b.onclick=()=>{const cp=(typeof currentChatPerson!=='undefined'?currentChatPerson:null);const id=cp?.id||cp?.uid||window.currentChatPerson?.id||window.currentChatPerson?.uid||window.__currentChatPerson?.id;if(id)startVoiceCall(id);else showToast?.('Open a member chat first.');};const close=h.querySelector('.chat-close');if(close)h.insertBefore(b,close);else h.appendChild(b)})}
+  const oldOpen=window.openChat;const wrap=function(id){return oldOpen.apply(this,arguments).then?oldOpen.apply(this,arguments):oldOpen.apply(this,arguments)};
+  setTimeout(()=>{addButtons();listenIncoming();},500);setInterval(()=>{addButtons();if(uid())listenIncoming()},3000);
+})();
+</script>
+
+<style id="ss-demo-dialogues-css">
+  #chatMessages .message{max-width:82%;line-height:1.5;white-space:pre-wrap}
+  #chatMessages .message.them{background:#f1f7f4;border:1px solid #dbeae4}
+  .ss-demo-typing{font-size:12px;color:#71817c;padding:4px 12px 8px;font-style:italic}
+</style>
+<script id="ss-demo-dialogues-js">
+(function(){
+  const dialogues={
+    ananya:{
+      intro:"Hi! 👋 I’m Ananya. I can help you practise Telugu or Hindi. I’m also learning Python and AI. What would you like to learn?",
+      replies:[
+        [/telugu|hindi|language|speak|conversation/i,"Of course! 😊 We can practise simple everyday sentences first. If you want, I can also correct your pronunciation and wording."],
+        [/python|coding|program|ai/i,"Yes! That’s actually one of my learning goals too. 💻 I’m still improving, but we can learn together and try a small Python exercise."],
+        [/time|when|available|weekend|schedule/i,"I’m usually free after school and on weekends. 📅 A short 30–45 minute session would work well for me."],
+        [/hello|hi|hey/i,"Hello! 😊 Nice to meet you. Tell me one skill you want to learn, and I’ll see how I can help."],
+        [/.*/,"That sounds interesting! 😊 Tell me what you’re hoping to learn, and we can make a simple plan together."]
+      ]
+    },
+    aarav:{
+      intro:"Hey! 👋 I’m Aarav. I teach Python and robotics, and I’m trying to improve my guitar and public speaking. What are you interested in?",
+      replies:[
+        [/python|coding|program/i,"Great choice! 🐍 We can start with variables and loops, then build a tiny project together. What’s your current level?"],
+        [/robot|arduino|electronics/i,"Robotics is really fun! 🤖 I can explain the basics of sensors, motors and simple projects. Have you built anything before?"],
+        [/guitar|music/i,"Nice! 🎸 I’m learning guitar myself, so a skill swap sounds perfect. We could practise beginner chords together."],
+        [/speak|presentation|public/i,"I’m working on public speaking too! 😄 We could practise a short introduction and give each other feedback."],
+        [/hello|hi|hey/i,"Hey! 😊 Glad you dropped by. What would you like to learn or practise today?"],
+        [/.*/,"Sounds good! 👍 Tell me a little about your goal and I’ll suggest a small activity we can do together."]
+      ]
+    },
+    meera:{
+      intro:"Vanakkam! 👋 I’m Meera. I teach Bharatanatyam and Carnatic music, and I’m learning graphic design and photography. What would you like to explore?",
+      replies:[
+        [/dance|bharatanatyam/i,"I’d love to help! 💃 We can begin with basic posture, hand gestures and rhythm. Have you learned any Indian classical dance before?"],
+        [/music|carnatic|sing/i,"Wonderful! 🎶 We can start with basic swaras and simple rhythm exercises. Tell me if you’re a beginner."],
+        [/design|graphic/i,"That’s one of the skills I’m trying to learn too! 🎨 We could exchange ideas and practise by making a simple poster."],
+        [/photo|photography|camera/i,"Photography sounds fun! 📷 I’d like to improve at it too. We can discuss composition, lighting and simple phone-camera techniques."],
+        [/hello|hi|hey/i,"Hi! 😊 Nice to meet you. Are you interested in dance, music, or a creative skill?"],
+        [/.*/,"I’m interested! 😊 Tell me more about what you want to learn and we can plan a friendly skill exchange."]
+      ]
+    },
+    rohan:{
+      intro:"Hi! I’m Rohan 👋 I work with Python, AI and ML. I’m also interested in web design and editing. What are you building or learning?",
+      replies:[
+        [/python|coding|program/i,"Absolutely. 💻 We can work through a Python problem together. If you share your level, I’ll keep it beginner-friendly or make it more challenging."],
+        [/ai|machine|ml|artificial/i,"AI is a big topic! 🤖 We can start with a simple explanation of machine learning and then build a tiny example."],
+        [/web|html|css|design/i,"Web design sounds good! 🌐 We can improve a page together and talk about layout, responsiveness and user experience."],
+        [/edit|video/i,"I’m interested in editing too. 🎬 We could exchange tips on pacing, transitions and making short videos more engaging."],
+        [/hello|hi|hey/i,"Hey! 👋 What project are you working on? I’d be happy to talk through it."],
+        [/.*/,"Interesting! Tell me your goal and what you already know. We can turn it into a small practice session. 🚀"]
+      ]
+    },
+    saanvi:{
+      intro:"Hi! 👋 I’m Saanvi. I can help with Maths and study planning. I’m learning Spanish and guitar. What can I help you with?",
+      replies:[
+        [/math|algebra|geometry|calculus/i,"Sure! 📚 Send me the topic or type of problem you’re practising, and we can solve one step at a time."],
+        [/study|exam|plan|school/i,"Let’s make it manageable. 📝 We can choose one goal, split it into short tasks and leave time for revision."],
+        [/spanish|language/i,"¡Genial! 🇪🇸 I’m learning Spanish too. We could practise greetings, everyday phrases and a little vocabulary."],
+        [/guitar|music/i,"I’m still learning guitar, but I’d love to practise together! 🎸 Beginner chords would be a good place to start."],
+        [/hello|hi|hey/i,"Hi! 😊 What are you working on today?"],
+        [/.*/,"No problem! 😊 Tell me what you’re trying to improve and we’ll take it one step at a time."]
+      ]
+    },
+    vikram:{
+      intro:"Hey! 👋 I’m Vikram. I teach cricket and chess, and I’m learning Python and photography. Which one interests you?",
+      replies:[
+        [/cricket|bat|bowling|sport/i,"Cricket it is! 🏏 We can talk about batting basics, bowling practice or match strategy. What do you play?"],
+        [/chess|checkmate|opening/i,"I’d be happy to play through a chess position with you. ♟️ We can start with openings or basic tactics."],
+        [/python|coding/i,"I’m learning Python myself! 💻 A skill swap would be great—we can practise a small coding problem together."],
+        [/photo|photography|camera/i,"I’m trying to improve my photography too. 📷 We can compare ideas for composition and taking better outdoor shots."],
+        [/hello|hi|hey/i,"Hey! 😄 Good to meet you. What would you like to practise?"],
+        [/.*/,"Sounds good! Tell me which skill you’re interested in and we’ll figure out a simple activity."]
+      ]
+    },
+    ishita:{
+      intro:"Namaste! 👋 I’m Ishita. I teach Rangoli and Mehendi, and I’m learning coding and photography. What would you like to learn?",
+      replies:[
+        [/rangoli|kolam|art/i,"I’d love to show you! 🎨 We can start with simple geometric patterns and then make a more detailed design."],
+        [/mehendi|henna/i,"Sure! 🌿 We can practise basic lines, flowers and simple patterns before trying a full design."],
+        [/coding|python|program/i,"Coding is one of my goals too! 💻 We could start with a beginner exercise and learn together."],
+        [/photo|photography|camera/i,"Photography would be a great exchange. 📷 We can practise framing and natural-light photos."],
+        [/hello|hi|hey/i,"Namaste! 😊 Nice to meet you. What skill caught your attention?"],
+        [/.*/,"That sounds nice! 😊 Tell me what you want to learn and I’ll suggest a beginner-friendly activity."]
+      ]
+    },
+    aditya:{
+      intro:"Hi! I’m Aditya 👋 I teach Physics and Science, and I’m interested in learning web development. What are you studying?",
+      replies:[
+        [/physics|science|force|motion|electric/i,"Sure! 🔬 Tell me the topic you’re stuck on. I’ll explain the idea first and then we can work through an example."],
+        [/web|html|css|javascript|coding/i,"Web development is what I want to learn! 🌐 If you know HTML or CSS, maybe you can teach me while I help you with science."],
+        [/study|exam|school/i,"Let’s break it down into smaller concepts. 📚 Which chapter are you preparing for?"],
+        [/hello|hi|hey/i,"Hi! 😊 What subject or skill are you interested in today?"],
+        [/.*/,"Happy to help! Tell me the topic you’re working on and we can take it step by step."]
+      ]
+    },
+    kavya:{
+      intro:"Hello! 👋 I’m Kavya. I teach music and guitar, and I’m learning photography and Python. What would you like to practise?",
+      replies:[
+        [/guitar|chord|music/i,"Great! 🎸 We can start with a few beginner chords and a simple rhythm. What songs do you like?"],
+        [/photo|photography|camera/i,"I’m learning photography too! 📷 We could practise composition together and share feedback on our pictures."],
+        [/python|coding/i,"Python sounds good. 💻 I’m learning it as well, so we can solve a beginner problem together."],
+        [/hello|hi|hey/i,"Hello! 😊 Nice to meet you. Are you here for music, guitar or another skill?"],
+        [/.*/,"Nice! 😊 Tell me a little more and we can turn it into a fun skill-swap session."]
+      ]
+    },
+    dev:{
+      intro:"Hey! 👋 I’m Dev. I can help with presentations and interviews, and I’m learning coding and design. What are you preparing for?",
+      replies:[
+        [/interview|job|resume|cv/i,"Definitely. 💼 We can do a mock interview and I can give you feedback on your answers and confidence."],
+        [/presentation|speak|public/i,"Let’s practise! 🎤 Give me your topic and I’ll help you structure a clear opening, main points and closing."],
+        [/coding|python|program/i,"I’m learning coding too. 💻 If you teach me something small, I can help you practise explaining it clearly."],
+        [/design|ui|graphic/i,"Design is on my learning list! 🎨 We can discuss simple layouts and how to make a presentation look cleaner."],
+        [/hello|hi|hey/i,"Hey! 😊 What are you preparing for?"],
+        [/.*/,"Sounds useful! Tell me your goal and we can practise it together."]
+      ]
+    },
+    priya:{
+      intro:"Hi! 👋 I’m Priya. I teach Hindi and English, and I’m learning digital marketing. What would you like to practise?",
+      replies:[
+        [/hindi|english|language|grammar|speaking/i,"Of course! 🗣️ We can practise conversation and I can gently correct grammar or vocabulary as we go."],
+        [/marketing|digital|social media|seo/i,"Digital marketing is what I’m learning! 📈 If you know something about it, I’d love to exchange ideas and learn together."],
+        [/practice|practise/i,"Absolutely. 😊 Give me a topic and we can have a short conversation around it."],
+        [/hello|hi|hey/i,"Hi! 😊 Nice to meet you. What language or skill are you working on?"],
+        [/.*/,"I’d be happy to chat! Tell me what you want to improve and we’ll make a simple practice plan."]
+      ]
+    },
+    arjun:{
+      intro:"Hello! 👋 I’m Arjun. I teach Chemistry and research skills, and I’m learning programming and guitar. What are you interested in?",
+      replies:[
+        [/chem|chemistry|organic|reaction/i,"Sure! 🧪 Tell me the chemistry topic. We can go from the concept to an example and then a practice question."],
+        [/research|project|science/i,"Research can feel much easier when it’s structured. 🔎 We can work on the question, sources, notes and a clear conclusion."],
+        [/program|python|coding/i,"Programming is something I’m learning too. 💻 Maybe we can trade skills—coding practice for chemistry help!"],
+        [/guitar|music/i,"Guitar sounds fun! 🎸 I’m a learner too, so beginner chords and rhythm practice would be great."],
+        [/hello|hi|hey/i,"Hello! 😊 What would you like to learn or teach?"],
+        [/.*/,"Interesting! Tell me a little more about your goal and we can plan a useful skill exchange."]
+      ]
+    }
+  };
+
+  function demoPerson(){
+    const id=String(window.currentChatPerson?.id||'');
+    return dialogues[id]||null;
+  }
+  function replyFor(id,text){
+    const d=dialogues[id];
+    if(!d)return "Thanks for your message! 😊 Tell me more about what you’d like to learn.";
+    for(const pair of d.replies) if(pair[0].test(text)) return pair[1];
+    return d.replies[d.replies.length-1][1];
+  }
+  function getStore(){try{return JSON.parse(ssMemoryStorage.getItem('skillswapMessages')||'{}')}catch(e){return {}}}
+  function putStore(x){ssMemoryStorage.setItem('skillswapMessages',JSON.stringify(x))}
+  function render(){
+    const c=document.getElementById('chatMessages'); if(!c)return;
+    const user=typeof getCurrentUser==='function'?getCurrentUser():null, p=window.currentChatPerson;
+    if(!user||!p)return;
+    const key=chatKey(user.id,p.id), store=getStore();
+    c.innerHTML=''; (store[key]||[]).forEach(m=>{const el=document.createElement('div');el.className='message '+(m.type==='me'?'sent':'them');el.textContent=m.text;c.appendChild(el)});
+    c.scrollTop=c.scrollHeight;
+  }
+  window.openChat=async function(id){
+    const user=getCurrentUser(); if(!user){openAuth('signin');return}
+    let person=(window.skillswapPeople||[]).find(p=>String(p.id)===String(id));
+    if(!person && Array.isArray(window.demoPeople)) person=window.demoPeople.find(p=>String(p.id)===String(id));
+    if(!person){try{const local=JSON.parse(ssMemoryStorage.getItem('skillswapUsers')||'{}');person=Object.values(local).find(p=>String(p.id)===String(id)||String(p.uid)===String(id))}catch(e){}}
+    if(!person){try{const d=await safeJSON('/api/profile/'+encodeURIComponent(String(id)));if(!d.__error)person=d.user}catch(e){}}
+    if(!person){showToast('Profile not found.');return}
+    const isDemo=person.virtual===true || !!dialogues[String(person.id)];
+    window.currentChatPerson={id:person.id||person.uid,name:person.name||'SkillSwap Member',avatar:person.avatar||'🧑',demo:isDemo};
+    const n=document.getElementById('chatName'),a=document.getElementById('chatAvatar'),m=document.getElementById('chatModal');
+    if(n)n.textContent=window.currentChatPerson.name+(isDemo?' · Demo member':''); if(a)a.textContent=window.currentChatPerson.avatar; if(m)m.classList.add('show');
+    window.__ssBackendChat=!isDemo;
+    if(isDemo){
+      const store=getStore(),key=chatKey(user.id,person.id),d=dialogues[String(person.id)];
+      if(!store[key]){store[key]=[{type:'them',text:d?d.intro:'Hi! 👋 What would you like to learn or teach?'}];putStore(store)}
+      render();
+    }else{
+      const data=await safeJSON('/api/messages/'+encodeURIComponent(String(person.id))); if(data.__error){showToast(data.__error.message);return}
+      window.__ssChatMessages=Array.isArray(data)?data:[]; if(typeof renderBackendChat==='function')renderBackendChat();
+    }
+  };
+  window.sendMessage=async function(){
+    const p=window.currentChatPerson,input=document.getElementById('chatInput'); if(!p||!input)return;
+    const text=input.value.trim(); if(!text)return;
+    if(p.demo){
+      const user=getCurrentUser(); if(!user)return;
+      const store=getStore(),key=chatKey(user.id,p.id); if(!store[key])store[key]=[];
+      store[key].push({type:'me',text}); putStore(store); input.value=''; render();
+      const c=document.getElementById('chatMessages'); if(c){const t=document.createElement('div');t.className='ss-demo-typing';t.textContent=p.name+' is typing…';c.appendChild(t);c.scrollTop=c.scrollHeight}
+      setTimeout(()=>{
+        const latest=getStore(); if(!latest[key])latest[key]=[];
+        latest[key]=latest[key].filter(x=>x.type!=='typing');
+        latest[key].push({type:'them',text:replyFor(String(p.id),text)}); putStore(latest);
+        if(window.currentChatPerson&&String(window.currentChatPerson.id)===String(p.id)&&window.currentChatPerson.demo)render();
+      },850);
+      return;
+    }
+    input.disabled=true;
+    try{const d=await safeJSON('/api/messages/'+encodeURIComponent(String(p.id)),{method:'POST',body:JSON.stringify({message:text})});if(d.__error){showToast(d.__error.message);return}input.value='';const latest=await safeJSON('/api/messages/'+encodeURIComponent(String(p.id)));window.__ssChatMessages=Array.isArray(latest)?latest:[];renderBackendChat()}finally{input.disabled=false}
+  };
+  window.loadMessages=function(){if(window.currentChatPerson?.demo)render()};
+  window.__ssDemoDialogues=dialogues;
 })();
 </script>
