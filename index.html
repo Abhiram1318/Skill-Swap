@@ -12027,5 +12027,141 @@ input::placeholder, textarea::placeholder { color:#64748b !important; }
   -webkit-text-fill-color:#fff !important;
 }
 </style>
+
+<style id="ss-signup-match-text-white-final">
+/* Sign Up page: match preview text white */
+.ss-land-card .ss-land-person strong,
+.ss-land-card .ss-land-person small,
+.ss-land-card .ss-land-person .ss-land-match {
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+</style>
+<style id="ss-signup-grey-to-white-final">
+/* Sign Up page: all grey text -> white */
+body:has(#signup) #signup * ,
+#signUpPage *, #signupPage *, #signup *, .signup-page * {
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+</style>
+
+<style id="ss-more-than-skill-directory-white-final">
+/* Sign-up landing: make the grey text in More than a skill directory white */
+.ss-land-section h2 + p,
+.ss-land-section .ss-land-features p {
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+</style>
+
+<style id="ss-signup-features-white-final">
+.ss-land-feature b,
+.ss-land-feature b *,
+.ss-land-feature p,
+.ss-land-feature p * {
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+</style>
+
+<style id="ss-signin-signup-all-white-final">
+/* Sign In and Sign Up pages: force all visible text to white */
+#signin *, #signIn *, #signinPage *, #signInPage *, .signin-page *,
+#signup *, #signUp *, #signupPage *, #signUpPage *, .signup-page * {
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+/* Keep form fields readable with dark text */
+#signin input, #signin textarea, #signin select,
+#signIn input, #signIn textarea, #signIn select,
+#signinPage input, #signinPage textarea, #signinPage select,
+#signInPage input, #signInPage textarea, #signInPage select,
+#signup input, #signup textarea, #signup select,
+#signUp input, #signUp textarea, #signUp select,
+#signupPage input, #signupPage textarea, #signupPage select,
+#signUpPage input, #signUpPage textarea, #signUpPage select {
+  color:#102033 !important;
+  -webkit-text-fill-color:#102033 !important;
+}
+#signin input::placeholder, #signIn input::placeholder, #signinPage input::placeholder, #signInPage input::placeholder,
+#signup input::placeholder, #signUp input::placeholder, #signupPage input::placeholder, #signUpPage input::placeholder {
+  color:#64748b !important;
+  -webkit-text-fill-color:#64748b !important;
+}
+</style>
+
+<style id="ss-auth-all-text-white-final">
+/* Sign In / Sign Up: force visible text to white, excluding form controls */
+#signin, #signInPage, #login, #loginPage, .signin-page, .sign-in-page,
+#signup, #signUpPage, #signupPage, .signup-page, .sign-up-page { color:#fff !important; -webkit-text-fill-color:#fff !important; }
+#signin *, #signInPage *, #login *, #loginPage *, .signin-page *, .sign-in-page *,
+#signup *, #signUpPage *, #signupPage *, .signup-page *, .sign-up-page * {
+  color:#fff !important; -webkit-text-fill-color:#fff !important;
+}
+#signin input, #signin textarea, #signin select, #signInPage input, #signInPage textarea, #signInPage select,
+#login input, #login textarea, #login select, #loginPage input, #loginPage textarea, #loginPage select,
+#signup input, #signup textarea, #signup select, #signUpPage input, #signUpPage textarea, #signUpPage select,
+#signupPage input, #signupPage textarea, #signupPage select, .signup-page input, .signup-page textarea, .signup-page select,
+.signin-page input, .signin-page textarea, .signin-page select, .sign-in-page input, .sign-in-page textarea, .sign-in-page select {
+  color:#102033 !important; -webkit-text-fill-color:#102033 !important;
+}
+</style>
 </body>
 </html>
+
+<style id="ss-signin-signup-email-password-white-final">
+/* Sign In / Sign Up: Email and Password labels + related text white */
+#signin label,
+#signin .label,
+#signin .field-label,
+#signin .form-label,
+#signin [class*="label"],
+#signup label,
+#signup .label,
+#signup .field-label,
+#signup .form-label,
+#signup [class*="label"],
+#signInPage label,
+#signInPage .label,
+#signInPage .field-label,
+#signInPage .form-label,
+#signInPage [class*="label"],
+#signUpPage label,
+#signUpPage .label,
+#signUpPage .field-label,
+#signUpPage .form-label,
+#signUpPage [class*="label"] {
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+
+/* Catch plain Email / Password text even when it is not inside a label */
+#signin,
+#signin *,
+#signup,
+#signup *,
+#signInPage,
+#signInPage *,
+#signUpPage,
+#signUpPage * {
+  --form-text-white:#fff;
+}
+
+/* Keep entered input text readable; labels/placeholders remain white */
+#signin input,
+#signup input,
+#signInPage input,
+#signUpPage input {
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+#signin input::placeholder,
+#signup input::placeholder,
+#signInPage input::placeholder,
+#signUpPage input::placeholder {
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+  opacity:1 !important;
+}
+</style>
