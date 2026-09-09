@@ -8055,7 +8055,7 @@ window.addEventListener("keydown",e=>{
     const ok=await loadCommandCenter();
     if(typeof window.refreshProDashboard==='function') await window.refreshProDashboard();
     if(typeof window.ss5Refresh==='function') await window.ss5Refresh(true);
-    if(typeof window.showToast==='function') showToast(ok?'Dashboard refreshed':'Sign in to use your dashboard');
+    if(ok && typeof window.showToast==='function') showToast('Dashboard refreshed');
   };
 
   window.ss4Discover=function(){
@@ -12490,4 +12490,3 @@ textarea::placeholder {
   -webkit-text-fill-color:#fff !important;
 }
 </style>
-   
