@@ -3623,6 +3623,18 @@ html:not(.ss-starting) #authModal.show { display:flex !important; }
 
     </div>
 
+    <div class="dashboard-card">
+        <h3>
+            ✅ Completed exchanges
+        </h3>
+        <p>
+            Your finished SkillSwap sessions.
+        </p>
+        <div class="review-list" id="completedList">
+            <div class="ss-dash-empty">Sign in to see completed exchanges.</div>
+        </div>
+    </div>
+
 </div>
 
 </section>
@@ -12701,6 +12713,50 @@ button,a,input,select,textarea{touch-action:manipulation}
     -webkit-text-fill-color: #102033 !important;
 }
 </style>
+
+
+<style id="ss-dashboard-fully-working-css">
+#requestList,#connectionList,#reviewList,#completedList{display:flex;flex-direction:column;gap:10px}
+.ss-dash-item{padding:13px;border:1px solid rgba(89,174,255,.20);border-radius:14px;background:rgba(7,26,56,.72);color:#eef6ff}
+.ss-dash-item strong{color:#fff}.ss-dash-item small,.ss-dash-item p{color:#b9d4ee;font-size:.82rem;line-height:1.45}.ss-dash-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.ss-dash-btn{border:0;border-radius:9px;padding:8px 11px;font-weight:800;cursor:pointer}.ss-dash-primary{background:#12a879;color:#fff}.ss-dash-secondary{background:#17385f;color:#dcecff;border:1px solid rgba(102,190,255,.2)}.ss-dash-danger{background:#7f2632;color:#fff}.ss-dash-status{display:inline-block;border-radius:999px;padding:3px 8px;font-size:11px;font-weight:800;margin-left:5px}.ss-dash-pending{background:#493817;color:#ffd36b}.ss-dash-accepted{background:#123f31;color:#7ee5bd}.ss-dash-completed{background:#183d68;color:#9fd3ff}.ss-dash-declined{background:#48242a;color:#ff9ba5}.ss-dash-empty{padding:15px 4px;color:#b9d4ee;font-size:.84rem}
+#requestList .ss-dash-item,#connectionList .ss-dash-item,#reviewList .ss-dash-item,#completedList .ss-dash-item{color:#eef6ff}
+</style>
+<script id="ss-dashboard-fully-working-js">
+(function(){
+ 'use strict';
+ const escD=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const demoIds=new Set(['ananya','aarav','meera','rohan','saanvi','vikram','ishita','aditya','kavya','dev','priya','arjun']);
+ function D(){return window.ssFirebase?.db||null}
+ function A(){return window.ssFirebaseAuth||window.ssFirebase?.auth||null}
+ function me(){return window.ssFirebaseProfile||A()?.currentUser||window.currentUser||null}
+ function uid(){return me()?.uid||me()?.id||null}
+ function localUsers(){try{return Object.values(JSON.parse(window.ssMemoryStorage?.getItem('skillswapUsers')||'{}'))}catch(e){return []}}
+ function person(id){const all=(window.skillswapPeople||[]).concat(window.demoPeople||[],localUsers());return all.find(x=>String(x.id)===String(id)||String(x.uid)===String(id)||String(x.userId)===String(id))||null}
+ function empty(id,msg){const e=document.getElementById(id);if(e)e.innerHTML='<div class="ss-dash-empty">'+msg+'</div>'}
+ function btn(text,fn,cls='ss-dash-secondary'){return '<button type="button" class="ss-dash-btn '+cls+'" onclick="'+fn+'">'+text+'</button>'}
+ function status(s){const map={pending:['Pending','ss-dash-pending'],accepted:['Connected','ss-dash-accepted'],completed:['Completed','ss-dash-completed'],declined:['Declined','ss-dash-declined'],cancelled:['Cancelled','ss-dash-declined']};const m=map[s]||[s||'Unknown','ss-dash-pending'];return '<span class="ss-dash-status '+m[1]+'">'+escD(m[0])+'</span>'}
+ async function read(path){const d=D();if(!d)return null;const s=await d.ref(path).get();return s.exists()?s.val():null}
+ async function render(){
+   const rbox=document.getElementById('requestList'),cbox=document.getElementById('connectionList'),vbox=document.getElementById('reviewList');if(!rbox&&!cbox&&!vbox)return;
+   const u=me();if(!u){empty('requestList','🔐 Sign in to manage your requests.');empty('connectionList','🔐 Sign in to see your connections.');empty('reviewList','🔐 Sign in to see reviews.');let cb=document.getElementById('completedList');if(cb)empty('completedList','🔐 Sign in to see completed exchanges.');return}
+   const id=String(uid());let reqs={};
+   try{reqs=await read('requests')||{}}catch(e){reqs={}}
+   const mine=Object.entries(reqs).map(([key,r])=>({...r,_key:key})).filter(r=>String(r.senderUid||r.senderId)===id||String(r.receiverUid||r.receiverId)===id);
+   const outgoing=mine.filter(r=>String(r.senderUid||r.senderId)===id);
+   const incoming=mine.filter(r=>String(r.receiverUid||r.receiverId)===id);
+   if(rbox){rbox.innerHTML=outgoing.length?outgoing.slice().reverse().map(r=>{const pid=r.receiverUid||r.receiverId;const p=person(pid);const name=r.receiverName||p?.name||'SkillSwap member';let actions='';if(r.status==='accepted')actions=btn('💬 Chat','openChat(\''+escD(pid)+'\')','ss-dash-primary')+btn('📅 Schedule','openScheduleModal()');else if(r.status==='pending')actions=btn('✕ Cancel','dashboardRequestAction(\''+escD(r._key)+'\',\'cancel\')','ss-dash-danger');return '<div class="ss-dash-item"><strong>🤝 '+escD(name)+'</strong>'+status(r.status)+'<p>Learn: <b>'+escD(r.wanted||r.skillWanted||'—')+'</b> · Teach: <b>'+escD(r.offered||r.skillOffered||'—')+'</b></p>'+actions+'</div>'}).join(''):'<div class="ss-dash-empty">No outgoing requests yet. Find a member and send a skill-swap request.</div>'}
+   if(cbox){const accepted=mine.filter(r=>r.status==='accepted');cbox.innerHTML=accepted.length?accepted.map(r=>{const incomingSide=String(r.receiverUid||r.receiverId)===id;const pid=incomingSide?(r.senderUid||r.senderId):(r.receiverUid||r.receiverId);const p=person(pid);const name=incomingSide?(r.senderName||p?.name):(r.receiverName||p?.name)||'SkillSwap member';return '<div class="ss-dash-item"><strong>💬 '+escD(name)+'</strong>'+status('accepted')+'<p>'+escD(r.wanted||r.skillWanted||'Skill exchange')+' ↔ '+escD(r.offered||r.skillOffered||'Skill exchange')+'</p><div class="ss-dash-actions">'+btn('💬 Chat','openChat(\''+escD(pid)+'\')','ss-dash-primary')+btn('📞 Call','openChat(\''+escD(pid)+'\');setTimeout(()=>window.startVoiceCall&&window.startVoiceCall(\''+escD(pid)+'\'),300)')+btn('📅 Schedule','openScheduleModal()')+'</div></div>'}).join(''):'<div class="ss-dash-empty">No active connections yet. Accepted requests will appear here.</div>'}
+   if(vbox){let reviews=await read('reviews')||{};const arr=Object.values(reviews).filter(x=>String(x.targetUid||x.targetId)===id).slice(-8).reverse();vbox.innerHTML=arr.length?arr.map(x=>'<div class="ss-dash-item"><strong>⭐ '+escD(x.reviewerName||'Member')+'</strong><p>'+('★'.repeat(Math.max(0,Math.min(5,Number(x.rating)||0))))+' · '+escD(x.text||'No written feedback.')+'</p></div>').join(''):'<div class="ss-dash-empty">No reviews yet. Complete an exchange and ask your partner to leave feedback.</div>'}
+   const cb=document.getElementById('completedList');if(cb){let sessions=await read('sessions')||{};const done=Object.entries(sessions).map(([key,x])=>({...x,_key:key})).filter(x=>Array.isArray(x.participantUids)&&x.participantUids.map(String).includes(id)&&(x.status==='completed'||x.status==='complete'));cb.innerHTML=done.length?done.slice().reverse().map(x=>'<div class="ss-dash-item"><strong>✅ '+escD(x.title||'SkillSwap exchange')+'</strong>'+status('completed')+'<p>'+escD(x.starts_at||x.startsAt||'Completed exchange')+' · '+escD(x.notes||'Skill exchange completed successfully.')+'</p></div>').join(''):'<div class="ss-dash-empty">No completed exchanges yet. Finish a scheduled session to build your exchange history.</div>'}
+ }
+ window.dashboardRequestAction=async function(key,action){try{const d=D();if(!d||!uid())return;if(action==='cancel'){await d.ref('requests/'+key).update({status:'cancelled',updated_at:new Date().toISOString()});showToast?.('Request cancelled.')}await render();if(typeof refreshProDashboard==='function')refreshProDashboard()}catch(e){showToast?.('Could not update request: '+e.message)}};
+ window.renderDashboard=render;
+ window.ssRefreshMainDashboard=render;
+ document.addEventListener('DOMContentLoaded',()=>setTimeout(render,900));
+ const auth=A();if(auth)auth.onAuthStateChanged(()=>setTimeout(render,300));
+ setInterval(()=>{if(uid())render().catch(()=>{})},5000);
+})();
+</script>
 
 </html>
 
