@@ -12526,50 +12526,6 @@ body.ss-authenticated #ssUltimatePlatform {
 })();
 </script>
 
-
-<style id="ss-v10-hide-dashboard-message">
-/* Never show the public "Sign in to use your dashboard" prompt
-   once the user is authenticated. */
-body.ss-authenticated #signinDashboardPrompt,
-body.ss-authenticated .signin-dashboard-prompt,
-body.ss-authenticated [id*="signin"][id*="dashboard"],
-body.ss-authenticated [class*="signin"][class*="dashboard"],
-body.ss-authenticated [id*="login"][id*="dashboard"],
-body.ss-authenticated [class*="login"][class*="dashboard"] {
-    display: none !important;
-}
-</style>
-
-
-<script id="ss-v10-hide-dashboard-message-js">
-(function(){
-  function hideAuthenticatedPrompt(){
-    if(!document.body.classList.contains('ss-authenticated')) return;
-    const needles=[
-      'sign in to use your dashboard',
-      'signin to use your dashboard',
-      'sign in to use dashboard',
-      'login to use your dashboard'
-    ];
-    document.querySelectorAll('body *').forEach(function(el){
-      if(el.children.length) return;
-      const text=(el.textContent||'').trim().toLowerCase();
-      if(needles.some(function(n){return text.includes(n);})){
-        el.style.setProperty('display','none','important');
-      }
-    });
-  }
-
-  const observer=new MutationObserver(hideAuthenticatedPrompt);
-  function start(){
-    hideAuthenticatedPrompt();
-    observer.observe(document.body,{childList:true,subtree:true,characterData:true});
-  }
-  if(document.body) start();
-  else document.addEventListener('DOMContentLoaded',start);
-})();
-</script>
-
 </html>
 
 <style id="ss-signin-signup-email-password-white-final">
