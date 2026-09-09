@@ -3031,6 +3031,93 @@ h1 span{background:none!important;-webkit-background-clip:initial!important;back
 /* Feature headings: white */
 .ss-feature-card h3, .ss-feature-card h3 *, .feature-card h3, .feature-card h3 * { color:#fff !important; -webkit-text-fill-color:#fff !important; }
 </style>
+
+<style id="learner-type-visibility-fix">
+/* Ensure every learner category is visible in the account form */
+#signupType {
+    width: 100% !important;
+    background: #fff !important;
+    color: #102033 !important;
+    -webkit-text-fill-color: #102033 !important;
+}
+#signupType option {
+    background: #fff !important;
+    color: #102033 !important;
+    -webkit-text-fill-color: #102033 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+#signupForm { overflow-y: auto !important; }
+</style>
+
+<style id="learner-type-text-fix">
+/* Learner-type dropdown: make the selected text and every option clearly readable */
+#signupType {
+    width: 100% !important;
+    min-height: 46px !important;
+    padding: 10px 42px 10px 14px !important;
+    background: #ffffff !important;
+    color: #102033 !important;
+    -webkit-text-fill-color: #102033 !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    line-height: 1.4 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+#signupType option {
+    background: #ffffff !important;
+    color: #102033 !important;
+    -webkit-text-fill-color: #102033 !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+#signupType:focus {
+    color: #102033 !important;
+    -webkit-text-fill-color: #102033 !important;
+    background: #ffffff !important;
+    outline: 2px solid #176b57 !important;
+    outline-offset: 1px !important;
+}
+</style>
+
+
+<style id="white-typed-text-fix">
+/* Keep text typed by the user white in dark input/text boxes */
+body input,
+body textarea,
+body select,
+body input[type="text"],
+body input[type="email"],
+body input[type="password"],
+body input[type="number"],
+body input[type="tel"],
+body input[type="url"],
+body input[type="search"] {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #ffffff !important;
+}
+
+body input::placeholder,
+body textarea::placeholder {
+    color: rgba(255,255,255,0.72) !important;
+    -webkit-text-fill-color: rgba(255,255,255,0.72) !important;
+}
+
+/* Keep the learner-type dropdown readable */
+#signupType,
+#signupType option {
+    color: #102033 !important;
+    -webkit-text-fill-color: #102033 !important;
+    background: #ffffff !important;
+}
+</style>
+
 </head>
 
 <body>
@@ -3855,13 +3942,12 @@ h1 span{background:none!important;-webkit-background-clip:initial!important;back
             </label>
 
             <select id="signupType">
-
-                <option>Teen Student</option>
-                <option>School Student</option>
-                <option>College Student</option>
-                <option>Young Learner</option>
-                <option>Other Learner</option>
-
+                <option value="Young Learner">Young Learner</option>
+                <option value="School Student">School Student</option>
+                <option value="College Student">College Student</option>
+                <option value="University Student">University Student</option>
+                <option value="Other Learner">Other Learner</option>
+                <option value="Teen Student">Teen Student</option>
             </select>
 
         </div>
@@ -12172,7 +12258,144 @@ body:has(#signup) #signup * ,
   color:#000 !important;
 }
 </style>
+
+<style id="actual-typed-text-fix">
+/* Final override: text entered into all SkillSwap form fields is white */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+textarea,
+select {
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  caret-color: #fff !important;
+  text-shadow: none !important;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):focus,
+textarea:focus,
+select:focus {
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  caret-color: #fff !important;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"])::placeholder,
+textarea::placeholder {
+  color: rgba(255,255,255,.75) !important;
+  -webkit-text-fill-color: rgba(255,255,255,.75) !important;
+  opacity: 1 !important;
+}
+
+/* The learner category menu stays readable */
+#signupType,
+#signupType option {
+  color: #102033 !important;
+  -webkit-text-fill-color: #102033 !important;
+  background: #fff !important;
+}
+</style>
+
 </body>
+
+<style id="v7-typed-text-visible">
+/* FINAL: signup text-entry boxes use a dark field so typed text is clearly WHITE */
+#signupForm input:not([type="checkbox"]):not([type="radio"]),
+#signupForm textarea,
+#signupForm input:not([type="checkbox"]):not([type="radio"]):focus,
+#signupForm textarea:focus {
+    background: #102033 !important;
+    background-color: #102033 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #ffffff !important;
+    opacity: 1 !important;
+    text-shadow: none !important;
+}
+
+#signupForm input::placeholder,
+#signupForm textarea::placeholder {
+    color: rgba(255,255,255,.72) !important;
+    -webkit-text-fill-color: rgba(255,255,255,.72) !important;
+    opacity: 1 !important;
+}
+
+#signupForm input:-webkit-autofill,
+#signupForm input:-webkit-autofill:hover,
+#signupForm input:-webkit-autofill:focus,
+#signupForm textarea:-webkit-autofill {
+    -webkit-text-fill-color: #ffffff !important;
+    -webkit-box-shadow: 0 0 0 1000px #102033 inset !important;
+    box-shadow: 0 0 0 1000px #102033 inset !important;
+    caret-color: #ffffff !important;
+}
+
+/* Keep learner-type dropdown separate and readable */
+#signupType,
+#signupType option {
+    background: #ffffff !important;
+    color: #102033 !important;
+    -webkit-text-fill-color: #102033 !important;
+}
+</style>
+
+
+<style id="v8-signin-signup-white-text">
+/* FINAL FIX: typed text is white in BOTH Sign In and Sign Up fields */
+#signinForm input,
+#signinForm textarea,
+#signinForm input:focus,
+#signinForm textarea:focus,
+#signupForm input:not([type="checkbox"]):not([type="radio"]),
+#signupForm textarea,
+#signupForm input:not([type="checkbox"]):not([type="radio"]):focus,
+#signupForm textarea:focus {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #ffffff !important;
+    opacity: 1 !important;
+    text-shadow: none !important;
+}
+
+/* Make Sign In fields dark so white typed text is clearly visible */
+#signinForm input,
+#signinForm textarea,
+#signinForm input:focus,
+#signinForm textarea:focus {
+    background: #102033 !important;
+    background-color: #102033 !important;
+}
+
+/* Sign In placeholders */
+#signinForm input::placeholder,
+#signinForm textarea::placeholder,
+#signupForm input::placeholder,
+#signupForm textarea::placeholder {
+    color: rgba(255,255,255,.72) !important;
+    -webkit-text-fill-color: rgba(255,255,255,.72) !important;
+    opacity: 1 !important;
+}
+
+/* Chrome/Edge autofill */
+#signinForm input:-webkit-autofill,
+#signinForm input:-webkit-autofill:hover,
+#signinForm input:-webkit-autofill:focus,
+#signupForm input:-webkit-autofill,
+#signupForm input:-webkit-autofill:hover,
+#signupForm input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #ffffff !important;
+    -webkit-box-shadow: 0 0 0 1000px #102033 inset !important;
+    box-shadow: 0 0 0 1000px #102033 inset !important;
+}
+
+/* Learner dropdown remains dark text on white */
+#signupType,
+#signupType option {
+    background: #ffffff !important;
+    color: #102033 !important;
+    -webkit-text-fill-color: #102033 !important;
+}
+</style>
+
 </html>
 
 <style id="ss-signin-signup-email-password-white-final">
@@ -12255,5 +12478,15 @@ body:has(#signup) #signup * ,
 #authModal #signupForm {
   background:#fff !important;
   background-image:none !important;
+}
+</style>
+
+<style id="ss-create-one-white-final">
+/* Sign In / Sign Up: "Create one" link text */
+#authModal #signinForm button[onclick*="switchAuth"],
+#authModal #signupForm button[onclick*="switchAuth"],
+#authModal .modal button[onclick*="switchAuth"] {
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
 }
 </style>
