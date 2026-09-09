@@ -12141,6 +12141,37 @@ body:has(#signup) #signup * ,
   background:#fff !important;
 }
 </style>
+
+<style id="ss-auth-close-final">
+/* Authentication modal close button — always visible on white auth pages */
+#authModal .modal-close,
+#authModal button.modal-close {
+  display:flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  position:absolute !important;
+  top:14px !important;
+  right:14px !important;
+  z-index:2147483647 !important;
+  width:40px !important;
+  height:40px !important;
+  align-items:center !important;
+  justify-content:center !important;
+  background:#ffffff !important;
+  color:#102033 !important;
+  -webkit-text-fill-color:#102033 !important;
+  border:2px solid #102033 !important;
+  border-radius:50% !important;
+  font-size:25px !important;
+  line-height:1 !important;
+  box-shadow:0 3px 12px rgba(0,0,0,.18) !important;
+  cursor:pointer !important;
+}
+#authModal .modal-close:hover {
+  background:#f1f5f9 !important;
+  color:#000 !important;
+}
+</style>
 </body>
 </html>
 
