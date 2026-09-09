@@ -12294,6 +12294,141 @@ textarea::placeholder {
 }
 </style>
 
+
+
+<!-- SKILLSWAP MOBILE-FIRST RESPONSIVE FINAL PATCH -->
+<style id="ssMobileReadyFinal">
+/* Prevent horizontal overflow on phones */
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+img,video,canvas,svg{max-width:100%;height:auto}
+button,a,input,select,textarea{touch-action:manipulation}
+
+/* Tablet */
+@media (max-width: 900px){
+  .container,.wrap,.section-inner,.section,.ss-ultimate-shell,.ss5-wrap,.ss4-shell{max-width:100%}
+  .ss-ultimate-actions,.ss-pro-actions,.quick-actions{flex-wrap:wrap}
+  .ss-ultimate-actions button,.ss-pro-actions button{min-height:44px}
+  .modal-overlay{padding:12px!important}
+}
+
+/* Phone */
+@media (max-width: 680px){
+  body{font-size:15px;line-height:1.5}
+
+  /* Main page spacing */
+  .section,.how{padding:42px 14px!important}
+  .hero{padding:46px 14px!important}
+  .hero h1{font-size:clamp(32px,10vw,44px)!important;line-height:1.08!important}
+  .hero p,.hero-subtitle{font-size:15px!important}
+
+  /* Public landing */
+  .ss-land-wrap{padding-left:14px!important;padding-right:14px!important}
+  .ss-land-nav{padding:14px 0!important;gap:10px!important;flex-wrap:wrap}
+  .ss-land-brand{font-size:18px!important}
+  .ss-land-actions{width:100%;display:grid!important;grid-template-columns:1fr 1fr;gap:8px!important}
+  .ss-land-actions button{width:100%;min-height:44px}
+  .ss-land-hero{padding:36px 0!important;grid-template-columns:1fr!important}
+  .ss-land-hero h1{font-size:clamp(34px,11vw,48px)!important;line-height:1.08!important}
+  .ss-land-hero p{font-size:15px!important}
+  .ss-land-features,.ss-land-steps{grid-template-columns:1fr!important}
+  .ss-land-card{padding:16px!important}
+
+  /* Ultimate platform */
+  .ss-ultimate-shell{padding-left:0!important;padding-right:0!important}
+  .ss-ultimate-hero{padding:24px 16px!important;border-radius:18px!important}
+  .ss-ultimate-hero h2{font-size:clamp(27px,8vw,38px)!important;line-height:1.12!important}
+  .ss-ultimate-actions{display:grid!important;grid-template-columns:1fr!important;gap:9px!important}
+  .ss-ultimate-actions button{width:100%;min-height:46px}
+  .ss-ultimate-grid,.ss-feature-grid,.ss-mini-grid,.ss-ultimate-form{grid-template-columns:1fr!important}
+  .ss-ultimate-row{gap:12px!important}
+  .ss-searchbar{width:100%!important}
+  .ss-searchbar input{min-width:0!important;width:100%!important}
+
+  /* Dashboard / analytics */
+  .ss-pro{margin:20px 0!important;padding:14px!important;border-radius:18px!important}
+  .ss-pro-head,.ss5-head,.ss4-top,.ss4-hero-inner{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:12px!important}
+  .ss-pro-actions,.ss4-actions{display:grid!important;grid-template-columns:1fr!important;width:100%!important}
+  .ss-pro-actions button,.ss4-actions .ss4-btn{width:100%!important;min-height:44px}
+  .ss-pro-grid,.ss4-grid{grid-template-columns:1fr!important}
+  .ss-span-2,.ss-span-3{grid-column:auto!important}
+  .ss-journey{grid-template-columns:1fr 1fr!important;gap:8px!important}
+  .ss-listings{grid-template-columns:1fr!important}
+  .ss-metrics,.ss-statgrid,.ss5-stats{grid-template-columns:1fr 1fr!important;gap:8px!important}
+  .ss5-wrap{padding:0 12px 105px!important;margin-top:16px!important}
+  .ss5-card{padding:16px!important;border-radius:18px!important}
+  .ss5-title{font-size:22px!important}
+  .ss5-chart{height:125px!important;gap:5px!important}
+  .ss5-item{align-items:flex-start!important;padding:10px!important}
+  .ss5-btn{padding:9px 10px!important;min-height:42px}
+
+  /* Community / hub / discovery */
+  .ss-community-grid,.ss-hub-grid,.ss-hub-results,.ss-hub-form,.ss-enhanced-grid,.ss-other-grid{grid-template-columns:1fr!important}
+  .ss-community-composer-row{flex-direction:column!important;align-items:stretch!important}
+  .ss-community-composer-row button{width:100%;min-height:44px}
+  .ss-hub-form .full{grid-column:auto!important}
+  .ss-enhanced-profile{grid-template-columns:1fr!important;text-align:center}
+  .ss-static-member-grid{grid-template-columns:1fr!important}
+
+  /* Forms */
+  .ss-form-grid{grid-template-columns:1fr!important}
+  input,select,textarea{font-size:16px!important;max-width:100%}
+  textarea{min-height:100px}
+  .quick-actions{display:grid!important;grid-template-columns:1fr 1fr!important}
+  .quick-action{min-height:44px}
+
+  /* Modals fit the phone screen */
+  .modal-overlay{align-items:flex-start!important;padding:10px!important;overflow-y:auto!important}
+  .modal,.modal-content,#authModal .modal{width:100%!important;max-width:100%!important;max-height:calc(100vh - 20px)!important;margin:0!important;border-radius:18px!important;overflow-y:auto!important}
+  #authModal .modal{padding:18px!important}
+  .modal-header{padding-right:4px!important}
+  .modal-submit{width:100%!important;min-height:46px!important}
+
+  /* Touch-friendly navigation */
+  .nav-links{display:none!important}
+  .ss5-bottomnav{left:8px!important;right:8px!important;bottom:8px!important;padding:6px!important;border-radius:17px!important}
+  .ss5-bottomnav button{flex:1;min-width:0;min-height:48px!important;padding:6px 2px!important;font-size:11px!important}
+  .ss4-nav{position:sticky!important;bottom:8px!important;z-index:1000!important;overflow-x:auto!important}
+  .ss4-nav button{min-width:72px!important;min-height:44px!important}
+
+  /* Fixed join CTA must not cover mobile navigation */
+  .ss-mobile-cta{left:10px!important;right:10px!important;bottom:76px!important}
+  .ss-mobile-cta button{min-height:48px!important}
+
+  /* Toasts stay inside the phone viewport */
+  .ss-toast{left:12px!important;right:12px!important;bottom:14px!important;max-width:none!important;width:auto!important}
+
+  /* Avoid oversized desktop typography */
+  h1{font-size:clamp(30px,9vw,44px)!important}
+  h2{font-size:clamp(24px,7vw,34px)!important}
+  h3{font-size:clamp(19px,5.5vw,25px)!important}
+
+  /* Cards and controls should never force page width */
+  .card,.panel,.feature-card,.profile-card,.dashboard-card,.community-card,
+  .ss-hub-card,.ss-other-community,.ss-land-card,.quick-panel,.progress-panel{min-width:0!important;max-width:100%!important}
+  .section-header{gap:10px!important}
+  .section-header p{max-width:100%!important}
+
+  /* Horizontal data/table areas remain usable */
+  table{display:block!important;width:100%!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch}
+  pre,.code-block{max-width:100%!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch}
+}
+
+/* Very small phones */
+@media (max-width: 380px){
+  .ss5-stats,.ss-metrics,.ss-statgrid{grid-template-columns:1fr!important}
+  .quick-actions{grid-template-columns:1fr!important}
+  .ss-journey{grid-template-columns:1fr!important}
+  .ss-land-actions{grid-template-columns:1fr!important}
+  .ss5-bottomnav button{font-size:10px!important}
+  .ss5-bottomnav{border-radius:15px!important}
+}
+
+/* Landscape phones */
+@media (max-height: 520px) and (orientation:landscape){
+  .modal,.modal-content,#authModal .modal{max-height:calc(100vh - 12px)!important}
+  .ss-mobile-cta{bottom:62px!important}
+}
+</style>
 </body>
 
 <style id="v7-typed-text-visible">
