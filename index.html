@@ -7605,27 +7605,79 @@ window.addEventListener("keydown",e=>{
     const own=document.getElementById('ownProfileActions');if(own)own.style.display='none';
     let actions=document.getElementById('publicProfileActions');
     if(!actions){actions=document.createElement('div');actions.id='publicProfileActions';actions.className='profile-modal-actions';document.querySelector('#profileModal .modal').appendChild(actions)}
-    actions.innerHTML=`<button class="edit-profile-btn" onclick="openRequest('${esc(person.id)}')">🤝 Request Skill Swap</button><button class="edit-profile-secondary" onclick="openSafetyReport('${esc(person.id)}')">🚩 Report</button><button class="edit-profile-secondary" onclick="blockMember('${esc(person.id)}')">🚫 Block</button><button class="edit-profile-secondary" onclick="closeModal('profileModal')">Close</button>`;
+    actions.innerHTML=`<button class="edit-profile-btn" onclick="openChat('${esc(person.id)}')">💬 Chat</button><button class="edit-profile-btn" onclick="openRequest('${esc(person.id)}')">🤝 Request Skill Swap</button><button class="edit-profile-secondary" onclick="openSafetyReport('${esc(person.id)}')">🚩 Report</button><button class="edit-profile-secondary" onclick="blockMember('${esc(person.id)}')">🚫 Block</button><button class="edit-profile-secondary" onclick="closeModal('profileModal')">Close</button>`;
     document.getElementById('profileModal').classList.add('show');
   };
 
-  // Real SQLite chat, replacing the local-only demo chat when a backend connection exists.
+  // Chat: real Firebase/SQLite members use persistent backend chat; demo members use a local conversational demo chat.
+  function isDemoMember(person){
+    return !!person && (person.virtual===true || demoPeople.some(p=>String(p.id)===String(person.id)));
+  }
   window.openChat=async function(id){
-    const user=getCurrentUser();if(!user){openAuth('signin');return}
-    let person=(window.skillswapPeople||[]).find(p=>String(p.id)===String(id));if(!person){const d=await safeJSON('/api/profile/'+id);person=d.user}
+    const user=getCurrentUser();
+    if(!user){openAuth('signin');return}
+    let person=(window.skillswapPeople||[]).find(p=>String(p.id)===String(id)) || demoPeople.find(p=>String(p.id)===String(id));
+    if(!person){
+      try{
+        const localUsers=JSON.parse(ssMemoryStorage.getItem('skillswapUsers')||'{}');
+        person=Object.values(localUsers).find(u=>String(u.id)===String(id)||String(u.uid)===String(id));
+      }catch(e){}
+    }
+    if(!person){
+      try{const d=await safeJSON('/api/profile/'+id);if(!d.__error&&d.user)person=d.user}catch(e){}
+    }
     if(!person){showToast('Profile not found.');return}
-    const d=await safeJSON('/api/messages/'+id);if(d.__error){showToast(d.__error.message);return}
-    currentChatPerson={id:person.id,name:person.name,avatar:person.avatar||'🧑'};
-    document.getElementById('chatName').textContent=person.name;document.getElementById('chatAvatar').textContent=person.avatar||'🧑';document.getElementById('chatModal').classList.add('show');
-    window.__ssBackendChat=true;window.__ssChatMessages=Array.isArray(d)?d:[];renderBackendChat();
+
+    currentChatPerson={id:person.id||person.uid,name:person.name||'SkillSwap Member',avatar:person.avatar||'🧑',demo:isDemoMember(person)};
+    document.getElementById('chatName').textContent=currentChatPerson.name+(currentChatPerson.demo?' · Demo member':'');
+    document.getElementById('chatAvatar').textContent=currentChatPerson.avatar;
+    document.getElementById('chatModal').classList.add('show');
+
+    if(currentChatPerson.demo){
+      window.__ssBackendChat=false;
+      loadMessages();
+      return;
+    }
+
+    const d=await safeJSON('/api/messages/'+encodeURIComponent(String(currentChatPerson.id)));
+    if(d.__error){showToast(d.__error.message);return}
+    window.__ssBackendChat=true;
+    window.__ssChatMessages=Array.isArray(d)?d:[];
+    renderBackendChat();
   };
   function renderBackendChat(){const c=document.getElementById('chatMessages');if(!c)return;c.innerHTML='';(window.__ssChatMessages||[]).forEach(m=>{const d=document.createElement('div');d.className='message '+(m.type==='me'?'sent':'them');d.textContent=m.text;c.appendChild(d)});c.scrollTop=c.scrollHeight}
   window.sendMessage=async function(){
-    if(!window.__ssBackendChat){return}
-    const input=document.getElementById('chatInput'),text=input.value.trim();if(!text||!currentChatPerson)return;
-    input.disabled=true;const d=await safeJSON('/api/messages/'+currentChatPerson.id,{method:'POST',body:JSON.stringify({message:text})});input.disabled=false;if(d.__error){showToast(d.__error.message);return}input.value='';const latest=await safeJSON('/api/messages/'+currentChatPerson.id);window.__ssChatMessages=Array.isArray(latest)?latest:window.__ssChatMessages;renderBackendChat();
+    if(!currentChatPerson)return;
+    const input=document.getElementById('chatInput'),text=input.value.trim();if(!text)return;
+    if(currentChatPerson.demo){
+      const messages=getMessages(),key=chatKey(getCurrentUser().id,currentChatPerson.id);
+      if(!messages[key])messages[key]=[];
+      messages[key].push({type:'me',text});
+      saveMessages(messages);input.value='';loadMessages();
+      setTimeout(()=>{const latest=getMessages();if(!latest[key])latest[key]=[];latest[key].push({type:'them',text:generateReply(text)});saveMessages(latest);if(currentChatPerson?.demo)loadMessages()},700);
+      return;
+    }
+    input.disabled=true;
+    const d=await safeJSON('/api/messages/'+encodeURIComponent(String(currentChatPerson.id)),{method:'POST',body:JSON.stringify({message:text})});
+    input.disabled=false;
+    if(d.__error){showToast(d.__error.message);return}
+    input.value='';
+    const latest=await safeJSON('/api/messages/'+encodeURIComponent(String(currentChatPerson.id)));
+    window.__ssChatMessages=Array.isArray(latest)?latest:window.__ssChatMessages;
+    renderBackendChat();
   };
-  window.loadMessages=async function(){if(window.__ssBackendChat&&currentChatPerson){const d=await safeJSON('/api/messages/'+currentChatPerson.id);if(!d.__error){window.__ssChatMessages=d;renderBackendChat()}}};
+  window.loadMessages=async function(){
+    if(!currentChatPerson)return;
+    if(currentChatPerson.demo){
+      const user=getCurrentUser();if(!user)return;
+      const messages=getMessages(),key=chatKey(user.id,currentChatPerson.id);
+      if(!messages[key])messages[key]=[{type:'them',text:'Hi! 👋 I’m a demo SkillSwap member. What would you like to learn or teach?'}];
+      saveMessages(messages);
+      const c=document.getElementById('chatMessages');if(c){c.innerHTML='';messages[key].forEach(m=>{const d=document.createElement('div');d.className='message '+m.type;d.textContent=m.text;c.appendChild(d)});c.scrollTop=c.scrollHeight}
+      return;
+    }
+    if(window.__ssBackendChat){const d=await safeJSON('/api/messages/'+encodeURIComponent(String(currentChatPerson.id)));if(!d.__error){window.__ssChatMessages=d;renderBackendChat()}}
+  };
   window.handleChatKey=function(e){if(e.key==='Enter'){e.preventDefault();sendMessage()}};
 
   // Keep dashboard metrics fresh after profile/auth changes.
@@ -12384,6 +12436,21 @@ button,a,input,select,textarea{touch-action:manipulation}
   .ss-mobile-cta{bottom:62px!important}
 }
 </style>
+
+<style id="ss-demo-chat-buttons">
+.ss-other-card .ss-demo-chat-btn{margin-left:7px!important}
+@media(max-width:650px){.ss-other-card .ss-demo-chat-btn{margin:8px 0 0!important;width:100%}}
+</style>
+<script id="ss-demo-chat-bind">
+(function(){
+  const map={
+    'Ananya Reddy':'ananya','Aarav Sharma':'aarav','Meera Krishnan':'meera','Rohan Patel':'rohan','Saanvi Gupta':'saanvi','Vikram Rao':'vikram','Ishita Singh':'ishita','Aditya Nair':'aditya','Kavya Das':'kavya','Dev Malhotra':'dev','Priya Sharma':'priya','Arjun Mehta':'arjun'
+  };
+  function bind(){document.querySelectorAll('#ssOtherGrid .ss-other-card').forEach(card=>{const name=card.querySelector('h3')?.textContent?.trim();const id=map[name];if(!id||card.querySelector('.ss-demo-chat-btn'))return;const b=document.createElement('button');b.type='button';b.className='ss-other-btn ss-demo-chat-btn';b.textContent='💬 Chat';b.onclick=()=>openChat(id);const view=card.querySelector('.ss-other-btn');view?.parentNode?.appendChild(b);});}
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(bind,100));
+  setTimeout(bind,500);setTimeout(bind,1500);
+})();
+</script>
 </body>
 
 <style id="v7-typed-text-visible">
