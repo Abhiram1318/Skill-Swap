@@ -7615,7 +7615,7 @@ window.addEventListener("keydown",e=>{
   function logged(){return !!getCurrentUser();}
   async function safeJSON(url,opts){try{return await api(url,opts)}catch(e){return {__error:e}}}
   window.refreshProDashboard=async function(){
-    if(!logged()){showToast('Sign in to use your dashboard.');return}
+    if(!logged())return;
     const d=await safeJSON('/api/dashboard'); if(!d.__error){const c=d.counts||{};metricConnections.textContent=c.connections||0;metricRequests.textContent=c.incoming||0;metricSessions.textContent=c.sessions||0;metricUnread.textContent=c.unread||0}
     await Promise.all([refreshJourney(),loadNotifications(),loadSessions(),loadListings()]);
     const u=getCurrentUser(); if(u){proRating.textContent=u.rating?('⭐ '+Number(u.rating).toFixed(1)):'New';proReviews.textContent=(u.reviews||0)+' reviews'}
@@ -8090,8 +8090,8 @@ window.addEventListener("keydown",e=>{
       ['ss5Connections','ss5Sessions','ss5Views','ss5Offers','ss5XP'].forEach(id=>{if($(id))$(id).textContent='0'});
       if($('ss5Level'))$('ss5Level').textContent='Level 1';
       if($('ss5XPBar'))$('ss5XPBar').style.width='0%';
-      if($('ss5Saved'))$('ss5Saved').innerHTML='<div class="ss5-empty">Sign in to use your growth hub.</div>';
-      if($('ss5Chart'))$('ss5Chart').innerHTML='<div class="ss5-empty" style="width:100%">Sign in to see your weekly activity.</div>';
+      if($('ss5Saved'))$('ss5Saved').innerHTML='<div class="ss5-empty"></div>';
+      if($('ss5Chart'))$('ss5Chart').innerHTML='<div class="ss5-empty" style="width:100%"></div>';
       if($('ss5Days'))$('ss5Days').innerHTML='';
       return false;
     }
@@ -8148,7 +8148,7 @@ window.addEventListener("keydown",e=>{
 
   window.ss5Refresh=async function(silent){
     const ok=await loadGrowthHub();
-    if(!silent && typeof window.showToast==='function') showToast(ok?'Growth hub refreshed':'Sign in to use your growth hub');
+    if(!silent && typeof window.showToast==='function') if(ok && typeof window.showToast==='function') showToast('Growth hub refreshed');
     return ok;
   };
 
