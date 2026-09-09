@@ -3144,6 +3144,54 @@ body textarea::placeholder {
 #chatModal .chat-input input { background:#082936 !important; border-color:rgba(255,255,255,.25) !important; }
 #chatModal .chat-input button { color:#fff !important; -webkit-text-fill-color:#fff !important; }
 </style>
+
+<style id="ss-initial-load-fix">
+/* Prevent the authentication UI from flashing during page startup. */
+html.ss-starting body > * { visibility:hidden !important; }
+html.ss-starting #ssPublicLanding { visibility:hidden !important; }
+html.ss-starting #authModal { display:none !important; }
+html:not(.ss-starting) #authModal { display:none; }
+html:not(.ss-starting) #authModal.show { display:flex !important; }
+</style>
+<script id="ss-initial-load-fix-js">
+(function(){
+  document.documentElement.classList.add('ss-starting');
+  function finishInitialLoad(loggedIn){
+    try{
+      var modal=document.getElementById('authModal');
+      /* Never let a stale/automatic auth modal appear during startup. */
+      if(modal && !window.__ssAuthOpenedByUser) modal.classList.remove('show');
+      var landing=document.getElementById('ssPublicLanding');
+      if(landing) landing.style.display=loggedIn?'none':'block';
+      document.body.classList.toggle('ss-authenticated',!!loggedIn);
+    }catch(e){}
+    document.documentElement.classList.remove('ss-starting');
+  }
+  window.__ssAuthOpenedByUser=false;
+  var oldOpen=window.ssOpenAuth;
+  window.ssOpenAuth=function(type){
+    window.__ssAuthOpenedByUser=true;
+    if(typeof oldOpen==='function') return oldOpen(type);
+    var m=document.getElementById('authModal');
+    if(m){m.classList.add('show'); if(typeof switchAuth==='function') switchAuth(type==='signup'?'signup':'signin');}
+    return false;
+  };
+  function boot(){
+    var a=window.ssFirebaseAuth||window.ssFirebase?.auth;
+    if(a && typeof a.onAuthStateChanged==='function'){
+      var done=false;
+      a.onAuthStateChanged(function(u){
+        if(done)return; done=true;
+        finishInitialLoad(!!u);
+      });
+      setTimeout(function(){if(!done){done=true;finishInitialLoad(!!(a.currentUser||window.ssFirebaseProfile||getCurrentUser?.()));}},2500);
+    }else{
+      setTimeout(function(){finishInitialLoad(!!(window.ssFirebaseProfile||((typeof getCurrentUser==='function')?getCurrentUser():null)));},150);
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
+})();
+</script>
 </head>
 
 <body>
@@ -8655,10 +8703,18 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
     if(typeof openAuth==='function')openAuth('signin');
     return false;
   }
+  // Firebase RTDB can throw an INTERNAL ASSERT FAILED error when the same
+  // path/query is listened to more than once at the same time. Booking opens
+  // can trigger overlapping reads, so reuse an in-flight read for each path.
+  const ssReadInFlight=window.__ssReadInFlight||(window.__ssReadInFlight=new Map());
   async function safeOnce(path){
     const d=db();
     if(!d)throw new Error('Firebase is not ready yet. Please wait a moment and try again.');
-    return d.ref(path).once('value');
+    const key=String(path);
+    if(ssReadInFlight.has(key)) return ssReadInFlight.get(key);
+    const promise=d.ref(key).get().finally(()=>{ssReadInFlight.delete(key);});
+    ssReadInFlight.set(key,promise);
+    return promise;
   }
   async function getUsers(){
     const s=await safeOnce('users');
