@@ -4502,7 +4502,7 @@ html:not(.ss-starting) #authModal.show { display:flex !important; }
 </div>
 
 <!-- Supabase SDK: Auth + PostgreSQL + Realtime -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 /* =========================================================
    SKILLSWAP INDIA — SUPABASE ADAPTER
@@ -4521,12 +4521,25 @@ html:not(.ss-starting) #authModal.show { display:flex !important; }
   if(!ready)return;
 
   const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  window.ssSupabaseClient=client;
+  window.ssSupabaseRawClient=client;
   window.ssSupabase=client;
 
   const now=()=>new Date().toISOString();
   const json=(obj,status=200)=>new Response(JSON.stringify(obj),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}});
   const bodyOf=async(init)=>{try{return init&&init.body?JSON.parse(init.body):{}}catch{return{}}};
-  const cleanUser=d=>{if(!d)return null;return {...d,id:d.id||d.uid,uid:d.uid||d.id,email:d.email||'',languages:Array.isArray(d.languages)?d.languages:[],teach:Array.isArray(d.teach)?d.teach:[],want:Array.isArray(d.want)?d.want:[],availability:Array.isArray(d.availability)?d.availability:[]};};
+  const cleanUser=d=>{
+    if(!d)return null;
+    const teach=d.teach??d.skills_teach??'';
+    const want=d.want??d.skills_want??'';
+    return {...d,id:d.id||d.uid,uid:d.uid||d.id,email:d.email||'',
+      languages:Array.isArray(d.languages)?d.languages:(d.languages?String(d.languages).split(',').map(x=>x.trim()).filter(Boolean):['English']),
+      teach:Array.isArray(teach)?teach:String(teach).split(',').map(x=>x.trim()).filter(Boolean),
+      want:Array.isArray(want)?want:String(want).split(',').map(x=>x.trim()).filter(Boolean),
+      availability:Array.isArray(d.availability)?d.availability:(d.availability?String(d.availability).split(',').map(x=>x.trim()).filter(Boolean):['Flexible']),
+      avatar:d.avatar||d.avatar_url||'🧑🏻'
+    };
+  };
 
   // Small local fallback for features whose tables have not been created yet.
   const localKey='skillswap_supabase_fallback_v1';
@@ -4628,7 +4641,18 @@ html:not(.ss-starting) #authModal.show { display:flex !important; }
     const p=String(path).split('/').filter(Boolean),root=p[0]||'';
     if(root==='users'){
       const uid=p[1];if(!uid)throw new Error('Profile id is required.');
-      const row=mapProfile(value);row.id=uid;row.uid=uid;
+      const v=mapProfile(value);
+      const row={
+        id:uid,
+        name:String(v.name||'SkillSwap Member'),
+        email:String(v.email||''),
+        location:v.location==null?'':String(v.location),
+        bio:v.bio==null?'':String(v.bio),
+        skills_teach:Array.isArray(v.teach)?v.teach.join(', '):(v.skills_teach==null?'':String(v.skills_teach)),
+        skills_want:Array.isArray(v.want)?v.want.join(', '):(v.skills_want==null?'':String(v.skills_want)),
+        avatar_url:v.avatar_url||v.avatar||null,
+        created_at:v.created_at||now()
+      };
       const {error}=await client.from('profiles').upsert(row,{onConflict:'id'});if(error)throw error;return;
     }
     if(root==='requests'||root==='connections'||root==='messages'||root==='favorites'){
@@ -4679,7 +4703,7 @@ html:not(.ss-starting) #authModal.show { display:flex !important; }
     if(!user)return null;
     let p=await currentProfile();
     if(!p){
-      const base={id:user.id,uid:user.id,legacyId:Date.now(),name:user.user_metadata?.name||user.email?.split('@')[0]||'SkillSwap Member',email:user.email||'',type:'University Student',location:'Online',languages:['English'],bio:'Learning and sharing skills.',teach:['Knowledge Sharing'],want:['Something New'],availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:now()};
+      const base={id:user.id,name:user.user_metadata?.name||user.email?.split('@')[0]||'SkillSwap Member',email:user.email||'',location:'Online',bio:'Learning and sharing skills.',skills_teach:'Knowledge Sharing',skills_want:'Something New',avatar_url:null,created_at:now()};
       const {data,error}=await client.from('profiles').upsert(base,{onConflict:'id'}).select().single();if(error)throw error;p=data;
     }
     return cleanUser(p);
@@ -4692,8 +4716,8 @@ html:not(.ss-starting) #authModal.show { display:flex !important; }
       const {data:{user}}=await client.auth.getUser();
       if(path==='/api/signup'&&method==='POST'){
         const {data,error}=await client.auth.signUp({email:payload.email,password:payload.password,options:{data:{name:payload.name||'SkillSwap Member'}}});if(error)throw error;
-        const u=data.user,p={id:u.id,uid:u.id,legacyId:Date.now(),name:payload.name||'SkillSwap Member',email:u.email||payload.email,type:payload.type||'University Student',location:payload.location||'Online',languages:String(payload.languages||'English').split(',').map(x=>x.trim()).filter(Boolean),bio:payload.bio||'Learning and sharing skills.',teach:String(payload.teach||'Knowledge Sharing').split(',').map(x=>x.trim()).filter(Boolean),want:String(payload.want||'Something New').split(',').map(x=>x.trim()).filter(Boolean),availability:Array.isArray(payload.availability)?payload.availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:now()};
-        const {error:pe}=await client.from('profiles').upsert(p,{onConflict:'id'});if(pe)throw pe;return json({success:true,user:p});
+        const u=data.user,p={id:u.id,name:payload.name||'SkillSwap Member',email:u.email||payload.email,location:payload.location||'Online',bio:payload.bio||'Learning and sharing skills.',skills_teach:String(payload.teach||'Knowledge Sharing'),skills_want:String(payload.want||'Something New'),avatar_url:null,created_at:now()};
+        const {error:pe}=await client.from('profiles').upsert(p,{onConflict:'id'});if(pe)throw pe;return json({success:true,user:cleanUser(p)});
       }
       if(path==='/api/signin'&&method==='POST'){
         const {data,error}=await client.auth.signInWithPassword({email:payload.email,password:payload.password});if(error)throw error;const p=await ensureProfile(data.user);return json({success:true,user:p});
@@ -13157,5 +13181,69 @@ button,a,input,select,textarea{touch-action:manipulation}
   };
   window.loadMessages=function(){if(window.currentChatPerson?.demo)render()};
   window.__ssDemoDialogues=dialogues;
+})();
+</script>
+
+<script id="ssSupabaseSignupFinalFix">
+(function(){
+  const $=id=>document.getElementById(id);
+  const val=id=>String($(id)?.value||'').trim();
+  const toast=m=>{if(typeof window.showToast==='function')window.showToast(m);else alert(m)};
+  const client=()=>window.ssSupabaseClient||window.ssSupabaseRawClient||null;
+  async function saveProfile(user){
+    const c=client(); if(!c||!user) throw new Error('Supabase client is not ready.');
+    const name=val('signupName')||user.user_metadata?.name||user.email?.split('@')[0]||'SkillSwap Member';
+    const location=val('signupLocation')||'Online';
+    const bio=val('signupBio')||'Learning and sharing skills.';
+    const teach=val('signupSkill')||'Knowledge Sharing';
+    const want=val('signupWanted')||'Something New';
+    const {data,error}=await c.from('profiles').upsert({
+      id:user.id,
+      name,
+      email:user.email||val('signupEmail'),
+      location,
+      bio,
+      skills_teach:teach,
+      skills_want:want,
+      avatar_url:null,
+      created_at:new Date().toISOString()
+    },{onConflict:'id'}).select().single();
+    if(error) throw error;
+    window.ssSupabaseProfile=data;
+    try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(data));}catch(e){}
+    return data;
+  }
+  window.signUp=async function(){
+    const c=client();
+    const email=val('signupEmail').toLowerCase();
+    const password=$('signupPassword')?.value||'';
+    const name=val('signupName');
+    if(!name)return toast('Please enter your name.');
+    if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return toast('Please enter a valid email address.');
+    if(password.length<6)return toast('Your password must be at least 6 characters.');
+    if(!c)return toast('Supabase is not ready. Please refresh the page.');
+    const btn=document.querySelector('#signupForm .modal-submit');
+    if(btn){btn.disabled=true;btn.textContent='Creating your account…';}
+    try{
+      const {data,error}=await c.auth.signUp({email,password,options:{data:{name}}});
+      if(error)throw error;
+      if(!data.user)throw new Error('Supabase did not return a user.');
+      if(!data.session)throw new Error('Account created, but no active session was returned. Confirm Email must be OFF in Supabase Authentication.');
+      const profile=await saveProfile(data.user);
+      window.ssSupabaseProfile=profile;
+      document.body.classList.add('ss-authenticated');
+      if(typeof window.setAppState==='function')window.setAppState(true);
+      if(typeof window.updateUserUI==='function')window.updateUserUI();
+      if(typeof window.closeModal==='function')window.closeModal('authModal');
+      if(typeof window.renderEverything==='function'){try{await window.renderEverything();}catch(e){console.warn('renderEverything:',e);}}
+      toast('🎉 Welcome to SkillSwap India, '+profile.name+'!');
+    }catch(e){
+      console.error('SkillSwap Supabase signup error:',e);
+      let m=e?.message||'Account creation failed.';
+      if(e?.code==='user_already_exists'||/already registered|already exists/i.test(m))m='This email is already registered. Please use Sign in.';
+      else if(/password/i.test(m)&&/6|characters|length|weak/i.test(m))m='Your password must be at least 6 characters.';
+      toast('❌ '+m);
+    }finally{if(btn){btn.disabled=false;btn.textContent='Create my profile';}}
+  };
 })();
 </script>
