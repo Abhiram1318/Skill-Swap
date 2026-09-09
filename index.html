@@ -12526,6 +12526,112 @@ body.ss-authenticated #ssUltimatePlatform {
 })();
 </script>
 
+
+<style id="ss-v10-hide-dashboard-message">
+/* Never show the public "Sign in to use your dashboard" prompt
+   once the user is authenticated. */
+body.ss-authenticated #signinDashboardPrompt,
+body.ss-authenticated .signin-dashboard-prompt,
+body.ss-authenticated [id*="signin"][id*="dashboard"],
+body.ss-authenticated [class*="signin"][class*="dashboard"],
+body.ss-authenticated [id*="login"][id*="dashboard"],
+body.ss-authenticated [class*="login"][class*="dashboard"] {
+    display: none !important;
+}
+</style>
+
+
+<script id="ss-v10-hide-dashboard-message-js">
+(function(){
+  function hideAuthenticatedPrompt(){
+    if(!document.body.classList.contains('ss-authenticated')) return;
+    const needles=[
+      'sign in to use your dashboard',
+      'signin to use your dashboard',
+      'sign in to use dashboard',
+      'login to use your dashboard'
+    ];
+    document.querySelectorAll('body *').forEach(function(el){
+      if(el.children.length) return;
+      const text=(el.textContent||'').trim().toLowerCase();
+      if(needles.some(function(n){return text.includes(n);})){
+        el.style.setProperty('display','none','important');
+      }
+    });
+  }
+
+  const observer=new MutationObserver(hideAuthenticatedPrompt);
+  function start(){
+    hideAuthenticatedPrompt();
+    observer.observe(document.body,{childList:true,subtree:true,characterData:true});
+  }
+  if(document.body) start();
+  else document.addEventListener('DOMContentLoaded',start);
+})();
+</script>
+
+
+<style id="ss-hide-auth-prompts-v11">
+/* Logged-in members should never see pre-login sign-in prompts. */
+body.ss-authenticated .ss-signin-prompt,
+body.ss-authenticated [data-auth-prompt],
+body.ss-authenticated .signin-prompt,
+body.ss-authenticated .login-prompt {
+  display: none !important;
+}
+</style>
+
+<script id="ss-hide-auth-prompts-js-v11">
+(function(){
+  const phrases = [
+    'sign in to use your dashboard',
+    'signin to use your dashboard',
+    'sign in to use dashboard',
+    'login to use your dashboard',
+    'sign in to manage requests',
+    'signin to manage requests',
+    'login to manage requests',
+    'sign in to see connections',
+    'signin to see connections',
+    'login to see connections',
+    'sign in to see reviews',
+    'signin to see reviews',
+    'login to see reviews'
+  ];
+
+  function hideAuthPrompts(){
+    if(!document.body || !document.body.classList.contains('ss-authenticated')) return;
+
+    // Hide matching elements without removing their useful surrounding UI.
+    document.querySelectorAll('body *').forEach(function(el){
+      if(el.id === 'ss-hide-auth-prompts-js-v11' || el.id === 'ss-hide-auth-prompts-v11') return;
+      if(el.children.length > 0) return;
+
+      const text = (el.textContent || '').trim().toLowerCase();
+      if(!text) return;
+
+      if(phrases.some(function(p){ return text === p || text.includes(p); })){
+        el.style.setProperty('display','none','important');
+      }
+    });
+  }
+
+  function start(){
+    hideAuthPrompts();
+    const observer = new MutationObserver(hideAuthPrompts);
+    observer.observe(document.body, {childList:true, subtree:true, characterData:true});
+    window.addEventListener('load', hideAuthPrompts);
+    document.addEventListener('click', function(){ setTimeout(hideAuthPrompts, 0); }, true);
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+})();
+</script>
+
 </html>
 
 <style id="ss-signin-signup-email-password-white-final">
