@@ -3122,6 +3122,28 @@ body textarea::placeholder {
 .ss-other-loading{grid-column:1/-1;padding:28px 18px;text-align:center;border:1px dashed #cfe0da;border-radius:16px;background:#fff;color:#687a75;font-weight:700}
 .dark-mode .ss-other-loading{background:#10211c;color:#b9cbc5;border-color:#34564c}
 </style>
+
+<style id="skillswap-chat-white-text-fix">
+/* Chat readability fix: all chat names, messages and controls are white */
+#chatModal .chat-header,
+#chatModal .chat-header h3,
+#chatModal .chat-header p,
+#chatModal .chat-person,
+#chatModal .chat-messages,
+#chatModal .message,
+#chatModal .message.them,
+#chatModal .message.me,
+#chatModal .message.sent,
+#chatModal .chat-input,
+#chatModal .chat-input input,
+#chatModal .chat-input button { color:#fff !important; -webkit-text-fill-color:#fff !important; }
+#chatModal .message.them,
+#chatModal .message.me,
+#chatModal .message.sent { color:#fff !important; -webkit-text-fill-color:#fff !important; }
+#chatModal .chat-input input::placeholder { color:rgba(255,255,255,.72) !important; -webkit-text-fill-color:rgba(255,255,255,.72) !important; }
+#chatModal .chat-input input { background:#082936 !important; border-color:rgba(255,255,255,.25) !important; }
+#chatModal .chat-input button { color:#fff !important; -webkit-text-fill-color:#fff !important; }
+</style>
 </head>
 
 <body>
