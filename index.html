@@ -12916,12 +12916,18 @@ body.ss-guest-mode .guest-only{display:block!important}
   };
 
   function initGuest(){
-    var saved = false;
-    try{ saved = sessionStorage.getItem(guestStorageKey()) === '1'; }catch(e){}
-    if(!saved){
-      try{ saved = localStorage.getItem(guestStorageKey()) === '1'; }catch(e){}
-    }
-    if(saved) window.__ssGuestMode = true;
+    /*
+     * IMPORTANT:
+     * Guest Mode must NEVER start automatically on page load.
+     * Older versions stored skillswap_guest_mode in localStorage, which
+     * caused a previous guest session to reopen as Guest Mode without a click.
+     *
+     * A guest session is now activated only by an explicit user action.
+     * Remove stale flags left by older versions.
+     */
+    window.__ssGuestMode = false;
+    try{ sessionStorage.removeItem(guestStorageKey()); }catch(e){}
+    try{ localStorage.removeItem(guestStorageKey()); }catch(e){}
     setGuestUI();
   }
 
