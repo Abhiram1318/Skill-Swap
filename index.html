@@ -12898,3 +12898,84 @@ body.dark .ss-call-card{background:#14211d;border-color:#29433b;color:#eef8f4}.s
   else {repairButtons();setTimeout(repairButtons,500);setTimeout(repairButtons,1500);}
 })();
 </script>
+
+<!-- FINAL TEXT COLOR FIX -->
+<style id="skillswap-final-white-text-fix">
+/* Text typed by the user */
+.chat-input input,
+.chat-input textarea,
+#chatInput,
+#messageInput,
+#chatMessageInput,
+textarea.chat-input,
+input.chat-input{
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+  caret-color:#fff !important;
+  background:#0b5f4d !important;
+  border-color:#187a64 !important;
+}
+.chat-input input::placeholder,
+.chat-input textarea::placeholder,
+#chatInput::placeholder,
+#messageInput::placeholder,
+#chatMessageInput::placeholder{
+  color:rgba(255,255,255,.72) !important;
+  -webkit-text-fill-color:rgba(255,255,255,.72) !important;
+}
+
+/* Chat controls and actions */
+.chat-input button,
+.chat-close,
+.ss-voice-btn,
+.ss-call-answer,
+.ss-call-end,
+.ss-call-mute,
+#ssAnswerBtn,
+#ssRejectBtn,
+#ssEndCallBtn,
+#ssEndLiveBtn,
+#ssMuteBtn,
+#ssDemoMute,
+#ssDemoEnd,
+.profile-modal-actions .edit-profile-btn,
+.ss-primary-btn,
+.ss3-toolbar button,
+.ss4-nav button,
+.ss-other-btn,
+.connect,
+.modal-submit,
+.cta button,
+.primary{
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+
+/* Messages typed/sent by the current user */
+.message.me,
+.message.sent,
+.message.mine,
+.message.self{
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+
+/* Chat header text */
+.chat-header,
+.chat-header *{
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+
+/* Call overlay text/options */
+.ss-call-overlay,
+.ss-call-overlay *{
+  color:#fff !important;
+}
+
+/* Keep the close/secondary profile option readable on its white button */
+.profile-modal-actions .edit-profile-secondary{
+  color:#176b57 !important;
+  -webkit-text-fill-color:#176b57 !important;
+}
+</style>
