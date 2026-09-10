@@ -12958,6 +12958,279 @@ body.ss-guest-mode .guest-only{display:block!important}
 })();
 </script>
 
+
+<!-- =========================
+     SKILLSWAP v13 — GUEST MODE ACCESS CONTROL
+     Guest mode is an exploration state, not a member account.
+========================= -->
+<style id="skillswap-guest-access-v13">
+/* Guest users can browse public content, but never see member-only UI. */
+html.ss-guest-mode #loggedInNav,
+body.ss-guest-mode #loggedInNav,
+body.ss-emergency-guest #loggedInNav{
+  display:none!important;
+}
+html.ss-guest-mode #loggedOutNav,
+body.ss-guest-mode #loggedOutNav{
+  display:flex!important;
+}
+
+/* Hide account/dashboard controls while exploring as a guest. */
+html.ss-guest-mode #requestsSection,
+body.ss-guest-mode #requestsSection,
+html.ss-guest-mode #qualityPanel .progress-panel,
+body.ss-guest-mode #qualityPanel .progress-panel,
+html.ss-guest-mode #profileModal,
+body.ss-guest-mode #profileModal,
+html.ss-guest-mode #ssChatDirectoryCard,
+body.ss-guest-mode #ssChatDirectoryCard{
+  display:none!important;
+}
+
+/* Keep public member cards visible, but disable member actions. */
+html.ss-guest-mode .ss-guest-restricted,
+body.ss-guest-mode .ss-guest-restricted{
+  opacity:.58!important;
+  cursor:not-allowed!important;
+  filter:grayscale(.15);
+}
+
+.ss-guest-lock-banner{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:2147483000;
+  display:none;
+  max-width:360px;
+  padding:13px 16px;
+  border-radius:14px;
+  background:#176b57;
+  color:#fff;
+  box-shadow:0 16px 40px rgba(0,0,0,.20);
+  font:700 13px/1.45 system-ui,sans-serif;
+}
+html.ss-guest-mode .ss-guest-lock-banner,
+body.ss-guest-mode .ss-guest-lock-banner{display:block}
+.ss-guest-lock-banner strong{display:block;margin-bottom:3px;font-size:14px}
+.ss-guest-lock-banner button{
+  margin-top:9px;
+  border:1px solid rgba(255,255,255,.45);
+  background:#fff;
+  color:#176b57;
+  border-radius:9px;
+  padding:7px 10px;
+  font-weight:800;
+  cursor:pointer;
+}
+</style>
+
+<script id="skillswap-guest-access-v13">
+(function(){
+  'use strict';
+
+  function isGuest(){
+    return !!(
+      window.__ssGuestMode ||
+      window.guestMode ||
+      window.isGuestUser ||
+      document.documentElement.classList.contains('ss-guest-mode') ||
+      document.body.classList.contains('ss-guest-mode') ||
+      document.body.classList.contains('ss-emergency-guest')
+    );
+  }
+
+  function toast(msg){
+    try{
+      if(typeof window.showToast === 'function'){ window.showToast(msg); return; }
+    }catch(e){}
+    try{ alert(msg); }catch(e){}
+  }
+
+  function openSignup(){
+    try{
+      if(typeof window.ssOpenAuth === 'function'){ window.ssOpenAuth('signup'); return; }
+      if(typeof window.openAuth === 'function'){ window.openAuth('signup'); return; }
+    }catch(e){}
+  }
+
+  function applyGuestLock(){
+    var guest = isGuest();
+
+    document.documentElement.classList.toggle('ss-guest-mode', guest);
+    if(document.body) document.body.classList.toggle('ss-guest-mode', guest);
+
+    var loggedIn = document.getElementById('loggedInNav');
+    var loggedOut = document.getElementById('loggedOutNav');
+
+    if(guest){
+      if(loggedIn) loggedIn.style.setProperty('display','none','important');
+      if(loggedOut) loggedOut.style.setProperty('display','flex','important');
+
+      ['requestsSection','ssChatDirectoryCard','profileModal'].forEach(function(id){
+        var el=document.getElementById(id);
+        if(el) el.style.setProperty('display','none','important');
+      });
+
+      var health=document.getElementById('profileHealthAction');
+      if(health) health.style.setProperty('display','none','important');
+
+      var profilePanel=document.querySelector('#qualityPanel .progress-panel');
+      if(profilePanel) profilePanel.style.setProperty('display','none','important');
+
+      /* Add a visible guest indicator without exposing account controls. */
+      if(!document.getElementById('ssGuestLockBanner')){
+        var b=document.createElement('div');
+        b.id='ssGuestLockBanner';
+        b.className='ss-guest-lock-banner';
+        b.innerHTML='<strong>👤 Guest Mode</strong><span>Browsing is available. Sign in or create a free account to chat, call, connect, edit a profile, or use your dashboard.</span><button type="button" id="ssGuestSignInBtn">Sign in / Join free</button>';
+        document.body.appendChild(b);
+        document.getElementById('ssGuestSignInBtn').addEventListener('click',function(){
+          if(window.exitGuestMode) window.exitGuestMode();
+          else{
+            window.__ssGuestMode=false;
+            document.documentElement.classList.remove('ss-guest-mode');
+            document.body.classList.remove('ss-guest-mode');
+          }
+          openSignup();
+        });
+      }
+    }else{
+      var banner=document.getElementById('ssGuestLockBanner');
+      if(banner) banner.remove();
+    }
+  }
+
+  function restrictedAction(name){
+    if(!isGuest()) return false;
+    toast('🔒 '+name+' is available to registered SkillSwap members. Please sign in or create a free account.');
+    return true;
+  }
+
+  /*
+   * Capture clicks before legacy inline onclick handlers.
+   * This prevents guest users from entering member-only features
+   * even when an older script tries to open them.
+   */
+  document.addEventListener('click', function(ev){
+    if(!isGuest()) return;
+
+    var target=ev.target;
+    var btn=target && target.closest ? target.closest('button,a,[onclick]') : null;
+    if(!btn) return;
+
+    var id=String(btn.id||'').toLowerCase();
+    var text=(btn.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
+    var onclick=String(btn.getAttribute('onclick')||'').toLowerCase();
+
+    var restricted =
+      onclick.indexOf('openrequest(')!==-1 ||
+      onclick.indexOf('submit')!==-1 && onclick.indexOf('request')!==-1 ||
+      onclick.indexOf('ssdemochat(')!==-1 ||
+      onclick.indexOf('ssdemocall(')!==-1 ||
+      onclick.indexOf('startskillswapcall(')!==-1 ||
+      onclick.indexOf('openchat(')!==-1 ||
+      onclick.indexOf('openeditprofile(')!==-1 ||
+      onclick.indexOf('openprofile(')!==-1 && (id==='navprofilename' || btn.closest('#loggedInNav')) ||
+      onclick.indexOf('sshubopen(')!==-1 && /groups|requests|sessions|matches/.test(onclick) ||
+      id==='profilehealthaction' ||
+      text==='my requests' ||
+      text.includes('improve my profile') ||
+      text.includes('chat') ||
+      text.includes('call') ||
+      text.includes('request skill swap') ||
+      text.includes('connect');
+
+    /* Never block the auth buttons themselves. */
+    var authButton =
+      btn.closest('#authModal') ||
+      btn.closest('#ssEmergencyAuth') ||
+      text.includes('sign in') ||
+      text.includes('join free') ||
+      text.includes('create your free') ||
+      text.includes('create my profile') ||
+      text.includes('continue as guest') ||
+      text.includes('explore as guest');
+
+    if(restricted && !authButton){
+      ev.preventDefault();
+      ev.stopImmediatePropagation();
+      restrictedAction(
+        text.includes('chat') ? 'Chat' :
+        text.includes('call') ? 'Calls' :
+        text.includes('request') || text.includes('connect') ? 'Skill-swap requests and connections' :
+        'This feature'
+      );
+      return false;
+    }
+  }, true);
+
+  /*
+   * Keep old authentication/render functions from immediately restoring
+   * the signed-in navigation while guest mode is active.
+   */
+  function guardAuthUI(){
+    if(!isGuest()) return;
+    var loggedIn=document.getElementById('loggedInNav');
+    var loggedOut=document.getElementById('loggedOutNav');
+    if(loggedIn) loggedIn.style.setProperty('display','none','important');
+    if(loggedOut) loggedOut.style.setProperty('display','flex','important');
+  }
+
+  var originalSetAppState=window.setAppState;
+  if(typeof originalSetAppState==='function'){
+    window.setAppState=function(){
+      var result=originalSetAppState.apply(this,arguments);
+      if(isGuest()) guardAuthUI();
+      return result;
+    };
+  }
+
+  var originalUpdateUserUI=window.updateUserUI;
+  if(typeof originalUpdateUserUI==='function'){
+    window.updateUserUI=function(){
+      var result=originalUpdateUserUI.apply(this,arguments);
+      if(isGuest()) guardAuthUI();
+      return result;
+    };
+  }
+
+  /* Do not let guest mode use the existing Firebase account as a member UI. */
+  window.ssGuestAccess = {
+    isGuest:isGuest,
+    requireMember:function(action){
+      if(!isGuest()) return true;
+      restrictedAction(action||'use this feature');
+      return false;
+    }
+  };
+
+  function boot(){
+    applyGuestLock();
+    guardAuthUI();
+
+    /* Legacy scripts may repaint the UI later. Re-apply the guest lock briefly. */
+    var count=0;
+    var timer=setInterval(function(){
+      applyGuestLock();
+      guardAuthUI();
+      if(++count>80) clearInterval(timer);
+    },250);
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',boot);
+  }else{
+    boot();
+  }
+
+  window.addEventListener('load',function(){
+    applyGuestLock();
+    guardAuthUI();
+  });
+
+})();
+</script>
+
 </body>
 
 <style id="v7-typed-text-visible">
