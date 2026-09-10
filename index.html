@@ -3990,8 +3990,9 @@ input,textarea,select{background:#fff!important}
 
 
         <button
+            type="button"
             class="modal-submit"
-            onclick="signUp()">
+            onclick="signUp(); return false;">
             Create my profile
         </button>
 
@@ -13117,3 +13118,109 @@ input.chat-input{
 #ssMajorHub .ss-hub-panel .ss-badge-chip { color:#087f5b !important; -webkit-text-fill-color:#087f5b !important; }
 #ssMajorHub .ss-hub-panel button { color:#fff !important; -webkit-text-fill-color:#fff !important; }
 </style>
+
+
+<style id="ss-auth-final-visibility">
+#signupForm .modal-submit{pointer-events:auto!important;cursor:pointer!important;position:relative!important;z-index:999999!important}
+#ssSignupStatus{display:block!important}
+</style>
+<script id="ss-auth-final-signup-override">
+(function(){
+  'use strict';
+  const $=id=>document.getElementById(id);
+  const text=id=>String($(id)?.value||'').trim();
+  const toast=msg=>{if(typeof window.showToast==='function')window.showToast(msg);else alert(msg)};
+  const getAuth=()=>window.ssFirebaseAuth||window.ssFirebase?.auth||null;
+  const getDb=()=>window.ssFirebase?.db||null;
+  const status=(msg,kind='error')=>{
+    let box=$('ssSignupStatus');
+    if(!box){
+      box=document.createElement('div'); box.id='ssSignupStatus'; box.setAttribute('role','alert');
+      const form=$('signupForm'); const btn=form?.querySelector('.modal-submit');
+      if(form) form.insertBefore(box,btn||null);
+    }
+    box.className='ss-signup-status '+kind;
+    box.textContent=msg;
+    box.style.display='block';
+  };
+  const profileFor=(user)=>{
+    const name=text('signupName')||user.displayName||String(user.email||'').split('@')[0]||'SkillSwap Member';
+    const languages=text('signupLanguages');
+    const teach=text('signupSkill');
+    const want=text('signupWanted');
+    const availability=[...document.querySelectorAll('#signupForm input[name="availability"]:checked')].map(x=>x.value);
+    const id=Date.now();
+    return {uid:user.uid,id,legacyId:id,name,email:user.email||text('signupEmail').toLowerCase(),type:text('signupType')||'College Student',location:text('signupLocation')||'Online',languages:languages?languages.split(',').map(x=>x.trim()).filter(Boolean):['English'],bio:text('signupBio')||'Learning and sharing skills.',teach:teach?teach.split(',').map(x=>x.trim()).filter(Boolean):['Knowledge Sharing'],want:want?want.split(',').map(x=>x.trim()).filter(Boolean):['Something New'],availability:availability.length?availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()};
+  };
+
+  window.signUp=async function(){
+    const name=text('signupName');
+    const email=text('signupEmail').toLowerCase();
+    const password=$('signupPassword')?.value||'';
+    const btn=document.querySelector('#signupForm .modal-submit');
+    if(!name){status('Please enter your name.'); $('signupName')?.focus(); return false;}
+    if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){status('Please enter a valid email address.'); $('signupEmail')?.focus(); return false;}
+    if(password.length<6){status('Your password must be at least 6 characters.'); $('signupPassword')?.focus(); return false;}
+
+    let auth=getAuth();
+    if(!auth){
+      status('Connecting to Firebase…','loading');
+      try{
+        if(window.firebase && !firebase.apps.length && window.SKILLSWAP_FIREBASE_CONFIG) firebase.initializeApp(window.SKILLSWAP_FIREBASE_CONFIG);
+        auth=window.ssFirebaseAuth=window.ssFirebaseAuth||firebase.auth();
+        window.ssFirebase=window.ssFirebase||{};
+        window.ssFirebase.auth=auth;
+        window.ssFirebase.db=window.ssFirebase.db||firebase.database();
+        window.ssFirebaseReady=true;
+      }catch(e){console.error(e);status('Firebase could not start. Please refresh the page and try again.');return false;}
+    }
+
+    if(btn){btn.disabled=true;btn.textContent='Creating your account…';}
+    status('Creating your secure SkillSwap account…','loading');
+    try{
+      try{await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);}catch(e){console.warn('Persistence setup:',e);}
+      const cred=await auth.createUserWithEmailAndPassword(email,password);
+      const user=cred.user;
+      try{await user.updateProfile({displayName:name});}catch(e){console.warn('Profile name update:',e);}
+
+      const profile=profileFor(user);
+      let profileSaved=false;
+      const db=getDb();
+      if(db){
+        try{
+          await db.ref('users/'+user.uid).set(profile);
+          profileSaved=true;
+        }catch(dbErr){
+          console.error('Profile database write failed:',dbErr);
+        }
+      }
+      window.ssFirebaseProfile=profile;
+      try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
+      document.body.classList.add('ss-authenticated');
+      if(typeof window.setAppState==='function')window.setAppState(true);
+      if(typeof window.updateUserUI==='function')window.updateUserUI();
+      if(typeof window.closeModal==='function')window.closeModal('authModal');
+      if(typeof window.renderEverything==='function'){try{await window.renderEverything();}catch(e){console.warn('Render after signup:',e);}}
+      toast(profileSaved?'🎉 Account created successfully! Welcome to SkillSwap India.':'🎉 Your account was created successfully. Your profile will finish syncing when Firebase Database is available.');
+      return true;
+    }catch(e){
+      console.error('FINAL SkillSwap signup error:',e);
+      const c=String(e?.code||'');
+      const raw=String(e?.message||'');
+      let m='Account creation failed. Please try again.';
+      if(c==='auth/email-already-in-use')m='This email is already registered. Please use Sign in instead.';
+      else if(c==='auth/invalid-email')m='Please enter a valid email address.';
+      else if(c==='auth/weak-password')m='Your password must be at least 6 characters.';
+      else if(c==='auth/operation-not-allowed')m='Email/password sign-up is disabled. In Firebase Console, enable Authentication → Sign-in method → Email/Password.';
+      else if(c==='auth/network-request-failed')m='Firebase could not connect. Check your internet connection, then try again.';
+      else if(c==='auth/too-many-requests')m='Too many sign-up attempts. Please wait a few minutes and try again.';
+      else if(raw.toLowerCase().includes('api key'))m='Firebase rejected the web API key. Please verify the Firebase Web App configuration.';
+      else if(raw)m=raw.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,'');
+      status(m);
+      return false;
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent='Create my profile';}
+    }
+  };
+})();
+</script>
