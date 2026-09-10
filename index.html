@@ -13237,6 +13237,80 @@ body.ss-guest-mode .ss-guest-lock-banner{display:block}
 })();
 </script>
 
+
+<!-- FINAL FIX v15: "More ways to learn, teach & connect" is display-only -->
+<style id="ss-major-hub-disabled-css">
+  #ssMajorHub .ss-hub-card button,
+  #ssMajorHub .ss-hub-panel button,
+  #ssMajorHub .ss-hub-panel input,
+  #ssMajorHub .ss-hub-panel select,
+  #ssMajorHub .ss-hub-panel textarea,
+  #ssMajorHub a {
+    pointer-events: none !important;
+    cursor: default !important;
+    opacity: .58 !important;
+  }
+  #ssMajorHub .ss-hub-card button {
+    background: #eef3f1 !important;
+    border-color: #d7e2de !important;
+    color: #6b7773 !important;
+  }
+  #ssMajorHub .ss-hub-panel {
+    display: none !important;
+  }
+</style>
+<script id="ss-major-hub-disabled-js">
+(function(){
+  function disableMajorHub(){
+    const hub=document.getElementById('ssMajorHub');
+    if(!hub || hub.dataset.ssDisabled==='1') return;
+    hub.dataset.ssDisabled='1';
+
+    // Make every control in this section inert.
+    hub.querySelectorAll('button,a,input,select,textarea').forEach(el=>{
+      el.setAttribute('disabled','disabled');
+      el.setAttribute('aria-disabled','true');
+      el.tabIndex=-1;
+      el.onclick=null;
+      el.onmousedown=null;
+      el.onmouseup=null;
+      el.onkeydown=null;
+    });
+
+    // Block both inline handlers and event listeners added by older scripts.
+    const stop=e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+      return false;
+    };
+    ['click','dblclick','mousedown','mouseup','pointerdown','pointerup',
+     'touchstart','touchend','keydown','keyup','submit','change','input']
+      .forEach(type=>hub.addEventListener(type,stop,true));
+
+    // Keep the dynamically created panel closed and empty.
+    const panel=document.getElementById('ssHubPanel');
+    if(panel){
+      panel.classList.remove('active');
+      panel.innerHTML='';
+      const observer=new MutationObserver(()=>{
+        panel.classList.remove('active');
+        panel.innerHTML='';
+      });
+      observer.observe(panel,{childList:true,subtree:true,attributes:true});
+    }
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',disableMajorHub,{once:true});
+  }else{
+    disableMajorHub();
+  }
+  setTimeout(disableMajorHub,500);
+  setTimeout(disableMajorHub,1500);
+})();
+</script>
+
 </body>
 
 <style id="v7-typed-text-visible">
