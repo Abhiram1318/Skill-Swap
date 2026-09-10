@@ -13982,3 +13982,86 @@ window.renderSkillSwapChatDirectory=render;document.addEventListener('DOMContent
 const oldOpen=window.openChat;window.openChat=async function(id){await oldOpen(id);setTimeout(()=>{const p=window.currentChatPerson||window.__ssChatPerson||currentChatPerson;if(!p)return;let box=document.getElementById('ssChatCallButtons');if(!box){box=document.createElement('div');box.id='ssChatCallButtons';box.className='ss-chat-actions';const h=document.querySelector('#chatModal .chat-header');if(h)h.appendChild(box)}box.innerHTML=`<button class="ss-chat-call" onclick="startSkillSwapCall('${esc(p.id)}',true)">📹 Call</button>`},50)};
 })();
 </script>
+
+<style id="ss-auth-v7-css">
+#ssAuthStatus{white-space:pre-wrap!important;word-break:break-word!important;text-align:left!important}
+</style>
+<script id="ss-auth-v7-final">
+(function(){
+'use strict';
+function msg(t,kind){
+ const b=document.getElementById('ssAuthStatus'); if(!b)return;
+ b.textContent=t; b.style.display='block'; b.style.padding='12px 14px'; b.style.marginTop='12px'; b.style.borderRadius='12px';
+ b.style.background=kind==='error'?'#fff0f0':kind==='ok'?'#eefaf4':'#f3f7f5';
+ b.style.color=kind==='error'?'#9f1d2d':kind==='ok'?'#176b57':'#334';
+}
+function friendly(e){
+ const c=String(e&&e.code||'');
+ const raw=String(e&&e.message||'');
+ const map={
+ 'auth/invalid-credential':'Incorrect email or password. Check your email and password and try again.',
+ 'auth/invalid-login-credentials':'Incorrect email or password. Check your email and password and try again.',
+ 'auth/user-not-found':'No SkillSwap account exists with this email. Please use Join Free to create one.',
+ 'auth/wrong-password':'Incorrect password. Please try again.',
+ 'auth/invalid-email':'Please enter a valid email address.',
+ 'auth/user-disabled':'This Firebase account has been disabled.',
+ 'auth/too-many-requests':'Too many sign-in attempts. Wait a few minutes and try again.',
+ 'auth/network-request-failed':'Firebase could not connect. Check your internet connection, then reload the page.',
+ 'auth/operation-not-allowed':'Email/password sign-in is disabled in Firebase. In Firebase Console, open Authentication → Sign-in method → Email/Password and enable it.',
+ 'auth/api-key-not-valid.-please-pass-a-valid-api-key.':'The Firebase Web API key is invalid. Replace the web app configuration with the current Firebase configuration.',
+ 'auth/app-not-authorized':'This website domain is not authorized for this Firebase project. Add the domain under Firebase Authentication → Settings → Authorized domains.',
+ 'auth/unauthorized-domain':'This website domain is not authorized. Add the current domain under Firebase Authentication → Settings → Authorized domains.',
+ 'auth/internal-error':'Firebase returned an internal error. Reload the page and try again.'
+ };
+ if(map[c])return map[c]+'\n\nFirebase code: '+c;
+ return (raw||'Sign in failed. Firebase returned an unknown error.')+'\n\nFirebase code: '+(c||'none');
+}
+function getAuthV7(){
+ if(!window.firebase || !window.firebase.auth) throw new Error('Firebase Authentication SDK did not load. Check that firebase-auth-compat.js is reachable.');
+ const cfg=window.SKILLSWAP_FIREBASE_CONFIG;
+ if(!cfg||!cfg.apiKey||!cfg.authDomain||!cfg.projectId||!cfg.appId) throw new Error('Firebase configuration is incomplete.');
+ if(!firebase.apps.length) firebase.initializeApp(cfg);
+ const a=firebase.auth();
+ window.ssFirebaseAuth=a;
+ window.ssFirebase=window.ssFirebase||{}; window.ssFirebase.auth=a;
+ return a;
+}
+function finishV7(user){
+ const profile={uid:user.uid,id:user.uid,legacyId:user.uid,name:user.displayName||((user.email||'').split('@')[0])||'SkillSwap Member',email:user.email||'',avatar:'🧑🏻'};
+ window.ssFirebaseProfile=profile;
+ try{localStorage.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
+ try{window.ssMemoryStorage&&window.ssMemoryStorage.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
+ document.body.classList.add('ss-authenticated');
+ try{window.updateUserUI&&window.updateUserUI();}catch(e){}
+ const m=document.getElementById('authModal'); if(m){m.classList.remove('show');m.style.display='none';}
+ try{window.renderEverything&&window.renderEverything();}catch(e){console.warn(e)}
+}
+window.signIn=async function(){
+ const email=(document.getElementById('signinEmail')?.value||'').trim().toLowerCase();
+ const password=document.getElementById('signinPassword')?.value||'';
+ const btn=document.querySelector('#signinForm .modal-submit');
+ if(!email){msg('❌ Enter your email address.','error');return false}
+ if(!password){msg('❌ Enter your password.','error');return false}
+ if(btn){btn.disabled=true;btn.textContent='Connecting…'}
+ msg('⏳ Firebase Authentication…','wait');
+ try{
+   const auth=getAuthV7();
+   msg('⏳ Checking your email and password with Firebase…','wait');
+   const cred=await auth.signInWithEmailAndPassword(email,password);
+   finishV7(cred.user);
+   msg('✅ Signed in successfully.','ok');
+   if(window.showToast)window.showToast('👋 Welcome back!');
+   return true;
+ }catch(e){
+   console.error('SkillSwap AUTH v7:',e);
+   const text='❌ '+friendly(e);
+   msg(text,'error');
+   if(window.showToast)window.showToast('❌ Sign in failed. See the message in the sign-in box.');
+   return false;
+ }finally{if(btn){btn.disabled=false;btn.textContent='Sign in'}}
+};
+window.addEventListener('load',function(){
+ try{getAuthV7();}catch(e){console.warn('Firebase startup:',e)}
+});
+})();
+</script>
