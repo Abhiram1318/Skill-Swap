@@ -3128,6 +3128,23 @@ header,.navbar,.nav,.topbar,.site-header,.app-header,nav{background:#fff!importa
 .ss-land-wrap,#ssPublicLanding,.hero{background-color:#f7faf9!important}
 input,textarea,select{background:#fff!important}
 </style>
+
+<style id="skillswap-investor-section">
+.investor-section{padding:78px 6%;background:linear-gradient(135deg,#062d25,#0b5a48);color:#fff;border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08)}
+.investor-inner{max-width:1180px;margin:auto;display:grid;grid-template-columns:1.05fr .95fr;gap:45px;align-items:center}
+.investor-eyebrow{display:inline-block;font-size:.75rem;letter-spacing:.12em;font-weight:900;color:#bcefe2;margin-bottom:14px}
+.investor-copy h2{font-size:clamp(2rem,4vw,3.1rem);line-height:1.08;margin:0 0 16px;color:#fff!important;-webkit-text-fill-color:#fff!important}
+.investor-copy p{max-width:650px;line-height:1.75;color:#d8eee8!important;-webkit-text-fill-color:#d8eee8!important;font-size:1rem}
+.investor-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}
+.investor-primary,.investor-secondary{padding:13px 18px;border-radius:11px;font-weight:800;cursor:pointer}
+.investor-primary{border:1px solid #fff;background:#fff;color:#064438!important;-webkit-text-fill-color:#064438!important}
+.investor-secondary{border:1px solid rgba(255,255,255,.45);background:transparent;color:#fff!important;-webkit-text-fill-color:#fff!important}
+.investor-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.investor-card{padding:20px;border-radius:16px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);min-height:125px}
+.investor-card strong{display:block;color:#fff!important;-webkit-text-fill-color:#fff!important;margin-bottom:8px;font-size:1rem}
+.investor-card span{display:block;color:#cde8e0!important;-webkit-text-fill-color:#cde8e0!important;line-height:1.55;font-size:.86rem}
+@media(max-width:850px){.investor-inner{grid-template-columns:1fr}.investor-cards{grid-template-columns:1fr}}
+</style>
 </head>
 
 <body>
@@ -3645,6 +3662,30 @@ input,textarea,select{background:#fff!important}
 
 </div>
 
+</section>
+
+
+<!-- =========================
+     INVESTORS
+========================= -->
+<section class="investor-section" id="investors" aria-label="Investors">
+  <div class="investor-inner">
+    <div class="investor-copy">
+      <span class="investor-eyebrow">INVEST WITH SKILLSWAP</span>
+      <h2>Help build the future of peer-to-peer learning.</h2>
+      <p>SkillSwap connects people who want to learn with people who can teach. We are building a trusted community where skills, knowledge and opportunities can be exchanged.</p>
+      <div class="investor-actions">
+        <button type="button" class="investor-primary" onclick="ssInvestorInterest()">💼 I'm interested in investing</button>
+        <button type="button" class="investor-secondary" onclick="document.getElementById('howItWorks').scrollIntoView({behavior:'smooth'})">Learn about SkillSwap</button>
+      </div>
+    </div>
+    <div class="investor-cards">
+      <div class="investor-card"><strong>🌍 Community</strong><span>Built for learners and teachers across India.</span></div>
+      <div class="investor-card"><strong>🤝 Skill economy</strong><span>Turn knowledge and skills into meaningful exchanges.</span></div>
+      <div class="investor-card"><strong>📈 Growth</strong><span>Designed to scale from local communities to a wider learning network.</span></div>
+      <div class="investor-card"><strong>🔐 Trust</strong><span>Profiles, requests, chat, calls and reputation help members connect responsibly.</span></div>
+    </div>
+  </div>
 </section>
 
 <!-- =========================
@@ -12642,6 +12683,16 @@ body.dark .ss-call-card{background:#14211d;border-color:#29433b;color:#eef8f4}.s
     }
   };
 })();
+</script>
+
+<script id="skillswap-investor-actions">
+window.ssInvestorInterest=function(){
+  if(typeof showToast==='function'){
+    showToast('Thanks for your interest in SkillSwap. Investor enquiries can be connected through the team.');
+  }else{
+    alert('Thanks for your interest in SkillSwap. Investor enquiries can be connected through the team.');
+  }
+};
 </script>
 </body>
 
