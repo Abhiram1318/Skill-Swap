@@ -6025,109 +6025,112 @@ function profileList(value,fallback){
 
 
 async function saveEditedProfile(){
-
+    const auth=window.ssFirebaseAuth || window.ssFirebase?.auth || null;
+    const db=window.ssFirebase?.db || null;
+    const currentAuthUser=auth?.currentUser || null;
     const current=getCurrentUser();
-    if(!current){
+
+    if(!currentAuthUser || !current){
         openAuth("signin");
         return;
     }
 
-    const name=document.getElementById("editName").value.trim();
-    const email=current.email || document.getElementById("editEmail").value.trim();
-    const type=document.getElementById("editType").value;
-    const location=document.getElementById("editLocation").value.trim();
-    const avatar=document.getElementById("editAvatar").value.trim() || "🧑🏻";
-    const languages=profileList(document.getElementById("editLanguages").value,"English");
-    const bio=document.getElementById("editBio").value.trim();
-    const teach=profileList(document.getElementById("editTeach").value,"Knowledge Sharing");
-    const want=profileList(document.getElementById("editWant").value,"Something New");
+    const value=id=>String(document.getElementById(id)?.value || "").trim();
+    const name=value("editName");
+    const type=value("editType") || "University Student";
+    const location=value("editLocation");
+    const avatar=value("editAvatar") || "🧑🏻";
+    const languages=profileList(value("editLanguages"),"English");
+    const bio=value("editBio");
+    const teach=profileList(value("editTeach"),"Knowledge Sharing");
+    const want=profileList(value("editWant"),"Something New");
     const availability=[...document.querySelectorAll('input[name="editAvailability"]:checked')].map(x=>x.value);
 
-    if(!name){
-        showToast("Please enter your name.");
-        return;
-    }
-
-    if(!location){
-        showToast("Please enter your city or location.");
-        return;
-    }
-
-    const updated={
-        ...current,
-        name,
-        email,
-        type,
-        location,
-        avatar,
-        languages:languages.length?languages:["English"],
-        bio:bio || "Learning and sharing skills.",
-        teach:teach.length?teach:["Knowledge Sharing"],
-        want:want.length?want:["Something New"],
-        availability:availability.length?availability:["Flexible"]
-    };
+    if(!name){showToast("Please enter your name.");return;}
+    if(!location){showToast("Please enter your city or location.");return;}
+    if(!auth || !db){showToast("Firebase is not ready. Refresh the page and try again.");return;}
 
     const btn=document.getElementById("saveProfileBtn");
-    if(btn){
-        btn.disabled=true;
-        btn.textContent="Saving…";
-    }
+    if(btn){btn.disabled=true;btn.textContent="Saving to Firebase…";}
 
-    let backendSaved=false;
-
-    // If the Flask app has the update endpoint, save to the database too.
     try{
-        const data=await api("/api/profile/update",{
-            method:"POST",
-            body:JSON.stringify({
-                name:updated.name,
-                type:updated.type,
-                location:updated.location,
-                languages:updated.languages,
-                bio:updated.bio,
-                teach:updated.teach,
-                want:updated.want,
-                availability:updated.availability,
-                avatar:updated.avatar
-            })
-        });
-        if(data && data.success){
-            backendSaved=true;
-            if(data.user) Object.assign(updated,data.user);
+        const uid=currentAuthUser.uid;
+        const ref=db.ref("users/"+uid);
+        const snap=await ref.once("value");
+        const existing=snap.exists() ? (snap.val()||{}) : {};
+
+        const updated={
+            ...existing,
+            ...current,
+            uid,
+            id:existing.id || current.id || Date.now(),
+            legacyId:existing.legacyId || current.legacyId || existing.id || current.id || Date.now(),
+            name,
+            email:currentAuthUser.email || existing.email || current.email || "",
+            type,
+            location,
+            avatar,
+            languages:languages.length?languages:["English"],
+            bio:bio || "Learning and sharing skills.",
+            teach:teach.length?teach:["Knowledge Sharing"],
+            want:want.length?want:["Something New"],
+            availability:availability.length?availability:["Flexible"],
+            rating:Number(existing.rating ?? current.rating ?? 0),
+            reviews:Number(existing.reviews ?? current.reviews ?? 0),
+            created_at:existing.created_at || current.created_at || new Date().toISOString(),
+            updated_at:new Date().toISOString()
+        };
+
+        // Update the Firebase Authentication display name as well.
+        if(currentAuthUser.displayName !== name){
+            await currentAuthUser.updateProfile({displayName:name});
         }
+
+        // Save the complete editable profile under the authenticated user's UID.
+        await ref.set(updated);
+
+        // Keep the in-memory/local UI cache synchronized with Firebase.
+        window.ssFirebaseProfile=updated;
+        try{window.ssMemoryStorage?.setItem("skillswapUser",JSON.stringify(updated));}catch(e){console.warn(e);}
+        try{
+            const users=JSON.parse(window.ssMemoryStorage?.getItem("skillswapUsers") || "{}");
+            if(updated.email)users[updated.email]=updated;
+            window.ssMemoryStorage?.setItem("skillswapUsers",JSON.stringify(users));
+        }catch(e){console.warn("Local profile cache update:",e);}
+
+        window.skillswapPeople=Array.isArray(window.skillswapPeople)
+            ? window.skillswapPeople.map(person=>String(person.uid||person.id)===String(uid)?{...person,...updated}:person)
+            : window.skillswapPeople;
+
+        document.body.classList.add("ss-authenticated");
+        if(typeof window.setAppState==='function')window.setAppState(true);
+        if(typeof window.updateUserUI==='function')window.updateUserUI();
+        if(typeof window.updateProfileModal==='function')window.updateProfileModal();
+        if(typeof window.renderEverything==='function'){
+            try{await window.renderEverything();}catch(e){console.warn("Profile UI refresh:",e);}
+        }
+        if(typeof window.ss4UpdateProfileCompletion==='function')window.ss4UpdateProfileCompletion(updated);
+
+        closeModal("editProfileModal");
+        document.getElementById("profileModal")?.classList.add("show");
+        showToast("✅ Profile saved to Firebase successfully.");
     }catch(error){
-        console.info("Profile API unavailable; keeping the edit locally.",error);
-    }
-
-    ssMemoryStorage.setItem("skillswapUser",JSON.stringify(updated));
-
-    try{
-        const users=JSON.parse(ssMemoryStorage.getItem("skillswapUsers") || "{}");
-        if(email) users[email]=updated;
-        ssMemoryStorage.setItem("skillswapUsers",JSON.stringify(users));
-    }catch(error){
-        console.warn("Could not update local user directory.",error);
-    }
-
-    window.skillswapPeople=Array.isArray(window.skillswapPeople)
-        ? window.skillswapPeople.map(person=>String(person.id)===String(updated.id)?{...person,...updated}:person)
-        : window.skillswapPeople;
-
-    closeModal("editProfileModal");
-    updateUserUI();
-    updateProfileModal();
-    renderEverything();
-    if(typeof window.ss4UpdateProfileCompletion === "function"){ window.ss4UpdateProfileCompletion(updated); }
-    document.getElementById("profileModal").classList.add("show");
-
-    showToast(backendSaved ? "✅ Profile updated successfully." : "✅ Profile updated on this device.");
-
-    if(btn){
-        btn.disabled=false;
-        btn.textContent="💾 Save Changes";
+        console.error("Firebase profile update failed:",error);
+        const code=String(error?.code||"");
+        const message=String(error?.message||"");
+        let friendly="Could not save your profile. Please try again.";
+        if(code==='PERMISSION_DENIED' || message.toLowerCase().includes('permission_denied')){
+            friendly="Firebase denied the profile update. Make sure your Realtime Database rules allow a signed-in user to write users/<their UID>.";
+        }else if(code==='auth/requires-recent-login'){
+            friendly="For security, please sign in again before changing your profile name.";
+        }else if(message){
+            friendly=message.replace(/^Firebase:\s*/,'').replace(/\s*\([^)]*\)\.?$/,'');
+        }
+        showToast("❌ "+friendly);
+    }finally{
+        if(btn){btn.disabled=false;btn.textContent="💾 Save Changes";}
     }
 }
-
 
 /* =========================
    LOGOUT
@@ -12329,6 +12332,219 @@ textarea::placeholder {
   }
 })();
 </script>
+
+
+<style id="skillswap-real-chat-call-css">
+.ss-call-overlay{position:fixed;inset:0;background:rgba(5,24,19,.62);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:10050;padding:20px}
+.ss-call-overlay.show{display:flex}
+.ss-call-card{width:min(420px,94vw);background:#fff;border:1px solid #dce9e4;border-radius:26px;padding:26px;box-shadow:0 30px 90px rgba(0,0,0,.25);text-align:center}
+.ss-call-avatar{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;background:#e9f5f0;font-size:42px;margin:4px auto 14px}
+.ss-call-card h3{margin:0 0 5px;font-size:22px}.ss-call-status{color:#64746e;font-size:14px;margin-bottom:16px}.ss-call-timer{font-variant-numeric:tabular-nums;font-size:28px;font-weight:800;margin:8px 0 18px}.ss-call-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.ss-call-actions button{border:0;border-radius:14px;padding:11px 17px;font-weight:800;cursor:pointer}.ss-call-mute{background:#eef4f1;color:#17342c}.ss-call-end{background:#c62828;color:#fff}.ss-call-answer{background:#176b57;color:#fff}.ss-call-note{font-size:12px;color:#71817c;margin-top:15px;line-height:1.5}
+body.dark .ss-call-card{background:#14211d;border-color:#29433b;color:#eef8f4}.ss-chat-live{font-size:11px;color:#176b57;font-weight:800}.ss-chat-demo{font-size:11px;color:#9a6a00;font-weight:800}
+</style>
+
+<div id="ssCallOverlay" class="ss-call-overlay" aria-hidden="true">
+  <div class="ss-call-card">
+    <div id="ssCallAvatar" class="ss-call-avatar">👤</div>
+    <h3 id="ssCallTitle">Voice call</h3>
+    <div id="ssCallStatus" class="ss-call-status">Ready</div>
+    <div id="ssCallTimer" class="ss-call-timer">00:00</div>
+    <div id="ssCallActions" class="ss-call-actions"></div>
+    <div id="ssCallNote" class="ss-call-note"></div>
+  </div>
+</div>
+
+<script id="skillswap-real-chat-call-js">
+(function(){
+  'use strict';
+  const fb=()=>window.ssFirebase||{};
+  const db=()=>fb().db||null;
+  const auth=()=>window.ssFirebaseAuth||fb().auth||null;
+  const me=()=>auth()?.currentUser||null;
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const demos=()=>Array.isArray(window.demoPeople)?window.demoPeople:[];
+  let chatRef=null,chatHandler=null,current=null;
+  let call={ref:null,pc:null,stream:null,candidateListener:null,incomingQuery:null,incomingHandler:null,timer:null,seconds:0,muted:false,connected:false,remoteUid:null,remoteName:'',remoteAvatar:'👤',demo:false};
+
+  function profileList(){
+    const list=[];
+    const live=Array.isArray(window.skillswapPeople)?window.skillswapPeople:[];
+    live.forEach(x=>list.push(x)); demos().forEach(x=>{if(!list.some(y=>String(y.id)===String(x.id)))list.push(x)});
+    return list;
+  }
+  async function findPerson(id){
+    let p=profileList().find(x=>String(x.id)===String(id)||String(x.uid)===String(id));
+    if(p)return p;
+    try{const snap=await db().ref('users/'+String(id)).once('value');const v=snap.val();if(v)p={...v,id:String(id),uid:String(id)}}catch(e){}
+    return p||null;
+  }
+  function isDemo(p){return !!p&&(p.virtual===true||demos().some(x=>String(x.id)===String(p.id)))}
+  function pair(a,b){return [String(a),String(b)].sort().join('_')}
+
+  function renderMessages(items){
+    const box=document.getElementById('chatMessages');if(!box)return;
+    box.innerHTML='';
+    items.forEach(m=>{
+      const d=document.createElement('div');d.className='message '+(String(m.senderUid)===String(me()?.uid)||m.type==='me'?'sent':'them');
+      d.textContent=m.text||'';box.appendChild(d);
+    });
+    box.scrollTop=box.scrollHeight;
+  }
+  function detachChat(){
+    if(chatRef&&chatHandler){try{chatRef.off('value',chatHandler)}catch(e){}}
+    chatRef=null;chatHandler=null;
+  }
+  function attachChat(uid1,uid2){
+    detachChat();
+    const d=db();if(!d)return;
+    chatRef=d.ref('chats/'+pair(uid1,uid2)+'/messages');
+    chatHandler=snap=>{
+      const arr=[];snap.forEach(c=>{const v=c.val()||{};arr.push({id:c.key,...v})});
+      arr.sort((a,b)=>Number(a.created_at||0)-Number(b.created_at||0));
+      renderMessages(arr.slice(-200));
+    };
+    chatRef.on('value',chatHandler);
+  }
+
+  window.openChat=async function(id){
+    const u=me();if(!u){if(typeof openAuth==='function')openAuth('signin');return}
+    const p=await findPerson(id);if(!p){if(typeof showToast==='function')showToast('Profile not found.');return}
+    current={id:String(p.id||p.uid),uid:String(p.uid||p.id),name:p.name||p.displayName||'SkillSwap Member',avatar:p.avatar||'🧑',demo:isDemo(p)};
+    window.currentChatPerson=current;
+    const name=document.getElementById('chatName'),av=document.getElementById('chatAvatar');
+    if(name)name.innerHTML=esc(current.name)+' <span class="'+(current.demo?'ss-chat-demo':'ss-chat-live')+'">'+(current.demo?'DEMO':'LIVE')+'</span>';
+    if(av)av.textContent=current.avatar;
+    document.getElementById('chatModal')?.classList.add('show');
+    if(current.demo){
+      detachChat();
+      window.__ssBackendChat=false;
+      const key='skillswap_demo_chat_'+pair(u.uid,current.id);
+      let data=[];try{data=JSON.parse(localStorage.getItem(key)||'[]')}catch(e){}
+      if(!data.length)data=[{senderUid:current.id,text:'Hi! 👋 I’m a demo SkillSwap member. What would you like to learn or teach?',created_at:Date.now()}];
+      renderMessages(data);
+      return;
+    }
+    window.__ssBackendChat=true;
+    attachChat(u.uid,current.uid);
+  };
+
+  window.sendMessage=async function(){
+    const u=me(),input=document.getElementById('chatInput'),text=input?.value.trim();
+    if(!u||!current||!text)return;
+    if(current.demo){
+      const key='skillswap_demo_chat_'+pair(u.uid,current.id);let data=[];try{data=JSON.parse(localStorage.getItem(key)||'[]')}catch(e){}
+      data.push({senderUid:u.uid,text,created_at:Date.now()});localStorage.setItem(key,JSON.stringify(data));if(input)input.value='';renderMessages(data);
+      setTimeout(()=>{let latest=[];try{latest=JSON.parse(localStorage.getItem(key)||'[]')}catch(e){}latest.push({senderUid:current.id,text:demoReply(text,current),created_at:Date.now()});localStorage.setItem(key,JSON.stringify(latest));if(current?.demo)renderMessages(latest)},850);
+      return;
+    }
+    const d=db();if(!d){showToast?.('Firebase is not ready.');return}
+    input.disabled=true;
+    try{
+      await d.ref('chats/'+pair(u.uid,current.uid)+'/messages').push().set({senderUid:u.uid,text:text.slice(0,4000),created_at:Date.now()});
+      input.value='';
+    }catch(e){showToast?.(e?.message||'Could not send message.')}finally{input.disabled=false}
+  };
+  window.loadMessages=function(){if(current&&!current.demo&&me())attachChat(me().uid,current.uid)};
+
+  function demoReply(text,p){
+    const s=String(text).toLowerCase();
+    if(/hello|hi|hey/.test(s))return 'Hello! 😊 Great to hear from you. Want to plan a skill-swap session?';
+    if(/python|coding|program|ai/.test(s))return 'That sounds interesting! 💻 We can practise together and exchange what we know.';
+    if(/telugu|hindi|language|speak/.test(s))return 'Sure! 🗣️ We can start with everyday conversation and practise step by step.';
+    if(/call|voice/.test(s))return 'You can use the 📞 Call button for a demo call. Real members can make live browser calls.';
+    if(/time|weekend|schedule|available/.test(s))return 'Weekends are a good time for a short 30–45 minute skill exchange. 📅';
+    return 'Thanks for your message! 😊 Tell me what you would like to learn and what you can teach.';
+  }
+
+  function el(id){return document.getElementById(id)}
+  function showCall(title,status,avatar,note){
+    el('ssCallTitle').textContent=title||'Voice call';el('ssCallStatus').textContent=status||'';el('ssCallAvatar').textContent=avatar||'👤';el('ssCallNote').textContent=note||'';el('ssCallTimer').textContent='00:00';el('ssCallOverlay').classList.add('show');el('ssCallOverlay').setAttribute('aria-hidden','false')
+  }
+  function hideCall(){el('ssCallOverlay').classList.remove('show');el('ssCallOverlay').setAttribute('aria-hidden','true')}
+  function timerStart(){clearInterval(call.timer);call.seconds=0;el('ssCallTimer').textContent='00:00';call.timer=setInterval(()=>{call.seconds++;el('ssCallTimer').textContent=String(Math.floor(call.seconds/60)).padStart(2,'0')+':'+String(call.seconds%60).padStart(2,'0')},1000)}
+  function timerStop(){clearInterval(call.timer);call.timer=null}
+  function cleanCall(remove){
+    timerStop();
+    if(call.candidateListener&&call.candidateListener.ref){try{call.candidateListener.ref.off('child_added',call.candidateListener.fn)}catch(e){}}
+    if(call.incomingQuery&&call.incomingHandler){try{call.incomingQuery.off('child_added',call.incomingHandler)}catch(e){}}
+    if(call.pc){try{call.pc.close()}catch(e){}}
+    if(call.stream)call.stream.getTracks().forEach(t=>t.stop());
+    if(remove&&call.ref){try{call.ref.remove()}catch(e){}}
+    call={ref:null,pc:null,stream:null,candidateListener:null,incomingQuery:null,incomingHandler:null,timer:null,seconds:0,muted:false,connected:false,remoteUid:null,remoteName:'',remoteAvatar:'👤',demo:false};
+  }
+  function endCall(remove=true){cleanCall(remove);hideCall()}
+  window.endVoiceCall=()=>endCall(true);
+  async function mic(){if(!navigator.mediaDevices?.getUserMedia)throw new Error('Your browser does not support microphone calls.');return navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false})}
+  const rtcConfig={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']}]};
+  async function startPC(){
+    const pc=new RTCPeerConnection(rtcConfig);call.pc=pc;call.stream=await mic();call.stream.getTracks().forEach(t=>pc.addTrack(t,call.stream));
+    pc.ontrack=e=>{let a=document.getElementById('ssVoiceAudio');if(!a){a=document.createElement('audio');a.id='ssVoiceAudio';a.autoplay=true;a.playsInline=true;document.body.appendChild(a)}a.srcObject=e.streams[0];a.play().catch(()=>{})};
+    pc.onconnectionstatechange=()=>{const s=pc.connectionState;if(s==='connected'){call.connected=true;el('ssCallStatus').textContent='Connected';timerStart()}if(['failed','closed'].includes(s)&&call.connected)endCall(true)};
+    return pc;
+  }
+  function addCandidates(ref,pc){
+    const fn=snap=>{const c=snap.val();if(c)pc.addIceCandidate(new RTCIceCandidate(c)).catch(()=>{})};
+    ref.on('child_added',fn);call.candidateListener={ref,fn};
+  }
+  async function callReal(person){
+    const u=me(),other=String(person.uid||person.id||'');if(!u||!other||u.uid===other)return;
+    if(location.protocol!=='https:'&&location.hostname!=='localhost')throw new Error('Voice calls require HTTPS (or localhost) so the browser can use your microphone.');
+    if(!db())throw new Error('Firebase Database is not available.');
+    endCall(false);call.remoteUid=other;call.remoteName=person.name||'SkillSwap Member';call.remoteAvatar=person.avatar||'👤';
+    showCall('Calling '+call.remoteName,'Requesting microphone…',call.remoteAvatar,'Keep this page open while the other member answers.');
+    el('ssCallActions').innerHTML='<button class="ss-call-end" id="ssEndCallBtn">Cancel call</button>';el('ssEndCallBtn').onclick=()=>endCall(true);
+    try{
+      const ref=db().ref('voiceCalls').push();call.ref=ref;
+      const pc=await startPC();const offerCandidates=ref.child('callerCandidates');pc.onicecandidate=e=>{if(e.candidate)offerCandidates.push(e.candidate.toJSON())};
+      const offer=await pc.createOffer({offerToReceiveAudio:true});await pc.setLocalDescription(offer);
+      await ref.set({callerId:u.uid,calleeId:other,callerName:current?.name||u.displayName||'SkillSwap Member',callerAvatar:current?.avatar||'👤',status:'ringing',createdAt:Date.now(),offer:{type:offer.type,sdp:offer.sdp}});
+      const answerHandler=snap=>{const d=snap.val();if(!d)return;if(d.status==='accepted'&&d.answer&&!pc.currentRemoteDescription){pc.setRemoteDescription(new RTCSessionDescription(d.answer)).catch(()=>{})}if(d.status==='rejected'){showCall('Call declined',call.remoteName,call.remoteAvatar,'The member declined the call.');setTimeout(()=>endCall(true),1000)}if(d.status==='ended')endCall(false)};
+      ref.on('value',answerHandler);call.answerHandler=answerHandler;addCandidates(ref.child('calleeCandidates'),pc);
+    }catch(e){endCall(true);throw e}
+  }
+  async function acceptReal(ref,data){
+    if(call.ref)return;
+    const u=me();if(!u)return;
+    call.ref=ref;call.remoteUid=String(data.callerId);call.remoteName=data.callerName||'SkillSwap Member';call.remoteAvatar=data.callerAvatar||'👤';call.incoming=true;
+    showCall(call.remoteName,'Incoming voice call…',call.remoteAvatar,'Answer only if you want to speak with this member.');
+    el('ssCallActions').innerHTML='<button class="ss-call-answer" id="ssAnswerBtn">Answer</button><button class="ss-call-end" id="ssRejectBtn">Decline</button>';
+    el('ssAnswerBtn').onclick=async()=>{
+      try{const pc=await startPC();const ansCandidates=ref.child('calleeCandidates');pc.onicecandidate=e=>{if(e.candidate)ansCandidates.push(e.candidate.toJSON())};await pc.setRemoteDescription(new RTCSessionDescription(data.offer));const answer=await pc.createAnswer();await pc.setLocalDescription(answer);await ref.update({answer:{type:answer.type,sdp:answer.sdp},status:'accepted'});addCandidates(ref.child('callerCandidates'),pc);el('ssCallActions').innerHTML='<button class="ss-call-mute" id="ssMuteBtn">Mute</button><button class="ss-call-end" id="ssEndLiveBtn">End call</button>';el('ssMuteBtn').onclick=()=>toggleMute(el('ssMuteBtn'));el('ssEndLiveBtn').onclick=()=>endCall(true)}catch(e){console.error(e);endCall(true);showToast?.(e.message||'Could not answer call.')}
+    };
+    el('ssRejectBtn').onclick=async()=>{try{await ref.update({status:'rejected'})}catch(e){}endCall(true)};
+  }
+  function toggleMute(btn){if(!call.stream)return;call.muted=!call.muted;call.stream.getAudioTracks().forEach(t=>t.enabled=!call.muted);btn.textContent=call.muted?'Unmute':'Mute'}
+  function demoCall(person){
+    endCall(false);call.demo=true;call.remoteName=person.name||'Demo member';call.remoteAvatar=person.avatar||'👤';showCall('Calling '+call.remoteName,'Connecting…',call.remoteAvatar,'Demo calls are simulated because a demo member is not a real browser participant. Real members use live browser-to-browser audio.');
+    el('ssCallActions').innerHTML='<button class="ss-call-mute" id="ssDemoMute">Mute</button><button class="ss-call-end" id="ssDemoEnd">End call</button>';el('ssDemoMute').onclick=()=>{call.muted=!call.muted;el('ssDemoMute').textContent=call.muted?'Unmute':'Mute'};el('ssDemoEnd').onclick=()=>endCall(false);
+    setTimeout(()=>{if(call.demo){el('ssCallStatus').textContent='Connected (demo)';timerStart()}},900);
+  }
+  window.startVoiceCall=async function(id){
+    const u=me();if(!u){openAuth?.('signin');return}
+    const p=await findPerson(id);if(!p){showToast?.('Member not found.');return}
+    if(isDemo(p)){demoCall(p);return}
+    try{await callReal(p)}catch(e){showToast?.(e.message||'Could not start voice call.')}
+  };
+  function listenIncoming(){
+    const u=me(),d=db();if(!u||!d)return;
+    if(call.incomingQuery&&call.incomingHandler){try{call.incomingQuery.off('child_added',call.incomingHandler)}catch(e){}}
+    const q=d.ref('voiceCalls').orderByChild('calleeId').equalTo(String(u.uid));
+    const fn=snap=>{const data=snap.val();if(data&&data.status==='ringing'&&!call.ref)acceptReal(snap.ref,data)};
+    call.incomingQuery=q;call.incomingHandler=fn;q.on('child_added',fn);
+  }
+  function addCallButton(){
+    document.querySelectorAll('.chat-header').forEach(h=>{
+      if(h.querySelector('.ss-voice-btn'))return;
+      const b=document.createElement('button');b.type='button';b.className='ss-voice-btn';b.textContent='📞 Call';b.style.cssText='border:0;background:#176b57;color:#fff;border-radius:10px;padding:8px 11px;font-weight:800;cursor:pointer;margin-right:8px';
+      b.onclick=()=>{const p=window.currentChatPerson||current;if(p?.id||p?.uid)window.startVoiceCall(p.id||p.uid);else showToast?.('Open a member chat first.')};
+      const close=h.querySelector('.chat-close');if(close)h.insertBefore(b,close);else h.appendChild(b);
+    });
+  }
+  window.addEventListener('beforeunload',()=>{try{cleanCall(true);detachChat()}catch(e){}});
+  document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{addCallButton();listenIncoming()},700);setInterval(()=>{addCallButton();if(me())listenIncoming()},5000)});
+})();
+</script>
+
 </body>
 
 <style id="v7-typed-text-visible">
