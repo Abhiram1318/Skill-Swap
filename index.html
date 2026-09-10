@@ -12670,10 +12670,10 @@ body.dark .ss-call-card{background:#14211d;border-color:#29433b;color:#eef8f4}.s
         '<p class="ss-enhanced-muted">People ranked by how well their teaching skills complement what you want to learn.</p>'+
         '<div class="ss-enhanced-list">'+
         (scored.length?scored.map(x=>
-          '<div class="ss-enhanced-row"><div><strong>'+esc(x.name||'Member')+'</strong>'+\
-          '<div class="ss-enhanced-muted">Teaches: '+esc(arr(x.teach).slice(0,3).join(' · ')||'—')+'</div>'+\
-          '<div class="ss-enhanced-muted">Wants: '+esc(arr(x.want).slice(0,3).join(' · ')||'—')+'</div></div>'+\
-          '<div><span class="ss-enhanced-chip">'+x._score+' match</span> '+\
+          '<div class="ss-enhanced-row"><div><strong>'+esc(x.name||'Member')+'</strong>'+
+          '<div class="ss-enhanced-muted">Teaches: '+esc(arr(x.teach).slice(0,3).join(' · ')||'—')+'</div>'+
+          '<div class="ss-enhanced-muted">Wants: '+esc(arr(x.want).slice(0,3).join(' · ')||'—')+'</div></div>'+
+          '<div><span class="ss-enhanced-chip">'+x._score+' match</span> '+
           '<button class="ss-enhanced-btn" onclick="ssUltimateConnect(\''+esc(x.uid)+'\')">Connect</button></div></div>'
         ).join(''):'<div class="ss-enhanced-muted">No matching members found yet. Add teaching and learning skills to your profile to improve your matches.</div>')+
         '</div></div>';
