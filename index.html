@@ -13207,6 +13207,50 @@ body.ss-guest-mode .guest-only{display:block!important}
 })();
 </script>
 
+<script id="skillswap-same-page-auth-final">
+(function(){
+  function openAuth(mode){
+    var modal=document.getElementById('authModal');
+    if(!modal) return false;
+    var si=document.getElementById('signinForm');
+    var su=document.getElementById('signupForm');
+    var isSignup=String(mode||'signin').toLowerCase()==='signup';
+    if(si) si.style.display=isSignup?'none':'';
+    if(su) su.style.display=isSignup?'':'none';
+    modal.classList.add('show');
+    modal.style.display='flex';
+    document.body.classList.add('modal-open');
+    setTimeout(function(){
+      var el=document.getElementById(isSignup?'signupName':'signinEmail');
+      if(el) el.focus();
+    },50);
+    return false;
+  }
+  function closeAuth(){
+    var modal=document.getElementById('authModal');
+    if(modal){modal.classList.remove('show');modal.style.display='none';}
+    document.body.classList.remove('modal-open');
+    return false;
+  }
+  window.ssOpenAuth=openAuth;
+  window.openAuth=openAuth;
+  window.switchAuth=openAuth;
+  window.closeAuth=closeAuth;
+  // Make every public auth button stay on this page.
+  document.addEventListener('click',function(e){
+    var el=e.target.closest ? e.target.closest('button,a') : null;
+    if(!el) return;
+    var text=(el.textContent||'').trim().toLowerCase();
+    var oc=(el.getAttribute('onclick')||'').toLowerCase();
+    if(text==='sign in' || text==='signin' || oc.indexOf("ssopenauth('signin')")>=0 || oc.indexOf('ssopenauth("signin")')>=0){
+      e.preventDefault(); e.stopImmediatePropagation(); openAuth('signin'); return;
+    }
+    if(text==='join free' || text==='sign up' || text==='signup' || text.indexOf('create your free student profile')>=0 || oc.indexOf("ssopenauth('signup')")>=0 || oc.indexOf('ssopenauth("signup")')>=0){
+      e.preventDefault(); e.stopImmediatePropagation(); openAuth('signup'); return;
+    }
+  },true);
+})();
+</script>
 </body>
 
 <style id="v7-typed-text-visible">
@@ -14432,101 +14476,3 @@ body.ss-emergency-guest #loggedInNav{display:flex!important}
 #ssFinalAuthRepair .close{position:absolute;right:14px;top:10px;background:none;border:0;color:#fff!important;font-size:30px;cursor:pointer}
 #ssFinalAuthRepairMsg{min-height:22px;margin-top:12px;color:#ffd166!important;font-size:14px;line-height:1.4}
 </style>
-<div id="ssFinalAuthRepair" aria-hidden="true">
-  <div class="card" role="dialog" aria-modal="true">
-    <button class="close" type="button" id="ssFinalAuthRepairClose">×</button>
-    <h2 id="ssFinalAuthRepairTitle">Sign in to SkillSwap</h2>
-    <p id="ssFinalAuthRepairSub">Use your SkillSwap account or continue exploring as a guest.</p>
-    <form id="ssFinalAuthRepairForm">
-      <div id="ssFinalAuthRepairNameWrap" style="display:none">
-        <label for="ssFinalAuthRepairName">Name</label>
-        <input id="ssFinalAuthRepairName" type="text" autocomplete="name" placeholder="Your name">
-      </div>
-      <label for="ssFinalAuthRepairEmail">Email</label>
-      <input id="ssFinalAuthRepairEmail" type="email" autocomplete="email" placeholder="you@example.com" required>
-      <label for="ssFinalAuthRepairPassword">Password</label>
-      <input id="ssFinalAuthRepairPassword" type="password" autocomplete="new-password" placeholder="At least 6 characters" minlength="6" required>
-      <button class="main" id="ssFinalAuthRepairSubmit" type="submit">Sign in</button>
-      <button class="guest" id="ssFinalAuthRepairGuest" type="button">👤 Continue as Guest</button>
-      <button class="switch" id="ssFinalAuthRepairSwitch" type="button">Create a new account</button>
-      <div id="ssFinalAuthRepairMsg" role="status" aria-live="polite"></div>
-    </form>
-  </div>
-</div>
-<script id="ss-final-auth-repair-js">
-(function(){
-'use strict';
-var modal,form,title,sub,nameWrap,nameInput,emailInput,passwordInput,submit,guest,switchBtn,msg,mode='signin';
-function $(id){return document.getElementById(id)}
-function init(){
- modal=$('ssFinalAuthRepair'); if(!modal)return;
- form=$('ssFinalAuthRepairForm'); title=$('ssFinalAuthRepairTitle'); sub=$('ssFinalAuthRepairSub'); nameWrap=$('ssFinalAuthRepairNameWrap'); nameInput=$('ssFinalAuthRepairName'); emailInput=$('ssFinalAuthRepairEmail'); passwordInput=$('ssFinalAuthRepairPassword'); submit=$('ssFinalAuthRepairSubmit'); guest=$('ssFinalAuthRepairGuest'); switchBtn=$('ssFinalAuthRepairSwitch'); msg=$('ssFinalAuthRepairMsg');
- $('ssFinalAuthRepairClose').onclick=close;
- modal.onclick=function(e){if(e.target===modal)close()};
- form.onsubmit=function(e){e.preventDefault(); mode==='signup'?signup():signin()};
- guest.onclick=guestMode;
- switchBtn.onclick=function(){open(mode==='signin'?'signup':'signin')};
-}
-function open(which){
- if(!modal)init(); mode=which==='signup'?'signup':'signin';
- title.textContent=mode==='signup'?'Create your SkillSwap account':'Sign in to SkillSwap';
- sub.textContent=mode==='signup'?'Create a free account to connect, chat, call and exchange skills.':'Use your SkillSwap account or continue exploring as a guest.';
- nameWrap.style.display=mode==='signup'?'block':'none';
- nameInput.required=mode==='signup';
- submit.textContent=mode==='signup'?'Create my account':'Sign in';
- switchBtn.textContent=mode==='signup'?'Already have an account? Sign in':'Create a new account';
- msg.textContent=''; emailInput.value=''; passwordInput.value='';
- modal.classList.add('open');modal.setAttribute('aria-hidden','false');
- setTimeout(function(){(mode==='signup'?nameInput:emailInput).focus()},50);
- return false;
-}
-function close(){if(!modal)return;modal.classList.remove('open');modal.setAttribute('aria-hidden','true')}
-function show(text){msg.textContent=text||''}
-function firebaseAuth(){
- if(!window.firebase||!firebase.auth)throw new Error('Firebase Authentication SDK did not load.');
- if(!firebase.apps||!firebase.apps.length){
-  if(!window.SKILLSWAP_FIREBASE_CONFIG)throw new Error('Firebase configuration is missing.');
-  firebase.initializeApp(window.SKILLSWAP_FIREBASE_CONFIG);
- }
- return firebase.auth();
-}
-async function saveUser(user,name){
- try{
-  if(user.updateProfile)await user.updateProfile({displayName:name||user.displayName||''});
-  if(window.firebase&&firebase.database){
-   var db=firebase.database();
-   var profile={uid:user.uid,id:user.uid,legacyId:user.uid,name:name||user.displayName||((user.email||'member').split('@')[0]),email:user.email||'',type:'SkillSwap Member',location:'Online',languages:['English'],teach:['Knowledge Sharing'],want:['Something New'],availability:['Flexible'],bio:'Welcome to SkillSwap India!',avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()};
-   try{await db.ref('users/'+user.uid).update(profile)}catch(e){console.warn('Profile database save skipped:',e)}
-  }
- }catch(e){console.warn('Profile update skipped:',e)}
-}
-async function signup(){
- var email=(emailInput.value||'').trim().toLowerCase(), password=passwordInput.value||'', name=(nameInput.value||'').trim();
- if(!name){show('Please enter your name.');return} if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){show('Please enter a valid email address.');return} if(password.length<6){show('Password must be at least 6 characters.');return}
- submit.disabled=true;guest.disabled=true;show('Creating your account…');
- try{var a=firebaseAuth();var c=await a.createUserWithEmailAndPassword(email,password);await saveUser(c.user,name);window.guestMode=false;window.isGuestUser=false;localStorage.removeItem('skillswap_guest_mode');close();if(typeof window.showToast==='function')window.showToast('Account created successfully! Welcome to SkillSwap.');else alert('Account created successfully!');if(typeof window.renderEverything==='function')await window.renderEverything()}catch(e){console.error(e);var code=e&&e.code||'';var text=e&&e.message||'Unable to create your account.';if(code==='auth/email-already-in-use')text='This email is already registered. Please sign in.';else if(code==='auth/operation-not-allowed')text='Email/Password sign-in is disabled in Firebase Authentication.';else if(code==='auth/invalid-api-key')text='Firebase API key is invalid.';else if(code==='auth/network-request-failed')text='Network error. Check your internet connection.';show(text)}finally{submit.disabled=false;guest.disabled=false}}
-async function signin(){
- var email=(emailInput.value||'').trim().toLowerCase(),password=passwordInput.value||'';if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){show('Please enter a valid email address.');return}if(!password){show('Please enter your password.');return}
- submit.disabled=true;guest.disabled=true;show('Signing in…');
- try{var a=firebaseAuth();var c=await a.signInWithEmailAndPassword(email,password);window.guestMode=false;window.isGuestUser=false;localStorage.removeItem('skillswap_guest_mode');close();if(typeof window.showToast==='function')window.showToast('Signed in successfully!');else alert('Signed in successfully!');if(typeof window.renderEverything==='function')await window.renderEverything()}catch(e){console.error(e);var code=e&&e.code||'';var text=e&&e.message||'Unable to sign in.';if(code==='auth/invalid-credential'||code==='auth/wrong-password'||code==='auth/user-not-found')text='Incorrect email or password.';else if(code==='auth/operation-not-allowed')text='Email/Password sign-in is disabled in Firebase Authentication.';else if(code==='auth/network-request-failed')text='Network error. Check your internet connection.';show(text)}finally{submit.disabled=false;guest.disabled=false}}
-async function guestMode(){
- guest.disabled=true;submit.disabled=true;show('Starting Guest Mode…');
- try{
-  var user=null;
-  try{var a=firebaseAuth();user=a.currentUser;if(!user||!user.isAnonymous)user=(await a.signInAnonymously()).user}catch(e){console.warn('Anonymous Auth unavailable; using local exploration mode.',e)}
-  window.guestMode=true;window.isGuestUser=true;window.ssGuestUser=user||{uid:'local-guest',isAnonymous:true};localStorage.setItem('skillswap_guest_mode','true');if(user)localStorage.setItem('skillswap_guest_uid',user.uid);document.body.classList.add('ss-guest-mode');close();if(typeof window.showToast==='function')window.showToast('Guest Mode enabled — you can explore SkillSwap now.');else alert('Guest Mode enabled.');if(typeof window.renderEverything==='function')await window.renderEverything();
- }catch(e){console.error(e);show('Guest Mode could not be started. Please refresh the page.')}finally{guest.disabled=false;submit.disabled=false}
-}
-// Capture clicks before old inline handlers. Only intercept public/auth controls, not unrelated buttons.
-document.addEventListener('click',function(e){
- var t=e.target&&e.target.closest?e.target.closest('button,a'):null;if(!t)return;
- var oc=(t.getAttribute('onclick')||'').toLowerCase(),txt=(t.textContent||'').trim().toLowerCase();
- var isSignIn=oc.includes('ssopenauth(\'signin\'')||oc.includes('ssopenauth("signin"')||oc.includes('switchauth(\'signin\'')||oc.includes('switchauth("signin"')||txt==='sign in'||txt==='signin';
- var isSignUp=oc.includes('ssopenauth(\'signup\'')||oc.includes('ssopenauth("signup"')||oc.includes('switchauth(\'signup\'')||oc.includes('switchauth("signup"')||txt.includes('join free')||txt.includes('create my free profile')||txt.includes('create my account');
- var isGuest=oc.includes('continueasguest')||txt.includes('explore as guest')||txt.includes('continue as guest');
- if(isGuest||isSignUp||isSignIn){e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();if(isGuest)guestMode();else open(isSignUp?'signup':'signin');}
-},true);
-window.ssFinalAuthOpen=open;window.ssFinalGuest=guestMode;
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
-})();
-</script>
