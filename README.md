@@ -169,36 +169,6 @@ Some possible future enhancements include:
 
 ---
 
-## 🤝 Contributing
-
-Contributions are welcome!
-
-1. Fork the repository.
-2. Create a new branch.
-
-```bash
-git checkout -b feature/your-feature
-```
-
-3. Make your changes.
-4. Commit your changes.
-
-```bash
-git commit -m "Add new feature"
-```
-
-5. Push the branch.
-
-```bash
-git push origin feature/your-feature
-```
-
-6. Open a Pull Request.
-
----
-
-### ⭐ Support the Project
-
 If you find SkillSwap interesting, consider giving the repository a ⭐ on GitHub!
 
 **SkillSwap India — Learn. Teach. Connect. 🇮🇳**
