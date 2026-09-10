@@ -13866,3 +13866,119 @@ body.ss-emergency-guest #loggedInNav{display:flex!important}
   setTimeout(()=>{if(user())renderDirectory()},2500);
 })();
 </script>
+
+<style id="ss-chat-call-v6">
+#ssChatDirectoryCard .ss-chat-open{white-space:nowrap}
+.ss-chat-actions{display:flex;gap:6px;align-items:center;margin-left:auto}
+.ss-chat-call{border:1px solid #176b57;background:#176b57;color:#fff;border-radius:9px;padding:8px 10px;font-weight:800;cursor:pointer}
+.ss-call-modal{max-width:520px;text-align:center}
+.ss-call-status{font-weight:800;margin:10px 0 14px}
+.ss-call-videos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.ss-call-videos video{width:100%;aspect-ratio:16/10;background:#111;border-radius:12px;object-fit:cover}
+.ss-call-controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.ss-call-controls button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer}
+.ss-call-danger{background:#b42318!important;color:#fff}
+.ss-call-accept{background:#176b57!important;color:#fff}
+.ss-call-muted{background:#eef2f0}
+@media(max-width:700px){.ss-call-videos{grid-template-columns:1fr}.ss-chat-actions{flex-wrap:wrap}}
+</style>
+<div class="modal-overlay" id="ssCallModal">
+  <div class="modal ss-call-modal">
+    <div style="font-size:44px" id="ssCallAvatar">📞</div>
+    <h3 id="ssCallName">Call</h3>
+    <div class="ss-call-status" id="ssCallStatus">Ready</div>
+    <div class="ss-call-videos">
+      <video id="ssLocalVideo" autoplay muted playsinline></video>
+      <video id="ssRemoteVideo" autoplay playsinline></video>
+    </div>
+    <div class="ss-call-controls" id="ssCallControls">
+      <button class="ss-call-accept" id="ssAcceptCall" onclick="ssAcceptIncomingCall()">Accept</button>
+      <button class="ss-call-danger" onclick="ssEndCall()">End call</button>
+    </div>
+  </div>
+</div>
+<script id="ss-chat-call-system-v6">
+(function(){
+'use strict';
+const demoIds=new Set((window.demoPeople||[]).map(p=>String(p.id)));
+let pc=null, localStream=null, activeCall=null, callRef=null, callListener=null, candidateListener=null;
+const $=id=>document.getElementById(id);
+const me=()=>{try{return typeof getCurrentUser==='function'?getCurrentUser():null}catch(e){return null}};
+const db=()=>window.ssFirebase&&window.ssFirebase.db;
+const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+function callId(a,b){return [String(a),String(b)].sort().join('_')}
+function status(t){if($('ssCallStatus'))$('ssCallStatus').textContent=t}
+function showCall(name,avatar){$('ssCallName').textContent=name||'Call';$('ssCallAvatar').textContent=avatar||'📞';$('ssCallModal').classList.add('show')}
+function closeCallUI(){ $('ssCallModal')?.classList.remove('show'); const lv=$('ssLocalVideo'),rv=$('ssRemoteVideo');if(lv)lv.srcObject=null;if(rv)rv.srcObject=null; }
+async function media(video=true){
+ try{return await navigator.mediaDevices.getUserMedia({audio:true,video:video})}
+ catch(e){status('Microphone/camera permission is required.');throw e}
+}
+function cleanup(){
+ if(callRef&&callListener){callRef.off('value',callListener);callListener=null}
+ if(callRef&&candidateListener){callRef.child('candidates').off('child_added',candidateListener);candidateListener=null}
+ if(pc){try{pc.onicecandidate=null;pc.ontrack=null;pc.close()}catch(e){}pc=null}
+ if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null}
+ activeCall=null;callRef=null;
+}
+async function sendCandidate(c){if(!callRef||!c)return;await callRef.child('candidates').push({...c,from:me()?.uid||me()?.id})}
+function wirePeer(){
+ pc=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]});
+ pc.onicecandidate=e=>{if(e.candidate)sendCandidate(e.candidate.toJSON())};
+ pc.ontrack=e=>{if($('ssRemoteVideo'))$('ssRemoteVideo').srcObject=e.streams[0]};
+ if(localStream)localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
+}
+async function watchCandidates(){
+ if(!callRef)return;
+ candidateListener=callRef.child('candidates').on('child_added',async snap=>{const c=snap.val();if(!c||c.from===String(me()?.uid||me()?.id))return;try{await pc?.addIceCandidate(new RTCIceCandidate(c))}catch(e){}});
+}
+async function startRealCall(person,video=true){
+ const u=me(); if(!u)return;
+ if(!db()){showCall(person.name,person.avatar);status('Real calling needs Firebase Realtime Database.');return}
+ cleanup();showCall(person.name,person.avatar);$('ssAcceptCall').style.display='none';
+ try{
+  localStream=await media(video);$('ssLocalVideo').srcObject=localStream;wirePeer();
+  const id=callId(u.uid||u.id,person.uid||person.id);callRef=db().ref('calls/'+id);activeCall={id,role:'caller',person};
+  await callRef.set({callerUid:u.uid||u.id,receiverUid:person.uid||person.id,callerName:u.name||u.displayName||'SkillSwap Member',receiverName:person.name,status:'ringing',video,createdAt:firebase.database.ServerValue.TIMESTAMP});
+  await watchCandidates();const offer=await pc.createOffer();await pc.setLocalDescription(offer);await callRef.update({offer:{type:offer.type,sdp:offer.sdp}});status('Calling '+person.name+'…');
+  callListener=callRef.on('value',async snap=>{const d=snap.val()||{};if(d.status==='accepted'&&d.answer&&!pc.currentRemoteDescription){await pc.setRemoteDescription(new RTCSessionDescription(d.answer));status('Connected');}if(d.status==='declined'){status('Call declined.');setTimeout(ssEndCall,900)}if(d.status==='ended'){status('Call ended.');setTimeout(ssEndCall,600)}});
+ }catch(e){console.error(e);status('Could not start call. Check browser permissions.');setTimeout(ssEndCall,1400)}
+}
+async function incomingCall(d,id){
+ if(activeCall)return;
+ const u=me();if(!u)return;activeCall={id,role:'receiver',person:{name:d.callerName||'SkillSwap Member',avatar:'📞'},video:d.video!==false};callRef=db().ref('calls/'+id);showCall(activeCall.person.name,'📞');$('ssAcceptCall').style.display='inline-block';status('Incoming '+(activeCall.video?'video ':'audio ')+'call…');
+ callListener=callRef.on('value',async snap=>{const x=snap.val()||{};if(x.status==='ended'||x.status==='declined'){status('Call ended.');setTimeout(ssEndCall,500)}});
+}
+window.ssAcceptIncomingCall=async function(){
+ if(!activeCall||activeCall.role!=='receiver'||!callRef)return;
+ try{
+  $('ssAcceptCall').style.display='none';localStream=await media(activeCall.video);$('ssLocalVideo').srcObject=localStream;wirePeer();await watchCandidates();
+  const d=(await callRef.once('value')).val()||{};if(!d.offer)throw Error('Offer missing');await pc.setRemoteDescription(new RTCSessionDescription(d.offer));const ans=await pc.createAnswer();await pc.setLocalDescription(ans);await callRef.update({answer:{type:ans.type,sdp:ans.sdp},status:'accepted'});status('Connected');
+ }catch(e){status('Could not accept call.');setTimeout(ssEndCall,1200)}
+};
+window.ssEndCall=async function(){const r=callRef;cleanup();closeCallUI();if(r){try{await r.update({status:'ended'})}catch(e){}}};
+window.startSkillSwapCall=function(id,video=true){
+ const u=me();if(!u){if(typeof openAuth==='function')openAuth('signin');return}
+ const p=(window.demoPeople||[]).find(x=>String(x.id)===String(id));
+ if(p&&demoIds.has(String(id))){showCall(p.name,p.avatar||'📞');$('ssAcceptCall').style.display='none';status('Demo call with '+p.name);setTimeout(()=>{if(!$('ssCallModal').classList.contains('show'))return;status('Connected · Demo call');},900);return}
+ let person=(window.skillswapPeople||[]).find(x=>String(x.id)===String(id)||String(x.uid)===String(id));
+ if(!person){showCall('SkillSwap member','📞');$('ssAcceptCall').style.display='none';status('Member profile is loading…');fetch('/api/profile/'+encodeURIComponent(id)).then(r=>r.ok?r.json():null).then(d=>{if(d?.user)startRealCall(d.user,video);else status('Member not found.')}).catch(()=>status('Could not load member.'));return}
+ startRealCall(person,video);
+};
+window.closeSkillSwapCall=window.ssEndCall;
+// Incoming real-call watcher. Demo calls never create Firebase signaling.
+setTimeout(()=>{const u=me();const D=db();if(!u||!D)return;const uid=String(u.uid||u.id);D.ref('calls').on('child_added',snap=>{const d=snap.val();if(!d||String(d.receiverUid)!==uid||d.status!=='ringing')return;incomingCall(d,snap.key)})},1800);
+
+// Replace chat directory with a guaranteed demo-first directory and Call buttons.
+async function people(){try{if(typeof window.skillswapLoadPeople==='function'){const x=await window.skillswapLoadPeople('');return Array.isArray(x)?x:[]}}catch(e){}try{const r=await fetch('/api/people');return r.ok?await r.json():[]}catch(e){return[]}}
+async function render(){const host=$('ssChatDirectory');if(!host)return;const u=me();if(!u){host.innerHTML='<div class="empty-state">Sign in to chat and call SkillSwap members.</div>';return}
+ const list=[],seen=new Set(), demos=Array.isArray(window.demoPeople)?window.demoPeople:[];
+ demos.forEach(p=>{if(String(p.id)!==String(u.id)&&String(p.id)!==String(u.uid)){seen.add(String(p.id));list.push({...p,__demo:true})}});
+ const real=await people();real.forEach(p=>{const id=String(p.id??p.uid);if(id&&id!==String(u.id)&&id!==String(u.uid)&&!seen.has(id)){seen.add(id);list.push(p)}});
+ host.innerHTML=list.slice(0,18).map(p=>{const id=String(p.id??p.uid);return `<div class="ss-chat-member"><div class="ss-chat-member-avatar">${esc(p.avatar||'🧑')}</div><div class="ss-chat-member-info"><strong>${esc(p.name||'SkillSwap Member')}${p.__demo?'<span class="ss-chat-demo">DEMO</span>':''}</strong><small>${esc(p.location||'SkillSwap member')}</small></div><div class="ss-chat-actions"><button class="ss-chat-open" onclick="openChat('${esc(id)}')">💬 Chat</button><button class="ss-chat-call" onclick="startSkillSwapCall('${esc(id)}',true)">📹 Call</button></div></div>`}).join('')||'<div class="empty-state">No members available yet.</div>';
+}
+window.renderSkillSwapChatDirectory=render;document.addEventListener('DOMContentLoaded',()=>{setTimeout(render,700);setTimeout(render,1800)});setTimeout(()=>{if(me())render()},3000);
+// Add call controls to existing chat header for both demo and real chats.
+const oldOpen=window.openChat;window.openChat=async function(id){await oldOpen(id);setTimeout(()=>{const p=window.currentChatPerson||window.__ssChatPerson||currentChatPerson;if(!p)return;let box=document.getElementById('ssChatCallButtons');if(!box){box=document.createElement('div');box.id='ssChatCallButtons';box.className='ss-chat-actions';const h=document.querySelector('#chatModal .chat-header');if(h)h.appendChild(box)}box.innerHTML=`<button class="ss-chat-call" onclick="startSkillSwapCall('${esc(p.id)}',true)">📹 Call</button>`},50)};
+})();
+</script>
