@@ -13354,7 +13354,7 @@ body.ss-emergency-guest #loggedInNav{display:flex!important}
     if(code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') return 'Incorrect email or password.';
     if(code === 'auth/operation-not-allowed') return 'Email/password authentication is disabled. Enable Email/Password in Firebase Authentication → Sign-in method.';
     if(code === 'auth/network-request-failed') return 'Network error. Check your internet connection and try again.';
-    return String(error?.message || fallback).replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^^)]*\)\.?$/i,'');
+    return String(error?.message || fallback).replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]*\)\.?$/i,'');
   }
 
   function getAuth(){
@@ -13432,13 +13432,41 @@ body.ss-emergency-guest #loggedInNav{display:flex!important}
     window.isGuestUser=false;
     document.body.classList.remove('ss-guest-mode','ss-emergency-guest');
     try{ localStorage.removeItem('skillswap_guest_mode'); localStorage.removeItem('skillswap_guest_uid'); }catch(e){}
-    const profile=await saveProfile(user, user.displayName || ((user.email||'').split('@')[0]));
-    $('authModal')?.classList.remove('show');
-    if($('authModal')) $('authModal').style.display='none';
+
+    // Do NOT wait for Realtime Database during authentication.
+    // Database rules/network problems must never leave the Sign In button stuck.
+    const basicProfile={
+      uid:user.uid,
+      id:user.uid,
+      legacyId:user.uid,
+      name:user.displayName || ((user.email||'').split('@')[0]) || 'SkillSwap Member',
+      email:user.email || ''
+    };
+    window.ssFirebaseProfile=basicProfile;
+    try{ localStorage.setItem('skillswapUser',JSON.stringify(basicProfile)); }catch(e){}
+    try{ window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(basicProfile)); }catch(e){}
+
+    const modal=$('authModal');
+    if(modal){ modal.classList.remove('show'); modal.style.display='none'; }
     document.body.classList.add('ss-authenticated');
     try{ window.updateUserUI?.(); }catch(e){}
-    try{ await window.renderEverything?.(); }catch(e){ console.warn('renderEverything:',e); }
-    toast(message || ('Welcome back, '+(profile.name||'SkillSwap member')+'!'));
+
+    // Load the richer profile in the background, with a short timeout.
+    setTimeout(async()=>{
+      try{
+        const profile=await Promise.race([
+          saveProfile(user,user.displayName || ((user.email||'').split('@')[0])),
+          new Promise((_,reject)=>setTimeout(()=>reject(new Error('profile-timeout')),3000))
+        ]);
+        window.ssFirebaseProfile=profile;
+        try{ localStorage.setItem('skillswapUser',JSON.stringify(profile)); }catch(e){}
+        try{ window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile)); }catch(e){}
+        try{ window.updateUserUI?.(); }catch(e){}
+        try{ await window.renderEverything?.(); }catch(e){ console.warn('renderEverything:',e); }
+      }catch(e){ console.warn('Profile/background load skipped:',e); }
+    },0);
+
+    toast(message || ('Welcome back, '+(basicProfile.name||'SkillSwap member')+'!'));
     return false;
   }
 
@@ -13446,20 +13474,31 @@ body.ss-emergency-guest #loggedInNav{display:flex!important}
     const email=($('signinEmail')?.value||'').trim().toLowerCase();
     const password=$('signinPassword')?.value||'';
     const btn=document.querySelector('#signinForm .modal-submit');
-    if(!email) return toast('Please enter your email address.'),false;
-    if(!password) return toast('Please enter your password.'),false;
+    if(!email){ toast('Please enter your email address.'); return false; }
+    if(!password){ toast('Please enter your password.'); return false; }
+    if(btn){ btn.disabled=true; btn.textContent='Signing in…'; }
+
     try{
-      if(btn){btn.disabled=true;btn.textContent='Signing in…';}
       const auth=getAuth();
-      const cred=await auth.signInWithEmailAndPassword(email,password);
+      // Authentication itself is the only operation awaited here.
+      // This prevents a Database problem from making the button appear frozen.
+      const cred=await Promise.race([
+        auth.signInWithEmailAndPassword(email,password),
+        new Promise((_,reject)=>setTimeout(()=>reject(new Error('SIGNIN_TIMEOUT')),12000))
+      ]);
       await finishLogin(cred.user,'👋 Welcome back!');
+      return true;
     }catch(error){
       console.error('SIGN IN ERROR',error);
-      toast('❌ '+cleanError(error,'Sign in failed.'));
+      if(error?.message==='SIGNIN_TIMEOUT'){
+        toast('❌ Sign in timed out. Check your internet connection and Firebase Authentication settings.');
+      }else{
+        toast('❌ '+cleanError(error,'Sign in failed.'));
+      }
+      return false;
     }finally{
-      if(btn){btn.disabled=false;btn.textContent='Sign in';}
+      if(btn){ btn.disabled=false; btn.textContent='Sign in'; }
     }
-    return false;
   };
 
   window.signUp = async function(){
@@ -13489,7 +13528,7 @@ body.ss-emergency-guest #loggedInNav{display:flex!important}
         availability:availability.length?availability:['Flexible'],
         avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()
       };
-      if(db) await db.ref('users/'+cred.user.uid).set(profile);
+      if(db){ try{ await Promise.race([db.ref('users/'+cred.user.uid).set(profile), new Promise((_,reject)=>setTimeout(()=>reject(new Error('profile-write-timeout')),5000))]); }catch(e){ console.warn('Profile write skipped:',e); } }
       window.ssFirebaseProfile=profile;
       try{localStorage.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
       try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
