@@ -11459,9 +11459,7 @@ input::placeholder,textarea::placeholder{
 </script>
 
 <style id="ssFinalFixes">#ssSeparateMenuButton,#ssMenuOverlay,#ssMenuPanel,.ss-menu-btn,.ss-menu-overlay,.ss-menu-panel{display:none!important}#authModal .modal{background:linear-gradient(145deg,rgba(7,22,52,.98),rgba(10,42,91,.98))!important;color:#eef7ff!important;border:1px solid rgba(80,180,255,.25)!important;box-shadow:0 30px 80px rgba(0,0,0,.45)!important}#authModal .modal h2,#authModal .modal label{color:#f4fbff!important}#authModal .modal-subtitle,#authModal .modal p{color:#b9d4ee!important}#authModal input,#authModal select,#authModal textarea{background:#071a38!important;color:#f4fbff!important;border:1px solid rgba(89,174,255,.28)!important}#authModal input::placeholder,#authModal textarea::placeholder{color:#7895b5!important}#authModal input:focus,#authModal select:focus,#authModal textarea:focus{border-color:#39b9ff!important;box-shadow:0 0 0 3px rgba(57,185,255,.12)!important;outline:none}</style>
-<script id="ssFinalSignupFix">
-(function(){function v(id){const e=document.getElementById(id);return e?String(e.value||'').trim():''}function t(m){if(typeof showToast==='function')showToast(m);else alert(m)}window.signUp=async function(){const name=v('signupName'),email=v('signupEmail').toLowerCase(),password=document.getElementById('signupPassword')?.value||'',type=v('signupType')||'College Student',location=v('signupLocation')||'Online',languages=v('signupLanguages'),bio=v('signupBio')||'Learning and sharing skills.',teach=v('signupSkill'),want=v('signupWanted'),availability=[...document.querySelectorAll('#signupForm input[name="availability"]:checked')].map(x=>x.value);if(!name)return t('Please enter your name.');if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return t('Please enter a valid email address.');if(password.length<6)return t('Password must be at least 6 characters.');const auth=window.ssFirebaseAuth||window.ssFirebase?.auth,db=window.ssFirebase?.db;if(!auth||!db)return t('Firebase is not ready. Check firebase-config.js and refresh.');const btn=document.querySelector('#signupForm .modal-submit');if(btn){btn.disabled=true;btn.textContent='Creating your account…'}try{await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);const cred=await auth.createUserWithEmailAndPassword(email,password);try{await cred.user.updateProfile({displayName:name})}catch(_){}const id=Date.now()+Math.floor(Math.random()*1000);const profile={uid:cred.user.uid,legacyId:id,id,name,email,type,location,languages:languages?languages.split(',').map(x=>x.trim()).filter(Boolean):['English'],bio,teach:teach?teach.split(',').map(x=>x.trim()).filter(Boolean):['Knowledge Sharing'],want:want?want.split(',').map(x=>x.trim()).filter(Boolean):['Something New'],availability:availability.length?availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()};await db.ref('users/'+cred.user.uid).set(profile);window.ssFirebaseProfile=profile;if(window.ssMemoryStorage)window.ssMemoryStorage.setItem('skillswapUser',JSON.stringify(profile));if(typeof setAppState==='function')setAppState(true);if(typeof closeModal==='function')closeModal('authModal');if(typeof updateUserUI==='function')updateUserUI();if(typeof renderEverything==='function')await renderEverything();t('🎉 Welcome to SkillSwap India, '+name+'!')}catch(e){console.error(e);const c=e?.code||'',m=c==='auth/email-already-in-use'?'This email is already registered. Please sign in.':c==='auth/invalid-email'?'Please enter a valid email address.':c==='auth/weak-password'?'Password must be at least 6 characters.':c==='auth/network-request-failed'?'Network error. Check your internet connection.':e?.message||'Account creation failed.';t('❌ '+m)}finally{if(btn){btn.disabled=false;btn.textContent='Create my profile'}}};})();
-</script>
+
 
 
 <style id="ssFinalWorkingFix">
@@ -11557,119 +11555,7 @@ input::placeholder,textarea::placeholder{
 #authModal .modal{position:relative;z-index:2147483001;max-height:90vh;overflow:auto}
 #authModal .modal-submit{pointer-events:auto!important;position:relative;z-index:2147483002}
 </style>
-<script id="ssAbsoluteFinalAuth">
-(function(){
-  'use strict';
-  const $=id=>document.getElementById(id);
-  const val=id=>String($(id)?.value||'').trim();
-  const toast=m=>{if(typeof window.showToast==='function')window.showToast(m);else alert(m)};
-  const auth=()=>window.ssFirebaseAuth||window.ssFirebase?.auth||null;
-  const db=()=>window.ssFirebase?.db||null;
 
-  window.ssOpenAuth=function(type){
-    const modal=$('authModal');
-    if(!modal){toast('Authentication window is missing from the page.');return false;}
-    modal.classList.add('show');
-    if(typeof window.switchAuth==='function')window.switchAuth(type==='signup'?'signup':'signin');
-    else {
-      if($('signinForm'))$('signinForm').style.display=type==='signup'?'none':'block';
-      if($('signupForm'))$('signupForm').style.display=type==='signup'?'block':'none';
-    }
-    setTimeout(()=>$(type==='signup'?'signupName':'signinEmail')?.focus(),50);
-    return false;
-  };
-
-  window.signIn=async function(){
-    const email=val('signinEmail').toLowerCase();
-    const password=$('signinPassword')?.value||'';
-    const btn=document.querySelector('#signinForm .modal-submit');
-    if(!email){toast('Please enter your email address.');return;}
-    if(!password){toast('Please enter your password.');return;}
-    const a=auth(),d=db();
-    if(!a||!d){toast('Firebase is not ready. Make sure firebase-config.js is beside this HTML file, then refresh.');return;}
-    if(btn){btn.disabled=true;btn.textContent='Signing in…';}
-    try{
-      if(window.firebase?.auth?.Auth?.Persistence)await a.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);
-      const cred=await a.signInWithEmailAndPassword(email,password);
-      let snap=await d.ref('users/'+cred.user.uid).once('value');
-      if(!snap.exists()){
-        const now=new Date().toISOString(), id=Date.now();
-        await d.ref('users/'+cred.user.uid).set({uid:cred.user.uid,id,legacyId:id,name:cred.user.displayName||email.split('@')[0]||'SkillSwap Member',email:cred.user.email||email,type:'College Student',location:'Online',languages:['English'],bio:'Welcome to SkillSwap India! Complete your profile to start learning and teaching.',teach:['Knowledge Sharing'],want:['Something New'],availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:now});
-        snap=await d.ref('users/'+cred.user.uid).once('value');
-      }
-      const profile=snap.val()||{uid:cred.user.uid,name:cred.user.displayName||email.split('@')[0],email};
-      window.ssFirebaseProfile=profile;
-      try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
-      document.body.classList.add('ss-authenticated');
-      if(typeof window.setAppState==='function')window.setAppState(true);
-      if(typeof window.updateUserUI==='function')window.updateUserUI();
-      if(typeof window.closeModal==='function')window.closeModal('authModal');
-      toast('👋 Welcome back, '+(profile.name||'SkillSwap member')+'!');
-      if(typeof window.renderEverything==='function'){try{await window.renderEverything();}catch(e){console.warn(e);}}
-    }catch(e){
-      console.error(e);
-      const c=String(e?.code||''), raw=String(e?.message||'');
-      let m=raw||'Sign in failed.';
-      if(c==='auth/user-not-found'||c==='auth/invalid-credential')m='No matching SkillSwap account was found, or the password is incorrect.';
-      else if(c==='auth/wrong-password')m='The email or password is incorrect.';
-      else if(c==='auth/invalid-email')m='Please enter a valid email address.';
-      else if(c==='auth/too-many-requests')m='Too many attempts. Please wait a few minutes and try again.';
-      else if(c==='auth/network-request-failed')m='Network error. Check your internet connection.';
-      else if(raw.toLowerCase().includes('permission_denied'))m='Firebase Database permission was denied. Please publish your Realtime Database rules.';
-      toast('❌ '+m.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
-    }finally{if(btn){btn.disabled=false;btn.textContent='Sign in';}}
-  };
-
-  window.signUp=async function(){
-    const name=val('signupName'),email=val('signupEmail').toLowerCase(),password=$('signupPassword')?.value||'';
-    const type=val('signupType')||'College Student',location=val('signupLocation')||'Online',languages=val('signupLanguages'),bio=val('signupBio')||'Learning and sharing skills.',teach=val('signupSkill'),want=val('signupWanted');
-    const availability=[...document.querySelectorAll('#signupForm input[name="availability"]:checked')].map(x=>x.value);
-    if(!name){toast('Please enter your name.');return;}
-    if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('Please enter a valid email address.');return;}
-    if(password.length<6){toast('Your password must be at least 6 characters.');return;}
-    const a=auth(),d=db();
-    if(!a||!d){toast('Firebase is not ready. Make sure firebase-config.js is beside this HTML file, then refresh.');return;}
-    const btn=document.querySelector('#signupForm .modal-submit');
-    if(btn){btn.disabled=true;btn.textContent='Creating your account…';}
-    try{
-      if(window.firebase?.auth?.Auth?.Persistence)await a.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);
-      const cred=await a.createUserWithEmailAndPassword(email,password);
-      try{await cred.user.updateProfile({displayName:name});}catch(e){console.warn(e);}
-      const id=Date.now();
-      const profile={uid:cred.user.uid,id,legacyId:id,name,email:cred.user.email||email,type,location,languages:languages?languages.split(',').map(x=>x.trim()).filter(Boolean):['English'],bio,teach:teach?teach.split(',').map(x=>x.trim()).filter(Boolean):['Knowledge Sharing'],want:want?want.split(',').map(x=>x.trim()).filter(Boolean):['Something New'],availability:availability.length?availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()};
-      await d.ref('users/'+cred.user.uid).set(profile);
-      window.ssFirebaseProfile=profile;
-      try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
-      document.body.classList.add('ss-authenticated');
-      if(typeof window.setAppState==='function')window.setAppState(true);
-      if(typeof window.updateUserUI==='function')window.updateUserUI();
-      if(typeof window.closeModal==='function')window.closeModal('authModal');
-      toast('🎉 Welcome to SkillSwap India, '+name+'!');
-      if(typeof window.renderEverything==='function'){try{await window.renderEverything();}catch(e){console.warn(e);}}
-    }catch(e){
-      console.error(e);
-      const c=String(e?.code||''),raw=String(e?.message||'');
-      let m=raw||'Account creation failed.';
-      if(c==='auth/email-already-in-use')m='This email is already registered. Please use Sign in.';
-      else if(c==='auth/invalid-email')m='Please enter a valid email address.';
-      else if(c==='auth/weak-password')m='Your password must be at least 6 characters.';
-      else if(c==='auth/operation-not-allowed')m='Email/password sign-up is not enabled in Firebase Authentication.';
-      else if(c==='auth/network-request-failed')m='Network error. Check your internet connection.';
-      else if(raw.toLowerCase().includes('permission_denied'))m='The account was created, but Firebase Database rules blocked profile creation. Please publish the Realtime Database rules.';
-      toast('❌ '+m.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
-    }finally{if(btn){btn.disabled=false;btn.textContent='Create my profile';}}
-  };
-
-  // Prevent any remaining legacy menu from ever becoming visible.
-  function killMenus(){
-    document.querySelectorAll('#ssSeparateMenuButton,#ssMenuOverlay,#ssMenuPanel,.ss-menu-btn,.ss-menu-overlay,.ss-menu-panel').forEach(el=>el.remove());
-    document.querySelectorAll('#ssUltimatePlatform .ss-ultimate-nav').forEach(el=>el.remove());
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',killMenus);else killMenus();
-  setTimeout(killMenus,100);
-  setTimeout(killMenus,1000);
-})();
-</script>
 <div id="ssLogoutConfirmModal" aria-hidden="true" role="dialog" aria-modal="true">
   <div class="ss-logout-dialog">
     <h2>Log out?</h2>
@@ -12714,178 +12600,7 @@ window.ssInvestorInterest=function(){
 };
 </script>
 
-<script id="ssAuthButtonAndFirebaseFinalFix">
-(function(){
-  'use strict';
 
-  // The public landing page uses ssOpenAuth(), while the main app uses
-  // openAuth(). Keep both names pointing to the same working function.
-  window.ssOpenAuth = function(type){
-    type = type === 'signup' ? 'signup' : 'signin';
-    try{
-      if(typeof window.openAuth === 'function'){
-        window.openAuth(type);
-        return false;
-      }
-      const modal=document.getElementById('authModal');
-      const signIn=document.getElementById('signinForm');
-      const signUp=document.getElementById('signupForm');
-      if(!modal || !signIn || !signUp){
-        alert('The SkillSwap sign-in window could not be loaded. Please refresh the page.');
-        return false;
-      }
-      modal.classList.add('show');
-      signIn.style.display=type==='signin'?'block':'none';
-      signUp.style.display=type==='signup'?'block':'none';
-    }catch(e){
-      console.error('SkillSwap auth modal error:',e);
-      alert('Could not open the authentication window. Please refresh the page.');
-    }
-    return false;
-  };
-
-  // Make the existing global auth functions explicit so inline onclick
-  // handlers always resolve to the final Firebase implementation.
-  if(typeof window.openAuth !== 'function'){
-    window.openAuth=window.ssOpenAuth;
-  }
-
-  // Ensure the Firebase Auth instance exists even if an earlier initialization
-  // block failed or was skipped.
-  window.ssEnsureFirebaseAuth = function(){
-    try{
-      if(!window.firebase) throw new Error('Firebase SDK did not load.');
-      if(!window.SKILLSWAP_FIREBASE_CONFIG) throw new Error('Firebase configuration is missing.');
-      if(!firebase.apps.length) firebase.initializeApp(window.SKILLSWAP_FIREBASE_CONFIG);
-      const auth=window.ssFirebaseAuth || firebase.auth();
-      const db=(window.ssFirebase && window.ssFirebase.db) || firebase.database();
-      window.ssFirebaseAuth=auth;
-      window.ssFirebase=window.ssFirebase || {};
-      window.ssFirebase.auth=auth;
-      window.ssFirebase.db=db;
-      window.ssFirebaseReady=true;
-      return auth;
-    }catch(e){
-      window.ssFirebaseReady=false;
-      window.ssFirebaseError=e && e.message ? e.message : String(e);
-      console.error('SkillSwap Firebase startup error:',e);
-      return null;
-    }
-  };
-
-  // Rebind the two modal buttons to the final Firebase Auth methods.
-  window.signIn = async function(){
-    const email=(document.getElementById('signinEmail')?.value||'').trim().toLowerCase();
-    const password=document.getElementById('signinPassword')?.value||'';
-    const btn=document.querySelector('#signinForm .modal-submit');
-    const toast=m=>typeof window.showToast==='function'?window.showToast(m):alert(m);
-    if(!email){toast('Please enter your email address.');return false;}
-    if(!password){toast('Please enter your password.');return false;}
-
-    const auth=window.ssEnsureFirebaseAuth();
-    if(!auth){toast('Firebase could not start. Please refresh the page and try again.');return false;}
-    const db=window.ssFirebase?.db;
-    if(btn){btn.disabled=true;btn.textContent='Signing in…';}
-    try{
-      try{await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);}catch(e){console.warn('Auth persistence:',e);}
-      const cred=await auth.signInWithEmailAndPassword(email,password);
-      let profile=null;
-      if(db){
-        try{
-          const snap=await db.ref('users/'+cred.user.uid).once('value');
-          profile=snap.exists()?snap.val():null;
-        }catch(e){console.warn('Profile read after sign-in:',e);}
-      }
-      if(!profile){
-        profile={uid:cred.user.uid,id:Date.now(),legacyId:Date.now(),name:cred.user.displayName||email.split('@')[0]||'SkillSwap Member',email:cred.user.email||email,type:'College Student',location:'Online',languages:['English'],bio:'Welcome to SkillSwap India!',teach:['Knowledge Sharing'],want:['Something New'],availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()};
-        if(db){try{await db.ref('users/'+cred.user.uid).set(profile);}catch(e){console.warn('Profile creation after sign-in:',e);}}
-      }
-      window.ssFirebaseProfile=profile;
-      try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
-      document.body.classList.add('ss-authenticated');
-      if(typeof window.setAppState==='function')window.setAppState(true);
-      if(typeof window.updateUserUI==='function')window.updateUserUI();
-      if(typeof window.closeModal==='function')window.closeModal('authModal');
-      if(typeof window.renderEverything==='function'){try{await window.renderEverything();}catch(e){console.warn('Render after sign-in:',e);}}
-      toast('👋 Welcome back, '+(profile.name||'SkillSwap member')+'!');
-      return true;
-    }catch(e){
-      console.error('SkillSwap sign-in error:',e);
-      const c=String(e?.code||'');
-      let m=String(e?.message||'Sign in failed.');
-      if(c==='auth/invalid-credential'||c==='auth/wrong-password'||c==='auth/user-not-found')m='The email or password is incorrect.';
-      else if(c==='auth/invalid-email')m='Please enter a valid email address.';
-      else if(c==='auth/too-many-requests')m='Too many attempts. Please wait a few minutes and try again.';
-      else if(c==='auth/network-request-failed')m='Network error. Check your internet connection.';
-      else if(c==='auth/operation-not-allowed')m='Email/password sign-in is disabled in Firebase Authentication.';
-      toast('❌ '+m.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
-      return false;
-    }finally{
-      if(btn){btn.disabled=false;btn.textContent='Sign in';}
-    }
-  };
-
-  window.signUp = async function(){
-    const v=id=>String(document.getElementById(id)?.value||'').trim();
-    const name=v('signupName'), email=v('signupEmail').toLowerCase(), password=document.getElementById('signupPassword')?.value||'';
-    const toast=m=>typeof window.showToast==='function'?window.showToast(m):alert(m);
-    const btn=document.querySelector('#signupForm .modal-submit');
-    if(!name){toast('Please enter your name.');document.getElementById('signupName')?.focus();return false;}
-    if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('Please enter a valid email address.');document.getElementById('signupEmail')?.focus();return false;}
-    if(password.length<6){toast('Your password must be at least 6 characters.');document.getElementById('signupPassword')?.focus();return false;}
-
-    const auth=window.ssEnsureFirebaseAuth();
-    if(!auth){toast('Firebase could not start. Please refresh the page and try again.');return false;}
-    const db=window.ssFirebase?.db;
-    if(btn){btn.disabled=true;btn.textContent='Creating your account…';}
-    try{
-      try{await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);}catch(e){console.warn('Auth persistence:',e);}
-      const cred=await auth.createUserWithEmailAndPassword(email,password);
-      try{await cred.user.updateProfile({displayName:name});}catch(e){console.warn('Display name update:',e);}
-      const id=Date.now()+Math.floor(Math.random()*1000);
-      const csv=id=>v(id)?v(id).split(',').map(x=>x.trim()).filter(Boolean):[];
-      const profile={uid:cred.user.uid,id,legacyId:id,name,email:cred.user.email||email,type:v('signupType')||'College Student',location:v('signupLocation')||'Online',languages:csv('signupLanguages').length?csv('signupLanguages'):['English'],bio:v('signupBio')||'Learning and sharing skills.',teach:csv('signupSkill').length?csv('signupSkill'):['Knowledge Sharing'],want:csv('signupWanted').length?csv('signupWanted'):['Something New'],availability:[...document.querySelectorAll('#signupForm input[name="availability"]:checked')].map(x=>x.value),avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()};
-      if(!profile.availability.length)profile.availability=['Flexible'];
-      if(db){
-        try{await db.ref('users/'+cred.user.uid).set(profile);}
-        catch(e){console.warn('Profile database write:',e);}
-      }
-      window.ssFirebaseProfile=profile;
-      try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
-      document.body.classList.add('ss-authenticated');
-      if(typeof window.setAppState==='function')window.setAppState(true);
-      if(typeof window.updateUserUI==='function')window.updateUserUI();
-      if(typeof window.closeModal==='function')window.closeModal('authModal');
-      if(typeof window.renderEverything==='function'){try{await window.renderEverything();}catch(e){console.warn('Render after signup:',e);}}
-      toast('🎉 Account created successfully! Welcome to SkillSwap India.');
-      return true;
-    }catch(e){
-      console.error('SkillSwap sign-up error:',e);
-      const c=String(e?.code||'');
-      let m=String(e?.message||'Account creation failed.');
-      if(c==='auth/email-already-in-use')m='This email is already registered. Please use Sign in instead.';
-      else if(c==='auth/invalid-email')m='Please enter a valid email address.';
-      else if(c==='auth/weak-password')m='Your password must be at least 6 characters.';
-      else if(c==='auth/operation-not-allowed')m='Email/password sign-up is disabled in Firebase Authentication.';
-      else if(c==='auth/network-request-failed')m='Network error. Check your internet connection.';
-      else if(c==='auth/too-many-requests')m='Too many sign-up attempts. Please wait a few minutes and try again.';
-      toast('❌ '+m.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
-      return false;
-    }finally{
-      if(btn){btn.disabled=false;btn.textContent='Create my profile';}
-    }
-  };
-
-  // Make every visible public auth button use the working alias.
-  function wireAuthButtons(){
-    document.querySelectorAll('[onclick*="ssOpenAuth"]').forEach(btn=>{
-      btn.style.pointerEvents='auto';
-      btn.style.cursor='pointer';
-    });
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wireAuthButtons);else wireAuthButtons();
-})();
-</script>
 
 
 <style id="ssGuestModeStyles">
@@ -13076,181 +12791,9 @@ body.ss-guest-mode .guest-only{display:block!important}
   </div>
 </div>
 
-<script id="ss-clean-auth-v2-js">
-(function(){
-  'use strict';
-  const $=id=>document.getElementById(id);
-  let mode='signin';
-  const overlay=$('ssCleanAuthOverlay');
-  if(!overlay)return;
 
-  function auth(){
-    try{
-      if(window.ssFirebaseAuth)return window.ssFirebaseAuth;
-      if(window.ssFirebase&&window.ssFirebase.auth)return window.ssFirebase.auth;
-      if(window.firebase&&typeof firebase.auth==='function')return firebase.auth();
-    }catch(e){console.warn('SkillSwap auth unavailable',e)}
-    return null;
-  }
-  function message(text,ok){const el=$('ssCleanAuthMessage');if(el){el.textContent=text||'';el.style.color=ok?'#8ff0c7':'#ffd166';}}
-  function open(which){
-    mode=which==='signup'?'signup':'signin';
-    overlay.classList.add('ss-open'); overlay.setAttribute('aria-hidden','false');
-    $('ssCleanNameField').style.display=mode==='signup'?'block':'none';
-    $('ssCleanConfirmField').style.display=mode==='signup'?'block':'none';
-    $('ssCleanAuthSubmit').textContent=mode==='signup'?'Create my account':'Sign in';
-    $('ssCleanSigninTab').classList.toggle('active',mode==='signin');
-    $('ssCleanSignupTab').classList.toggle('active',mode==='signup');
-    $('ssCleanTitle')?.remove();
-    $('ssCleanAuthTitle').textContent=mode==='signup'?'Create your SkillSwap account 🇮🇳':'Welcome back 👋';
-    $('ssCleanAuthSubtitle').textContent=mode==='signup'?'Create your profile and start exchanging skills.':'Sign in to continue learning, teaching and connecting.';
-    $('ssCleanSwitchText').innerHTML=mode==='signup'?'Already have an account? <button class="ss-ca-link" id="ssCleanSwitch" type="button">Sign in</button>':"Don't have an account? <button class=\"ss-ca-link\" id=\"ssCleanSwitch\" type=\"button\">Create one</button>";
-    $('ssCleanSwitch').onclick=()=>open(mode==='signup'?'signin':'signup');
-    $('ssCleanPassword').autocomplete=mode==='signup'?'new-password':'current-password';
-    message('');
-    setTimeout(()=>{const first=mode==='signup'?$('ssCleanName'):$('ssCleanEmail');first&&first.focus()},30);
-  }
-  function close(){overlay.classList.remove('ss-open');overlay.setAttribute('aria-hidden','true');message('')}
-  window.ssCleanOpenAuth=open;
-  window.ssCleanCloseAuth=close;
 
-  $('ssCleanAuthClose').onclick=close;
-  $('ssCleanSigninTab').onclick=()=>open('signin');
-  $('ssCleanSignupTab').onclick=()=>open('signup');
-  overlay.addEventListener('click',e=>{if(e.target===overlay)close()});
 
-  $('ssCleanAuthForm').addEventListener('submit',async e=>{
-    e.preventDefault();
-    const email=$('ssCleanEmail').value.trim().toLowerCase();
-    const password=$('ssCleanPassword').value;
-    const name=$('ssCleanName').value.trim();
-    const confirm=$('ssCleanConfirm').value;
-    if(!email||!email.includes('@')){message('Please enter a valid email address.');return}
-    if(password.length<6){message('Password must be at least 6 characters.');return}
-    if(mode==='signup'&&!name){message('Please enter your name.');return}
-    if(mode==='signup'&&password!==confirm){message('Passwords do not match.');return}
-    const a=auth();
-    if(!a){message('Firebase Authentication is not loaded. Please refresh the page.');return}
-    const btn=$('ssCleanAuthSubmit');btn.disabled=true;message(mode==='signup'?'Creating your account…':'Signing you in…');
-    try{
-      let cred;
-      if(mode==='signup'){
-        cred=await a.createUserWithEmailAndPassword(email,password);
-        try{await cred.user.updateProfile({displayName:name})}catch(_){ }
-        try{
-          if(window.ssFirebase&&window.ssFirebase.db){
-            await window.ssFirebase.db.ref('users/'+cred.user.uid).set({uid:cred.user.uid,id:Date.now(),legacyId:Date.now(),name,email,type:'SkillSwap Member',location:'',languages:'',teaches:'',learns:'',bio:'',createdAt:Date.now(),updatedAt:Date.now()});
-          }
-        }catch(dbErr){console.warn('Profile save failed after signup:',dbErr)}
-        window.isGuestUser=false;window.guestMode=false;
-        localStorage.removeItem('skillswap_guest_mode');localStorage.removeItem('skillswap_guest_uid');
-        message('Account created successfully!',true);
-      }else{
-        cred=await a.signInWithEmailAndPassword(email,password);
-        window.isGuestUser=false;window.guestMode=false;
-        localStorage.removeItem('skillswap_guest_mode');localStorage.removeItem('skillswap_guest_uid');
-        message('Signed in successfully!',true);
-      }
-      setTimeout(()=>{close();try{if(typeof window.updateAuthUI==='function')window.updateAuthUI(cred.user)}catch(_){};try{if(typeof window.loadDashboard==='function')window.loadDashboard()}catch(_){}},450);
-    }catch(err){
-      console.error(err);
-      const code=err&&err.code||'';
-      const map={
-        'auth/email-already-in-use':'This email already has an account. Please sign in.',
-        'auth/invalid-email':'Please enter a valid email address.',
-        'auth/weak-password':'Please choose a stronger password.',
-        'auth/invalid-credential':'Email or password is incorrect.',
-        'auth/user-not-found':'No account was found with this email.',
-        'auth/wrong-password':'The password is incorrect.',
-        'auth/operation-not-allowed':'Email/password sign-in is disabled in Firebase Authentication.',
-        'auth/network-request-failed':'Network error. Check your internet connection.',
-        'auth/too-many-requests':'Too many attempts. Please wait a little and try again.'
-      };
-      message(map[code]||err.message||'Authentication failed.');
-    }finally{btn.disabled=false}
-  });
-
-  $('ssCleanGuest').onclick=async()=>{
-    const a=auth();
-    try{
-      if(a&&typeof a.signInAnonymously==='function'){
-        const cred=await a.signInAnonymously();
-        localStorage.setItem('skillswap_guest_mode','true');localStorage.setItem('skillswap_guest_uid',cred.user.uid);
-      }else{
-        localStorage.setItem('skillswap_guest_mode','true');
-      }
-      window.isGuestUser=true;window.guestMode=true;
-      message('Guest mode enabled. Welcome to SkillSwap!',true);
-      setTimeout(()=>close(),350);
-    }catch(err){
-      console.warn('Anonymous guest login failed; using exploration mode.',err);
-      localStorage.setItem('skillswap_guest_mode','true');window.isGuestUser=true;window.guestMode=true;
-      message('Guest exploration enabled.',true);setTimeout(()=>close(),350);
-    }
-  };
-
-  // Capture clicks on the old authentication buttons and route them to this clean UI.
-  document.addEventListener('click',function(e){
-    if(e.target.closest('#ssCleanAuthOverlay'))return;
-    const b=e.target.closest('button,a');if(!b)return;
-    const text=(b.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
-    const oc=(b.getAttribute('onclick')||'').toLowerCase().replace(/\s/g,'');
-    const signin=text==='sign in'||text==='signin'||oc.includes('ssopenauth(\'signin\')')||oc.includes('ssopenauth("signin")');
-    const signup=text==='join free'||text==='sign up'||text==='signup'||text.includes('create my free profile')||oc.includes('ssopenauth(\'signup\')')||oc.includes('ssopenauth("signup")');
-    const guest=text.includes('continue as guest')||text.includes('explore as guest')||oc.includes('continueasguest');
-    if(signin||signup||guest){e.preventDefault();e.stopImmediatePropagation();if(guest){$('ssCleanGuest').click()}else open(signup?'signup':'signin');return false}
-  },true);
-
-  // Expose conventional names so existing inline handlers can also use the new UI.
-  window.ssOpenAuth=open;window.openAuth=open;window.switchAuth=function(t){open(t)};
-  window.continueAsGuest=function(){$('ssCleanGuest').click()};
-})();
-</script>
-
-<script id="skillswap-same-page-auth-final">
-(function(){
-  function openAuth(mode){
-    var modal=document.getElementById('authModal');
-    if(!modal) return false;
-    var si=document.getElementById('signinForm');
-    var su=document.getElementById('signupForm');
-    var isSignup=String(mode||'signin').toLowerCase()==='signup';
-    if(si) si.style.display=isSignup?'none':'';
-    if(su) su.style.display=isSignup?'':'none';
-    modal.classList.add('show');
-    modal.style.display='flex';
-    document.body.classList.add('modal-open');
-    setTimeout(function(){
-      var el=document.getElementById(isSignup?'signupName':'signinEmail');
-      if(el) el.focus();
-    },50);
-    return false;
-  }
-  function closeAuth(){
-    var modal=document.getElementById('authModal');
-    if(modal){modal.classList.remove('show');modal.style.display='none';}
-    document.body.classList.remove('modal-open');
-    return false;
-  }
-  window.ssOpenAuth=openAuth;
-  window.openAuth=openAuth;
-  window.switchAuth=openAuth;
-  window.closeAuth=closeAuth;
-  // Make every public auth button stay on this page.
-  document.addEventListener('click',function(e){
-    var el=e.target.closest ? e.target.closest('button,a') : null;
-    if(!el) return;
-    var text=(el.textContent||'').trim().toLowerCase();
-    var oc=(el.getAttribute('onclick')||'').toLowerCase();
-    if(text==='sign in' || text==='signin' || oc.indexOf("ssopenauth('signin')")>=0 || oc.indexOf('ssopenauth("signin")')>=0){
-      e.preventDefault(); e.stopImmediatePropagation(); openAuth('signin'); return;
-    }
-    if(text==='join free' || text==='sign up' || text==='signup' || text.indexOf('create your free student profile')>=0 || oc.indexOf("ssopenauth('signup')")>=0 || oc.indexOf('ssopenauth("signup")')>=0){
-      e.preventDefault(); e.stopImmediatePropagation(); openAuth('signup'); return;
-    }
-  },true);
-})();
-</script>
 </body>
 
 <style id="v7-typed-text-visible">
@@ -13732,560 +13275,17 @@ input.chat-input{
 #signupForm .modal-submit{pointer-events:auto!important;cursor:pointer!important;position:relative!important;z-index:999999!important}
 #ssSignupStatus{display:block!important}
 </style>
-<script id="ss-auth-final-signup-override">
-(function(){
-  'use strict';
-  const $=id=>document.getElementById(id);
-  const text=id=>String($(id)?.value||'').trim();
-  const toast=msg=>{if(typeof window.showToast==='function')window.showToast(msg);else alert(msg)};
-  const getAuth=()=>window.ssFirebaseAuth||window.ssFirebase?.auth||null;
-  const getDb=()=>window.ssFirebase?.db||null;
-  const status=(msg,kind='error')=>{
-    let box=$('ssSignupStatus');
-    if(!box){
-      box=document.createElement('div'); box.id='ssSignupStatus'; box.setAttribute('role','alert');
-      const form=$('signupForm'); const btn=form?.querySelector('.modal-submit');
-      if(form) form.insertBefore(box,btn||null);
-    }
-    box.className='ss-signup-status '+kind;
-    box.textContent=msg;
-    box.style.display='block';
-  };
-  const profileFor=(user)=>{
-    const name=text('signupName')||user.displayName||String(user.email||'').split('@')[0]||'SkillSwap Member';
-    const languages=text('signupLanguages');
-    const teach=text('signupSkill');
-    const want=text('signupWanted');
-    const availability=[...document.querySelectorAll('#signupForm input[name="availability"]:checked')].map(x=>x.value);
-    const id=Date.now();
-    return {uid:user.uid,id,legacyId:id,name,email:user.email||text('signupEmail').toLowerCase(),type:text('signupType')||'College Student',location:text('signupLocation')||'Online',languages:languages?languages.split(',').map(x=>x.trim()).filter(Boolean):['English'],bio:text('signupBio')||'Learning and sharing skills.',teach:teach?teach.split(',').map(x=>x.trim()).filter(Boolean):['Knowledge Sharing'],want:want?want.split(',').map(x=>x.trim()).filter(Boolean):['Something New'],availability:availability.length?availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()};
-  };
 
-  window.signUp=async function(){
-    const name=text('signupName');
-    const email=text('signupEmail').toLowerCase();
-    const password=$('signupPassword')?.value||'';
-    const btn=document.querySelector('#signupForm .modal-submit');
-    if(!name){status('Please enter your name.'); $('signupName')?.focus(); return false;}
-    if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){status('Please enter a valid email address.'); $('signupEmail')?.focus(); return false;}
-    if(password.length<6){status('Your password must be at least 6 characters.'); $('signupPassword')?.focus(); return false;}
-
-    let auth=getAuth();
-    if(!auth){
-      status('Connecting to Firebase…','loading');
-      try{
-        if(window.firebase && !firebase.apps.length && window.SKILLSWAP_FIREBASE_CONFIG) firebase.initializeApp(window.SKILLSWAP_FIREBASE_CONFIG);
-        auth=window.ssFirebaseAuth=window.ssFirebaseAuth||firebase.auth();
-        window.ssFirebase=window.ssFirebase||{};
-        window.ssFirebase.auth=auth;
-        window.ssFirebase.db=window.ssFirebase.db||firebase.database();
-        window.ssFirebaseReady=true;
-      }catch(e){console.error(e);status('Firebase could not start. Please refresh the page and try again.');return false;}
-    }
-
-    if(btn){btn.disabled=true;btn.textContent='Creating your account…';}
-    status('Creating your secure SkillSwap account…','loading');
-    try{
-      try{await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);}catch(e){console.warn('Persistence setup:',e);}
-      const cred=await auth.createUserWithEmailAndPassword(email,password);
-      const user=cred.user;
-      try{await user.updateProfile({displayName:name});}catch(e){console.warn('Profile name update:',e);}
-
-      const profile=profileFor(user);
-      let profileSaved=false;
-      const db=getDb();
-      if(db){
-        try{
-          await db.ref('users/'+user.uid).set(profile);
-          profileSaved=true;
-        }catch(dbErr){
-          console.error('Profile database write failed:',dbErr);
-        }
-      }
-      window.ssFirebaseProfile=profile;
-      try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
-      document.body.classList.add('ss-authenticated');
-      if(typeof window.setAppState==='function')window.setAppState(true);
-      if(typeof window.updateUserUI==='function')window.updateUserUI();
-      if(typeof window.closeModal==='function')window.closeModal('authModal');
-      if(typeof window.renderEverything==='function'){try{await window.renderEverything();}catch(e){console.warn('Render after signup:',e);}}
-      toast(profileSaved?'🎉 Account created successfully! Welcome to SkillSwap India.':'🎉 Your account was created successfully. Your profile will finish syncing when Firebase Database is available.');
-      return true;
-    }catch(e){
-      console.error('FINAL SkillSwap signup error:',e);
-      const c=String(e?.code||'');
-      const raw=String(e?.message||'');
-      let m='Account creation failed. Please try again.';
-      if(c==='auth/email-already-in-use')m='This email is already registered. Please use Sign in instead.';
-      else if(c==='auth/invalid-email')m='Please enter a valid email address.';
-      else if(c==='auth/weak-password')m='Your password must be at least 6 characters.';
-      else if(c==='auth/operation-not-allowed')m='Email/password sign-up is disabled. In Firebase Console, enable Authentication → Sign-in method → Email/Password.';
-      else if(c==='auth/network-request-failed')m='Firebase could not connect. Check your internet connection, then try again.';
-      else if(c==='auth/too-many-requests')m='Too many sign-up attempts. Please wait a few minutes and try again.';
-      else if(raw.toLowerCase().includes('api key'))m='Firebase rejected the web API key. Please verify the Firebase Web App configuration.';
-      else if(raw)m=raw.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,'');
-      status(m);
-      return false;
-    }finally{
-      if(btn){btn.disabled=false;btn.textContent='Create my profile';}
-    }
-  };
-})();
-</script>
 
 <!-- =========================================================
      SKILLSWAP FINAL AUTH / GUEST REPAIR
      This block intentionally comes last so it is the final
      implementation used by the existing buttons.
 ========================================================= -->
-<script id="skillswapFinalWorkingAuth">
-(function(){
-  'use strict';
-
-  function el(id){ return document.getElementById(id); }
-  function value(id){ var e=el(id); return e ? String(e.value || '').trim() : ''; }
-  function toast(message){
-    try{ if(typeof window.showToast === 'function'){ window.showToast(message); return; } }catch(e){}
-    try{ alert(message); }catch(e){}
-  }
-  function getAuth(){
-    try{
-      if(!window.firebase || !firebase.auth) throw new Error('Firebase Authentication SDK is not loaded.');
-      if(!firebase.apps.length){
-        if(!window.SKILLSWAP_FIREBASE_CONFIG) throw new Error('Firebase configuration is missing.');
-        firebase.initializeApp(window.SKILLSWAP_FIREBASE_CONFIG);
-      }
-      var a=firebase.auth();
-      window.ssFirebaseAuth=a;
-      window.ssFirebase=window.ssFirebase || {};
-      window.ssFirebase.auth=a;
-      if(firebase.database){ window.ssFirebase.db=window.ssFirebase.db || firebase.database(); }
-      window.ssFirebaseReady=true;
-      return a;
-    }catch(e){
-      window.ssFirebaseReady=false;
-      window.ssFirebaseError=e && e.message ? e.message : String(e);
-      console.error('SkillSwap Firebase auth initialization:',e);
-      throw e;
-    }
-  }
-  function getDb(){
-    try{
-      if(window.ssFirebase && window.ssFirebase.db) return window.ssFirebase.db;
-      if(window.firebase && firebase.database) return firebase.database();
-    }catch(e){ console.warn('Database unavailable:',e); }
-    return null;
-  }
-  function openAuthModal(type){
-    var modal=el('authModal'), signIn=el('signinForm'), signUp=el('signupForm');
-    if(!modal || !signIn || !signUp){ toast('Authentication window is missing. Please refresh the page.'); return false; }
-    modal.classList.add('show');
-    signIn.style.display=type==='signup' ? 'none' : 'block';
-    signUp.style.display=type==='signup' ? 'block' : 'none';
-    setTimeout(function(){
-      var target=type==='signup' ? el('signupName') : el('signinEmail');
-      if(target) target.focus();
-    },60);
-    return false;
-  }
-
-  // Do not call another openAuth implementation here. This avoids recursion
-  // between older patches and the final handler.
-  window.ssOpenAuth=openAuthModal;
-  window.openAuth=openAuthModal;
-  window.switchAuth=function(type){ return openAuthModal(type==='signup'?'signup':'signin'); };
-
-  window.signIn=async function(){
-    var email=value('signinEmail').toLowerCase();
-    var password=el('signinPassword') ? el('signinPassword').value : '';
-    var button=document.querySelector('#signinForm .modal-submit');
-    if(!email){ toast('Please enter your email address.'); return false; }
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ toast('Please enter a valid email address.'); return false; }
-    if(!password){ toast('Please enter your password.'); return false; }
-
-    try{
-      var auth=getAuth();
-      if(button){ button.disabled=true; button.dataset.oldText=button.textContent; button.textContent='Signing in…'; }
-      if(auth.setPersistence && firebase.auth.Auth && firebase.auth.Auth.Persistence){
-        try{ await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL); }catch(e){ console.warn('Persistence:',e); }
-      }
-      var credential=await auth.signInWithEmailAndPassword(email,password);
-      var user=credential.user;
-      window.isGuestUser=false;
-      window.guestMode=false;
-      try{ localStorage.removeItem('skillswap_guest_mode'); localStorage.removeItem('skillswap_guest_uid'); }catch(e){}
-
-      // Profile creation is best-effort. A database permission problem must
-      // never make a successful Firebase login look like a failed login.
-      var db=getDb();
-      if(db && user){
-        try{
-          var snap=await db.ref('users/'+user.uid).once('value');
-          if(!snap.exists()){
-            await db.ref('users/'+user.uid).set({
-              uid:user.uid,
-              id:user.uid,
-              legacyId:user.uid,
-              name:user.displayName || email.split('@')[0] || 'SkillSwap Member',
-              email:user.email || email,
-              type:'SkillSwap Member',
-              location:'Online',
-              languages:['English'],
-              teach:[],
-              want:[],
-              bio:'Welcome to SkillSwap India!',
-              created_at:new Date().toISOString(),
-              updated_at:new Date().toISOString()
-            });
-          }
-        }catch(profileError){
-          console.warn('Profile write skipped after successful sign-in:',profileError);
-        }
-      }
-
-      var modal=el('authModal'); if(modal) modal.classList.remove('show');
-      toast('✅ Signed in successfully. Welcome back!');
-      try{ if(typeof window.renderEverything==='function') await window.renderEverything(); }catch(e){ console.warn('Render after sign-in:',e); }
-      return false;
-    }catch(e){
-      console.error('Sign-in failed:',e);
-      var code=String(e && e.code || '');
-      var message='Could not sign in.';
-      if(code==='auth/invalid-credential' || code==='auth/wrong-password' || code==='auth/user-not-found') message='Incorrect email or password.';
-      else if(code==='auth/invalid-email') message='Please enter a valid email address.';
-      else if(code==='auth/too-many-requests') message='Too many attempts. Please wait a little and try again.';
-      else if(code==='auth/network-request-failed') message='Network error. Check your internet connection and try again.';
-      else if(code==='auth/operation-not-allowed') message='Email/password sign-in is disabled in Firebase Authentication.';
-      else if(e && e.message) message=e.message;
-      toast('❌ '+message.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
-      return false;
-    }finally{
-      if(button){ button.disabled=false; button.textContent=button.dataset.oldText || 'Sign in'; }
-    }
-  };
-
-  window.signUp=async function(){
-    var name=value('signupName');
-    var email=value('signupEmail').toLowerCase();
-    var password=el('signupPassword') ? el('signupPassword').value : '';
-    var type=value('signupType') || 'College Student';
-    var location=value('signupLocation') || 'Online';
-    var languages=value('signupLanguages');
-    var bio=value('signupBio') || 'Learning and sharing skills.';
-    var teach=value('signupSkill');
-    var want=value('signupWanted');
-    var availability=[].slice.call(document.querySelectorAll('#signupForm input[name="availability"]:checked')).map(function(x){return x.value;});
-    var button=document.querySelector('#signupForm .modal-submit');
-
-    if(!name){ toast('Please enter your name.'); return false; }
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ toast('Please enter a valid email address.'); return false; }
-    if(password.length<6){ toast('Password must be at least 6 characters.'); return false; }
-
-    try{
-      var auth=getAuth();
-      if(button){ button.disabled=true; button.dataset.oldText=button.textContent; button.textContent='Creating account…'; }
-      if(auth.setPersistence && firebase.auth.Auth && firebase.auth.Auth.Persistence){
-        try{ await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL); }catch(e){ console.warn('Persistence:',e); }
-      }
-
-      var user=null;
-      var current=auth.currentUser;
-      // If the visitor is anonymous, upgrade that same temporary account when
-      // possible. This preserves the guest session's Firebase identity.
-      if(current && current.isAnonymous && firebase.auth.EmailAuthProvider){
-        try{
-          var credential=firebase.auth.EmailAuthProvider.credential(email,password);
-          var linked=await current.linkWithCredential(credential);
-          user=linked.user;
-        }catch(linkError){
-          if(String(linkError && linkError.code)==='auth/credential-already-in-use'){
-            var signed=await auth.signInWithEmailAndPassword(email,password);
-            user=signed.user;
-          }else if(String(linkError && linkError.code)==='auth/provider-already-linked'){
-            user=current;
-          }else{
-            throw linkError;
-          }
-        }
-      }else{
-        var created=await auth.createUserWithEmailAndPassword(email,password);
-        user=created.user;
-      }
-
-      if(user && user.updateProfile){
-        try{ await user.updateProfile({displayName:name}); }catch(e){ console.warn('Display name update:',e); }
-      }
-
-      window.isGuestUser=false;
-      window.guestMode=false;
-      try{ localStorage.removeItem('skillswap_guest_mode'); localStorage.removeItem('skillswap_guest_uid'); }catch(e){}
-
-      var profile={
-        uid:user.uid,
-        id:user.uid,
-        legacyId:user.uid,
-        name:name,
-        email:user.email || email,
-        type:type,
-        location:location,
-        languages:languages ? languages.split(',').map(function(x){return x.trim();}).filter(Boolean) : ['English'],
-        teach:teach ? teach.split(',').map(function(x){return x.trim();}).filter(Boolean) : [],
-        want:want ? want.split(',').map(function(x){return x.trim();}).filter(Boolean) : [],
-        bio:bio,
-        availability:availability,
-        created_at:new Date().toISOString(),
-        updated_at:new Date().toISOString()
-      };
-
-      var db=getDb();
-      if(db){
-        try{ await db.ref('users/'+user.uid).set(profile); }
-        catch(profileError){ console.warn('Profile save skipped:',profileError); }
-      }
-
-      var modal=el('authModal'); if(modal) modal.classList.remove('show');
-      toast('🎉 Account created successfully! Welcome to SkillSwap India.');
-      try{ if(typeof window.renderEverything==='function') await window.renderEverything(); }catch(e){ console.warn('Render after signup:',e); }
-      return false;
-    }catch(e){
-      console.error('Sign-up failed:',e);
-      var code=String(e && e.code || '');
-      var message='Could not create your account.';
-      if(code==='auth/email-already-in-use') message='This email is already registered. Please sign in instead.';
-      else if(code==='auth/weak-password') message='Please use a stronger password with at least 6 characters.';
-      else if(code==='auth/invalid-email') message='Please enter a valid email address.';
-      else if(code==='auth/operation-not-allowed') message='Email/password accounts are disabled in Firebase Authentication.';
-      else if(code==='auth/network-request-failed') message='Network error. Check your internet connection and try again.';
-      else if(code==='auth/too-many-requests') message='Too many attempts. Please wait and try again later.';
-      else if(e && e.message) message=e.message;
-      toast('❌ '+message.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
-      return false;
-    }finally{
-      if(button){ button.disabled=false; button.textContent=button.dataset.oldText || 'Create my profile'; }
-    }
-  };
-
-  function setGuestUI(user){
-    window.isGuestUser=true;
-    window.guestMode=true;
-    try{
-      localStorage.setItem('skillswap_guest_mode','true');
-      if(user && user.uid) localStorage.setItem('skillswap_guest_uid',user.uid);
-    }catch(e){}
-    document.documentElement.classList.add('skillswap-guest-mode');
-    document.querySelectorAll('[data-guest-name]').forEach(function(x){x.textContent='Guest Explorer';});
-    document.querySelectorAll('.member-only').forEach(function(x){x.style.display='none';});
-  }
-
-  window.continueAsGuest=async function(){
-    var buttons=document.querySelectorAll('.ss-guest-btn');
-    buttons.forEach(function(b){b.disabled=true; b.dataset.oldText=b.textContent; b.textContent='Opening guest mode…';});
-    try{
-      var auth=getAuth();
-      var user=auth.currentUser;
-      if(!user || !user.isAnonymous){
-        try{
-          var cred=await auth.signInAnonymously();
-          user=cred.user;
-        }catch(anonError){
-          // Exploration mode can still work locally when Anonymous Auth is not
-          // enabled. Do not make browsing depend on a Firebase provider setting.
-          console.warn('Anonymous Auth unavailable; using local exploration mode:',anonError);
-          user=null;
-        }
-      }
-      setGuestUI(user);
-      var modal=el('authModal'); if(modal) modal.classList.remove('show');
-      toast('👋 Welcome! You are exploring SkillSwap as a guest.');
-      try{ if(typeof window.renderEverything==='function') await window.renderEverything(); }catch(e){ console.warn('Guest render:',e); }
-      return false;
-    }catch(e){
-      console.error('Guest mode failed:',e);
-      toast('❌ Guest mode could not be started. Please refresh and try again.');
-      return false;
-    }finally{
-      buttons.forEach(function(b){b.disabled=false; b.textContent=b.dataset.oldText || '👤 Continue as Guest';});
-    }
-  };
-
-  // Make the public auth buttons explicit and independent of older handlers.
-  document.addEventListener('click',function(event){
-    var target=event.target && event.target.closest ? event.target.closest('[data-skillswap-auth]') : null;
-    if(!target) return;
-    event.preventDefault();
-    openAuthModal(target.getAttribute('data-skillswap-auth')==='signup'?'signup':'signin');
-  },true);
-
-  // Ensure the auth buttons always have usable type attributes.
-  document.addEventListener('DOMContentLoaded',function(){
-    document.querySelectorAll('#signinForm button.modal-submit').forEach(function(b){b.type='button';});
-    document.querySelectorAll('#signupForm button.modal-submit').forEach(function(b){b.type='button';});
-  });
-
-  console.log('SkillSwap final authentication repair loaded.');
-})();
-</script>
 
 
-<script id="skillswap-auth-final-working">
-(function(){
-  'use strict';
 
-  function el(id){ return document.getElementById(id); }
-  function toast(msg){
-    try{ if(typeof window.showToast==='function'){ window.showToast(msg); return; } }catch(e){}
-    try{ alert(msg); }catch(e){}
-  }
-  function firebaseAuth(){
-    if(!window.firebase || !firebase.auth) throw new Error('Firebase Authentication SDK did not load.');
-    if(!window.SKILLSWAP_FIREBASE_CONFIG) throw new Error('Firebase configuration is missing.');
-    if(!firebase.apps.length) firebase.initializeApp(window.SKILLSWAP_FIREBASE_CONFIG);
-    var auth=firebase.auth();
-    window.ssFirebaseAuth=auth;
-    window.ssFirebase=window.ssFirebase||{};
-    window.ssFirebase.auth=auth;
-    if(firebase.database) window.ssFirebase.db=window.ssFirebase.db||firebase.database();
-    return auth;
-  }
-  function openAuth(mode){
-    var modal=el('authModal'), si=el('signinForm'), su=el('signupForm');
-    if(!modal||!si||!su){ toast('Authentication window is missing.'); return false; }
-    modal.classList.add('show');
-    modal.style.display='flex';
-    si.style.display=mode==='signup'?'none':'block';
-    su.style.display=mode==='signup'?'block':'none';
-    setTimeout(function(){
-      var f=mode==='signup'?el('signupName'):el('signinEmail');
-      if(f) f.focus();
-    },50);
-    return false;
-  }
-  window.ssOpenAuth=openAuth;
-  window.openAuth=openAuth;
-  window.switchAuth=function(mode){ return openAuth(mode==='signup'?'signup':'signin'); };
 
-  window.signIn=async function(){
-    var email=(el('signinEmail')?.value||'').trim().toLowerCase();
-    var password=el('signinPassword')?.value||'';
-    if(!email){toast('Please enter your email address.');return false;}
-    if(!password){toast('Please enter your password.');return false;}
-    var btn=document.querySelector('#signinForm .modal-submit');
-    try{
-      var auth=firebaseAuth();
-      if(btn){btn.disabled=true;btn.textContent='Signing in…';}
-      var cred=await auth.signInWithEmailAndPassword(email,password);
-      var user=cred.user;
-      window.guestMode=false;window.isGuestUser=false;
-      try{localStorage.removeItem('skillswap_guest_mode');localStorage.removeItem('skillswap_guest_uid');}catch(e){}
-      var db=window.ssFirebase?.db;
-      var profile=null;
-      if(db){try{var snap=await db.ref('users/'+user.uid).once('value');if(snap.exists())profile=snap.val();}catch(e){console.warn(e);}}
-      if(!profile){profile={uid:user.uid,id:user.uid,legacyId:user.uid,name:user.displayName||email.split('@')[0],email:user.email||email,type:'SkillSwap Member',location:'Online',languages:['English'],teach:['Knowledge Sharing'],want:['Something New'],availability:['Flexible'],bio:'Welcome to SkillSwap India!',avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()};if(db)try{await db.ref('users/'+user.uid).set(profile);}catch(e){console.warn(e);}}
-      window.ssFirebaseProfile=profile;
-      try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
-      el('authModal')?.classList.remove('show');
-      document.body.classList.add('ss-authenticated');
-      try{window.updateUserUI?.();}catch(e){}
-      try{await window.renderEverything?.();}catch(e){console.warn(e);}
-      toast('👋 Welcome back, '+(profile.name||'SkillSwap member')+'!');
-    }catch(e){
-      console.error('SIGN IN ERROR',e);
-      var c=String(e?.code||'');
-      var m=c==='auth/invalid-credential'||c==='auth/wrong-password'||c==='auth/user-not-found'?'Incorrect email or password.':c==='auth/operation-not-allowed'?'Email/password sign-in is disabled in Firebase Authentication.':c==='auth/network-request-failed'?'Network error. Check your internet connection.':(e?.message||'Sign in failed.');
-      toast('❌ '+m.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
-    }finally{if(btn){btn.disabled=false;btn.textContent='Sign in';}}
-    return false;
-  };
-
-  window.signUp=async function(){
-    var name=(el('signupName')?.value||'').trim();
-    var email=(el('signupEmail')?.value||'').trim().toLowerCase();
-    var password=el('signupPassword')?.value||'';
-    if(!name){toast('Please enter your name.');return false;}
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('Please enter a valid email address.');return false;}
-    if(password.length<6){toast('Password must be at least 6 characters.');return false;}
-    var btn=document.querySelector('#signupForm .modal-submit');
-    try{
-      var auth=firebaseAuth();
-      if(btn){btn.disabled=true;btn.textContent='Creating account…';}
-      var user;
-      if(auth.currentUser?.isAnonymous && firebase.auth.EmailAuthProvider){
-        try{user=(await auth.currentUser.linkWithCredential(firebase.auth.EmailAuthProvider.credential(email,password))).user;}
-        catch(linkErr){
-          if(linkErr.code==='auth/credential-already-in-use') user=(await auth.signInWithEmailAndPassword(email,password)).user;
-          else throw linkErr;
-        }
-      }else user=(await auth.createUserWithEmailAndPassword(email,password)).user;
-      try{await user.updateProfile({displayName:name});}catch(e){console.warn(e);}
-      var csv=function(id,def){var v=(el(id)?.value||'').trim();return v?v.split(',').map(function(x){return x.trim();}).filter(Boolean):def;};
-      var profile={uid:user.uid,id:user.uid,legacyId:user.uid,name:name,email:user.email||email,type:(el('signupType')?.value||'College Student'),location:(el('signupLocation')?.value||'Online').trim(),languages:csv('signupLanguages',['English']),bio:(el('signupBio')?.value||'Learning and sharing skills.').trim(),teach:csv('signupSkill',['Knowledge Sharing']),want:csv('signupWanted',['Something New']),availability:[...document.querySelectorAll('#signupForm input[name="availability"]:checked')].map(x=>x.value),avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()};
-      if(!profile.availability.length)profile.availability=['Flexible'];
-      var db=window.ssFirebase?.db;
-      if(db){try{await db.ref('users/'+user.uid).set(profile);}catch(e){console.warn('Profile save skipped:',e);}}
-      window.ssFirebaseProfile=profile;window.guestMode=false;window.isGuestUser=false;
-      try{localStorage.removeItem('skillswap_guest_mode');localStorage.removeItem('skillswap_guest_uid');}catch(e){}
-      try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
-      el('authModal')?.classList.remove('show');
-      document.body.classList.add('ss-authenticated');
-      try{window.updateUserUI?.();}catch(e){}
-      try{await window.renderEverything?.();}catch(e){console.warn(e);}
-      toast('🎉 Account created successfully! Welcome to SkillSwap India.');
-    }catch(e){
-      console.error('SIGN UP ERROR',e);
-      var c=String(e?.code||'');
-      var m=c==='auth/email-already-in-use'?'This email is already registered. Please sign in instead.':c==='auth/operation-not-allowed'?'Email/password sign-up is disabled in Firebase Authentication.':c==='auth/network-request-failed'?'Network error. Check your internet connection.':c==='auth/weak-password'?'Password must be at least 6 characters.':(e?.message||'Account creation failed.');
-      toast('❌ '+m.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
-    }finally{if(btn){btn.disabled=false;btn.textContent='Create my profile';}}
-    return false;
-  };
-
-  window.continueAsGuest=async function(){
-    var btns=document.querySelectorAll('.ss-guest-btn');
-    btns.forEach(function(b){b.disabled=true;});
-    try{
-      var user=null;
-      try{
-        var auth=firebaseAuth();
-        user=auth.currentUser;
-        if(!user||!user.isAnonymous) user=(await auth.signInAnonymously()).user;
-      }catch(e){
-        console.warn('Anonymous Firebase auth unavailable; using exploration mode.',e);
-      }
-      window.guestMode=true;window.isGuestUser=true;window.ssGuestUser=user||{uid:'guest',isAnonymous:true};
-      try{localStorage.setItem('skillswap_guest_mode','true');if(user)localStorage.setItem('skillswap_guest_uid',user.uid);}catch(e){}
-      document.body.classList.add('ss-guest-mode');
-      el('authModal')?.classList.remove('show');
-      toast('👋 Welcome! You can explore SkillSwap as a guest.');
-      try{await window.renderEverything?.();}catch(e){console.warn(e);}
-    }catch(e){console.error('GUEST ERROR',e);toast('❌ Guest mode could not be started.');}
-    finally{btns.forEach(function(b){b.disabled=false;});}
-    return false;
-  };
-
-  // Override old inline handlers by wiring the visible landing-page buttons directly.
-  function wire(){
-    document.querySelectorAll('button,a').forEach(function(b){
-      var t=(b.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
-      if(t==='sign in' || t.includes('sign in')){
-        if(b.closest('#signinForm')||b.closest('#signupForm')) return;
-        b.onclick=function(e){e.preventDefault();return openAuth('signin');};
-      }else if(t.includes('create your free student profile') || t.includes('create my free profile') || t==='join free' || t==='sign up'){
-        if(b.closest('#signinForm')||b.closest('#signupForm')) return;
-        b.onclick=function(e){e.preventDefault();return openAuth('signup');};
-      }else if(t.includes('explore as guest')){
-        b.onclick=function(e){e.preventDefault();return window.continueAsGuest();};
-      }
-    });
-    var si=el('signinForm'),su=el('signupForm');
-    if(si)si.addEventListener('submit',function(e){e.preventDefault();window.signIn();});
-    if(su)su.addEventListener('submit',function(e){e.preventDefault();window.signUp();});
-    document.querySelectorAll('#signinForm .modal-submit').forEach(b=>b.type='button');
-    document.querySelectorAll('#signupForm .modal-submit').forEach(b=>b.type='button');
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire);else wire();
-  console.log('SkillSwap authentication: final working handler loaded');
-})();
-</script>
 
 <!-- =========================
      SKILLSWAP EMERGENCY AUTH UI
@@ -14313,154 +13313,6 @@ input.chat-input{
 body.ss-emergency-guest #loggedOutNav{display:none!important}
 body.ss-emergency-guest #loggedInNav{display:flex!important}
 </style>
-<div id="ssEmergencyAuth" aria-hidden="true">
-  <div id="ssEmergencyCard" role="dialog" aria-modal="true" aria-labelledby="ssEmergencyTitle">
-    <button id="ssEmergencyClose" type="button" aria-label="Close">×</button>
-    <div id="ssEmergencyMode">SkillSwap</div>
-    <h2 id="ssEmergencyTitle">Welcome to SkillSwap</h2>
-    <p class="ss-e-sub" id="ssEmergencySub">Sign in to continue.</p>
-    <form id="ssEmergencyForm" novalidate>
-      <div id="ssEmergencyNameWrap" style="display:none">
-        <label for="ssEmergencyName">Name</label>
-        <input id="ssEmergencyName" autocomplete="name" placeholder="Your name">
-      </div>
-      <label for="ssEmergencyEmail">Email</label>
-      <input id="ssEmergencyEmail" type="email" autocomplete="email" placeholder="you@example.com">
-      <label for="ssEmergencyPassword">Password</label>
-      <input id="ssEmergencyPassword" type="password" autocomplete="current-password" placeholder="At least 6 characters">
-      <button id="ssEmergencyPrimary" type="submit">Sign in</button>
-      <button id="ssEmergencyGuest" type="button">👤 Continue as Guest</button>
-      <button id="ssEmergencySwitch" type="button">Create a new account</button>
-      <div id="ssEmergencyMsg" role="status" aria-live="polite"></div>
-    </form>
-  </div>
-</div>
-<script id="ssEmergencyAuthScript">
-(function(){
-  'use strict';
-  var mode='signin';
-  var $=function(id){return document.getElementById(id);};
-  var overlay=$('ssEmergencyAuth');
-  if(!overlay) return;
-  function msg(text,ok){var e=$('ssEmergencyMsg');e.textContent=text||'';e.className=ok?'ok':'';}
-  function open(modeName){
-    mode=modeName==='signup'?'signup':'signin';
-    overlay.classList.add('ss-open'); overlay.setAttribute('aria-hidden','false');
-    $('ssEmergencyMode').textContent=mode==='signup'?'Create your SkillSwap account':'Welcome back';
-    $('ssEmergencyTitle').textContent=mode==='signup'?'Join SkillSwap':'Sign in to SkillSwap';
-    $('ssEmergencySub').textContent=mode==='signup'?'Create a free profile and connect with members.':'Sign in to continue to SkillSwap.';
-    $('ssEmergencyNameWrap').style.display=mode==='signup'?'block':'none';
-    $('ssEmergencyPrimary').textContent=mode==='signup'?'Create my account':'Sign in';
-    $('ssEmergencySwitch').textContent=mode==='signup'?'Already have an account? Sign in':'Create a new account';
-    $('ssEmergencyPassword').autocomplete=mode==='signup'?'new-password':'current-password';
-    msg('');
-    setTimeout(function(){(mode==='signup'?$('ssEmergencyName'):$('ssEmergencyEmail')).focus();},40);
-  }
-  function close(){overlay.classList.remove('ss-open');overlay.setAttribute('aria-hidden','true');}
-  window.ssEmergencyOpenAuth=open;
-  window.ssEmergencyCloseAuth=close;
-  window.ssOpenAuth=open;
-  window.openAuth=open;
-  window.switchAuth=function(m){open(m);return false;};
-  function firebaseAuth(){
-    if(!window.firebase || !firebase.auth) throw new Error('Firebase Authentication SDK did not load.');
-    if(!firebase.apps.length){
-      if(!window.SKILLSWAP_FIREBASE_CONFIG) throw new Error('Firebase configuration is missing.');
-      firebase.initializeApp(window.SKILLSWAP_FIREBASE_CONFIG);
-    }
-    var a=firebase.auth();
-    window.ssFirebaseAuth=a;
-    window.ssFirebase=window.ssFirebase||{};
-    window.ssFirebase.auth=a;
-    if(firebase.database){try{window.ssFirebase.db=window.ssFirebase.db||firebase.database();}catch(e){}}
-    return a;
-  }
-  async function saveProfile(user,name){
-    var db=window.ssFirebase&&window.ssFirebase.db;
-    var profile={uid:user.uid,id:user.uid,legacyId:user.uid,name:name||user.displayName||((user.email||'member').split('@')[0]),email:user.email||'',type:'SkillSwap Member',location:'Online',languages:['English'],teach:['Knowledge Sharing'],want:['Something New'],availability:['Flexible'],bio:'Welcome to SkillSwap India!',avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()};
-    if(db){try{var snap=await db.ref('users/'+user.uid).once('value');if(snap.exists())profile=Object.assign(profile,snap.val());else await db.ref('users/'+user.uid).set(profile);}catch(e){console.warn('SkillSwap profile save skipped:',e);}}
-    window.ssFirebaseProfile=profile;
-    try{localStorage.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
-    try{window.updateUserUI&&window.updateUserUI();}catch(e){}
-    return profile;
-  }
-  async function submit(){
-    var name=($('ssEmergencyName').value||'').trim();
-    var email=($('ssEmergencyEmail').value||'').trim().toLowerCase();
-    var password=$('ssEmergencyPassword').value||'';
-    if(mode==='signup'&&!name){msg('Please enter your name.');return;}
-    if(!/^\S+@\S+\.\S+$/.test(email)){msg('Please enter a valid email address.');return;}
-    if(password.length<6){msg('Password must be at least 6 characters.');return;}
-    var b=$('ssEmergencyPrimary');b.disabled=true;b.textContent=mode==='signup'?'Creating account…':'Signing in…';msg('');
-    try{
-      var auth=firebaseAuth();
-      var cred;
-      if(mode==='signup'){
-        if(auth.currentUser&&auth.currentUser.isAnonymous&&firebase.auth.EmailAuthProvider){
-          try{cred=await auth.currentUser.linkWithCredential(firebase.auth.EmailAuthProvider.credential(email,password));}
-          catch(linkErr){
-            if(linkErr.code==='auth/credential-already-in-use'||linkErr.code==='auth/email-already-in-use') cred=await auth.createUserWithEmailAndPassword(email,password); else throw linkErr;
-          }
-        }else cred=await auth.createUserWithEmailAndPassword(email,password);
-        var u=cred.user;
-        if(u&&name)try{await u.updateProfile({displayName:name});}catch(e){}
-        await saveProfile(u,name);
-        document.body.classList.remove('ss-emergency-guest');
-        window.guestMode=false;window.isGuestUser=false;
-        try{localStorage.removeItem('skillswap_guest_mode');localStorage.removeItem('skillswap_guest_uid');}catch(e){}
-        close();msg('Account created.',true);alert('🎉 Account created successfully! Welcome to SkillSwap India.');
-      }else{
-        cred=await auth.signInWithEmailAndPassword(email,password);
-        var profile=await saveProfile(cred.user,cred.user.displayName||email.split('@')[0]);
-        document.body.classList.remove('ss-emergency-guest');window.guestMode=false;window.isGuestUser=false;
-        try{localStorage.removeItem('skillswap_guest_mode');localStorage.removeItem('skillswap_guest_uid');}catch(e){}
-        close();alert('👋 Welcome back, '+(profile.name||'SkillSwap member')+'!');
-      }
-    }catch(e){
-      console.error('SkillSwap auth error:',e);
-      var c=e&&e.code||'';var text=e&&e.message||'Authentication failed.';
-      if(c==='auth/operation-not-allowed')text='Email/password authentication is disabled in Firebase Authentication.';
-      else if(c==='auth/email-already-in-use')text='This email is already registered. Please sign in.';
-      else if(c==='auth/invalid-credential'||c==='auth/wrong-password'||c==='auth/user-not-found')text='Incorrect email or password.';
-      else if(c==='auth/network-request-failed')text='Network error. Check your internet connection.';
-      msg(text.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
-    }finally{b.disabled=false;b.textContent=mode==='signup'?'Create my account':'Sign in';}
-  }
-  async function guest(){
-    var b=$('ssEmergencyGuest');b.disabled=true;b.textContent='Opening Guest Mode…';msg('');
-    try{
-      var user=null;
-      try{var a=firebaseAuth();if(a.currentUser&&a.currentUser.isAnonymous)user=a.currentUser;else user=(await a.signInAnonymously()).user;}catch(e){console.warn('Anonymous auth unavailable; using local exploration mode.',e);}
-      window.guestMode=true;window.isGuestUser=true;window.ssGuestUser=user||{uid:'guest',isAnonymous:true};
-      try{localStorage.setItem('skillswap_guest_mode','true');if(user)localStorage.setItem('skillswap_guest_uid',user.uid);}catch(e){}
-      document.body.classList.add('ss-emergency-guest');
-      close();
-      alert('👤 Guest Mode enabled. You can explore SkillSwap now.');
-    }catch(e){console.error(e);msg('Guest Mode could not be started.');}
-    finally{b.disabled=false;b.textContent='👤 Continue as Guest';}
-  }
-  $('ssEmergencyForm').addEventListener('submit',function(e){e.preventDefault();submit();});
-  $('ssEmergencyGuest').addEventListener('click',guest);
-  $('ssEmergencySwitch').addEventListener('click',function(){open(mode==='signup'?'signin':'signup');});
-  $('ssEmergencyClose').addEventListener('click',close);
-  overlay.addEventListener('click',function(e){if(e.target===overlay)close();});
-  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&overlay.classList.contains('ss-open'))close();});
-
-  // Capture phase is intentional: it prevents old inline onclick handlers or
-  // legacy auth functions from swallowing these three public actions.
-  document.addEventListener('click',function(e){
-    var b=e.target&&e.target.closest?e.target.closest('button,a,[role="button"]'):null;
-    if(!b)return;
-    if(b.closest('#ssEmergencyAuth'))return;
-    var t=(b.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
-    if(t==='sign in'||t==='signin'||t.includes('sign in')){e.preventDefault();e.stopImmediatePropagation();open('signin');return false;}
-    if(t==='join free'||t==='sign up'||t==='signup'||t.includes('create my free profile')||t.includes('create your free')||t.includes('create account')){e.preventDefault();e.stopImmediatePropagation();open('signup');return false;}
-    if(t.includes('explore as guest')||t.includes('continue as guest')){e.preventDefault();e.stopImmediatePropagation();guest();return false;}
-  },true);
-  console.log('SkillSwap emergency authentication UI loaded.');
-})();
-</script>
-
 <!-- SKILLSWAP FINAL AUTH REPAIR -->
 <style id="ss-final-auth-repair-css">
 #ssFinalAuthRepair{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,10,20,.78);backdrop-filter:blur(8px);z-index:2147483647;padding:20px}
@@ -14476,3 +13328,229 @@ body.ss-emergency-guest #loggedInNav{display:flex!important}
 #ssFinalAuthRepair .close{position:absolute;right:14px;top:10px;background:none;border:0;color:#fff!important;font-size:30px;cursor:pointer}
 #ssFinalAuthRepairMsg{min-height:22px;margin-top:12px;color:#ffd166!important;font-size:14px;line-height:1.4}
 </style>
+
+<!-- =========================================================
+     SKILLSWAP INDIA — CLEAN AUTHENTICATION FIX
+     One authoritative Sign In / Sign Up implementation.
+     Uses the Firebase configuration already present above.
+========================================================= -->
+<script id="skillswap-clean-auth-final">
+(function(){
+  'use strict';
+
+  const $ = id => document.getElementById(id);
+  const config = window.SKILLSWAP_FIREBASE_CONFIG;
+
+  function toast(message){
+    if(typeof window.showToast === 'function') window.showToast(message);
+    else alert(message);
+  }
+
+  function cleanError(error, fallback){
+    const code = String(error?.code || '');
+    if(code === 'auth/email-already-in-use') return 'This email is already registered. Please sign in instead.';
+    if(code === 'auth/invalid-email') return 'Please enter a valid email address.';
+    if(code === 'auth/weak-password') return 'Password must contain at least 6 characters.';
+    if(code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') return 'Incorrect email or password.';
+    if(code === 'auth/operation-not-allowed') return 'Email/password authentication is disabled. Enable Email/Password in Firebase Authentication → Sign-in method.';
+    if(code === 'auth/network-request-failed') return 'Network error. Check your internet connection and try again.';
+    return String(error?.message || fallback).replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^^)]*\)\.?$/i,'');
+  }
+
+  function getAuth(){
+    if(!window.firebase || !firebase.auth) throw new Error('Firebase Authentication SDK did not load.');
+    if(!config?.apiKey || !config?.projectId || !config?.appId) throw new Error('Firebase configuration is missing.');
+    if(!firebase.apps.length) firebase.initializeApp(config);
+    const auth = firebase.auth();
+    let db = null;
+    if(firebase.database) db = firebase.database();
+    window.ssFirebase = window.ssFirebase || {};
+    window.ssFirebase.auth = auth;
+    if(db) window.ssFirebase.db = db;
+    window.ssFirebaseAuth = auth;
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>{});
+    return auth;
+  }
+
+  function openAuth(mode){
+    const modal=$('authModal'), sign=$('signinForm'), up=$('signupForm');
+    if(!modal || !sign || !up){ toast('Authentication form could not be loaded.'); return false; }
+    modal.classList.add('show');
+    modal.style.display='flex';
+    sign.style.display=mode==='signup'?'none':'block';
+    up.style.display=mode==='signup'?'block':'none';
+    setTimeout(()=>{ const f=mode==='signup'?$('signupName'):$('signinEmail'); if(f) f.focus(); },60);
+    return false;
+  }
+  window.ssOpenAuth=openAuth;
+  window.openAuth=openAuth;
+  window.switchAuth=mode=>openAuth(mode==='signup'?'signup':'signin');
+
+  async function saveProfile(user, suppliedName){
+    const db=window.ssFirebase?.db;
+    const ref=db ? db.ref('users/'+user.uid) : null;
+    let existing={};
+    if(ref){
+      try{ const snap=await ref.once('value'); if(snap.exists()) existing=snap.val()||{}; }catch(e){ console.warn('Profile read:',e); }
+    }
+    const profile=Object.assign({
+      uid:user.uid,
+      id:user.uid,
+      legacyId:user.uid,
+      name:suppliedName || user.displayName || ((user.email||'member').split('@')[0]),
+      email:user.email || '',
+      type:'University Student',
+      location:'Online',
+      languages:['English'],
+      bio:'Welcome to SkillSwap India! Complete your profile to start learning and teaching.',
+      teach:['Knowledge Sharing'],
+      want:['Something New'],
+      availability:['Flexible'],
+      avatar:'🧑🏻',
+      rating:0,
+      reviews:0,
+      created_at:new Date().toISOString()
+    }, existing);
+    if(suppliedName) profile.name=suppliedName;
+    if(!existing.uid) profile.uid=user.uid;
+    if(!existing.email) profile.email=user.email||'';
+    if(ref){
+      try{ await ref.set(profile); }
+      catch(e){
+        // Authentication remains successful even if the optional profile write is denied.
+        console.warn('Profile write:',e);
+      }
+    }
+    window.ssFirebaseProfile=profile;
+    try{ localStorage.setItem('skillswapUser',JSON.stringify(profile)); }catch(e){}
+    try{ window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile)); }catch(e){}
+    return profile;
+  }
+
+  async function finishLogin(user, message){
+    window.guestMode=false;
+    window.isGuestUser=false;
+    document.body.classList.remove('ss-guest-mode','ss-emergency-guest');
+    try{ localStorage.removeItem('skillswap_guest_mode'); localStorage.removeItem('skillswap_guest_uid'); }catch(e){}
+    const profile=await saveProfile(user, user.displayName || ((user.email||'').split('@')[0]));
+    $('authModal')?.classList.remove('show');
+    if($('authModal')) $('authModal').style.display='none';
+    document.body.classList.add('ss-authenticated');
+    try{ window.updateUserUI?.(); }catch(e){}
+    try{ await window.renderEverything?.(); }catch(e){ console.warn('renderEverything:',e); }
+    toast(message || ('Welcome back, '+(profile.name||'SkillSwap member')+'!'));
+    return false;
+  }
+
+  window.signIn = async function(){
+    const email=($('signinEmail')?.value||'').trim().toLowerCase();
+    const password=$('signinPassword')?.value||'';
+    const btn=document.querySelector('#signinForm .modal-submit');
+    if(!email) return toast('Please enter your email address.'),false;
+    if(!password) return toast('Please enter your password.'),false;
+    try{
+      if(btn){btn.disabled=true;btn.textContent='Signing in…';}
+      const auth=getAuth();
+      const cred=await auth.signInWithEmailAndPassword(email,password);
+      await finishLogin(cred.user,'👋 Welcome back!');
+    }catch(error){
+      console.error('SIGN IN ERROR',error);
+      toast('❌ '+cleanError(error,'Sign in failed.'));
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent='Sign in';}
+    }
+    return false;
+  };
+
+  window.signUp = async function(){
+    const name=($('signupName')?.value||'').trim();
+    const email=($('signupEmail')?.value||'').trim().toLowerCase();
+    const password=$('signupPassword')?.value||'';
+    const btn=document.querySelector('#signupForm .modal-submit');
+    if(!name) return toast('Please enter your name.'),false;
+    if(!/^\S+@\S+\.\S+$/.test(email)) return toast('Please enter a valid email address.'),false;
+    if(password.length<6) return toast('Password must contain at least 6 characters.'),false;
+    try{
+      if(btn){btn.disabled=true;btn.textContent='Creating account…';}
+      const auth=getAuth();
+      const cred=await auth.createUserWithEmailAndPassword(email,password);
+      if(cred.user && name){ try{ await cred.user.updateProfile({displayName:name}); }catch(e){} }
+      const db=window.ssFirebase?.db;
+      const csv=id=>{ const v=($(id)?.value||'').trim(); return v?v.split(',').map(x=>x.trim()).filter(Boolean):[]; };
+      const availability=[...document.querySelectorAll('#signupForm input[name="availability"]:checked')].map(x=>x.value);
+      const profile={
+        uid:cred.user.uid,id:cred.user.uid,legacyId:cred.user.uid,
+        name,email,type:$('signupType')?.value||'University Student',
+        location:($('signupLocation')?.value||'Online').trim(),
+        languages:csv('signupLanguages').length?csv('signupLanguages'):['English'],
+        bio:($('signupBio')?.value||'Learning and sharing skills.').trim(),
+        teach:csv('signupSkill').length?csv('signupSkill'):['Knowledge Sharing'],
+        want:csv('signupWanted').length?csv('signupWanted'):['Something New'],
+        availability:availability.length?availability:['Flexible'],
+        avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()
+      };
+      if(db) await db.ref('users/'+cred.user.uid).set(profile);
+      window.ssFirebaseProfile=profile;
+      try{localStorage.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
+      try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
+      $('authModal')?.classList.remove('show');
+      if($('authModal')) $('authModal').style.display='none';
+      document.body.classList.add('ss-authenticated');
+      try{window.updateUserUI?.();}catch(e){}
+      try{await window.renderEverything?.();}catch(e){console.warn('renderEverything:',e);}
+      toast('🎉 Account created successfully! Welcome to SkillSwap India.');
+    }catch(error){
+      console.error('SIGN UP ERROR',error);
+      toast('❌ '+cleanError(error,'Account creation failed.'));
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent='Create my profile';}
+    }
+    return false;
+  };
+
+  function wireForms(){
+    const si=$('signinForm'), su=$('signupForm');
+    if(si && !si.dataset.authWired){
+      si.dataset.authWired='1';
+      si.addEventListener('submit',e=>{e.preventDefault();window.signIn();});
+    }
+    if(su && !su.dataset.authWired){
+      su.dataset.authWired='1';
+      su.addEventListener('submit',e=>{e.preventDefault();window.signUp();});
+    }
+    document.querySelectorAll('#signinForm .modal-submit,#signupForm .modal-submit').forEach(b=>b.type='button');
+  }
+
+  document.addEventListener('click',function(e){
+    const b=e.target?.closest?.('button,a');
+    if(!b) return;
+    const insideAuth=b.closest('#authModal');
+    if(insideAuth) return;
+    const text=(b.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
+    if(text==='sign in'||text==='signin'||text==='log in'||text==='login'){
+      e.preventDefault();e.stopPropagation();openAuth('signin');return false;
+    }
+    if(text==='join free'||text==='sign up'||text==='signup'||text.includes('create your free student profile')||text.includes('create my free profile')){
+      e.preventDefault();e.stopPropagation();openAuth('signup');return false;
+    }
+  },false);
+
+  document.addEventListener('DOMContentLoaded',function(){
+    wireForms();
+    try{
+      const auth=getAuth();
+      auth.onAuthStateChanged(async user=>{
+        if(user && !user.isAnonymous){
+          window.ssFirebaseAuth=auth;
+          try{await saveProfile(user,user.displayName||((user.email||'').split('@')[0]));}catch(e){}
+          try{window.updateUserUI?.();}catch(e){}
+        }
+      });
+    }catch(e){console.warn('Firebase auth initialization:',e);}
+  });
+
+  // Also wire immediately when this script is loaded at the end of the document.
+  wireForms();
+  console.log('SkillSwap clean authentication loaded.');
+})();
+</script>
