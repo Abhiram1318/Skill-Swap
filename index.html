@@ -12545,6 +12545,123 @@ body.dark .ss-call-card{background:#14211d;border-color:#29433b;color:#eef8f4}.s
 })();
 </script>
 
+
+<script id="ss-demo-member-final-fix">
+(function(){
+  const DEMO_IDS=new Set(['ananya','aarav','meera','rohan','saanvi','vikram','ishita','aditya','kavya','dev','priya','arjun']);
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const demos=()=>Array.isArray(window.demoPeople)?window.demoPeople:[];
+  function isDemo(id){return DEMO_IDS.has(String(id)) || demos().some(p=>String(p.id)===String(id));}
+  function getDemo(id){return demos().find(p=>String(p.id)===String(id));}
+
+  // Demo profiles are intentionally local virtual members. Never send them through
+  // the Firebase/API "real member" profile route.
+  window.ssStarterInfo=function(id){
+    const p=getDemo(id);
+    if(p){ window.ssOpenDemoProfile(p); return; }
+    if(typeof showToast==='function')showToast('Profile not found.');
+  };
+
+  window.ssOpenDemoProfile=function(person){
+    if(!person)return;
+    const modal=document.getElementById('profileModal');
+    if(!modal){ if(typeof showToast==='function')showToast('Profile viewer is unavailable.'); return; }
+    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v||''};
+    set('profileAvatar',person.avatar||'👤');
+    set('profileName',person.name||'SkillSwap Demo Member');
+    set('profileType','🤖 Demo SkillSwap Member');
+    set('profileLocation','📍 '+(person.location||'India'));
+    set('profileBio',person.bio||'Demo member available for trying SkillSwap chat and calls.');
+    const teach=document.getElementById('profileTeach');
+    if(teach)teach.innerHTML=(person.teach||[]).map(x=>`<span class="skill-tag">${esc(x)}</span>`).join('');
+    const learn=document.getElementById('profileLearn');
+    if(learn)learn.innerHTML=(person.want||[]).map(x=>`<span class="skill-tag">${esc(x)}</span>`).join('');
+    set('profileLanguages',(person.languages||[]).join(' · '));
+    set('profileAvailability',(person.availability||[]).join(' · '));
+    const own=modal.querySelector('#ownProfileActions');if(own)own.style.display='none';
+    let actions=modal.querySelector('#publicProfileActions');
+    if(!actions){actions=document.createElement('div');actions.id='publicProfileActions';actions.className='profile-modal-actions';modal.querySelector('.modal')?.appendChild(actions);}
+    if(actions){
+      actions.innerHTML=`<button class="edit-profile-btn" type="button" onclick="ssDemoChat('${esc(person.id)}')">💬 Chat</button><button class="edit-profile-btn" type="button" onclick="ssDemoCall('${esc(person.id)}')">📞 Call</button><button class="edit-profile-secondary" type="button" onclick="closeModal('profileModal')">Close</button>`;
+    }
+    modal.classList.add('show');
+  };
+
+  window.ssDemoChat=function(id){
+    const p=getDemo(id); if(!p)return;
+    closeModal?.('profileModal');
+    const user=typeof getCurrentUser==='function'?getCurrentUser():null;
+    if(!user){openAuth?.('signin');return;}
+    window.currentChatPerson={id:p.id,name:p.name,avatar:p.avatar||'👤',demo:true};
+    window.__ssBackendChat=false;
+    const name=document.getElementById('chatName');if(name)name.textContent=p.name+' · Demo member';
+    const avatar=document.getElementById('chatAvatar');if(avatar)avatar.textContent=p.avatar||'👤';
+    document.getElementById('chatModal')?.classList.add('show');
+    renderDemoChat(p);
+  };
+
+  function demoStore(){
+    try{return JSON.parse((window.ssMemoryStorage||localStorage).getItem('skillswapMessages')||'{}')}catch(e){return {}}
+  }
+  function saveDemoStore(x){try{(window.ssMemoryStorage||localStorage).setItem('skillswapMessages',JSON.stringify(x))}catch(e){}}
+  function demoKey(a,b){return [String(a),String(b)].sort().join('_')}
+  function demoReply(text){
+    if(typeof window.generateReply==='function')return window.generateReply(text);
+    return 'Thanks for your message! 😊 This is a demo member, so I can chat with you here.';
+  }
+  function renderDemoChat(p){
+    const u=typeof getCurrentUser==='function'?getCurrentUser():null;if(!u)return;
+    const store=demoStore(),key=demoKey(u.id||u.uid,p.id);
+    if(!store[key])store[key]=[{type:'them',text:`Hi! 👋 I’m ${p.name}. I’m a demo SkillSwap member. What would you like to learn or teach?`}];
+    saveDemoStore(store);
+    const c=document.getElementById('chatMessages');if(!c)return;c.innerHTML='';
+    store[key].forEach(m=>{const d=document.createElement('div');d.className='message '+(m.type==='me'?'sent':'them');d.textContent=m.text;c.appendChild(d)});c.scrollTop=c.scrollHeight;
+  }
+
+  window.ssDemoSendMessage=function(){
+    const p=window.currentChatPerson;if(!p?.demo)return false;
+    const input=document.getElementById('chatInput'),text=input?.value.trim();if(!text)return true;
+    const u=typeof getCurrentUser==='function'?getCurrentUser():null;if(!u)return true;
+    const store=demoStore(),key=demoKey(u.id||u.uid,p.id);store[key]=store[key]||[];store[key].push({type:'me',text});saveDemoStore(store);input.value='';renderDemoChat(p);
+    setTimeout(()=>{const latest=demoStore();latest[key]=latest[key]||[];latest[key].push({type:'them',text:demoReply(text)});saveDemoStore(latest);if(window.currentChatPerson?.demo&&String(window.currentChatPerson.id)===String(p.id))renderDemoChat(p)},700);
+    return true;
+  };
+
+  // Override only the demo branch; real-member chat remains on Firebase.
+  const originalOpenChat=window.openChat;
+  window.openChat=async function(id){
+    if(isDemo(id)){ssDemoChat(id);return;}
+    if(typeof originalOpenChat==='function')return originalOpenChat.apply(this,arguments);
+  };
+  const originalSend=window.sendMessage;
+  window.sendMessage=async function(){
+    if(window.currentChatPerson?.demo){ssDemoSendMessage();return;}
+    if(typeof originalSend==='function')return originalSend.apply(this,arguments);
+  };
+
+  // Demo calls bypass the real-member Firebase/WebRTC signaling path.
+  window.ssDemoCall=function(id){
+    const p=getDemo(id);if(!p)return;
+    closeModal?.('profileModal');
+    if(typeof window.demoCall==='function'){window.demoCall(p);return;}
+    if(typeof window.startVoiceCall==='function'){window.startVoiceCall(p.id);return;}
+    if(typeof showToast==='function')showToast('Demo call is unavailable.');
+  };
+
+  // Make every community demo card open the real demo profile instead of ssStarterInfo().
+  function fixCards(){
+    document.querySelectorAll('#ssOtherGrid .ss-other-card').forEach(card=>{
+      const title=card.querySelector('h3')?.textContent?.trim();
+      const p=getDemo(title && demos().find(x=>x.name===title)?.id);
+      if(!p)return;
+      const b=card.querySelector('.ss-other-btn');
+      if(b){b.textContent='View profile';b.onclick=function(e){e.preventDefault();ssOpenDemoProfile(p)};}
+    });
+  }
+  document.addEventListener('DOMContentLoaded',()=>{setTimeout(fixCards,50);setTimeout(fixCards,1200);setTimeout(fixCards,3000)});
+})();
+</script>
+
 </body>
 
 <style id="v7-typed-text-visible">
