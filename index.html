@@ -13554,3 +13554,85 @@ body.ss-emergency-guest #loggedInNav{display:flex!important}
   console.log('SkillSwap clean authentication loaded.');
 })();
 </script>
+
+<!-- =========================================================
+     SKILLSWAP AUTH HOTFIX — SUBMIT + CLOSE
+     Fixes buttons that were changed to type="button" and therefore
+     never fired the form submit event. Also provides a direct close handler.
+========================================================= -->
+<style id="skillswap-auth-hotfix-css">
+#authModal .modal-close{
+  pointer-events:auto!important;
+  cursor:pointer!important;
+  z-index:2147483647!important;
+}
+#authModal .modal-submit{
+  pointer-events:auto!important;
+  cursor:pointer!important;
+  z-index:2147483647!important;
+}
+</style>
+<script id="skillswap-auth-hotfix">
+(function(){
+  'use strict';
+  function closeAuth(){
+    var modal=document.getElementById('authModal');
+    if(modal){
+      modal.classList.remove('show');
+      modal.style.display='none';
+    }
+    document.body.classList.remove('modal-open');
+    return false;
+  }
+  window.closeAuth=closeAuth;
+  window.closeAuthModal=closeAuth;
+
+  // Directly handle the two authentication buttons and the X button.
+  // Capture phase prevents older handlers from swallowing these clicks.
+  document.addEventListener('click',function(e){
+    var b=e.target && e.target.closest ? e.target.closest('button') : null;
+    if(!b || !b.closest('#authModal')) return;
+
+    if(b.classList.contains('modal-close')){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      closeAuth();
+      return false;
+    }
+
+    if(b.matches('#signinForm .modal-submit')){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      if(!b.disabled && typeof window.signIn==='function') window.signIn();
+      return false;
+    }
+
+    if(b.matches('#signupForm .modal-submit')){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      if(!b.disabled && typeof window.signUp==='function') window.signUp();
+      return false;
+    }
+  },true);
+
+  // Make the inline close handler use the reliable implementation too.
+  document.addEventListener('DOMContentLoaded',function(){
+    var close=document.querySelector('#authModal .modal-close');
+    if(close) close.onclick=function(e){e.preventDefault();closeAuth();return false;};
+  });
+
+  // Handle Enter in either auth form as well.
+  document.addEventListener('keydown',function(e){
+    if(e.key!=='Enter') return;
+    var target=e.target;
+    if(!target || !target.closest || !target.closest('#authModal')) return;
+    var form=target.closest('form');
+    if(!form) return;
+    e.preventDefault();
+    if(form.id==='signinForm' && typeof window.signIn==='function') window.signIn();
+    if(form.id==='signupForm' && typeof window.signUp==='function') window.signUp();
+  },true);
+
+  console.log('SkillSwap auth hotfix loaded: Sign In, Sign Up and Close are directly wired.');
+})();
+</script>
