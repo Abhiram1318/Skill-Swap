@@ -13311,6 +13311,100 @@ body.ss-guest-mode .ss-guest-lock-banner{display:block}
 })();
 </script>
 
+
+<!-- FINAL FIX v16: leaving Guest Mode when real Firebase authentication succeeds -->
+<script id="skillswap-guest-to-member-auth-v16">
+(function(){
+  'use strict';
+
+  function leaveGuestForRealUser(user){
+    // Anonymous Firebase users remain guests. A real email/password user
+    // must immediately become the authenticated member UI.
+    if(!user || user.isAnonymous) return;
+
+    window.__ssGuestMode = false;
+    window.guestMode = false;
+    window.isGuestUser = false;
+    window.ssGuestUser = null;
+
+    try{
+      sessionStorage.removeItem('skillswap_guest_mode');
+      localStorage.removeItem('skillswap_guest_mode');
+      localStorage.removeItem('skillswap_guest_uid');
+    }catch(e){}
+
+    document.documentElement.classList.remove('ss-guest-mode');
+    if(document.body){
+      document.body.classList.remove('ss-guest-mode','ss-emergency-guest');
+      document.body.classList.add('ss-authenticated');
+    }
+
+    // Remove the guest-only UI lock/banner.
+    const banner=document.getElementById('ssGuestLockBanner');
+    if(banner) banner.remove();
+
+    // Restore the normal member navigation and profile UI.
+    try{
+      if(typeof window.setAppState==='function') window.setAppState(true);
+    }catch(e){}
+    try{
+      if(typeof window.updateUserUI==='function') window.updateUserUI();
+    }catch(e){}
+    try{
+      if(typeof window.updateProfileModal==='function') window.updateProfileModal();
+    }catch(e){}
+    try{
+      if(typeof window.renderEverything==='function'){
+        Promise.resolve(window.renderEverything()).catch(function(e){
+          console.warn('Guest → member render:',e);
+        });
+      }
+    }catch(e){}
+
+    // Re-read the member profile from Firebase after the auth transition.
+    try{
+      const db=window.ssFirebase?.db;
+      if(db){
+        db.ref('users/'+user.uid).once('value').then(function(snap){
+          if(!snap.exists()) return;
+          const profile=snap.val()||{};
+          window.ssFirebaseProfile=profile;
+          try{ localStorage.setItem('skillswapUser',JSON.stringify(profile)); }catch(e){}
+          try{ window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile)); }catch(e){}
+          try{ window.updateUserUI?.(); }catch(e){}
+          try{ window.updateProfileModal?.(); }catch(e){}
+          try{ Promise.resolve(window.renderEverything?.()).catch(function(){}); }catch(e){}
+        }).catch(function(e){
+          console.warn('Guest → member profile restore:',e);
+        });
+      }
+    }catch(e){}
+  }
+
+  function attach(){
+    const auth=window.ssFirebaseAuth || (window.firebase && firebase.apps.length ? firebase.auth() : null);
+    if(!auth || typeof auth.onAuthStateChanged!=='function') return false;
+
+    // Do not replace any existing auth listener; add a dedicated transition listener.
+    if(window.__ssGuestMemberAuthObserver) return true;
+    window.__ssGuestMemberAuthObserver = auth.onAuthStateChanged(function(user){
+      leaveGuestForRealUser(user);
+    });
+    return true;
+  }
+
+  if(!attach()){
+    let tries=0;
+    const timer=setInterval(function(){
+      if(attach() || ++tries>=60) clearInterval(timer);
+    },250);
+  }
+
+  // Also expose a safe explicit transition for the auth code.
+  window.ssExitGuestAfterLogin = leaveGuestForRealUser;
+})();
+</script>
+
 </body>
 
 <style id="v7-typed-text-visible">
