@@ -8450,7 +8450,7 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
 <section id="ssMajorHub" aria-label="SkillSwap major features">
   <div class="ss-hub-head"><div><span class="ss-hub-kicker">SKILLSWAP PLATFORM</span><h2>🚀 More ways to learn, teach & connect</h2><p>Find better matches, arrange swaps, build reputation, track learning goals and participate in the community.</p></div></div>
   <div class="ss-hub-grid">
-    <article class="ss-hub-card"><div class="ss-hub-icon">🎯</div><h3>Smart matching</h3><p>Find people whose teaching and learning goals complement yours.</p><button onclick="ssHubOpen('matches')">Find matches</button></article>
+    <article class="ss-hub-card"><div class="ss-hub-icon">🎯</div><h3>Smart matching</h3><p>Find people whose teaching and learning goals complement yours.</p><button onclick="ssOpenSmartMatches()">Find matches</button></article>
     <article class="ss-hub-card"><div class="ss-hub-icon">📅</div><h3>Swap booking</h3><p>Schedule a skill exchange with an accepted connection.</p><button onclick="ssHubOpen('booking')">Book a swap</button></article>
     <article class="ss-hub-card"><div class="ss-hub-icon">⭐</div><h3>Ratings & reviews</h3><p>Build trust by reviewing completed skill exchanges.</p><button onclick="ssHubOpen('reviews')">Give a review</button></article>
     <article class="ss-hub-card"><div class="ss-hub-icon">🏆</div><h3>XP & badges</h3><p>Earn XP for profiles, connections, sessions and community activity.</p><button onclick="ssHubOpen('rewards')">View rewards</button></article>
@@ -12579,6 +12579,69 @@ body.dark .ss-call-card{background:#14211d;border-color:#29433b;color:#eef8f4}.s
 })();
 </script>
 
+
+<script id="ss-smart-matching-final-fix">
+(function(){
+  'use strict';
+  function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function arr(v){return Array.isArray(v)?v:(v?String(v).split(',').map(x=>x.trim()).filter(Boolean):[]);}
+  function auth(){return window.ssFirebaseAuth||window.ssFirebase?.auth||null;}
+  function db(){return window.ssFirebase?.db||null;}
+  function uid(){return auth()?.currentUser?.uid||null;}
+  function toast(m){if(typeof window.showToast==='function')window.showToast(m);else if(typeof window.toast==='function')window.toast(m);}
+
+  window.ssOpenSmartMatches=async function(){
+    const panel=document.getElementById('ssHubPanel');
+    if(!panel)return;
+    const u=uid();
+    if(!u){
+      toast('Please sign in to see smart matches.');
+      return;
+    }
+    const d=db();
+    if(!d){
+      panel.innerHTML='<div class="ss-hub-error"><strong>⚠️ Smart matching is still loading</strong><p>Please wait a moment and try again.</p></div>';
+      return;
+    }
+    panel.innerHTML='<div class="ss-enhanced-wrap"><h3>🎯 Smart matching</h3><p class="ss-enhanced-muted">Finding members whose teaching and learning goals complement yours…</p></div>';
+    try{
+      const [meSnap, usersSnap]=await Promise.all([
+        d.ref('users/'+u).once('value'),
+        d.ref('users').once('value')
+      ]);
+      const me=meSnap.val()||{};
+      const users=usersSnap.val()||{};
+      const mineTeach=new Set(arr(me.teach).map(x=>x.toLowerCase()));
+      const mineWant=new Set(arr(me.want).map(x=>x.toLowerCase()));
+      const scored=Object.values(users).filter(p=>p&&p.uid&&p.uid!==u).map(p=>{
+        const teach=new Set(arr(p.teach).map(x=>x.toLowerCase()));
+        const want=new Set(arr(p.want).map(x=>x.toLowerCase()));
+        let score=0;
+        mineWant.forEach(x=>{if(teach.has(x))score+=4;});
+        mineTeach.forEach(x=>{if(want.has(x))score+=4;});
+        if(p.location&&me.location&&String(p.location).toLowerCase()===String(me.location).toLowerCase())score+=1;
+        if(Number(p.rating||0)>=4)score+=1;
+        return {...p,_score:score};
+      }).sort((a,b)=>b._score-a._score).slice(0,12);
+
+      panel.innerHTML='<div class="ss-enhanced-wrap"><h3>🎯 Smart matches</h3>'+
+        '<p class="ss-enhanced-muted">People ranked by how well their teaching skills complement what you want to learn.</p>'+
+        '<div class="ss-enhanced-list">'+
+        (scored.length?scored.map(x=>
+          '<div class="ss-enhanced-row"><div><strong>'+esc(x.name||'Member')+'</strong>'+\
+          '<div class="ss-enhanced-muted">Teaches: '+esc(arr(x.teach).slice(0,3).join(' · ')||'—')+'</div>'+\
+          '<div class="ss-enhanced-muted">Wants: '+esc(arr(x.want).slice(0,3).join(' · ')||'—')+'</div></div>'+\
+          '<div><span class="ss-enhanced-chip">'+x._score+' match</span> '+\
+          '<button class="ss-enhanced-btn" onclick="ssUltimateConnect(\''+esc(x.uid)+'\')">Connect</button></div></div>'
+        ).join(''):'<div class="ss-enhanced-muted">No matching members found yet. Add teaching and learning skills to your profile to improve your matches.</div>')+
+        '</div></div>';
+    }catch(e){
+      console.error('Smart matching:',e);
+      panel.innerHTML='<div class="ss-hub-error"><strong>⚠️ Smart matching could not load</strong><p>'+esc(e?.message||'Please try again.')+'</p><button class="ss-enhanced-btn" onclick="ssOpenSmartMatches()">Try again</button></div>';
+    }
+  };
+})();
+</script>
 </body>
 
 <style id="v7-typed-text-visible">
@@ -12682,21 +12745,18 @@ body.dark .ss-call-card{background:#14211d;border-color:#29433b;color:#eef8f4}.s
 </style>
 
 
-<!-- MY PROFILE: CHAT/CALL REMOVED -->
-<style id="skillswap-my-profile-no-chat-call">
+<!-- PROFILE ACTIONS: CHAT/CALL KEPT FOR MEMBER PROFILES -->
+<style id="skillswap-profile-actions-kept">
 #ownProfileActions button[data-chat],
 #ownProfileActions button[data-call],
 #ownProfileActions button[onclick*="openChat"],
 #ownProfileActions button[onclick*="openCall"],
 #ownProfileActions button[onclick*="ssDemoChat"],
 #ownProfileActions button[onclick*="ssDemoCall"]{display:none!important}
-#publicProfileActions{display:none!important}
 </style>
-<script id="skillswap-my-profile-no-chat-call-js">
+<script id="skillswap-profile-actions-kept-js">
 (function(){
   function hidePublicAndCleanOwn(){
-    var pub=document.getElementById('publicProfileActions');
-    if(pub) pub.style.display='none';
     var own=document.getElementById('ownProfileActions');
     if(!own)return;
     own.querySelectorAll('button').forEach(function(btn){
@@ -12711,7 +12771,6 @@ body.dark .ss-call-card{background:#14211d;border-color:#29433b;color:#eef8f4}.s
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',hidePublicAndCleanOwn);
   else hidePublicAndCleanOwn();
-  setInterval(hidePublicAndCleanOwn,400);
 })();
 </script>
 
