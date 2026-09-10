@@ -3118,6 +3118,16 @@ body textarea::placeholder {
 }
 </style>
 
+
+<style id="skillswap-clean-bars-fix">
+/* Clean UI: remove accidental translucent/blurred rectangular artifacts */
+*,*::before,*::after{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+body::before,body::after{display:none!important}
+header,.navbar,.nav,.topbar,.site-header,.app-header,nav{background:#fff!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.card,.panel,.modal-content,.feature-card,.profile-card,.dashboard-card,.community-card,.ss-other-community,.ss-land-card,.ss-hub-card,.ss-pro,.ss-pro-card,.ss-metric,.ss-listing,.ss-static-card,.ss-static-chat-box{background:#fff!important}
+.ss-land-wrap,#ssPublicLanding,.hero{background-color:#f7faf9!important}
+input,textarea,select{background:#fff!important}
+</style>
 </head>
 
 <body>
@@ -3659,101 +3669,6 @@ body textarea::placeholder {
 </section>
 
 
-
-<!-- =========================
-     SKILLSWAP PRO PLATFORM
-========================= -->
-<section class="ss-pro" id="proDashboard">
-  <div class="ss-pro-head">
-    <div>
-      <span class="ss-pro-kicker">SKILLSWAP PRO</span>
-      <h2>SkillSwap workspace</h2>
-      <p>Track your progress, manage sessions, discover skill offers and stay on top of every connection.</p>
-    </div>
-    <div class="ss-pro-actions">
-      <button class="ss-outline-btn" onclick="refreshProDashboard()">↻ Refresh</button>
-      <button class="ss-primary-btn" onclick="openListingModal()">＋ Offer a skill</button>
-    </div>
-  </div>
-
-  <div class="ss-metrics" id="proMetrics">
-    <div class="ss-metric"><span>🤝</span><strong id="metricConnections">0</strong><small>Connections</small></div>
-    <div class="ss-metric"><span>📨</span><strong id="metricRequests">0</strong><small>Pending requests</small></div>
-    <div class="ss-metric"><span>📅</span><strong id="metricSessions">0</strong><small>Sessions</small></div>
-    <div class="ss-metric"><span>🔔</span><strong id="metricUnread">0</strong><small>Notifications</small></div>
-  </div>
-
-  <div class="ss-pro-grid">
-    <div class="ss-pro-card ss-span-2">
-      <div class="ss-card-title"><div><span>📨</span><h3>Incoming requests</h3></div><button class="ss-text-btn" onclick="loadIncomingRequests()">Refresh</button></div>
-      <div class="ss-incoming" id="incomingRequestsList"><div class="ss-loading">Sign in to see requests.</div></div>
-    </div>
-    <div class="ss-pro-card ss-span-2">
-      <div class="ss-card-title"><div><span>🧭</span><h3>Skill Journey</h3></div><button class="ss-text-btn" onclick="refreshJourney()">Update</button></div>
-      <div class="ss-journey" id="journeyList"><div class="ss-loading">Sign in to see your journey.</div></div>
-    </div>
-    <div class="ss-pro-card">
-      <div class="ss-card-title"><div><span>🔔</span><h3>Notifications</h3></div><button class="ss-text-btn" onclick="markAllNotificationsRead()">Mark all read</button></div>
-      <div class="ss-notifications" id="notificationsList"><div class="ss-loading">Sign in to see notifications.</div></div>
-    </div>
-    <div class="ss-pro-card ss-span-2" id="sessions">
-      <div class="ss-card-title"><div><span>📅</span><h3>Learning sessions</h3></div><button class="ss-text-btn" onclick="openScheduleModal()">＋ Schedule</button></div>
-      <div class="ss-session-list" id="sessionsList"><div class="ss-loading">No sessions loaded yet.</div></div>
-    </div>
-    <div class="ss-pro-card">
-      <div class="ss-card-title"><div><span>🎓</span><h3>Reputation</h3></div></div>
-      <div class="ss-reputation">
-        <div class="ss-rating-big" id="proRating">New</div>
-        <div><strong id="proReviews">0 reviews</strong><p>Build trust through great swaps.</p></div>
-      </div>
-      <div class="ss-trust-list"><div>🛡️ Safe in-app communication</div><div>⭐ Peer reputation</div><div>🚩 Report & block controls</div></div>
-    </div>
-    <div class="ss-pro-card ss-span-3">
-      <div class="ss-card-title"><div><span>🛍️</span><h3>SkillSwap Marketplace</h3></div><button class="ss-text-btn" onclick="loadListings()">Refresh</button></div>
-      <div class="ss-listings" id="listingsList"><div class="ss-loading">Loading skill offers…</div></div>
-    </div>
-  </div>
-</section>
-
-<div class="modal-overlay" id="scheduleModal">
-  <div class="modal ss-small-modal">
-    <button class="modal-close" onclick="closeModal('scheduleModal')">×</button>
-    <div class="modal-header"><span class="modal-eyebrow">PLAN A SWAP</span><h2>Schedule a learning session</h2><p>Sessions are available after a connection is accepted.</p></div>
-    <div class="ss-form-grid">
-      <div class="form-group ss-full"><label>Connected partner</label><select id="schedulePartner"><option value="">Select a connection</option></select></div>
-      <div class="form-group ss-full"><label>Session title</label><input id="scheduleTitle" placeholder="Python + UI Design practice"></div>
-      <div class="form-group"><label>Date & time</label><input id="scheduleStart" type="datetime-local"></div>
-      <div class="form-group"><label>Duration</label><select id="scheduleDuration"><option value="30">30 minutes</option><option value="60" selected>60 minutes</option><option value="90">90 minutes</option><option value="120">2 hours</option></select></div>
-      <div class="form-group ss-full"><label>Notes</label><textarea id="scheduleNotes" placeholder="What will you cover?"></textarea></div>
-    </div>
-    <button class="modal-submit" onclick="saveSchedule()">📅 Schedule session</button>
-  </div>
-</div>
-
-<div class="modal-overlay" id="listingModal">
-  <div class="modal ss-small-modal">
-    <button class="modal-close" onclick="closeModal('listingModal')">×</button>
-    <div class="modal-header"><span class="modal-eyebrow">SHARE A SKILL</span><h2>Create a skill offer</h2><p>Let other learners discover what you can teach.</p></div>
-    <div class="form-group"><label>Title</label><input id="listingTitle" placeholder="I can teach beginner Python"></div>
-    <div class="ss-form-grid"><div class="form-group"><label>Skill</label><input id="listingSkill" placeholder="Python"></div><div class="form-group"><label>Category</label><select id="listingCategory"><option>Technology</option><option>Languages</option><option>Academics</option><option>Indian Arts</option><option>Music & Dance</option><option>Sports</option><option>Other</option></select></div></div>
-    <div class="form-group"><label>Description</label><textarea id="listingDescription" placeholder="What can you help another student learn?"></textarea></div>
-    <div class="form-group"><label>Mode</label><select id="listingMode"><option value="online">Online</option><option value="in-person">In person</option><option value="both">Online + in person</option></select></div>
-    <button class="modal-submit" onclick="saveListing()">✨ Publish offer</button>
-  </div>
-</div>
-
-<div class="modal-overlay" id="safetyReportModal">
-  <div class="modal ss-small-modal">
-    <button class="modal-close" onclick="closeModal('safetyReportModal')">×</button>
-    <div class="modal-header"><span class="modal-eyebrow">SAFETY</span><h2>Report a member</h2><p>Use this if a profile or interaction makes you uncomfortable.</p></div>
-    <input type="hidden" id="reportPersonId">
-    <div class="form-group"><label>Reason</label><select id="reportReason"><option>Inappropriate behaviour</option><option>Spam</option><option>Harassment</option><option>Fake profile</option><option>Other</option></select></div>
-    <div class="form-group"><label>Details</label><textarea id="reportDetails" maxlength="1000" placeholder="Tell us what happened without sharing private information."></textarea></div>
-    <button class="modal-submit" onclick="submitReport()">🚩 Submit report</button>
-  </div>
-</div>
-
-</main>
 
 <footer>
 
@@ -4522,8 +4437,8 @@ window.SKILLSWAP_FIREBASE_CONFIG = {
       const profMatch=path.match(/^\/api\/profile\/([^/]+)$/);if(profMatch&&method==='GET'){const p=await profileByAny(decodeURIComponent(profMatch[1]));return p?json({user:p}):json({message:'Profile not found.'},404);}
       if(path==='/api/profile/update'&&method==='POST'){requireAuth();await db.ref('users/'+current.uid).update({...payload,uid:current.uid,updated_at:now()});return json({success:true,user:await currentProfile()});}
       const pv=path.match(/^\/api\/profile-view\/(.+)$/);if(pv&&method==='POST'){requireAuth();const ref=db.ref('profileViews').push();await ref.set({viewerUid:current.uid,personId:String(pv[1]),created_at:now()});return json({success:true});}
-      if(path==='/api/requests'&&method==='POST'){requireAuth();const receiver=await profileByAny(payload.receiverId);if(!receiver)throw new Error('Member not found.');if(receiver.uid===current.uid)throw new Error('You cannot connect with yourself.');const snapReq=await db.ref('requests').get();const all=snapReq.val()||{};const duplicate=Object.values(all).find(r=>((r.senderUid===current.uid&&r.receiverUid===receiver.uid)||(r.senderUid===receiver.uid&&r.receiverUid===current.uid))&&['pending','accepted'].includes(r.status));if(duplicate){if(duplicate.status==='accepted')throw new Error('You are already connected with this member.');throw new Error('A connection request is already pending.');}const sender=await currentProfile();const ref=db.ref('requests').push();await ref.set({senderUid:current.uid,senderId:sender.id,senderName:sender.name,senderAvatar:sender.avatar||'🧑',receiverUid:receiver.uid,receiverId:receiver.id,receiverName:receiver.name,receiverAvatar:receiver.avatar||'🧑',skillWanted:payload.wanted,skillOffered:payload.offered,message:payload.message||'',status:'pending',created_at:now()});await notify(receiver.uid,'New skill-swap request',`${sender.name} wants to exchange skills with you.`);return json({success:true,id:ref.key});}
-      if(path==='/api/requests/incoming'&&method==='GET'){requireAuth();const snap=await db.ref('requests').orderByChild('receiverUid').equalTo(current.uid).get();return json(entries(snap.val()).filter(r=>r.receiverUid===current.uid).slice(0,100));}
+      if(path==='/api/requests'&&method==='POST'){requireAuth();const receiver=await profileByAny(payload.receiverId);if(!receiver)throw new Error('Member not found.');if(receiver.uid===current.uid)throw new Error('You cannot connect with yourself.');const all=await allUnder('requests');const duplicate=Object.values(all).find(r=>((r.senderUid===current.uid&&r.receiverUid===receiver.uid)||(r.senderUid===receiver.uid&&r.receiverUid===current.uid))&&['pending','accepted'].includes(r.status));if(duplicate){if(duplicate.status==='accepted')throw new Error('You are already connected with this member.');throw new Error('A connection request is already pending.');}const sender=await currentProfile();const ref=db.ref('requests').push();await ref.set({senderUid:current.uid,senderId:sender.id,senderName:sender.name,senderAvatar:sender.avatar||'🧑',receiverUid:receiver.uid,receiverId:receiver.id,receiverName:receiver.name,receiverAvatar:receiver.avatar||'🧑',skillWanted:payload.wanted,skillOffered:payload.offered,message:payload.message||'',status:'pending',created_at:now()});await notify(receiver.uid,'New skill-swap request',`${sender.name} wants to exchange skills with you.`);return json({success:true,id:ref.key});}
+      if(path==='/api/requests/incoming'&&method==='GET'){requireAuth();const all=await allUnder('requests');return json(entries(all).filter(r=>r.receiverUid===current.uid).slice(0,100));}
       const reqMatch=path.match(/^\/api\/requests\/([^/]+)$/);if(reqMatch){requireAuth();const ref=db.ref('requests/'+reqMatch[1]),snap=await ref.get();if(!snap.exists())return json({message:'Request not found.'},404);const r=snap.val();if(method==='POST'){const action=payload.action||payload.status||'cancel';const status=action==='accept'?'accepted':action==='reject'?'declined':action==='complete'?'completed':'cancelled';await ref.update({status,updated_at:now()});if(r.senderUid)await notify(r.senderUid,status==='accepted'?'Request accepted':'Request updated',`${r.receiverName||'Your connection'} ${status}.`);return json({success:true,status});}return json({id:snap.key,...r});}
       if(path==='/api/favorites'&&method==='GET'){requireAuth();const all=await allUnder('favorites');const out=[];for(const d of Object.values(all)){if(d.uid===current.uid){const p=await profileByAny(d.personId);if(p)out.push(p);}}return json(out.slice(0,100));}
       if(path==='/api/favorites'&&(method==='POST'||method==='DELETE')){requireAuth();const personId=String(payload.person_id||payload.personId);const all=await allUnder('favorites');let found=null;for(const [id,d] of Object.entries(all))if(d.uid===current.uid&&String(d.personId)===personId){found=id;break;}if(method==='POST'&&!found)await db.ref('favorites').push().set({uid:current.uid,personId,created_at:now()});if(method==='DELETE'&&found)await db.ref('favorites/'+found).remove();return json({success:true});}
@@ -12858,3 +12773,128 @@ body.dark .ss-call-card{background:#14211d;border-color:#29433b;color:#eef8f4}.s
   -webkit-text-fill-color:#fff !important;
 }
 </style>
+<!-- FINAL CLEAN UI + DEMO PROFILE REPAIR -->
+<style id="skillswap-final-clean-ui">
+/* Remove every accidental glass/blur layer. Keep shadows, borders and layout. */
+*, *::before, *::after{
+  -webkit-backdrop-filter:none !important;
+  backdrop-filter:none !important;
+}
+/* Eliminate blurred rectangular overlays/background strips introduced by older upgrades. */
+.ss3-toolbar,
+.ss4-nav,
+.ss-call-overlay,
+.ss-static-chat-overlay,
+#ssStaticChatOverlay,
+.ss-award-modal,
+#ssRatingModal,
+.modal-overlay,
+.modal-backdrop,
+.overlay,
+.drawer-backdrop{
+  -webkit-backdrop-filter:none !important;
+  backdrop-filter:none !important;
+}
+/* Use clean solid surfaces instead of translucent rectangles. */
+.card,.panel,.feature-card,.profile-card,.dashboard-card,.community-card,
+.ss-other-card,.ss-land-card,.ss-pro,.ss-pro-card,.ss-metric,
+.ss-hub-card,.ss-hub-panel,.ss-hub-item,.ss-community-card,
+.ss-community-idea,.ss-post,.ss-mini-card,.ss-enhanced-stat,.ss-enhanced-row{
+  backdrop-filter:none !important;
+}
+/* Remove decorative pseudo-element blocks that can look like bars beside content. */
+.ss3-toolbar::before,.ss3-toolbar::after,
+.ss4-shell::before,.ss4-shell::after,
+.ss-pro::before,.ss-pro::after,
+.ss-other-card::before,.ss-other-card::after,
+.ss-land-card::before,.ss-land-card::after{
+  content:none !important;
+  display:none !important;
+}
+</style>
+
+<script id="skillswap-final-demo-profile-repair">
+(function(){
+  'use strict';
+  /* The original demoPeople is a lexical const, so later scripts cannot read it
+     through window.demoPeople. Keep a stable global copy for all later features. */
+  const DEMOS=[
+    {id:'ananya',name:'Ananya Reddy',location:'Hyderabad, Telangana',avatar:'👩🏻',teach:['Telugu','Hindi'],want:['Python','AI'],languages:['Telugu','Hindi','English'],availability:['Weekdays','Evenings'],bio:'Friendly learner and language enthusiast who enjoys helping others practise Telugu and Hindi.'},
+    {id:'aarav',name:'Aarav Sharma',location:'Bengaluru, Karnataka',avatar:'👨🏻',teach:['Python','Robotics'],want:['Guitar','Speaking'],languages:['English','Hindi'],availability:['Weekends'],bio:'Enjoys building projects with Python and robotics and learning creative communication skills.'},
+    {id:'meera',name:'Meera Krishnan',location:'Chennai, Tamil Nadu',avatar:'👩🏻',teach:['Bharatanatyam','Music'],want:['Design','Photography'],languages:['Tamil','English'],availability:['Evenings'],bio:'Passionate about classical dance and music, and excited to exchange creative skills.'},
+    {id:'rohan',name:'Rohan Patel',location:'Pune, Maharashtra',avatar:'👨🏻',teach:['Python','AI','ML'],want:['Web Design','Editing'],languages:['English','Hindi','Marathi'],availability:['Weekends'],bio:'Tech enthusiast interested in practical AI, machine learning and web creativity.'},
+    {id:'saanvi',name:'Saanvi Gupta',location:'Delhi, India',avatar:'👩🏻',teach:['Maths','Study Planning'],want:['Spanish','Guitar'],languages:['English','Hindi'],availability:['After school','Weekends'],bio:'Loves making study plans simple and helping learners become more confident with maths.'},
+    {id:'vikram',name:'Vikram Rao',location:'Vijayawada, Andhra Pradesh',avatar:'👨🏻',teach:['Cricket','Chess'],want:['Python','Photography'],languages:['Telugu','English','Hindi'],availability:['Weekends'],bio:'Sports and strategy fan who enjoys exchanging practical skills.'},
+    {id:'ishita',name:'Ishita Singh',location:'Jaipur, Rajasthan',avatar:'👩🏻',teach:['Rangoli','Mehendi'],want:['Coding','Photography'],languages:['Hindi','English'],availability:['Evenings'],bio:'Creative artist interested in learning technology and visual storytelling.'},
+    {id:'aditya',name:'Aditya Nair',location:'Kochi, Kerala',avatar:'👨🏻',teach:['Physics','Science'],want:['Web Development'],languages:['Malayalam','English'],availability:['Weekends'],bio:'Science learner who enjoys explaining concepts clearly and building useful web projects.'},
+    {id:'kavya',name:'Kavya Das',location:'Kolkata, West Bengal',avatar:'👩🏻',teach:['Music','Guitar'],want:['Photography','Python'],languages:['Bengali','English','Hindi'],availability:['Evenings'],bio:'Music lover looking for friendly skill exchanges in photography and programming.'},
+    {id:'dev',name:'Dev Malhotra',location:'Mumbai, Maharashtra',avatar:'👨🏻',teach:['Presentation','Interviews'],want:['Coding','Design'],languages:['English','Hindi'],availability:['Weekends'],bio:'Enjoys helping people communicate confidently and wants to grow technical and design skills.'},
+    {id:'priya',name:'Priya Sharma',location:'Hyderabad, Telangana',avatar:'👩🏻',teach:['Hindi','English'],want:['Digital Marketing'],languages:['Hindi','English','Telugu'],availability:['Evenings'],bio:'Language mentor interested in digital marketing and practical online skills.'},
+    {id:'arjun',name:'Arjun Mehta',location:'Ahmedabad, Gujarat',avatar:'👨🏻',teach:['Chemistry','Research'],want:['Programming','Guitar'],languages:['Gujarati','Hindi','English'],availability:['Weekends'],bio:'Research-minded learner who enjoys exchanging academic and creative skills.'}
+  ];
+  window.demoPeople=DEMOS;
+
+  const isDemoId=id=>DEMOS.some(p=>String(p.id)===String(id));
+  const getDemo=id=>DEMOS.find(p=>String(p.id)===String(id))||null;
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  /* Override the final public-profile route so demo IDs never go to Firebase/API. */
+  window.ssOpenDemoProfile=function(person){
+    if(!person)return;
+    const modal=document.getElementById('profileModal');
+    if(!modal){window.showToast?.('Profile viewer is unavailable.');return;}
+    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v||''};
+    set('profileAvatar',person.avatar||'👤');
+    set('profileName',person.name||'SkillSwap Member');
+    set('profileType','🤖 Demo SkillSwap Member');
+    set('profileLocation','📍 '+(person.location||'India'));
+    set('profileBio',person.bio||'Demo member available for trying SkillSwap.');
+    const teach=document.getElementById('profileTeach');
+    if(teach)teach.innerHTML=(person.teach||[]).map(x=>'<span class="skill-tag">'+esc(x)+'</span>').join('');
+    const learn=document.getElementById('profileLearn');
+    if(learn)learn.innerHTML=(person.want||[]).map(x=>'<span class="skill-tag">'+esc(x)+'</span>').join('');
+    set('profileLanguages',(person.languages||[]).join(' · '));
+    set('profileAvailability',(person.availability||[]).join(' · '));
+    const own=document.getElementById('ownProfileActions');if(own)own.style.display='none';
+    let actions=document.getElementById('publicProfileActions');
+    if(!actions){actions=document.createElement('div');actions.id='publicProfileActions';actions.className='profile-modal-actions';modal.querySelector('.modal,.modal-content')?.appendChild(actions);}
+    if(actions)actions.innerHTML='<button type="button" class="edit-profile-btn" onclick="ssDemoChat(\''+esc(person.id)+'\')">💬 Chat</button><button type="button" class="edit-profile-btn" onclick="ssDemoCall(\''+esc(person.id)+'\')">📞 Call</button><button type="button" class="edit-profile-secondary" onclick="closeModal(\'profileModal\')">Close</button>';
+    modal.classList.add('show');
+  };
+
+  const previous=window.openOtherProfile;
+  window.openOtherProfile=function(id){
+    if(isDemoId(id)){
+      const p=getDemo(id); if(p){window.ssOpenDemoProfile(p);return;}
+    }
+    if(typeof previous==='function')return previous.apply(this,arguments);
+    window.showToast?.('Profile not found.');
+  };
+
+  window.ssStarterInfo=function(id){
+    const p=getDemo(id);if(p){window.ssOpenDemoProfile(p);return;}
+    window.showToast?.('Profile not found.');
+  };
+
+  window.ssOtherView=async function(id){
+    if(isDemoId(id)){window.ssOpenDemoProfile(getDemo(id));return;}
+    const fn=window.openOtherProfile;
+    if(typeof fn==='function')return fn(id);
+    window.showToast?.('Profile not found.');
+  };
+
+  /* Fix buttons already rendered in the page, including cards generated before this script. */
+  function repairButtons(){
+    document.querySelectorAll('#matches .person-card,#ssOtherGrid .ss-other-card').forEach(card=>{
+      const h=card.querySelector('h3');
+      const name=h?.textContent?.trim()||'';
+      const p=DEMOS.find(x=>x.name===name);
+      if(!p)return;
+      const btn=card.querySelector('.ss-other-btn,button[onclick*="openOtherProfile"],button[onclick*="ssOtherView"]');
+      if(btn){btn.onclick=function(e){e.preventDefault();window.ssOpenDemoProfile(p);};btn.removeAttribute('onclick');}
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{repairButtons();setTimeout(repairButtons,500);setTimeout(repairButtons,1500);});
+  else {repairButtons();setTimeout(repairButtons,500);setTimeout(repairButtons,1500);}
+})();
+</script>
