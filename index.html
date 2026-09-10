@@ -12899,82 +12899,134 @@ body.dark .ss-call-card{background:#14211d;border-color:#29433b;color:#eef8f4}.s
 })();
 </script>
 
-<!-- FINAL TEXT COLOR FIX -->
-<style id="skillswap-final-white-text-fix">
-/* Text typed by the user */
-.chat-input input,
-.chat-input textarea,
-#chatInput,
-#messageInput,
-#chatMessageInput,
-textarea.chat-input,
-input.chat-input{
+<!-- FINAL TEXT COLOR FIX v2 -->
+<style id="skillswap-final-white-text-fix-v2">
+/* ===== CHAT: EVERYTHING THE USER SEES/TYPE IS WHITE ===== */
+.chat-modal .chat-header,
+.chat-modal .chat-header *,
+.chat-modal .chat-messages,
+.chat-modal .chat-messages *,
+.chat-modal .chat-input,
+.chat-modal .chat-input *{
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+
+/* User typing area */
+.chat-modal .chat-input input,
+.chat-modal .chat-input textarea,
+.chat-modal #chatInput,
+.chat-modal #messageInput,
+.chat-modal #chatMessageInput,
+#ssStaticChatOverlay .ss-static-chat-input input{
   color:#fff !important;
   -webkit-text-fill-color:#fff !important;
   caret-color:#fff !important;
   background:#0b5f4d !important;
-  border-color:#187a64 !important;
-}
-.chat-input input::placeholder,
-.chat-input textarea::placeholder,
-#chatInput::placeholder,
-#messageInput::placeholder,
-#chatMessageInput::placeholder{
-  color:rgba(255,255,255,.72) !important;
-  -webkit-text-fill-color:rgba(255,255,255,.72) !important;
+  border:1px solid #2b9279 !important;
 }
 
-/* Chat controls and actions */
-.chat-input button,
-.chat-close,
-.ss-voice-btn,
-.ss-call-answer,
-.ss-call-end,
-.ss-call-mute,
-#ssAnswerBtn,
-#ssRejectBtn,
-#ssEndCallBtn,
-#ssEndLiveBtn,
-#ssMuteBtn,
-#ssDemoMute,
-#ssDemoEnd,
-.profile-modal-actions .edit-profile-btn,
-.ss-primary-btn,
-.ss3-toolbar button,
-.ss4-nav button,
-.ss-other-btn,
-.connect,
-.modal-submit,
-.cta button,
-.primary{
+.chat-modal .chat-input input::placeholder,
+.chat-modal .chat-input textarea::placeholder,
+.chat-modal #chatInput::placeholder,
+.chat-modal #messageInput::placeholder,
+.chat-modal #chatMessageInput::placeholder,
+#ssStaticChatOverlay .ss-static-chat-input input::placeholder{
+  color:rgba(255,255,255,.75) !important;
+  -webkit-text-fill-color:rgba(255,255,255,.75) !important;
+}
+
+/* Sent/current-user messages */
+.chat-modal .message.me,
+.chat-modal .message.sent,
+.chat-modal .message.mine,
+.chat-modal .message.self,
+#ssStaticChatOverlay .ss-static-msg.me{
+  background:#087f5b !important;
   color:#fff !important;
   -webkit-text-fill-color:#fff !important;
 }
 
-/* Messages typed/sent by the current user */
-.message.me,
-.message.sent,
-.message.mine,
-.message.self{
+/* Other person's messages too */
+.chat-modal .message.them{
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+  background:#145a4b !important;
+  border-color:#2b9279 !important;
+}
+
+/* Chat buttons/options */
+.chat-modal button,
+.chat-modal .chat-input button,
+.chat-modal .chat-close,
+#ssStaticChatOverlay button,
+#ssStaticChatOverlay .ss-static-chat-close,
+#ssStaticChatOverlay .ss-static-chat-input button{
   color:#fff !important;
   -webkit-text-fill-color:#fff !important;
 }
 
-/* Chat header text */
-.chat-header,
-.chat-header *{
+.chat-modal .chat-input button,
+#ssStaticChatOverlay .ss-static-chat-input button{
+  background:#087f5b !important;
+}
+
+/* ===== PROFILE CHAT / CALL BUTTONS ===== */
+#publicProfileActions button,
+.profile-modal-actions button,
+.profile-modal-actions .edit-profile-btn{
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+  background:#176b57 !important;
+}
+
+/* ===== VOICE/CALL OVERLAY ===== */
+.ss-call-overlay .ss-call-card,
+.ss-call-overlay .ss-call-card *{
   color:#fff !important;
   -webkit-text-fill-color:#fff !important;
 }
 
-/* Call overlay text/options */
-.ss-call-overlay,
-.ss-call-overlay *{
-  color:#fff !important;
+.ss-call-overlay .ss-call-card{
+  background:#102f28 !important;
+  border-color:#2b5c4e !important;
 }
 
-/* Keep the close/secondary profile option readable on its white button */
+.ss-call-overlay .ss-call-status,
+.ss-call-overlay .ss-call-note{
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+
+.ss-call-overlay .ss-call-actions button,
+.ss-call-overlay .ss-call-mute,
+.ss-call-overlay .ss-call-answer,
+.ss-call-overlay .ss-call-end{
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+
+.ss-call-overlay .ss-call-mute{background:#285449 !important}
+.ss-call-overlay .ss-call-answer{background:#087f5b !important}
+.ss-call-overlay .ss-call-end{background:#c62828 !important}
+
+/* Force SVG/icon/text descendants in chat/call controls to inherit white */
+.chat-modal button *,
+#ssStaticChatOverlay button *,
+.ss-call-overlay button *,
+#publicProfileActions button *{
+  color:#fff !important;
+  fill:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+
+/* Secondary Close button stays dark text on its light background */
 .profile-modal-actions .edit-profile-secondary{
+  background:#fff !important;
+  color:#176b57 !important;
+  -webkit-text-fill-color:#176b57 !important;
+}
+.profile-modal-actions .edit-profile-secondary *{
   color:#176b57 !important;
   -webkit-text-fill-color:#176b57 !important;
 }
