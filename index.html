@@ -4413,7 +4413,7 @@ input,textarea,select{background:#fff!important}
    firebase-config.js file.
 ========================================================= */
 window.SKILLSWAP_FIREBASE_CONFIG = {
-  apiKey: "AIzaSyAwCtVLR4Po5Gk1ZafGXLNFgGS8-SfJzQ",
+  apiKey: "AIzaSyAwCtVLR4PoGk1ZafGXLNFgGS8-SfJzQ",
   authDomain: "skill-swap-india-b2a9a.firebaseapp.com",
   databaseURL: "https://skill-swap-india-b2a9a-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "skill-swap-india-b2a9a",
@@ -13885,5 +13885,166 @@ input.chat-input{
   });
 
   console.log('SkillSwap final authentication repair loaded.');
+})();
+</script>
+
+
+<script id="skillswap-auth-final-working">
+(function(){
+  'use strict';
+
+  function el(id){ return document.getElementById(id); }
+  function toast(msg){
+    try{ if(typeof window.showToast==='function'){ window.showToast(msg); return; } }catch(e){}
+    try{ alert(msg); }catch(e){}
+  }
+  function firebaseAuth(){
+    if(!window.firebase || !firebase.auth) throw new Error('Firebase Authentication SDK did not load.');
+    if(!window.SKILLSWAP_FIREBASE_CONFIG) throw new Error('Firebase configuration is missing.');
+    if(!firebase.apps.length) firebase.initializeApp(window.SKILLSWAP_FIREBASE_CONFIG);
+    var auth=firebase.auth();
+    window.ssFirebaseAuth=auth;
+    window.ssFirebase=window.ssFirebase||{};
+    window.ssFirebase.auth=auth;
+    if(firebase.database) window.ssFirebase.db=window.ssFirebase.db||firebase.database();
+    return auth;
+  }
+  function openAuth(mode){
+    var modal=el('authModal'), si=el('signinForm'), su=el('signupForm');
+    if(!modal||!si||!su){ toast('Authentication window is missing.'); return false; }
+    modal.classList.add('show');
+    modal.style.display='flex';
+    si.style.display=mode==='signup'?'none':'block';
+    su.style.display=mode==='signup'?'block':'none';
+    setTimeout(function(){
+      var f=mode==='signup'?el('signupName'):el('signinEmail');
+      if(f) f.focus();
+    },50);
+    return false;
+  }
+  window.ssOpenAuth=openAuth;
+  window.openAuth=openAuth;
+  window.switchAuth=function(mode){ return openAuth(mode==='signup'?'signup':'signin'); };
+
+  window.signIn=async function(){
+    var email=(el('signinEmail')?.value||'').trim().toLowerCase();
+    var password=el('signinPassword')?.value||'';
+    if(!email){toast('Please enter your email address.');return false;}
+    if(!password){toast('Please enter your password.');return false;}
+    var btn=document.querySelector('#signinForm .modal-submit');
+    try{
+      var auth=firebaseAuth();
+      if(btn){btn.disabled=true;btn.textContent='Signing in…';}
+      var cred=await auth.signInWithEmailAndPassword(email,password);
+      var user=cred.user;
+      window.guestMode=false;window.isGuestUser=false;
+      try{localStorage.removeItem('skillswap_guest_mode');localStorage.removeItem('skillswap_guest_uid');}catch(e){}
+      var db=window.ssFirebase?.db;
+      var profile=null;
+      if(db){try{var snap=await db.ref('users/'+user.uid).once('value');if(snap.exists())profile=snap.val();}catch(e){console.warn(e);}}
+      if(!profile){profile={uid:user.uid,id:user.uid,legacyId:user.uid,name:user.displayName||email.split('@')[0],email:user.email||email,type:'SkillSwap Member',location:'Online',languages:['English'],teach:['Knowledge Sharing'],want:['Something New'],availability:['Flexible'],bio:'Welcome to SkillSwap India!',avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()};if(db)try{await db.ref('users/'+user.uid).set(profile);}catch(e){console.warn(e);}}
+      window.ssFirebaseProfile=profile;
+      try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
+      el('authModal')?.classList.remove('show');
+      document.body.classList.add('ss-authenticated');
+      try{window.updateUserUI?.();}catch(e){}
+      try{await window.renderEverything?.();}catch(e){console.warn(e);}
+      toast('👋 Welcome back, '+(profile.name||'SkillSwap member')+'!');
+    }catch(e){
+      console.error('SIGN IN ERROR',e);
+      var c=String(e?.code||'');
+      var m=c==='auth/invalid-credential'||c==='auth/wrong-password'||c==='auth/user-not-found'?'Incorrect email or password.':c==='auth/operation-not-allowed'?'Email/password sign-in is disabled in Firebase Authentication.':c==='auth/network-request-failed'?'Network error. Check your internet connection.':(e?.message||'Sign in failed.');
+      toast('❌ '+m.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
+    }finally{if(btn){btn.disabled=false;btn.textContent='Sign in';}}
+    return false;
+  };
+
+  window.signUp=async function(){
+    var name=(el('signupName')?.value||'').trim();
+    var email=(el('signupEmail')?.value||'').trim().toLowerCase();
+    var password=el('signupPassword')?.value||'';
+    if(!name){toast('Please enter your name.');return false;}
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('Please enter a valid email address.');return false;}
+    if(password.length<6){toast('Password must be at least 6 characters.');return false;}
+    var btn=document.querySelector('#signupForm .modal-submit');
+    try{
+      var auth=firebaseAuth();
+      if(btn){btn.disabled=true;btn.textContent='Creating account…';}
+      var user;
+      if(auth.currentUser?.isAnonymous && firebase.auth.EmailAuthProvider){
+        try{user=(await auth.currentUser.linkWithCredential(firebase.auth.EmailAuthProvider.credential(email,password))).user;}
+        catch(linkErr){
+          if(linkErr.code==='auth/credential-already-in-use') user=(await auth.signInWithEmailAndPassword(email,password)).user;
+          else throw linkErr;
+        }
+      }else user=(await auth.createUserWithEmailAndPassword(email,password)).user;
+      try{await user.updateProfile({displayName:name});}catch(e){console.warn(e);}
+      var csv=function(id,def){var v=(el(id)?.value||'').trim();return v?v.split(',').map(function(x){return x.trim();}).filter(Boolean):def;};
+      var profile={uid:user.uid,id:user.uid,legacyId:user.uid,name:name,email:user.email||email,type:(el('signupType')?.value||'College Student'),location:(el('signupLocation')?.value||'Online').trim(),languages:csv('signupLanguages',['English']),bio:(el('signupBio')?.value||'Learning and sharing skills.').trim(),teach:csv('signupSkill',['Knowledge Sharing']),want:csv('signupWanted',['Something New']),availability:[...document.querySelectorAll('#signupForm input[name="availability"]:checked')].map(x=>x.value),avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()};
+      if(!profile.availability.length)profile.availability=['Flexible'];
+      var db=window.ssFirebase?.db;
+      if(db){try{await db.ref('users/'+user.uid).set(profile);}catch(e){console.warn('Profile save skipped:',e);}}
+      window.ssFirebaseProfile=profile;window.guestMode=false;window.isGuestUser=false;
+      try{localStorage.removeItem('skillswap_guest_mode');localStorage.removeItem('skillswap_guest_uid');}catch(e){}
+      try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
+      el('authModal')?.classList.remove('show');
+      document.body.classList.add('ss-authenticated');
+      try{window.updateUserUI?.();}catch(e){}
+      try{await window.renderEverything?.();}catch(e){console.warn(e);}
+      toast('🎉 Account created successfully! Welcome to SkillSwap India.');
+    }catch(e){
+      console.error('SIGN UP ERROR',e);
+      var c=String(e?.code||'');
+      var m=c==='auth/email-already-in-use'?'This email is already registered. Please sign in instead.':c==='auth/operation-not-allowed'?'Email/password sign-up is disabled in Firebase Authentication.':c==='auth/network-request-failed'?'Network error. Check your internet connection.':c==='auth/weak-password'?'Password must be at least 6 characters.':(e?.message||'Account creation failed.');
+      toast('❌ '+m.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
+    }finally{if(btn){btn.disabled=false;btn.textContent='Create my profile';}}
+    return false;
+  };
+
+  window.continueAsGuest=async function(){
+    var btns=document.querySelectorAll('.ss-guest-btn');
+    btns.forEach(function(b){b.disabled=true;});
+    try{
+      var user=null;
+      try{
+        var auth=firebaseAuth();
+        user=auth.currentUser;
+        if(!user||!user.isAnonymous) user=(await auth.signInAnonymously()).user;
+      }catch(e){
+        console.warn('Anonymous Firebase auth unavailable; using exploration mode.',e);
+      }
+      window.guestMode=true;window.isGuestUser=true;window.ssGuestUser=user||{uid:'guest',isAnonymous:true};
+      try{localStorage.setItem('skillswap_guest_mode','true');if(user)localStorage.setItem('skillswap_guest_uid',user.uid);}catch(e){}
+      document.body.classList.add('ss-guest-mode');
+      el('authModal')?.classList.remove('show');
+      toast('👋 Welcome! You can explore SkillSwap as a guest.');
+      try{await window.renderEverything?.();}catch(e){console.warn(e);}
+    }catch(e){console.error('GUEST ERROR',e);toast('❌ Guest mode could not be started.');}
+    finally{btns.forEach(function(b){b.disabled=false;});}
+    return false;
+  };
+
+  // Override old inline handlers by wiring the visible landing-page buttons directly.
+  function wire(){
+    document.querySelectorAll('button,a').forEach(function(b){
+      var t=(b.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
+      if(t==='sign in' || t.includes('sign in')){
+        if(b.closest('#signinForm')||b.closest('#signupForm')) return;
+        b.onclick=function(e){e.preventDefault();return openAuth('signin');};
+      }else if(t.includes('create your free student profile') || t.includes('create my free profile') || t==='join free' || t==='sign up'){
+        if(b.closest('#signinForm')||b.closest('#signupForm')) return;
+        b.onclick=function(e){e.preventDefault();return openAuth('signup');};
+      }else if(t.includes('explore as guest')){
+        b.onclick=function(e){e.preventDefault();return window.continueAsGuest();};
+      }
+    });
+    var si=el('signinForm'),su=el('signupForm');
+    if(si)si.addEventListener('submit',function(e){e.preventDefault();window.signIn();});
+    if(su)su.addEventListener('submit',function(e){e.preventDefault();window.signUp();});
+    document.querySelectorAll('#signinForm .modal-submit').forEach(b=>b.type='button');
+    document.querySelectorAll('#signupForm .modal-submit').forEach(b=>b.type='button');
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire);else wire();
+  console.log('SkillSwap authentication: final working handler loaded');
 })();
 </script>
