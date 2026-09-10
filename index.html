@@ -3807,6 +3807,17 @@ input,textarea,select{background:#fff!important}
             Sign in
         </button>
 
+        <div class="ss-guest-divider"><span>or</span></div>
+
+        <button
+            type="button"
+            class="ss-guest-btn"
+            onclick="continueAsGuest(); return false;">
+            👤 Continue as Guest
+        </button>
+
+        <p class="ss-guest-note">Explore SkillSwap without creating an account. You can sign up later.</p>
+
 
         <p
             style="text-align:center;margin-top:15px;color:var(--muted)">
@@ -4035,6 +4046,13 @@ input,textarea,select{background:#fff!important}
             class="modal-submit"
             onclick="signUp(); return false;">
             Create my profile
+        </button>
+
+        <button
+            type="button"
+            class="ss-guest-btn ss-guest-btn-secondary"
+            onclick="continueAsGuest(); return false;">
+            👤 Explore as Guest instead
         </button>
 
 
@@ -11041,6 +11059,7 @@ body.dark-mode .ss-rating-box textarea{background:#0d211c;color:#eaf7f2;border-c
         <p>SkillSwap India helps learners meet real people, exchange practical skills, build trusted connections and grow together through meaningful skill swaps.</p>
         <div class="ss-land-hero-actions">
           <button class="ss-land-btn primary" type="button" onclick="ssOpenAuth('signup');return false">✨ Create my free profile</button>
+          <button class="ss-land-btn secondary" type="button" onclick="continueAsGuest();return false">👤 Explore as Guest</button>
           <button class="ss-land-btn secondary" type="button" onclick="document.getElementById('ssLandHow').scrollIntoView({behavior:'smooth'})">See how it works ↓</button>
         </div>
         <div class="ss-land-trust">
@@ -12868,6 +12887,132 @@ window.ssInvestorInterest=function(){
 })();
 </script>
 
+
+<style id="ssGuestModeStyles">
+.ss-guest-divider{display:flex;align-items:center;gap:10px;margin:16px 0 12px;color:#7f9ab8;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.ss-guest-divider:before,.ss-guest-divider:after{content:"";height:1px;flex:1;background:rgba(130,170,210,.22)}
+.ss-guest-btn{width:100%;min-height:46px;border:1px solid rgba(74,190,255,.30);border-radius:12px;background:rgba(255,255,255,.07);color:#f4fbff!important;font-weight:800;font-size:14px;cursor:pointer;transition:.2s ease;display:flex;align-items:center;justify-content:center;gap:8px}
+.ss-guest-btn:hover{background:rgba(57,185,255,.13);border-color:rgba(57,185,255,.55);transform:translateY(-1px)}
+.ss-guest-btn:disabled{opacity:.6;cursor:wait;transform:none}
+.ss-guest-btn-secondary{margin-top:10px}
+.ss-guest-note{margin:8px 0 0;text-align:center;color:#91abc7;font-size:12px;line-height:1.45}
+body.ss-guest-mode .member-only{display:none!important}
+body.ss-guest-mode .guest-only{display:block!important}
+.ss-guest-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:rgba(57,185,255,.12);border:1px solid rgba(57,185,255,.25);color:#bfe9ff;font-size:12px;font-weight:800}
+</style>
+
+<script id="ssGuestModeFinal">
+(function(){
+  'use strict';
+
+  function toast(message){
+    try{ if(typeof window.showToast==='function'){ window.showToast(message); return; } }catch(e){}
+    try{ alert(message); }catch(e){}
+  }
+
+  function setGuestUI(user){
+    window.isGuestUser=true;
+    window.guestMode=true;
+    window.ssGuestUser=user||null;
+    document.body.classList.add('ss-guest-mode');
+    try{ localStorage.setItem('skillswap_guest_mode','true'); }catch(e){}
+    try{ if(user) localStorage.setItem('skillswap_guest_uid',user.uid); }catch(e){}
+
+    var guestProfile={
+      uid:user&&user.uid || '',
+      id:user&&user.uid || 'guest',
+      name:'Guest Explorer',
+      email:'',
+      type:'Guest',
+      location:'Online',
+      languages:['English'],
+      bio:'Exploring SkillSwap India as a guest.',
+      teach:['Knowledge Sharing'],
+      want:['Something New'],
+      availability:['Flexible'],
+      avatar:'👤',
+      rating:0,
+      reviews:0,
+      isGuest:true
+    };
+    window.ssFirebaseProfile=guestProfile;
+    try{ if(window.ssMemoryStorage) window.ssMemoryStorage.setItem('skillswapUser',JSON.stringify(guestProfile)); }catch(e){}
+
+    try{ document.querySelectorAll('[data-guest-name]').forEach(function(el){el.textContent='Guest Explorer';}); }catch(e){}
+    try{ if(typeof window.updateUserUI==='function') window.updateUserUI(); }catch(e){}
+    try{ if(typeof window.setAppState==='function') window.setAppState(true); }catch(e){}
+  }
+
+  window.continueAsGuest=async function(){
+    var buttons=document.querySelectorAll('.ss-guest-btn');
+    buttons.forEach(function(b){b.disabled=true; b.dataset.oldText=b.textContent; b.textContent='Opening guest mode…';});
+    try{
+      if(typeof window.firebase==='undefined' || !window.firebase.auth){
+        throw new Error('Firebase Authentication SDK is not loaded.');
+      }
+      var auth=window.ssFirebaseAuth || window.firebase.auth();
+      window.ssFirebaseAuth=auth;
+
+      var user=auth.currentUser;
+      if(user && user.isAnonymous){
+        setGuestUI(user);
+      }else{
+        var cred=await auth.signInAnonymously();
+        user=cred.user;
+        setGuestUI(user);
+      }
+
+      try{ if(typeof window.closeModal==='function') window.closeModal('authModal'); }catch(e){}
+      try{ if(typeof window.renderEverything==='function') await window.renderEverything(); }catch(e){ console.warn('Guest render:',e); }
+      toast('👋 Welcome! You are exploring SkillSwap as a guest.');
+    }catch(e){
+      console.error('Guest mode error:',e);
+      var code=String(e&&e.code||'');
+      var raw=String(e&&e.message||'');
+      var message='Guest mode could not be started.';
+      if(code==='auth/operation-not-allowed'){
+        message='Guest Mode is disabled in Firebase. Enable Authentication → Sign-in method → Anonymous, then refresh this page.';
+      }else if(code==='auth/network-request-failed'){
+        message='Firebase could not connect. Check your internet connection and try again.';
+      }else if(raw){
+        message=raw.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,'');
+      }
+      toast('❌ '+message);
+    }finally{
+      buttons.forEach(function(b){b.disabled=false; b.textContent=b.dataset.oldText||'👤 Continue as Guest';});
+    }
+    return false;
+  };
+
+  window.isGuestMode=function(){
+    try{ return !!(window.guestMode || window.isGuestUser || (window.firebase && window.firebase.auth && window.firebase.auth().currentUser && window.firebase.auth().currentUser.isAnonymous)); }catch(e){ return false; }
+  };
+
+  window.requireRegisteredMember=function(action){
+    try{
+      var user=window.firebase && window.firebase.auth ? window.firebase.auth().currentUser : null;
+      if(!user || user.isAnonymous){
+        toast('Please create a free SkillSwap account to '+(action||'use this feature')+'.');
+        if(typeof window.ssOpenAuth==='function') window.ssOpenAuth('signup');
+        return false;
+      }
+      return true;
+    }catch(e){
+      toast('Please sign in to continue.');
+      return false;
+    }
+  };
+
+  // Restore guest UI on reload when Firebase has already restored the anonymous session.
+  function restore(){
+    try{
+      var auth=window.firebase && window.firebase.auth ? window.firebase.auth() : null;
+      if(auth && auth.currentUser && auth.currentUser.isAnonymous) setGuestUI(auth.currentUser);
+    }catch(e){}
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',restore); else restore();
+})();
+</script>
 </body>
 
 <style id="v7-typed-text-visible">
