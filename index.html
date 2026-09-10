@@ -2728,7 +2728,7 @@ button,.btn,.join,.search-btn,.match-btn,.connect,.modal-submit,
     };
   }
 
-  /* Supabase Feature Hub: Request Skill Swap / Smart Matches */
+  /* Firebase Feature Hub: Request Skill Swap / Smart Matches */
   const originalGetUsers = window.getUsers;
   if(typeof originalGetUsers==='function'){
     window.getUsers = async function(){
@@ -3118,80 +3118,6 @@ body textarea::placeholder {
 }
 </style>
 
-<style id="ss-real-members-fix">
-.ss-other-loading{grid-column:1/-1;padding:28px 18px;text-align:center;border:1px dashed #cfe0da;border-radius:16px;background:#fff;color:#687a75;font-weight:700}
-.dark-mode .ss-other-loading{background:#10211c;color:#b9cbc5;border-color:#34564c}
-</style>
-
-<style id="skillswap-chat-white-text-fix">
-/* Chat readability fix: all chat names, messages and controls are white */
-#chatModal .chat-header,
-#chatModal .chat-header h3,
-#chatModal .chat-header p,
-#chatModal .chat-person,
-#chatModal .chat-messages,
-#chatModal .message,
-#chatModal .message.them,
-#chatModal .message.me,
-#chatModal .message.sent,
-#chatModal .chat-input,
-#chatModal .chat-input input,
-#chatModal .chat-input button { color:#fff !important; -webkit-text-fill-color:#fff !important; }
-#chatModal .message.them,
-#chatModal .message.me,
-#chatModal .message.sent { color:#fff !important; -webkit-text-fill-color:#fff !important; }
-#chatModal .chat-input input::placeholder { color:rgba(255,255,255,.72) !important; -webkit-text-fill-color:rgba(255,255,255,.72) !important; }
-#chatModal .chat-input input { background:#082936 !important; border-color:rgba(255,255,255,.25) !important; }
-#chatModal .chat-input button { color:#fff !important; -webkit-text-fill-color:#fff !important; }
-</style>
-
-<style id="ss-initial-load-fix">
-/* Prevent the authentication UI from flashing during page startup. */
-html.ss-starting body > * { visibility:hidden !important; }
-html.ss-starting #ssPublicLanding { visibility:hidden !important; }
-html.ss-starting #authModal { display:none !important; }
-html:not(.ss-starting) #authModal { display:none; }
-html:not(.ss-starting) #authModal.show { display:flex !important; }
-</style>
-<script id="ss-initial-load-fix-js">
-(function(){
-  document.documentElement.classList.add('ss-starting');
-  function finishInitialLoad(loggedIn){
-    try{
-      var modal=document.getElementById('authModal');
-      /* Never let a stale/automatic auth modal appear during startup. */
-      if(modal && !window.__ssAuthOpenedByUser) modal.classList.remove('show');
-      var landing=document.getElementById('ssPublicLanding');
-      if(landing) landing.style.display=loggedIn?'none':'block';
-      document.body.classList.toggle('ss-authenticated',!!loggedIn);
-    }catch(e){}
-    document.documentElement.classList.remove('ss-starting');
-  }
-  window.__ssAuthOpenedByUser=false;
-  var oldOpen=window.ssOpenAuth;
-  window.ssOpenAuth=function(type){
-    window.__ssAuthOpenedByUser=true;
-    if(typeof oldOpen==='function') return oldOpen(type);
-    var m=document.getElementById('authModal');
-    if(m){m.classList.add('show'); if(typeof switchAuth==='function') switchAuth(type==='signup'?'signup':'signin');}
-    return false;
-  };
-  function boot(){
-    var a=window.ssSupabaseAuth||window.ssSupabase?.auth;
-    if(a && typeof a.onAuthStateChanged==='function'){
-      var done=false;
-      a.onAuthStateChanged(function(u){
-        if(done)return; done=true;
-        finishInitialLoad(!!u);
-      });
-      setTimeout(function(){if(!done){done=true;finishInitialLoad(!!(a.currentUser||window.ssSupabaseProfile||getCurrentUser?.()));}},2500);
-    }else{
-      setTimeout(function(){finishInitialLoad(!!(window.ssSupabaseProfile||((typeof getCurrentUser==='function')?getCurrentUser():null)));},150);
-    }
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
-})();
-</script>
 </head>
 
 <body>
@@ -3413,81 +3339,81 @@ html:not(.ss-starting) #authModal.show { display:flex !important; }
       <h2>👥 Other community members</h2>
       <p>Discover people on SkillSwap, see what they can teach, and find what they want to learn.</p>
     </div>
-    <span id="ssOtherCount" class="ss-other-count">12 demo profiles</span>
+    <span id="ssOtherCount" class="ss-other-count">12 profiles</span>
   </div>
 
   <div id="ssOtherGrid" class="ss-other-grid">
     <article class="ss-other-card">
-      <div class="ss-other-card-head"><div class="ss-other-avatar">👩🏽</div><span class="ss-other-badge">Demo profile</span></div>
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👩🏽</div><span class="ss-other-badge">Community profile</span></div>
       <h3>Ananya Reddy</h3><p class="ss-other-location">📍 Hyderabad, Telangana</p><span class="ss-other-category">Languages</span>
       <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Telugu · Hindi</strong></div><div><small>WANTS TO LEARN</small><strong>Python · AI</strong></div></div>
-      <button type="button" class="ss-other-btn" onclick="openOtherProfile(\'ananya')">View profile</button>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
     </article>
     <article class="ss-other-card">
-      <div class="ss-other-card-head"><div class="ss-other-avatar">👨🏽</div><span class="ss-other-badge">Demo profile</span></div>
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👨🏽</div><span class="ss-other-badge">Community profile</span></div>
       <h3>Aarav Sharma</h3><p class="ss-other-location">📍 Bengaluru, Karnataka</p><span class="ss-other-category">Technology</span>
       <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Python · Robotics</strong></div><div><small>WANTS TO LEARN</small><strong>Guitar · Speaking</strong></div></div>
-      <button type="button" class="ss-other-btn" onclick="openOtherProfile(\'aarav')">View profile</button>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
     </article>
     <article class="ss-other-card">
-      <div class="ss-other-card-head"><div class="ss-other-avatar">👩🏽</div><span class="ss-other-badge">Demo profile</span></div>
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👩🏽</div><span class="ss-other-badge">Community profile</span></div>
       <h3>Meera Krishnan</h3><p class="ss-other-location">📍 Chennai, Tamil Nadu</p><span class="ss-other-category">Music &amp; Dance</span>
       <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Bharatanatyam · Music</strong></div><div><small>WANTS TO LEARN</small><strong>Design · Photography</strong></div></div>
-      <button type="button" class="ss-other-btn" onclick="openOtherProfile(\'meera')">View profile</button>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
     </article>
     <article class="ss-other-card">
-      <div class="ss-other-card-head"><div class="ss-other-avatar">👨🏽</div><span class="ss-other-badge">Demo profile</span></div>
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👨🏽</div><span class="ss-other-badge">Community profile</span></div>
       <h3>Rohan Patel</h3><p class="ss-other-location">📍 Pune, Maharashtra</p><span class="ss-other-category">Technology</span>
       <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Python · AI · ML</strong></div><div><small>WANTS TO LEARN</small><strong>Web Design · Editing</strong></div></div>
-      <button type="button" class="ss-other-btn" onclick="openOtherProfile(\'rohan')">View profile</button>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
     </article>
     <article class="ss-other-card">
-      <div class="ss-other-card-head"><div class="ss-other-avatar">👩🏼</div><span class="ss-other-badge">Demo profile</span></div>
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👩🏼</div><span class="ss-other-badge">Community profile</span></div>
       <h3>Saanvi Gupta</h3><p class="ss-other-location">📍 Delhi, India</p><span class="ss-other-category">Academics</span>
       <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Maths · Study Planning</strong></div><div><small>WANTS TO LEARN</small><strong>Spanish · Guitar</strong></div></div>
-      <button type="button" class="ss-other-btn" onclick="openOtherProfile(\'saanvi')">View profile</button>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
     </article>
     <article class="ss-other-card">
-      <div class="ss-other-card-head"><div class="ss-other-avatar">👨🏽</div><span class="ss-other-badge">Demo profile</span></div>
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👨🏽</div><span class="ss-other-badge">Community profile</span></div>
       <h3>Vikram Rao</h3><p class="ss-other-location">📍 Vijayawada, Andhra Pradesh</p><span class="ss-other-category">Sports</span>
       <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Cricket · Chess</strong></div><div><small>WANTS TO LEARN</small><strong>Python · Photography</strong></div></div>
-      <button type="button" class="ss-other-btn" onclick="openOtherProfile(\'vikram')">View profile</button>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
     </article>
     <article class="ss-other-card">
-      <div class="ss-other-card-head"><div class="ss-other-avatar">👩🏽</div><span class="ss-other-badge">Demo profile</span></div>
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👩🏽</div><span class="ss-other-badge">Community profile</span></div>
       <h3>Ishita Singh</h3><p class="ss-other-location">📍 Jaipur, Rajasthan</p><span class="ss-other-category">Indian Arts</span>
       <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Rangoli · Mehendi</strong></div><div><small>WANTS TO LEARN</small><strong>Coding · Photography</strong></div></div>
-      <button type="button" class="ss-other-btn" onclick="openOtherProfile(\'ishita')">View profile</button>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
     </article>
     <article class="ss-other-card">
-      <div class="ss-other-card-head"><div class="ss-other-avatar">🧑🏽‍🎓</div><span class="ss-other-badge">Demo profile</span></div>
+      <div class="ss-other-card-head"><div class="ss-other-avatar">🧑🏽‍🎓</div><span class="ss-other-badge">Community profile</span></div>
       <h3>Aditya Nair</h3><p class="ss-other-location">📍 Kochi, Kerala</p><span class="ss-other-category">Academics</span>
       <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Physics · Science</strong></div><div><small>WANTS TO LEARN</small><strong>Web Development</strong></div></div>
-      <button type="button" class="ss-other-btn" onclick="openOtherProfile(\'aditya')">View profile</button>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
     </article>
     <article class="ss-other-card">
-      <div class="ss-other-card-head"><div class="ss-other-avatar">👩🏻‍🎤</div><span class="ss-other-badge">Demo profile</span></div>
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👩🏻‍🎤</div><span class="ss-other-badge">Community profile</span></div>
       <h3>Kavya Das</h3><p class="ss-other-location">📍 Kolkata, West Bengal</p><span class="ss-other-category">Music</span>
       <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Music · Guitar</strong></div><div><small>WANTS TO LEARN</small><strong>Photography · Python</strong></div></div>
-      <button type="button" class="ss-other-btn" onclick="openOtherProfile(\'kavya')">View profile</button>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
     </article>
     <article class="ss-other-card">
-      <div class="ss-other-card-head"><div class="ss-other-avatar">👨🏻‍💼</div><span class="ss-other-badge">Demo profile</span></div>
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👨🏻‍💼</div><span class="ss-other-badge">Community profile</span></div>
       <h3>Dev Malhotra</h3><p class="ss-other-location">📍 Mumbai, Maharashtra</p><span class="ss-other-category">Career Skills</span>
       <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Presentation · Interviews</strong></div><div><small>WANTS TO LEARN</small><strong>Coding · Design</strong></div></div>
-      <button type="button" class="ss-other-btn" onclick="openOtherProfile(\'dev')">View profile</button>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
     </article>
     <article class="ss-other-card">
-      <div class="ss-other-card-head"><div class="ss-other-avatar">👩🏻‍🏫</div><span class="ss-other-badge">Demo profile</span></div>
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👩🏻‍🏫</div><span class="ss-other-badge">Community profile</span></div>
       <h3>Priya Sharma</h3><p class="ss-other-location">📍 Hyderabad, Telangana</p><span class="ss-other-category">Languages</span>
       <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Hindi · English</strong></div><div><small>WANTS TO LEARN</small><strong>Digital Marketing</strong></div></div>
-      <button type="button" class="ss-other-btn" onclick="openOtherProfile(\'priya')">View profile</button>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
     </article>
     <article class="ss-other-card">
-      <div class="ss-other-card-head"><div class="ss-other-avatar">👨🏻‍🔬</div><span class="ss-other-badge">Demo profile</span></div>
+      <div class="ss-other-card-head"><div class="ss-other-avatar">👨🏻‍🔬</div><span class="ss-other-badge">Community profile</span></div>
       <h3>Arjun Mehta</h3><p class="ss-other-location">📍 Ahmedabad, Gujarat</p><span class="ss-other-category">Science</span>
       <div class="ss-other-skills"><div><small>CAN TEACH</small><strong>Chemistry · Research</strong></div><div><small>WANTS TO LEARN</small><strong>Programming · Guitar</strong></div></div>
-      <button type="button" class="ss-other-btn" onclick="openOtherProfile(\'arjun')">View profile</button>
+      <button type="button" class="ss-other-btn" onclick="ssStarterInfo()">View profile</button>
     </article>
   </div>
 </section>
@@ -4501,250 +4427,129 @@ html:not(.ss-starting) #authModal.show { display:flex !important; }
 
 </div>
 
-<!-- Supabase SDK: Auth + PostgreSQL + Realtime -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<!-- Firebase SDK: Auth + Realtime Database. No Python/Flask/Supabase/browser persistence. -->
+<script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-database-compat.js"></script>
 <script>
 /* =========================================================
-   SKILLSWAP INDIA — SUPABASE ADAPTER
-   Uses Supabase Auth + PostgreSQL while preserving the
-   existing SkillSwap frontend API.
+   SKILLSWAP INDIA — FIREBASE WEB CONFIG
+   Inline configuration so this HTML works without a separate
+   firebase-config.js file.
+========================================================= */
+window.SKILLSWAP_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAwCtVLR4PoG5lK1zafGXLNFgGs8-SfJzQ",
+  authDomain: "skill-swap-india-b2a9a.firebaseapp.com",
+  databaseURL: "https://skill-swap-india-b2a9a-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "skill-swap-india-b2a9a",
+  storageBucket: "skill-swap-india-b2a9a.firebasestorage.app",
+  messagingSenderId: "287890222992",
+  appId: "1:287890222992:web:f2de60b76f3f5cf3f74d15",
+  measurementId: "G-HHWKHMMRLY"
+};
+</script>
+<script>
+/* =========================================================
+   SKILLSWAP INDIA — FIREBASE REALTIME DATABASE ADAPTER
+   Keeps the existing Flask-style frontend API but stores all
+   application data in Firebase Realtime Database.
 ========================================================= */
 (function(){
-  const SUPABASE_URL='https://fqpugoyplvpeidcfupdp.supabase.co';
-  const SUPABASE_KEY='sb_publishable_pmvFw9fOcenEc9fQUP1H7w_u_jmwM6Y';
-  const ready=!!(window.supabase&&SUPABASE_URL&&SUPABASE_KEY);
+  const cfg=window.SKILLSWAP_FIREBASE_CONFIG||{};
+  const ready=!!(cfg.apiKey&&cfg.projectId&&cfg.appId);
   const memory={};
   window.ssMemoryStorage={getItem:k=>Object.prototype.hasOwnProperty.call(memory,k)?memory[k]:null,setItem:(k,v)=>memory[k]=String(v),removeItem:k=>delete memory[k],clear:()=>Object.keys(memory).forEach(k=>delete memory[k])};
-  window.ssSupabaseReady=ready;
-  window.ssSupabaseReady=ready;
-  window.ssSupabaseError=ready?'':'Supabase SDK could not be loaded.';
-  if(!ready)return;
-
-  const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-  window.ssSupabaseClient=client;
-  window.ssSupabaseRawClient=client;
-  window.ssSupabase=client;
-
-  const now=()=>new Date().toISOString();
+  window.ssFirebaseReady=ready;
+  if(!ready){window.ssFirebaseError='Firebase is not configured. Edit firebase-config.js with your Firebase web app configuration.';return;}
+  if(!firebase.apps.length)firebase.initializeApp(cfg);
+  const auth=firebase.auth();
+  const db=firebase.database();
+  window.ssFirebase={auth,db};
+  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(e=>console.warn('Firebase auth persistence:',e));
   const json=(obj,status=200)=>new Response(JSON.stringify(obj),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}});
   const bodyOf=async(init)=>{try{return init&&init.body?JSON.parse(init.body):{}}catch{return{}}};
-  const cleanUser=d=>{
-    if(!d)return null;
-    const teach=d.teach??d.skills_teach??'';
-    const want=d.want??d.skills_want??'';
-    return {...d,id:d.id||d.uid,uid:d.uid||d.id,email:d.email||'',
-      languages:Array.isArray(d.languages)?d.languages:(d.languages?String(d.languages).split(',').map(x=>x.trim()).filter(Boolean):['English']),
-      teach:Array.isArray(teach)?teach:String(teach).split(',').map(x=>x.trim()).filter(Boolean),
-      want:Array.isArray(want)?want:String(want).split(',').map(x=>x.trim()).filter(Boolean),
-      availability:Array.isArray(d.availability)?d.availability:(d.availability?String(d.availability).split(',').map(x=>x.trim()).filter(Boolean):['Flexible']),
-      avatar:d.avatar||d.avatar_url||'🧑🏻'
-    };
-  };
-
-  // Small local fallback for features whose tables have not been created yet.
-  const localKey='skillswap_supabase_fallback_v1';
-  let local={};
-  try{local=JSON.parse(localStorage.getItem(localKey)||'{}')||{}}catch(e){local={};}
-  const saveLocal=()=>{try{localStorage.setItem(localKey,JSON.stringify(local));}catch(e){}};
-  const localTable=(name)=>{if(!local[name])local[name]={};return local[name];};
-  const uuid=()=>crypto.randomUUID?crypto.randomUUID():('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0,v=c==='x'?r:(r&3|8);return v.toString(16)}));
-
+  const now=()=>new Date().toISOString();
+  const cleanUser=d=>{if(!d)return null;return {...d,id:d.id||d.legacyId||d.uid,uid:d.uid||d.id,email:d.email||'',languages:Array.isArray(d.languages)?d.languages:[],teach:Array.isArray(d.teach)?d.teach:[],want:Array.isArray(d.want)?d.want:[],availability:Array.isArray(d.availability)?d.availability:[]};};
+  const usersRef=()=>db.ref('users');
   async function profileByAny(id){
     const s=String(id);
-    let q=client.from('profiles').select('*').eq('id',s).maybeSingle();
-    let {data,error}=await q;
-    if(!error&&data)return cleanUser(data);
-    const {data:all,error:e}=await client.from('profiles').select('*').limit(500);
-    if(e)return null;
-    return (all||[]).find(d=>String(d.id)===s||String(d.legacyId||'')===s||String(d.uid||'')===s)||null;
+    let snap=await db.ref('users/'+s).get();
+    if(snap.exists())return cleanUser(snap.val());
+    const all=await usersRef().get(), vals=all.val()||{};
+    for(const [uid,d] of Object.entries(vals))if(String(d.legacyId)===s||String(d.id)===s)return cleanUser(d);
+    return null;
   }
-  async function currentProfile(){
-    const {data:{user}}=await client.auth.getUser();
-    if(!user)return null;
-    const {data,error}=await client.from('profiles').select('*').eq('id',user.id).maybeSingle();
-    if(error)throw error;
-    return data?cleanUser(data):null;
-  }
-  async function people(){
-    const {data,error}=await client.from('profiles').select('*').limit(500);
-    if(error)throw error;
-    return (data||[]).map(cleanUser).filter(Boolean).slice(0,100);
-  }
-  async function notify(uid,title,body){
-    const t=localTable('notifications');
-    const id=uuid();t[id]={id,uid,title,body,is_read:false,created_at:now()};saveLocal();
-  }
-  async function allUnder(path){
-    const parts=String(path).split('/').filter(Boolean);
-    const root=parts[0]||'';
-    if(root==='users'){
-      const {data,error}=await client.from('profiles').select('*').limit(500);if(error)throw error;
-      if(parts[1]){const p=(data||[]).find(x=>String(x.id)===parts[1]);return p||{};}
-      return Object.fromEntries((data||[]).map(x=>[x.id,x]));
-    }
-    if(root==='requests'){
-      const {data,error}=await client.from('requests').select('*').limit(500);if(error)throw error;
-      return Object.fromEntries((data||[]).map(x=>[x.id,x]));
-    }
-    if(root==='connections'){
-      const {data,error}=await client.from('connections').select('*').limit(500);if(error)throw error;
-      return Object.fromEntries((data||[]).map(x=>[x.id,x]));
-    }
-    if(root==='messages'){
-      const {data,error}=await client.from('messages').select('*').limit(500);if(error)throw error;
-      return Object.fromEntries((data||[]).map(x=>[x.id,x]));
-    }
-    if(root==='favorites'){
-      const {data,error}=await client.from('favorites').select('*').limit(500);if(error)throw error;
-      return Object.fromEntries((data||[]).map(x=>[x.id,x]));
-    }
-    return localTable(root);
-  }
+  async function currentProfile(){const u=auth.currentUser;if(!u)return null;const s=await db.ref('users/'+u.uid).get();return s.exists()?cleanUser(s.val()):null;}
+  async function people(){const s=await usersRef().get();return Object.values(s.val()||{}).map(cleanUser).filter(Boolean).slice(0,100);}
+  async function notify(uid,title,body){if(!uid)return;const ref=db.ref('notifications').push();await ref.set({uid,title,body,is_read:false,created_at:now()});}
+  async function allUnder(path){const s=await db.ref(path).get();return s.val()||{};}
   function entries(obj){return Object.entries(obj||{}).map(([id,d])=>({id,...d}));}
-
-  function makeSnapshot(value,key=null){return {exists:()=>value!==undefined&&value!==null&&(typeof value!=='object'||Object.keys(value).length>0),val:()=>value,key};}
-  function makeRef(path){
-    const clean=String(path||'').replace(/^\/|\/$/g,'');
-    const parts=clean.split('/').filter(Boolean),root=parts[0]||'',id=parts[1]||null;
-    const ref={
-      key:id||null,
-      async get(){return makeSnapshot(await getPath(clean),id)},
-      async once(){return makeSnapshot(await getPath(clean),id)},
-      async set(value){await setPath(clean,value);return null},
-      async update(value){await updatePath(clean,value);return null},
-      async remove(){await removePath(clean);return null},
-      push(){const k=uuid();return {...makeRef(clean+'/'+k),key:k}},
-      orderByChild(){return ref},
-      equalTo(){return ref},
-      on(){},off(){},
-      child(childPath){return makeRef(clean+'/'+String(childPath).replace(/^\/+|\/+$/g,''))},
-      onDisconnect(){return {remove:async()=>{},set:async()=>{}}}
-    };
-    return ref;
-  }
-  async function getPath(path){
-    const p=String(path).split('/').filter(Boolean),root=p[0]||'';
-    if(root==='users'){
-      if(p[1]){const {data}=await client.from('profiles').select('*').eq('id',p[1]).maybeSingle();return data||null;}
-      const {data}=await client.from('profiles').select('*').limit(500);return Object.fromEntries((data||[]).map(x=>[x.id,x]));
-    }
-    if(root==='requests'||root==='connections'||root==='messages'||root==='favorites'){
-      const {data,error}=await client.from(root).select('*').limit(500);if(error)throw error;
-      const all=Object.fromEntries((data||[]).map(x=>[x.id,x]));return p[1]?all[p[1]]||null:all;
-    }
-    let cur=localTable(root);for(let i=1;i<p.length;i++){cur=cur?.[p[i]];}return cur??null;
-  }
-  function mapProfile(value){
-    const v={...value}; if(v.uid&&!v.id)v.id=v.uid; if(v.id&&!v.uid)v.uid=v.id; return v;
-  }
-  async function setPath(path,value){
-    const p=String(path).split('/').filter(Boolean),root=p[0]||'';
-    if(root==='users'){
-      const uid=p[1];if(!uid)throw new Error('Profile id is required.');
-      const v=mapProfile(value);
-      const row={
-        id:uid,
-        name:String(v.name||'SkillSwap Member'),
-        email:String(v.email||''),
-        location:v.location==null?'':String(v.location),
-        bio:v.bio==null?'':String(v.bio),
-        skills_teach:Array.isArray(v.teach)?v.teach.join(', '):(v.skills_teach==null?'':String(v.skills_teach)),
-        skills_want:Array.isArray(v.want)?v.want.join(', '):(v.skills_want==null?'':String(v.skills_want)),
-        avatar_url:v.avatar_url||v.avatar||null,
-        created_at:v.created_at||now()
-      };
-      const {error}=await client.from('profiles').upsert(row,{onConflict:'id'});if(error)throw error;return;
-    }
-    if(root==='requests'||root==='connections'||root==='messages'||root==='favorites'){
-      const id=p[1]||uuid();
-      let row={...value,id};
-      if(root==='requests')row={id,sender_id:row.sender_id||row.senderUid||null,receiver_id:row.receiver_id||row.receiverUid||null,message:row.message||'',status:row.status||'pending',created_at:row.created_at||now()};
-      if(root==='connections')row={id,user_id:row.user_id||row.userId||row.senderUid||null,connected_user_id:row.connected_user_id||row.connectedUserId||row.receiverUid||null,created_at:row.created_at||now()};
-      if(root==='messages')row={id,sender_id:row.sender_id||row.senderUid||null,receiver_id:row.receiver_id||row.receiverUid||null,message:row.message||row.text||'',created_at:row.created_at||now()};
-      if(root==='favorites')row={id,user_id:row.user_id||row.uid||null,favorite_user_id:row.favorite_user_id||row.personId||null,created_at:row.created_at||now()};
-      const {error}=await client.from(root).upsert(row,{onConflict:'id'});if(error)throw error;return;
-    }
-    if(!p[1]){local[root]=value||{};}else{const t=localTable(root);t[p[1]]=value;}saveLocal();
-  }
-  async function updatePath(path,value){
-    const p=String(path).split('/').filter(Boolean),root=p[0]||'';
-    if(root==='users'&&p[1]){const {error}=await client.from('profiles').update(value).eq('id',p[1]);if(error)throw error;return;}
-    if(['requests','connections','messages','favorites'].includes(root)&&p[1]){const {error}=await client.from(root).update(value).eq('id',p[1]);if(error)throw error;return;}
-    const old=(await getPath(path))||{};await setPath(path,{...old,...value});
-  }
-  async function removePath(path){
-    const p=String(path).split('/').filter(Boolean),root=p[0]||'';
-    if(['requests','connections','messages','favorites'].includes(root)&&p[1]){const {error}=await client.from(root).delete().eq('id',p[1]);if(error)throw error;return;}
-    if(root==='users'&&p[1]){const {error}=await client.from('profiles').delete().eq('id',p[1]);if(error)throw error;return;}
-    const t=localTable(root);if(p[1])delete t[p[1]];else local[root]={};saveLocal();
-  }
-
-  function wrapUser(u){if(!u)return null;return {...u,updateProfile:async({displayName}={})=>{const {data,error}=await client.auth.updateUser({data:{...(u.user_metadata||{}),name:displayName}});if(error)throw error;u.user_metadata=data.user.user_metadata;return data.user;}};}
-  const auth={
-    get currentUser(){return auth._currentUser||null},
-    _currentUser:null,
-    async setPersistence(){return null},
-    async createUserWithEmailAndPassword(email,password){
-      const {data,error}=await client.auth.signUp({email,password});if(error)throw {code:'auth/'+(error.code||'signup-failed'),message:error.message};
-      auth._currentUser=wrapUser(data.user);return {user:auth._currentUser};
-    },
-    async signInWithEmailAndPassword(email,password){
-      const {data,error}=await client.auth.signInWithPassword({email,password});if(error)throw {code:'auth/'+(error.code||'invalid-credential'),message:error.message};
-      auth._currentUser=wrapUser(data.user);return {user:auth._currentUser};
-    },
-    async signOut(){const {error}=await client.auth.signOut();if(error)throw error;auth._currentUser=null;},
-    onAuthStateChanged(cb){return client.auth.onAuthStateChange((_event,session)=>{auth._currentUser=wrapUser(session?.user||null);cb(auth._currentUser);}).data.subscription}
-  };
-  window.ssSupabase={auth,db:{ref:makeRef}};
-  window.ssSupabaseAuth=auth;
-  window.ssSupabaseRoute=null;
-
-  async function ensureProfile(user){
-    if(!user)return null;
-    let p=await currentProfile();
-    if(!p){
-      const base={id:user.id,name:user.user_metadata?.name||user.email?.split('@')[0]||'SkillSwap Member',email:user.email||'',location:'Online',bio:'Learning and sharing skills.',skills_teach:'Knowledge Sharing',skills_want:'Something New',avatar_url:null,created_at:now()};
-      const {data,error}=await client.from('profiles').upsert(base,{onConflict:'id'}).select().single();if(error)throw error;p=data;
-    }
-    return cleanUser(p);
-  }
-
   async function route(path,init={}){
     if(!path.startsWith('/api/'))return null;
-    const method=(init.method||'GET').toUpperCase(),payload=await bodyOf(init);
+    if(!ready)return json({success:false,message:window.ssFirebaseError},503);
+    const method=(init.method||'GET').toUpperCase(), payload=await bodyOf(init), current=auth.currentUser;
+    const requireAuth=()=>{if(!current)throw new Error('Please sign in first.');};
     try{
-      const {data:{user}}=await client.auth.getUser();
       if(path==='/api/signup'&&method==='POST'){
-        const {data,error}=await client.auth.signUp({email:payload.email,password:payload.password,options:{data:{name:payload.name||'SkillSwap Member'}}});if(error)throw error;
-        const u=data.user,p={id:u.id,name:payload.name||'SkillSwap Member',email:u.email||payload.email,location:payload.location||'Online',bio:payload.bio||'Learning and sharing skills.',skills_teach:String(payload.teach||'Knowledge Sharing'),skills_want:String(payload.want||'Something New'),avatar_url:null,created_at:now()};
-        const {error:pe}=await client.from('profiles').upsert(p,{onConflict:'id'});if(pe)throw pe;return json({success:true,user:cleanUser(p)});
+        const cred=await auth.createUserWithEmailAndPassword(payload.email,payload.password);
+        const id=Date.now()+Math.floor(Math.random()*1000);
+        const profile={uid:cred.user.uid,legacyId:id,id,name:payload.name||'SkillSwap Member',email:payload.email,type:payload.type||'University Student',location:payload.location||'Online',languages:String(payload.languages||'English').split(',').map(x=>x.trim()).filter(Boolean),bio:payload.bio||'Learning and sharing skills.',teach:String(payload.teach||payload.skill||'Knowledge Sharing').split(',').map(x=>x.trim()).filter(Boolean),want:String(payload.want||payload.wanted||'Something New').split(',').map(x=>x.trim()).filter(Boolean),availability:Array.isArray(payload.availability)?payload.availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:now()};
+        await db.ref('users/'+cred.user.uid).set(profile);return json({success:true,user:profile});
       }
       if(path==='/api/signin'&&method==='POST'){
-        const {data,error}=await client.auth.signInWithPassword({email:payload.email,password:payload.password});if(error)throw error;const p=await ensureProfile(data.user);return json({success:true,user:p});
+        const cred=await auth.signInWithEmailAndPassword(payload.email,payload.password);
+        let s=await db.ref('users/'+cred.user.uid).get();
+        if(!s.exists()){
+          const id=Date.now()+Math.floor(Math.random()*1000);
+          const profile={uid:cred.user.uid,legacyId:id,id,name:cred.user.displayName||((cred.user.email||payload.email||'').split('@')[0])||'SkillSwap Member',email:cred.user.email||payload.email||'',type:'University Student',location:'Online',languages:['English'],bio:'Welcome to SkillSwap India! Complete your profile to start learning and teaching.',teach:['Knowledge Sharing'],want:['Something New'],availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:now()};
+          await db.ref('users/'+cred.user.uid).set(profile);
+          s=await db.ref('users/'+cred.user.uid).get();
+        }
+        return json({success:true,user:cleanUser(s.val())});
       }
-      if(path==='/api/logout'&&method==='POST'){await client.auth.signOut();return json({success:true});}
+      if(path==='/api/logout'&&method==='POST'){await auth.signOut();return json({success:true});}
       if(path==='/api/me'&&method==='GET'){const p=await currentProfile();return json(p?{logged_in:true,user:p}:{logged_in:false,user:null});}
       if(path==='/api/people'&&method==='GET'){
-        let list=await people();const params=new URLSearchParams(path.split('?')[1]||'');const q=(params.get('q')||'').toLowerCase();const location=(params.get('location')||'').toLowerCase();
-        if(q)list=list.filter(p=>[p.name,p.location,p.bio,...p.teach,...p.want,...p.languages].join(' ').toLowerCase().includes(q));if(location)list=list.filter(p=>String(p.location||'').toLowerCase().includes(location));return json(list);
+        let list=await people();const params=new URLSearchParams(path.split('?')[1]||'');const q=(params.get('q')||'').toLowerCase();const type=(params.get('type')||'').toLowerCase();const location=(params.get('location')||'').toLowerCase();const availability=(params.get('availability')||'').toLowerCase();const online=params.get('online')==='true';
+        if(q)list=list.filter(p=>[p.name,p.location,p.bio,...p.teach,...p.want,...p.languages].join(' ').toLowerCase().includes(q));
+        if(type)list=list.filter(p=>String(p.type||'').toLowerCase()===type);
+        if(location)list=list.filter(p=>String(p.location||'').toLowerCase().includes(location));
+        if(availability)list=list.filter(p=>(p.availability||[]).join(' ').toLowerCase().includes(availability));
+        if(online){const ps=await allUnder('presence');list=list.filter(p=>ps[p.uid]?.online===true);}
+        return json(list);
       }
-      if(path==='/api/profile/update'&&method==='POST'){if(!user)throw new Error('Please sign in first.');const {data,error}=await client.from('profiles').update({...payload,updated_at:now()}).eq('id',user.id).select().single();if(error)throw error;return json({success:true,user:cleanUser(data)});}
+      if(path==='/api/presence'&&method==='GET'){const all=await allUnder('presence');return json(all);}
       const profMatch=path.match(/^\/api\/profile\/([^/]+)$/);if(profMatch&&method==='GET'){const p=await profileByAny(decodeURIComponent(profMatch[1]));return p?json({user:p}):json({message:'Profile not found.'},404);}
-      if(path==='/api/requests'&&method==='POST'){if(!user)throw new Error('Please sign in first.');const receiver=await profileByAny(payload.receiverId);if(!receiver)throw new Error('Member not found.');const sender=await currentProfile();const row={id:uuid(),sender_id:user.id,receiver_id:receiver.id,message:payload.message||'',status:'pending',created_at:now()};const {data,error}=await client.from('requests').insert(row).select().single();if(error)throw error;return json({success:true,id:data.id});}
-      if(path==='/api/requests/incoming'&&method==='GET'){if(!user)throw new Error('Please sign in first.');const {data,error}=await client.from('requests').select('*').eq('receiver_id',user.id).order('created_at',{ascending:false});if(error)throw error;return json(data||[]);}
-      if(path==='/api/favorites'&&method==='GET'){if(!user)throw new Error('Please sign in first.');const {data,error}=await client.from('favorites').select('*').eq('user_id',user.id);if(error)throw error;const out=[];for(const f of data||[]){const p=await profileByAny(f.favorite_user_id);if(p)out.push(p);}return json(out);}
-      if(path==='/api/favorites'&&(method==='POST'||method==='DELETE')){if(!user)throw new Error('Please sign in first.');const pid=String(payload.person_id||payload.personId);if(method==='POST'){const {error}=await client.from('favorites').insert({id:uuid(),user_id:user.id,favorite_user_id:pid,created_at:now()});if(error&&error.code!=='23505')throw error;}else{const {error}=await client.from('favorites').delete().eq('user_id',user.id).eq('favorite_user_id',pid);if(error)throw error;}return json({success:true});}
-      if(path==='/api/messages'&&method==='GET')return json([]);
-      const msgMatch=path.match(/^\/api\/messages\/([^/]+)$/);if(msgMatch){if(!user)throw new Error('Please sign in first.');const other=await profileByAny(msgMatch[1]);if(!other)throw new Error('Member not found.');if(method==='GET'){const {data,error}=await client.from('messages').select('*').or(`and(sender_id.eq.${user.id},receiver_id.eq.${other.id}),and(sender_id.eq.${other.id},receiver_id.eq.${user.id})`).order('created_at',{ascending:true}).limit(200);if(error)throw error;return json((data||[]).map(m=>({id:m.id,type:m.sender_id===user.id?'me':'them',text:m.message,created_at:m.created_at})));}if(method==='POST'){const {error}=await client.from('messages').insert({id:uuid(),sender_id:user.id,receiver_id:other.id,message:String(payload.message||'').slice(0,4000),created_at:now()});if(error)throw error;return json({success:true});}}
-      if(path==='/api/connections'&&method==='GET'){if(!user)throw new Error('Please sign in first.');const {data,error}=await client.from('connections').select('*').or(`user_id.eq.${user.id},connected_user_id.eq.${user.id}`);if(error)throw error;const ids=(data||[]).map(r=>r.user_id===user.id?r.connected_user_id:r.user_id);const out=[];for(const id of ids){const p=await profileByAny(id);if(p)out.push(p);}return json(out);}
-      return json({message:'This optional SkillSwap feature is not yet stored in Supabase. Core authentication, profiles, requests, connections, favorites and chat are connected.'},404);
-    }catch(e){console.error('SkillSwap Supabase',path,e);return json({success:false,message:e?.message||'Supabase request failed.'},400);}
+      if(path==='/api/profile/update'&&method==='POST'){requireAuth();await db.ref('users/'+current.uid).update({...payload,uid:current.uid,updated_at:now()});return json({success:true,user:await currentProfile()});}
+      const pv=path.match(/^\/api\/profile-view\/(.+)$/);if(pv&&method==='POST'){requireAuth();const ref=db.ref('profileViews').push();await ref.set({viewerUid:current.uid,personId:String(pv[1]),created_at:now()});return json({success:true});}
+      if(path==='/api/requests'&&method==='POST'){requireAuth();const receiver=await profileByAny(payload.receiverId);if(!receiver)throw new Error('Member not found.');if(receiver.uid===current.uid)throw new Error('You cannot connect with yourself.');const all=await allUnder('requests');const duplicate=Object.values(all).find(r=>((r.senderUid===current.uid&&r.receiverUid===receiver.uid)||(r.senderUid===receiver.uid&&r.receiverUid===current.uid))&&['pending','accepted'].includes(r.status));if(duplicate){if(duplicate.status==='accepted')throw new Error('You are already connected with this member.');throw new Error('A connection request is already pending.');}const sender=await currentProfile();const ref=db.ref('requests').push();await ref.set({senderUid:current.uid,senderId:sender.id,senderName:sender.name,senderAvatar:sender.avatar||'🧑',receiverUid:receiver.uid,receiverId:receiver.id,receiverName:receiver.name,receiverAvatar:receiver.avatar||'🧑',skillWanted:payload.wanted,skillOffered:payload.offered,message:payload.message||'',status:'pending',created_at:now()});await notify(receiver.uid,'New skill-swap request',`${sender.name} wants to exchange skills with you.`);return json({success:true,id:ref.key});}
+      if(path==='/api/requests/incoming'&&method==='GET'){requireAuth();const all=await allUnder('requests');return json(entries(all).filter(r=>r.receiverUid===current.uid).slice(0,100));}
+      const reqMatch=path.match(/^\/api\/requests\/([^/]+)$/);if(reqMatch){requireAuth();const ref=db.ref('requests/'+reqMatch[1]),snap=await ref.get();if(!snap.exists())return json({message:'Request not found.'},404);const r=snap.val();if(method==='POST'){const action=payload.action||payload.status||'cancel';const status=action==='accept'?'accepted':action==='reject'?'declined':action==='complete'?'completed':'cancelled';await ref.update({status,updated_at:now()});if(r.senderUid)await notify(r.senderUid,status==='accepted'?'Request accepted':'Request updated',`${r.receiverName||'Your connection'} ${status}.`);return json({success:true,status});}return json({id:snap.key,...r});}
+      if(path==='/api/favorites'&&method==='GET'){requireAuth();const all=await allUnder('favorites');const out=[];for(const d of Object.values(all)){if(d.uid===current.uid){const p=await profileByAny(d.personId);if(p)out.push(p);}}return json(out.slice(0,100));}
+      if(path==='/api/favorites'&&(method==='POST'||method==='DELETE')){requireAuth();const personId=String(payload.person_id||payload.personId);const all=await allUnder('favorites');let found=null;for(const [id,d] of Object.entries(all))if(d.uid===current.uid&&String(d.personId)===personId){found=id;break;}if(method==='POST'&&!found)await db.ref('favorites').push().set({uid:current.uid,personId,created_at:now()});if(method==='DELETE'&&found)await db.ref('favorites/'+found).remove();return json({success:true});}
+      const msgMatch=path.match(/^\/api\/messages\/([^/]+)$/);if(msgMatch){requireAuth();const other=await profileByAny(msgMatch[1]);if(!other)throw new Error('Member not found.');const pair=[current.uid,other.uid].sort().join('_');const col=db.ref('chats/'+pair+'/messages');if(method==='GET'){const snap=await col.get();return json(entries(snap.val()).sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at))).slice(-200).map(d=>({id:d.id,type:d.senderUid===current.uid?'me':'them',text:d.text,created_at:d.created_at})));}if(method==='POST'){const p=await currentProfile();await col.push().set({senderUid:current.uid,text:String(payload.message||'').slice(0,4000),created_at:now()});await notify(other.uid,'New message',`${p.name} sent you a message.`);return json({success:true});}}
+      if(path==='/api/notifications'&&method==='GET'){requireAuth();const all=await allUnder('notifications');return json(entries(all).filter(d=>d.uid===current.uid).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,100));}
+      if(path==='/api/notifications/read'&&method==='POST'){requireAuth();const all=await allUnder('notifications');const updates={};for(const [id,d] of Object.entries(all))if(d.uid===current.uid&&(!payload.id||id===String(payload.id)))updates[id+'/is_read']=true;await db.ref('notifications').update(updates);return json({success:true});}
+      if(path==='/api/connections'&&method==='GET'){requireAuth();const all=await allUnder('requests'),ids=new Set();Object.values(all).forEach(r=>{if(r.status==='accepted'){if(r.senderUid===current.uid)ids.add(r.receiverId);if(r.receiverUid===current.uid)ids.add(r.senderId);}});const out=[];for(const id of ids){const p=await profileByAny(id);if(p)out.push(p);}return json(out);}
+      if(path==='/api/sessions'&&method==='GET'){requireAuth();const all=await allUnder('sessions');return json(entries(all).filter(d=>Array.isArray(d.participantUids)&&d.participantUids.includes(current.uid)).slice(0,100));}
+      if(path==='/api/sessions'&&method==='POST'){requireAuth();const partner=await profileByAny(payload.partner_id||payload.guestId);if(!partner)throw new Error('Choose a valid connection.');const me=await currentProfile(),ref=db.ref('sessions').push();const data={host_uid:current.uid,guest_uid:partner.uid,host_name:me.name,guest_name:partner.name,participantUids:[current.uid,partner.uid],title:payload.title||'SkillSwap Session',starts_at:payload.start_at||payload.startsAt,duration:Number(payload.duration||payload.durationMinutes||60),notes:payload.notes||'',status:'scheduled',created_at:now()};await ref.set(data);await notify(partner.uid,'Session scheduled',`${me.name} scheduled a SkillSwap session with you.`);return json({success:true,id:ref.key});}
+      const sm=path.match(/^\/api\/sessions\/([^/]+)$/);if(sm&&method==='POST'){requireAuth();await db.ref('sessions/'+sm[1]).update({status:payload.status||payload.action,updated_at:now()});return json({success:true});}
+      if(path==='/api/listings'&&method==='GET'){return json(entries(await allUnder('listings')).slice(0,100));}
+      if(path==='/api/listings'&&method==='POST'){requireAuth();const me=await currentProfile(),ref=db.ref('listings').push();await ref.set({...payload,uid:current.uid,name:me.name,created_at:now()});return json({success:true,id:ref.key});}
+      const report=path.match(/^\/api\/report\/(.+)$/);if(report&&method==='POST'){requireAuth();await db.ref('reports').push().set({reporterUid:current.uid,targetId:String(report[1]),...payload,created_at:now()});return json({success:true});}
+      const block=path.match(/^\/api\/block\/(.+)$/);if(block&&method==='POST'){requireAuth();await db.ref('blocks/'+current.uid+'_'+String(block[1])).set({uid:current.uid,targetId:String(block[1]),created_at:now()});return json({success:true});}
+      if(path==='/api/reviews'&&method==='POST'){requireAuth();const target=await profileByAny(payload.targetUid||payload.targetId);if(!target||target.uid===current.uid)throw new Error('Invalid review target.');const rating=Math.max(1,Math.min(5,Number(payload.rating||0)));const text=String(payload.text||'').trim().slice(0,1000);if(!rating)throw new Error('Choose a rating.');const all=await allUnder('reviews');const duplicate=Object.values(all).find(r=>r.reviewerUid===current.uid&&r.targetUid===target.uid);if(duplicate)throw new Error('You already reviewed this member.');const me=await currentProfile();await db.ref('reviews').push().set({reviewerUid:current.uid,reviewerName:me.name,targetUid:target.uid,targetName:target.name,rating,text,created_at:now()});const userSnap=await db.ref('users/'+target.uid).get(),u=userSnap.val()||{};const oldCount=Number(u.reviews||0),oldRating=Number(u.rating||0);const nextCount=oldCount+1;const nextRating=((oldRating*oldCount)+rating)/nextCount;await db.ref('users/'+target.uid).update({rating:Number(nextRating.toFixed(2)),reviews:nextCount});await notify(target.uid,'New review',`${me.name} left you a ${rating}-star review.`);return json({success:true});}
+      if(path==='/api/gamification'&&method==='GET'){requireAuth();const s=await db.ref('gamification/'+current.uid).get();return json({gamification:s.exists()?s.val():{xp:0,level:1,streak:0,next_level_xp:500}});}
+      if(path==='/api/journey'&&method==='GET'){requireAuth();const p=await currentProfile();const all=await allUnder('requests');const connected=Object.values(all).some(r=>r.status==='accepted'&&(r.senderUid===current.uid||r.receiverUid===current.uid));const sess=await allUnder('sessions');const completed=Object.values(sess).some(x=>Array.isArray(x.participantUids)&&x.participantUids.includes(current.uid)&&x.status==='complete');return json({milestones:[{title:'Create your profile',done:!!p},{title:'Add teaching skills',done:(p.teach||[]).length>0},{title:'Add learning goals',done:(p.want||[]).length>0},{title:'Make your first connection',done:connected},{title:'Complete your first session',done:completed}]});}
+      if((path==='/api/analytics'||path==='/api/dashboard')&&method==='GET'){requireAuth();const uid=current.uid,p=await currentProfile(),reqs=await allUnder('requests'),sess=await allUnder('sessions'),views=await allUnder('profileViews'),notes=await allUnder('notifications');const connections=Object.values(reqs).filter(r=>r.status==='accepted'&&(r.senderUid===uid||r.receiverUid===uid)).length;const sessions=Object.values(sess).filter(x=>Array.isArray(x.participantUids)&&x.participantUids.includes(uid)).length;const unread=Object.values(notes).filter(x=>x.uid===uid&&!x.is_read&&!x.read).length;const incoming=Object.values(reqs).filter(x=>x.receiverUid===uid&&x.status==='pending').length;const analytics={connections,sessions,profile_views:Object.values(views).filter(x=>String(x.personId)===String(p?.id||uid)).length,offers:Object.values(reqs).filter(x=>x.senderUid===uid).length,unread,weekly:[]};return path==='/api/analytics'?json({analytics}):json({dashboard:{...analytics,incoming}});}
+      if(path==='/api/recommendations'&&method==='GET'){requireAuth();const me=await currentProfile(),list=(await people()).filter(p=>p.uid!==current.uid).map(p=>{const a=(me.want||[]).map(x=>String(x).toLowerCase()),b=(p.teach||[]).map(x=>String(x).toLowerCase()),c=(me.teach||[]).map(x=>String(x).toLowerCase()),d=(p.want||[]).map(x=>String(x).toLowerCase());let score=35;a.forEach(x=>{if(b.some(y=>x.includes(y)||y.includes(x)))score+=18});c.forEach(x=>{if(d.some(y=>x.includes(y)||y.includes(x)))score+=18});return {...p,match:Math.min(99,score)}}).sort((a,b)=>b.match-a.match).slice(0,20);return json({recommendations:list});}
+      return json({message:'Firebase route not implemented: '+path},404);
+    }catch(e){console.error('SkillSwap Firebase RTDB',path,e);return json({success:false,message:e.message||'Firebase request failed.'},400);}
   }
   const nativeFetch=window.fetch.bind(window);
   window.fetch=async function(input,init){const url=typeof input==='string'?input:input.url;try{const u=new URL(url,location.href);if(u.pathname.startsWith('/api/'))return route(u.pathname+(u.search||''),init||{});}catch(e){}return nativeFetch(input,init);};
-  window.ssSupabaseRoute=route;
-  auth.onAuthStateChanged(async u=>{try{window.ssSupabaseProfile=u?await ensureProfile(u):null;window.ssMemoryStorage.setItem('skillswapUser',JSON.stringify(window.ssSupabaseProfile||null));}catch(e){console.warn('Supabase profile restore:',e);window.ssSupabaseProfile=null;}});
-  client.auth.getSession().then(({data})=>{auth._currentUser=wrapUser(data.session?.user||null);});
+  window.ssFirebaseRoute=route;window.ssFirebaseAuth=auth;
+  auth.onAuthStateChanged(async u=>{if(u){const p=await currentProfile();window.ssFirebaseProfile=p;window.ssMemoryStorage.setItem('skillswapUser',JSON.stringify(p||null));try{const pr=db.ref('presence/'+u.uid);db.ref('.info/connected').on('value',snap=>{if(snap.val()===true){pr.onDisconnect().remove();pr.set({online:true,updated_at:now()});}});}catch(e){console.warn('Presence:',e)}}else{window.ssFirebaseProfile=null;window.ssMemoryStorage.removeItem('skillswapUser');}});
 })();
 </script>
 <script>
@@ -5022,7 +4827,7 @@ async function api(url, options={}){
         if(!response.ok){
             throw new Error(
                 data.message ||
-                `Server returned ${response.status}. Configure Supabase and open the site through GitHub Pages.`
+                `Server returned ${response.status}. Configure Firebase and open the site through GitHub Pages.`
             );
         }
 
@@ -5762,9 +5567,9 @@ async function signUp(){
     if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){show('Please enter a valid email address.');get('signupEmail')?.focus();return;}
     if(password.length<6){show('Your password must be at least 6 characters.');get('signupPassword')?.focus();return;}
     if(password.length>128){show('Your password is too long. Please use 128 characters or fewer.');return;}
-    if(!window.ssSupabaseReady || !window.ssSupabaseAuth || !window.ssSupabase){
-        show('Supabase is not ready. Please refresh the page and try again.');
-        console.error('SkillSwap signup: Supabase unavailable',window.ssSupabaseError);
+    if(!window.ssFirebaseReady || !window.ssFirebaseAuth || !window.ssFirebase){
+        show('Firebase is not ready. Please refresh the page and try again.');
+        console.error('SkillSwap signup: Firebase unavailable',window.ssFirebaseError);
         return;
     }
 
@@ -5776,8 +5581,8 @@ async function signUp(){
     show('Creating your secure SkillSwap account…','loading');
 
     try{
-        // Use Supabase Auth directly. This avoids depending on any old Flask/local-demo fallback.
-        const cred=await window.ssSupabaseAuth.createUserWithEmailAndPassword(email,password);
+        // Use Firebase Auth directly. This avoids depending on any old Flask/local-demo fallback.
+        const cred=await window.ssFirebaseAuth.createUserWithEmailAndPassword(email,password);
         const uid=cred.user.uid;
         const legacyId=Date.now()+Math.floor(Math.random()*1000);
         const profile={
@@ -5802,11 +5607,11 @@ async function signUp(){
         if(!profile.teach.length)profile.teach=['Knowledge Sharing'];
         if(!profile.want.length)profile.want=['Something New'];
 
-        await window.ssSupabase.db.ref('users/'+uid).set(profile);
-        window.ssSupabaseProfile=profile;
+        await window.ssFirebase.db.ref('users/'+uid).set(profile);
+        window.ssFirebaseProfile=profile;
         try{window.ssMemoryStorage.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
 
-        // Supabase LOCAL persistence keeps the authenticated session across reloads.
+        // Firebase LOCAL persistence keeps the authenticated session across reloads.
         document.body.classList.add('ss-authenticated');
         if(typeof setAppState==='function')setAppState(true);
         closeModal('authModal');
@@ -5815,18 +5620,18 @@ async function signUp(){
         if(typeof refreshProDashboard==='function')refreshProDashboard();
         showToast('🎉 Welcome to SkillSwap India, '+name+'! Your account is ready.');
     }catch(error){
-        console.error('SkillSwap Supabase signup error:',error);
+        console.error('SkillSwap Firebase signup error:',error);
         const code=String(error?.code||'');
         const message=String(error?.message||'');
         let friendly='We could not create your account. Please try again.';
         if(code==='auth/email-already-in-use')friendly='An account with this email already exists. Please sign in instead.';
         else if(code==='auth/invalid-email')friendly='Please enter a valid email address.';
         else if(code==='auth/weak-password')friendly='Choose a stronger password with at least 6 characters.';
-        else if(code==='auth/operation-not-allowed')friendly='Email/password sign-up is not enabled in Supabase. Enable Email/Password under Supabase Authentication → Sign-in method.';
+        else if(code==='auth/operation-not-allowed')friendly='Email/password sign-up is not enabled in Firebase. Enable Email/Password under Firebase Authentication → Sign-in method.';
         else if(code==='auth/network-request-failed')friendly='Network connection failed. Check your internet connection and try again.';
         else if(code==='auth/too-many-requests')friendly='Too many attempts were made. Please wait a few minutes and try again.';
-        else if(message.toLowerCase().includes('permission_denied'))friendly='Supabase Database permission was denied. Please publish the SkillSwap Realtime Database rules.';
-        else if(message)friendly=message.replace(/^Supabase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,'');
+        else if(message.toLowerCase().includes('permission_denied'))friendly='Firebase Database permission was denied. Please publish the SkillSwap Realtime Database rules.';
+        else if(message)friendly=message.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,'');
         show(friendly);
     }finally{
         if(button){
@@ -6329,11 +6134,11 @@ async function saveEditedProfile(){
 ========================= */
 async function logout(){
     try{
-        if(window.ssSupabaseAuth){
-            await window.ssSupabaseAuth.signOut();
+        if(window.ssFirebaseAuth){
+            await window.ssFirebaseAuth.signOut();
         }
     }catch(error){
-        console.warn("Supabase logout:",error);
+        console.warn("Firebase logout:",error);
     }
 
     try{
@@ -7826,7 +7631,7 @@ window.addEventListener("keydown",e=>{
   function logged(){return !!getCurrentUser();}
   async function safeJSON(url,opts){try{return await api(url,opts)}catch(e){return {__error:e}}}
   window.refreshProDashboard=async function(){
-    if(!logged())return;
+    if(!logged()){showToast('Sign in to use your dashboard.');return}
     const d=await safeJSON('/api/dashboard'); if(!d.__error){const c=d.counts||{};metricConnections.textContent=c.connections||0;metricRequests.textContent=c.incoming||0;metricSessions.textContent=c.sessions||0;metricUnread.textContent=c.unread||0}
     await Promise.all([refreshJourney(),loadNotifications(),loadSessions(),loadListings()]);
     const u=getCurrentUser(); if(u){proRating.textContent=u.rating?('⭐ '+Number(u.rating).toFixed(1)):'New';proReviews.textContent=(u.reviews||0)+' reviews'}
@@ -7883,79 +7688,27 @@ window.addEventListener("keydown",e=>{
     const own=document.getElementById('ownProfileActions');if(own)own.style.display='none';
     let actions=document.getElementById('publicProfileActions');
     if(!actions){actions=document.createElement('div');actions.id='publicProfileActions';actions.className='profile-modal-actions';document.querySelector('#profileModal .modal').appendChild(actions)}
-    actions.innerHTML=`<button class="edit-profile-btn" onclick="openChat('${esc(person.id)}')">💬 Chat</button><button class="edit-profile-btn" onclick="openRequest('${esc(person.id)}')">🤝 Request Skill Swap</button><button class="edit-profile-secondary" onclick="openSafetyReport('${esc(person.id)}')">🚩 Report</button><button class="edit-profile-secondary" onclick="blockMember('${esc(person.id)}')">🚫 Block</button><button class="edit-profile-secondary" onclick="closeModal('profileModal')">Close</button>`;
+    actions.innerHTML=`<button class="edit-profile-btn" onclick="openRequest('${esc(person.id)}')">🤝 Request Skill Swap</button><button class="edit-profile-secondary" onclick="openSafetyReport('${esc(person.id)}')">🚩 Report</button><button class="edit-profile-secondary" onclick="blockMember('${esc(person.id)}')">🚫 Block</button><button class="edit-profile-secondary" onclick="closeModal('profileModal')">Close</button>`;
     document.getElementById('profileModal').classList.add('show');
   };
 
-  // Chat: real Supabase/SQLite members use persistent backend chat; demo members use a local conversational demo chat.
-  function isDemoMember(person){
-    return !!person && (person.virtual===true || demoPeople.some(p=>String(p.id)===String(person.id)));
-  }
+  // Real SQLite chat, replacing the local-only demo chat when a backend connection exists.
   window.openChat=async function(id){
-    const user=getCurrentUser();
-    if(!user){openAuth('signin');return}
-    let person=(window.skillswapPeople||[]).find(p=>String(p.id)===String(id)) || demoPeople.find(p=>String(p.id)===String(id));
-    if(!person){
-      try{
-        const localUsers=JSON.parse(ssMemoryStorage.getItem('skillswapUsers')||'{}');
-        person=Object.values(localUsers).find(u=>String(u.id)===String(id)||String(u.uid)===String(id));
-      }catch(e){}
-    }
-    if(!person){
-      try{const d=await safeJSON('/api/profile/'+id);if(!d.__error&&d.user)person=d.user}catch(e){}
-    }
+    const user=getCurrentUser();if(!user){openAuth('signin');return}
+    let person=(window.skillswapPeople||[]).find(p=>String(p.id)===String(id));if(!person){const d=await safeJSON('/api/profile/'+id);person=d.user}
     if(!person){showToast('Profile not found.');return}
-
-    currentChatPerson={id:person.id||person.uid,name:person.name||'SkillSwap Member',avatar:person.avatar||'🧑',demo:isDemoMember(person)};
-    document.getElementById('chatName').textContent=currentChatPerson.name+(currentChatPerson.demo?' · Demo member':'');
-    document.getElementById('chatAvatar').textContent=currentChatPerson.avatar;
-    document.getElementById('chatModal').classList.add('show');
-
-    if(currentChatPerson.demo){
-      window.__ssBackendChat=false;
-      loadMessages();
-      return;
-    }
-
-    const d=await safeJSON('/api/messages/'+encodeURIComponent(String(currentChatPerson.id)));
-    if(d.__error){showToast(d.__error.message);return}
-    window.__ssBackendChat=true;
-    window.__ssChatMessages=Array.isArray(d)?d:[];
-    renderBackendChat();
+    const d=await safeJSON('/api/messages/'+id);if(d.__error){showToast(d.__error.message);return}
+    currentChatPerson={id:person.id,name:person.name,avatar:person.avatar||'🧑'};
+    document.getElementById('chatName').textContent=person.name;document.getElementById('chatAvatar').textContent=person.avatar||'🧑';document.getElementById('chatModal').classList.add('show');
+    window.__ssBackendChat=true;window.__ssChatMessages=Array.isArray(d)?d:[];renderBackendChat();
   };
   function renderBackendChat(){const c=document.getElementById('chatMessages');if(!c)return;c.innerHTML='';(window.__ssChatMessages||[]).forEach(m=>{const d=document.createElement('div');d.className='message '+(m.type==='me'?'sent':'them');d.textContent=m.text;c.appendChild(d)});c.scrollTop=c.scrollHeight}
   window.sendMessage=async function(){
-    if(!currentChatPerson)return;
-    const input=document.getElementById('chatInput'),text=input.value.trim();if(!text)return;
-    if(currentChatPerson.demo){
-      const messages=getMessages(),key=chatKey(getCurrentUser().id,currentChatPerson.id);
-      if(!messages[key])messages[key]=[];
-      messages[key].push({type:'me',text});
-      saveMessages(messages);input.value='';loadMessages();
-      setTimeout(()=>{const latest=getMessages();if(!latest[key])latest[key]=[];latest[key].push({type:'them',text:generateReply(text)});saveMessages(latest);if(currentChatPerson?.demo)loadMessages()},700);
-      return;
-    }
-    input.disabled=true;
-    const d=await safeJSON('/api/messages/'+encodeURIComponent(String(currentChatPerson.id)),{method:'POST',body:JSON.stringify({message:text})});
-    input.disabled=false;
-    if(d.__error){showToast(d.__error.message);return}
-    input.value='';
-    const latest=await safeJSON('/api/messages/'+encodeURIComponent(String(currentChatPerson.id)));
-    window.__ssChatMessages=Array.isArray(latest)?latest:window.__ssChatMessages;
-    renderBackendChat();
+    if(!window.__ssBackendChat){return}
+    const input=document.getElementById('chatInput'),text=input.value.trim();if(!text||!currentChatPerson)return;
+    input.disabled=true;const d=await safeJSON('/api/messages/'+currentChatPerson.id,{method:'POST',body:JSON.stringify({message:text})});input.disabled=false;if(d.__error){showToast(d.__error.message);return}input.value='';const latest=await safeJSON('/api/messages/'+currentChatPerson.id);window.__ssChatMessages=Array.isArray(latest)?latest:window.__ssChatMessages;renderBackendChat();
   };
-  window.loadMessages=async function(){
-    if(!currentChatPerson)return;
-    if(currentChatPerson.demo){
-      const user=getCurrentUser();if(!user)return;
-      const messages=getMessages(),key=chatKey(user.id,currentChatPerson.id);
-      if(!messages[key])messages[key]=[{type:'them',text:'Hi! 👋 I’m a demo SkillSwap member. What would you like to learn or teach?'}];
-      saveMessages(messages);
-      const c=document.getElementById('chatMessages');if(c){c.innerHTML='';messages[key].forEach(m=>{const d=document.createElement('div');d.className='message '+m.type;d.textContent=m.text;c.appendChild(d)});c.scrollTop=c.scrollHeight}
-      return;
-    }
-    if(window.__ssBackendChat){const d=await safeJSON('/api/messages/'+encodeURIComponent(String(currentChatPerson.id)));if(!d.__error){window.__ssChatMessages=d;renderBackendChat()}}
-  };
+  window.loadMessages=async function(){if(window.__ssBackendChat&&currentChatPerson){const d=await safeJSON('/api/messages/'+currentChatPerson.id);if(!d.__error){window.__ssChatMessages=d;renderBackendChat()}}};
   window.handleChatKey=function(e){if(e.key==='Enter'){e.preventDefault();sendMessage()}};
 
   // Keep dashboard metrics fresh after profile/auth changes.
@@ -8318,7 +8071,7 @@ window.addEventListener("keydown",e=>{
     const ok=await loadCommandCenter();
     if(typeof window.refreshProDashboard==='function') await window.refreshProDashboard();
     if(typeof window.ss5Refresh==='function') await window.ss5Refresh(true);
-    if(ok && typeof window.showToast==='function') showToast('Dashboard refreshed');
+    if(typeof window.showToast==='function') showToast(ok?'Dashboard refreshed':'Sign in to use your dashboard');
   };
 
   window.ss4Discover=function(){
@@ -8353,8 +8106,8 @@ window.addEventListener("keydown",e=>{
       ['ss5Connections','ss5Sessions','ss5Views','ss5Offers','ss5XP'].forEach(id=>{if($(id))$(id).textContent='0'});
       if($('ss5Level'))$('ss5Level').textContent='Level 1';
       if($('ss5XPBar'))$('ss5XPBar').style.width='0%';
-      if($('ss5Saved'))$('ss5Saved').innerHTML='<div class="ss5-empty"></div>';
-      if($('ss5Chart'))$('ss5Chart').innerHTML='<div class="ss5-empty" style="width:100%"></div>';
+      if($('ss5Saved'))$('ss5Saved').innerHTML='<div class="ss5-empty">Sign in to use your growth hub.</div>';
+      if($('ss5Chart'))$('ss5Chart').innerHTML='<div class="ss5-empty" style="width:100%">Sign in to see your weekly activity.</div>';
       if($('ss5Days'))$('ss5Days').innerHTML='';
       return false;
     }
@@ -8411,7 +8164,7 @@ window.addEventListener("keydown",e=>{
 
   window.ss5Refresh=async function(silent){
     const ok=await loadGrowthHub();
-    if(!silent && typeof window.showToast==='function') if(ok && typeof window.showToast==='function') showToast('Growth hub refreshed');
+    if(!silent && typeof window.showToast==='function') showToast(ok?'Growth hub refreshed':'Sign in to use your growth hub');
     return ok;
   };
 
@@ -8737,52 +8490,33 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
 (function(){
   const gridId='ssOtherGrid',countId='ssOtherCount';
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const demoIds=new Set(['ananya','aarav','meera','rohan','saanvi','vikram','ishita','aditya','kavya','dev','priya','arjun']);
+  window.ssStarterInfo=window.ssStarterInfo||function(){if(typeof showToast==='function')showToast('This is a community profile. Create your own profile to appear as a real SkillSwap member.');};
   function card(m){
     const uid=String(m.uid||m.id||'');
     const teach=Array.isArray(m.teach)?m.teach:(Array.isArray(m.skills)?m.skills:[]);
     const want=Array.isArray(m.want)?m.want:(Array.isArray(m.wantedSkills)?m.wantedSkills:[]);
     const category=m.type||m.category||'Skill Exchange';
     const avatar=m.avatar||'🧑🏻';
-    return `<article class="ss-other-card ss-other-live"><div class="ss-other-card-head"><div class="ss-other-avatar">${esc(avatar)}</div><span class="ss-other-badge">✓ Real member</span></div><h3>${esc(m.name||'SkillSwap Member')}</h3><p class="ss-other-location">📍 ${esc(m.location||'India')}</p><span class="ss-other-category">${esc(category)}</span><div class="ss-other-skills"><div><small>CAN TEACH</small><strong>${esc(teach.slice(0,3).join(' · ')||'Skills shared')}</strong></div><div><small>WANTS TO LEARN</small><strong>${esc(want.slice(0,3).join(' · ')||'Open to learning')}</strong></div></div><button type="button" class="ss-other-btn" onclick="ssOtherView('${esc(uid)}')">View profile</button><button type="button" class="ss-other-btn ss-real-chat-btn" onclick="openChat('${esc(uid)}')">💬 Chat</button></article>`;
+    return `<article class="ss-other-card ss-other-live"><div class="ss-other-card-head"><div class="ss-other-avatar">${esc(avatar)}</div><span class="ss-other-badge">✓ Real member</span></div><h3>${esc(m.name||'SkillSwap Member')}</h3><p class="ss-other-location">📍 ${esc(m.location||'India')}</p><span class="ss-other-category">${esc(category)}</span><div class="ss-other-skills"><div><small>CAN TEACH</small><strong>${esc(teach.slice(0,3).join(' · ')||'Skills shared')}</strong></div><div><small>WANTS TO LEARN</small><strong>${esc(want.slice(0,3).join(' · ')||'Open to learning')}</strong></div></div><button type="button" class="ss-other-btn" onclick="ssOtherView('${esc(uid)}')">View profile</button></article>`;
   }
   async function load(){
-    const grid=document.getElementById(gridId),count=document.getElementById(countId);
-    if(!grid)return;
-    const db=window.ssSupabase&&window.ssSupabase.db;
-    let real=[];
+    const grid=document.getElementById(gridId),count=document.getElementById(countId);if(!grid)return;
+    grid.querySelectorAll('.ss-other-live').forEach(x=>x.remove());
+    const db=window.ssFirebase&&window.ssFirebase.db;if(!db)return;
     try{
-      if(db){
-        const snap=await db.ref('users').once('value');
-        const raw=snap.exists()?snap.val():{};
-        const current=window.ssSupabaseAuth?.currentUser?.uid||null;
-        const seen=new Set(demoIds);
-        real=Object.entries(raw||{}).map(([uid,m])=>({...m,uid,id:uid})).filter(m=>m&&m.name&&String(m.uid)!==String(current)).filter(m=>{
-          const keys=[String(m.uid||''),String(m.email||'').trim().toLowerCase(),String(m.name||'').trim().toLowerCase()].filter(Boolean);
-          if(keys.some(k=>seen.has(k)))return false; keys.forEach(k=>seen.add(k)); return true;
-        });
-      }
-    }catch(e){console.warn('Real member loading:',e)}
-    // Static demo profiles always remain visible; real Supabase members are appended.
-    const demos=grid.querySelectorAll('.ss-other-card:not(.ss-other-live)');
-    real.forEach(m=>grid.insertAdjacentHTML('beforeend',card(m)));
-    if(count)count.textContent=(demos.length+real.length)+' '+((demos.length+real.length)===1?'profile':'profiles');
+      const snap=await db.ref('users').once('value');
+      const raw=snap.exists()?snap.val():{};
+      const current=window.ssFirebaseAuth?.currentUser?.uid||null;
+      const seen=new Set();
+      const people=Object.entries(raw||{}).map(([uid,m])=>({...m,uid,id:uid})).filter(m=>m&&m.name&&String(m.uid)!==String(current)).filter(m=>{
+        const keys=[String(m.uid||''),String(m.email||'').trim().toLowerCase(),String(m.name||'').trim().toLowerCase()].filter(Boolean);
+        if(keys.some(k=>seen.has(k)))return false;keys.forEach(k=>seen.add(k));return true;
+      });
+      if(people.length){grid.insertAdjacentHTML('beforeend',people.map(card).join(''));if(count)count.textContent=(12+people.length)+' profiles';}
+    }catch(e){console.warn('Other community members:',e)}
   }
-  window.ssOtherView=async function(uid){
-    if(typeof openOtherProfile==='function'){try{await openOtherProfile(uid);return}catch(e){console.warn('Profile viewer:',e)}}
-    if(typeof showToast==='function')showToast('Member profile is unavailable right now.');
-  };
-  function bind(){
-    // Remove only previously injected real cards, never the 12 demo cards.
-    document.querySelectorAll('#ssOtherGrid .ss-other-live').forEach(x=>x.remove());
-    load();
-    const auth=window.ssSupabaseAuth;
-    if(auth&&typeof auth.onAuthStateChanged==='function' && !window.__ssOtherAuthBound){
-      window.__ssOtherAuthBound=true;
-      auth.onAuthStateChanged(()=>setTimeout(load,100));
-    }
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind);else bind();
+  window.ssOtherView=async function(uid){if(typeof openOtherProfile==='function'){try{await openOtherProfile(uid);return}catch(e){console.warn(e)}}if(typeof showToast==='function')showToast('Please sign in to view this member.');};
+  document.addEventListener('DOMContentLoaded',()=>{load();setTimeout(load,1200);setTimeout(load,3000);});
 })();
 </script>
 
@@ -8813,10 +8547,10 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
 <script id="ss-major-features-js">
 (function(){
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const db=()=>window.ssSupabase&&window.ssSupabase.db;
-  const auth=()=>window.ssSupabaseAuth;
+  const db=()=>window.ssFirebase&&window.ssFirebase.db;
+  const auth=()=>window.ssFirebaseAuth;
   const uid=()=>auth()?.currentUser?.uid||null;
-  const profile=()=>window.ssSupabaseProfile||null;
+  const profile=()=>window.ssFirebaseProfile||null;
   const arr=v=>Array.isArray(v)?v:(v?String(v).split(',').map(x=>x.trim()).filter(Boolean):[]);
   const toast=m=>typeof showToast==='function'?showToast(m):alert(m);
 
@@ -8840,18 +8574,10 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
     if(typeof openAuth==='function')openAuth('signin');
     return false;
   }
-  // Supabase database can throw an INTERNAL ASSERT FAILED error when the same
-  // path/query is listened to more than once at the same time. Booking opens
-  // can trigger overlapping reads, so reuse an in-flight read for each path.
-  const ssReadInFlight=window.__ssReadInFlight||(window.__ssReadInFlight=new Map());
   async function safeOnce(path){
     const d=db();
-    if(!d)throw new Error('Supabase is not ready yet. Please wait a moment and try again.');
-    const key=String(path);
-    if(ssReadInFlight.has(key)) return ssReadInFlight.get(key);
-    const promise=d.ref(key).get().finally(()=>{ssReadInFlight.delete(key);});
-    ssReadInFlight.set(key,promise);
-    return promise;
+    if(!d)throw new Error('Firebase is not ready yet. Please wait a moment and try again.');
+    return d.ref(path).once('value');
   }
   async function getUsers(){
     const s=await safeOnce('users');
@@ -9169,7 +8895,7 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
     await ref.update({xp:Number(g.xp||0)+Number(points||0),badges,updated_at:new Date().toISOString()});
   };
 
-  // Make the section usable even when Supabase is still restoring the LOCAL auth session.
+  // Make the section usable even when Firebase is still restoring the LOCAL auth session.
   document.addEventListener('DOMContentLoaded',()=>{
     const p=document.getElementById('ssHubPanel');
     if(p)p.classList.remove('active');
@@ -9197,7 +8923,7 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
     }catch(e){console.warn('SkillSwap auth UI:',e)}
   }
   function bind(){
-    const auth=window.ssSupabaseAuth;
+    const auth=window.ssFirebaseAuth;
     if(!auth)return setTimeout(bind,300);
     auth.onAuthStateChanged(function(user){
       syncUserUI(user);
@@ -9214,7 +8940,7 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
 
 <!-- ================================================================
      SKILLSWAP INDIA — ULTIMATE PLATFORM ENHANCEMENT
-     Static GitHub Pages + Supabase Auth + Supabase database
+     Static GitHub Pages + Firebase Auth + Firebase Realtime Database
      No Supabase / no Python / no Render / no app-managed localStorage
      ================================================================ -->
 
@@ -9341,7 +9067,7 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
     <p>
       A richer SkillSwap experience for discovering people, organizing exchanges,
       tracking goals, building reputation and participating in the community —
-      powered by Supabase and designed for GitHub Pages.
+      powered by Firebase and designed for GitHub Pages.
     </p>
     <div class="ss-ultimate-actions">
       <button class="ss-ultimate-btn" onclick="ssUltimateOpen('discover')">🔎 Discover skills</button>
@@ -9370,10 +9096,10 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
   }[c]));
-  const db=()=>window.ssSupabase?.db||null;
-  const auth=()=>window.ssSupabaseAuth||window.ssSupabase?.auth||null;
+  const db=()=>window.ssFirebase?.db||null;
+  const auth=()=>window.ssFirebaseAuth||window.ssFirebase?.auth||null;
   const uid=()=>auth()?.currentUser?.uid||null;
-  const me=()=>window.ssSupabaseProfile||{};
+  const me=()=>window.ssFirebaseProfile||{};
   const arr=v=>Array.isArray(v)?v:(v?String(v).split(',').map(x=>x.trim()).filter(Boolean):[]);
   const now=()=>new Date().toISOString();
 
@@ -9405,19 +9131,19 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
 
   async function read(path){
     const d=db();
-    if(!d)throw new Error('Supabase is still loading. Please try again in a moment.');
+    if(!d)throw new Error('Firebase is still loading. Please try again in a moment.');
     return (await d.ref(path).once('value')).val();
   }
 
   async function write(path,value){
     const d=db();
-    if(!d)throw new Error('Supabase is not ready.');
+    if(!d)throw new Error('Firebase is not ready.');
     return d.ref(path).set(value);
   }
 
   async function update(path,value){
     const d=db();
-    if(!d)throw new Error('Supabase is not ready.');
+    if(!d)throw new Error('Firebase is not ready.');
     return d.ref(path).update(value);
   }
 
@@ -9613,9 +9339,9 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
       '<div class="ss-mini-card"><h4>How do exchanges work?</h4><p>Connect with a member, get the request accepted, then propose a session.</p></div>'+
       '<div class="ss-mini-card"><h4>How do I improve my profile?</h4><p>Add clear teaching skills, learning goals, location, availability and a useful bio.</p></div>'+
       '<div class="ss-mini-card"><h4>How does reputation work?</h4><p>Participate in exchanges and community activities, collect reviews and earn XP/badges.</p></div>'+
-      '<div class="ss-mini-card"><h4>Is my login persistent?</h4><p>Yes. Supabase Authentication uses LOCAL persistence so your session can survive a page reload.</p></div>'+
-      '<div class="ss-mini-card"><h4>Where is my data stored?</h4><p>Core account and community data is handled through Supabase Authentication and Realtime Database.</p></div>'+
-      '</div><p class="ss-privacy-note">For production launch, Supabase database security rules should be reviewed and tightened around private records such as chats and notifications.</p>');
+      '<div class="ss-mini-card"><h4>Is my login persistent?</h4><p>Yes. Firebase Authentication uses LOCAL persistence so your session can survive a page reload.</p></div>'+
+      '<div class="ss-mini-card"><h4>Where is my data stored?</h4><p>Core account and community data is handled through Firebase Authentication and Realtime Database.</p></div>'+
+      '</div><p class="ss-privacy-note">For production launch, Firebase Realtime Database security rules should be reviewed and tightened around private records such as chats and notifications.</p>');
   }
 
   document.addEventListener('DOMContentLoaded',()=>{
@@ -9636,12 +9362,12 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
 <script id="ss-final-feature-hub-fix">
 (function(){
   const E=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const D=()=>window.ssSupabase?.db||null;
-  const U=()=>window.ssSupabaseAuth?.currentUser?.uid||null;
+  const D=()=>window.ssFirebase?.db||null;
+  const U=()=>window.ssFirebaseAuth?.currentUser?.uid||null;
   const T=m=>typeof showToast==='function'?showToast(m):alert(m);
   const groups=[
     {id:'python-ai',name:'Python & AI',icon:'🐍',description:'Python, automation, data, machine learning and practical AI.'},
-    {id:'web-development',name:'Web Development',icon:'💻',description:'HTML, CSS, JavaScript, Supabase and web projects.'},
+    {id:'web-development',name:'Web Development',icon:'💻',description:'HTML, CSS, JavaScript, Firebase and web projects.'},
     {id:'languages',name:'Languages',icon:'🌐',description:'English, Hindi, Telugu and other language-learning practice.'},
     {id:'creative',name:'Creative Skills',icon:'🎨',description:'Design, music, photography, drawing and creative projects.'},
     {id:'career',name:'Career Skills',icon:'🚀',description:'Interviews, presentations, CVs and professional growth.'},
@@ -9672,7 +9398,7 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
     const signed=!!U();
     panel('<h3>👥 Skill groups</h3><p class="ss-hub-help">Join communities around skills you want to learn or teach.</p><div class="ss-hub-results">'+
       [...map.values()].map(g=>'<article class="ss-hub-item"><div style="font-size:28px">'+E(g.icon||'👥')+'</div><strong>'+E(g.name||g.id)+'</strong><small>'+Number(g.members||0)+' members</small><p>'+E(g.description||'SkillSwap community group')+'</p><button data-ss-safe-group="'+E(g.id)+'" data-ss-safe-name="'+E(g.name||g.id)+'">'+(signed?'Join group':'Sign in to join')+'</button></article>').join('')+
-      '</div><p class="ss-hub-help">The group catalog remains available even when Supabase RLS policies deny access to <code>/groups</code>.</p>');
+      '</div><p class="ss-hub-help">The group catalog remains available even when Firebase rules deny access to <code>/groups</code>.</p>');
     document.querySelectorAll('[data-ss-safe-group]').forEach(b=>b.onclick=()=>join(b.dataset.ssSafeGroup,b.dataset.ssSafeName));
   }
   async function join(id,name){
@@ -9695,7 +9421,7 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
       await renderGroups();
     }catch(e){
       console.error(e);
-      T('Supabase blocked saving this membership. The group browser itself is working.');
+      T('Firebase blocked saving this membership. The group browser itself is working.');
     }
   }
   const oldOpen=window.ssHubOpen;
@@ -9760,9 +9486,9 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
   ];
 
   const E=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const D=()=>window.ssSupabase&&window.ssSupabase.db?window.ssSupabase.db:null;
-  const U=()=>window.ssSupabaseAuth&&window.ssSupabaseAuth.currentUser?window.ssSupabaseAuth.currentUser.uid:null;
-  const ME=()=>window.ssSupabaseProfile||{};
+  const D=()=>window.ssFirebase&&window.ssFirebase.db?window.ssFirebase.db:null;
+  const U=()=>window.ssFirebaseAuth&&window.ssFirebaseAuth.currentUser?window.ssFirebaseAuth.currentUser.uid:null;
+  const ME=()=>window.ssFirebaseProfile||{};
   const T=m=>typeof window.showToast==='function'?window.showToast(m):alert(m);
   const P=()=>document.getElementById('ssHubPanel');
 
@@ -9897,7 +9623,7 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
       if(typeof window.openAuth==='function')window.openAuth('signin');
       return;
     }
-    if(!d)return T('Supabase is not ready. Please try again.');
+    if(!d)return T('Firebase is not ready. Please try again.');
 
     const ref=d.ref('groupMembers/'+id+'/'+u);
     try{
@@ -9932,7 +9658,7 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
       await openGroup(id);
     }catch(e){
       console.error('Group membership update failed:',e);
-      T('Could not update your membership. Please check Supabase RLS policies for groupMembers.');
+      T('Could not update your membership. Please check Firebase Rules for groupMembers.');
     }
   }
 
@@ -9987,7 +9713,7 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
 
     try{
       const d=D();
-      if(!d)throw new Error('Supabase unavailable');
+      if(!d)throw new Error('Firebase unavailable');
 
       const s=await d.ref('groupIdeas/'+id).once('value');
       const ideas=Object.entries(s.val()||{}).map(([key,v])=>({...v,key}))
@@ -10011,7 +9737,7 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
       };
     }catch(e){
       console.error('Community ideas load failed:',e);
-      box.innerHTML='<div class="ss-community-empty">Ideas are temporarily unavailable. Your membership still works. If this persists, allow read access to groupIdeas in Supabase RLS policies.</div>';
+      box.innerHTML='<div class="ss-community-empty">Ideas are temporarily unavailable. Your membership still works. If this persists, allow read access to groupIdeas in Firebase Rules.</div>';
     }
   }
 
@@ -10024,7 +9750,7 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
     const text=(input?.value||'').trim();
     if(!text)return T('Write your idea first.');
     if(text.length>1500)return T('Please keep your idea under 1,500 characters.');
-    if(!d)return T('Supabase is not ready. Please try again.');
+    if(!d)return T('Firebase is not ready. Please try again.');
 
     try{
       await d.ref('groupIdeas/'+id).push().set({
@@ -10040,7 +9766,7 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
       await renderIdeas(id);
     }catch(e){
       console.error('Share idea failed:',e);
-      T('Could not share the idea. Please check Supabase RLS policies for groupIdeas.');
+      T('Could not share the idea. Please check Firebase Rules for groupIdeas.');
     }
   }
 
@@ -10097,13 +9823,13 @@ body.dark-mode .ss-other-skills strong{color:#dceae6}
 <script id="ss-enhanced-platform-fix-and-upgrades">
 (function(){
 'use strict';
-const A=()=>window.ssSupabaseAuth||window.ssSupabase?.auth||null;
-const D=()=>window.ssSupabase?.db||null;
+const A=()=>window.ssFirebaseAuth||window.ssFirebase?.auth||null;
+const D=()=>window.ssFirebase?.db||null;
 const UID=()=>A()?.currentUser?.uid||null;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const arr=v=>Array.isArray(v)?v:(v?String(v).split(',').map(x=>x.trim()).filter(Boolean):[]);
 const toast=m=>{if(typeof window.showToast==='function')window.showToast(m);else if(typeof window.toast==='function')window.toast(m);};
-async function val(path){const d=D();if(!d)throw Error('Supabase is still loading.');return (await d.ref(path).once('value')).val()}
+async function val(path){const d=D();if(!d)throw Error('Firebase is still loading.');return (await d.ref(path).once('value')).val()}
 async function profile(){const u=A()?.currentUser;if(!u||!D())return null;const s=await D().ref('users/'+u.uid).once('value');return s.exists()?s.val():null}
 function setText(id,text){const e=document.getElementById(id);if(e)e.textContent=text}
 function setAvatar(p){const e=document.getElementById('navAvatar');if(e)e.textContent=p?.avatar||'👤'}
@@ -10116,7 +9842,7 @@ async function syncProfileUI(){
    const fallback={uid:u.uid,name:u.displayName||((u.email||'').split('@')[0])||'SkillSwap Member',email:u.email||'',avatar:'🧑🏻',type:'University Student',location:'Online',languages:['English'],teach:['Knowledge Sharing'],want:['Something New'],availability:['Flexible'],bio:'Welcome to SkillSwap India! Complete your profile to start learning and teaching.',rating:0,reviews:0,created_at:new Date().toISOString()};
    try{await D().ref('users/'+u.uid).set(fallback);p=fallback}catch(e){p=fallback}
  }
- window.ssSupabaseProfile=p;
+ window.ssFirebaseProfile=p;
  setText('navProfileName',p.name||u.displayName||'Profile');setAvatar(p);
  window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(p));
  document.documentElement.dataset.ssProfileReady='true';
@@ -11356,7 +11082,7 @@ body.dark-mode .ss-rating-box textarea{background:#0d211c;color:#eaf7f2;border-c
           <button class="ss-land-btn secondary" type="button" onclick="document.getElementById('ssLandHow').scrollIntoView({behavior:'smooth'})">See how it works ↓</button>
         </div>
         <div class="ss-land-trust">
-          <span>✓ Real member profiles</span><span>✓ Supabase-powered accounts</span><span>✓ Ratings & reviews</span>
+          <span>✓ Real member profiles</span><span>✓ Firebase-powered accounts</span><span>✓ Ratings & reviews</span>
         </div>
       </div>
       <div class="ss-land-card">
@@ -11420,7 +11146,7 @@ body.dark-mode .ss-rating-box textarea{background:#0d211c;color:#eaf7f2;border-c
 
   function user(){
     try{
-      if(window.ssSupabaseProfile) return window.ssSupabaseProfile;
+      if(window.ssFirebaseProfile) return window.ssFirebaseProfile;
       if(typeof getCurrentUser==='function') return getCurrentUser();
     }catch(e){}
     return null;
@@ -11451,24 +11177,24 @@ body.dark-mode .ss-rating-box textarea{background:#0d211c;color:#eaf7f2;border-c
     if(health) health.style.display=loggedIn?'inline-flex':'none';
   }
 
-  async function refreshSupabaseProfile(u){
+  async function refreshFirebaseProfile(u){
     try{
-      if(!u || !window.ssSupabase || !window.ssSupabase.db) return;
-      const snap=await window.ssSupabase.db.ref('users/'+u.uid).get();
+      if(!u || !window.ssFirebase || !window.ssFirebase.db) return;
+      const snap=await window.ssFirebase.db.ref('users/'+u.uid).get();
       if(snap.exists()){
         const p=snap.val();
-        window.ssSupabaseProfile=p;
+        window.ssFirebaseProfile=p;
         try{window.ssMemoryStorage.setItem('skillswapUser',JSON.stringify(p));}catch(e){}
         setAppState(true);
       }
     }catch(e){ console.warn('SkillSwap profile restore:',e); }
   }
 
-  if(window.ssSupabaseAuth && typeof window.ssSupabaseAuth.onAuthStateChanged==='function'){
-    window.ssSupabaseAuth.onAuthStateChanged(async function(u){
+  if(window.ssFirebaseAuth && typeof window.ssFirebaseAuth.onAuthStateChanged==='function'){
+    window.ssFirebaseAuth.onAuthStateChanged(async function(u){
       if(u){
         setAppState(true);
-        await refreshSupabaseProfile(u);
+        await refreshFirebaseProfile(u);
         setAppState(true);
       }else{
         setAppState(false);
@@ -11567,7 +11293,7 @@ body.dark-mode .ss-rating-box textarea{background:#0d211c;color:#eaf7f2;border-c
     container.appendChild(b);
   };
 
-  // Keep the authenticated app hidden until Supabase restores a real session.
+  // Keep the authenticated app hidden until Firebase restores a real session.
   // This prevents the public home from reappearing after a reload.
   setTimeout(function(){setAppState(!!user());},1200);
 })();
@@ -11753,7 +11479,7 @@ input::placeholder,textarea::placeholder{
 
 <style id="ssFinalFixes">#ssSeparateMenuButton,#ssMenuOverlay,#ssMenuPanel,.ss-menu-btn,.ss-menu-overlay,.ss-menu-panel{display:none!important}#authModal .modal{background:linear-gradient(145deg,rgba(7,22,52,.98),rgba(10,42,91,.98))!important;color:#eef7ff!important;border:1px solid rgba(80,180,255,.25)!important;box-shadow:0 30px 80px rgba(0,0,0,.45)!important}#authModal .modal h2,#authModal .modal label{color:#f4fbff!important}#authModal .modal-subtitle,#authModal .modal p{color:#b9d4ee!important}#authModal input,#authModal select,#authModal textarea{background:#071a38!important;color:#f4fbff!important;border:1px solid rgba(89,174,255,.28)!important}#authModal input::placeholder,#authModal textarea::placeholder{color:#7895b5!important}#authModal input:focus,#authModal select:focus,#authModal textarea:focus{border-color:#39b9ff!important;box-shadow:0 0 0 3px rgba(57,185,255,.12)!important;outline:none}</style>
 <script id="ssFinalSignupFix">
-(function(){function v(id){const e=document.getElementById(id);return e?String(e.value||'').trim():''}function t(m){if(typeof showToast==='function')showToast(m);else alert(m)}window.signUp=async function(){const name=v('signupName'),email=v('signupEmail').toLowerCase(),password=document.getElementById('signupPassword')?.value||'',type=v('signupType')||'College Student',location=v('signupLocation')||'Online',languages=v('signupLanguages'),bio=v('signupBio')||'Learning and sharing skills.',teach=v('signupSkill'),want=v('signupWanted'),availability=[...document.querySelectorAll('#signupForm input[name="availability"]:checked')].map(x=>x.value);if(!name)return t('Please enter your name.');if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return t('Please enter a valid email address.');if(password.length<6)return t('Password must be at least 6 characters.');const auth=window.ssSupabaseAuth||window.ssSupabase?.auth,db=window.ssSupabase?.db;if(!auth||!db)return t('Supabase is not ready. Check Supabase settings and refresh.');const btn=document.querySelector('#signupForm .modal-submit');if(btn){btn.disabled=true;btn.textContent='Creating your account…'}try{await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);const cred=await auth.createUserWithEmailAndPassword(email,password);try{await cred.user.updateProfile({displayName:name})}catch(_){}const id=Date.now()+Math.floor(Math.random()*1000);const profile={uid:cred.user.uid,legacyId:id,id,name,email,type,location,languages:languages?languages.split(',').map(x=>x.trim()).filter(Boolean):['English'],bio,teach:teach?teach.split(',').map(x=>x.trim()).filter(Boolean):['Knowledge Sharing'],want:want?want.split(',').map(x=>x.trim()).filter(Boolean):['Something New'],availability:availability.length?availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()};await db.ref('users/'+cred.user.uid).set(profile);window.ssSupabaseProfile=profile;if(window.ssMemoryStorage)window.ssMemoryStorage.setItem('skillswapUser',JSON.stringify(profile));if(typeof setAppState==='function')setAppState(true);if(typeof closeModal==='function')closeModal('authModal');if(typeof updateUserUI==='function')updateUserUI();if(typeof renderEverything==='function')await renderEverything();t('🎉 Welcome to SkillSwap India, '+name+'!')}catch(e){console.error(e);const c=e?.code||'',m=c==='auth/email-already-in-use'?'This email is already registered. Please sign in.':c==='auth/invalid-email'?'Please enter a valid email address.':c==='auth/weak-password'?'Password must be at least 6 characters.':c==='auth/network-request-failed'?'Network error. Check your internet connection.':e?.message||'Account creation failed.';t('❌ '+m)}finally{if(btn){btn.disabled=false;btn.textContent='Create my profile'}}};})();
+(function(){function v(id){const e=document.getElementById(id);return e?String(e.value||'').trim():''}function t(m){if(typeof showToast==='function')showToast(m);else alert(m)}window.signUp=async function(){const name=v('signupName'),email=v('signupEmail').toLowerCase(),password=document.getElementById('signupPassword')?.value||'',type=v('signupType')||'College Student',location=v('signupLocation')||'Online',languages=v('signupLanguages'),bio=v('signupBio')||'Learning and sharing skills.',teach=v('signupSkill'),want=v('signupWanted'),availability=[...document.querySelectorAll('#signupForm input[name="availability"]:checked')].map(x=>x.value);if(!name)return t('Please enter your name.');if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return t('Please enter a valid email address.');if(password.length<6)return t('Password must be at least 6 characters.');const auth=window.ssFirebaseAuth||window.ssFirebase?.auth,db=window.ssFirebase?.db;if(!auth||!db)return t('Firebase is not ready. Check firebase-config.js and refresh.');const btn=document.querySelector('#signupForm .modal-submit');if(btn){btn.disabled=true;btn.textContent='Creating your account…'}try{await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);const cred=await auth.createUserWithEmailAndPassword(email,password);try{await cred.user.updateProfile({displayName:name})}catch(_){}const id=Date.now()+Math.floor(Math.random()*1000);const profile={uid:cred.user.uid,legacyId:id,id,name,email,type,location,languages:languages?languages.split(',').map(x=>x.trim()).filter(Boolean):['English'],bio,teach:teach?teach.split(',').map(x=>x.trim()).filter(Boolean):['Knowledge Sharing'],want:want?want.split(',').map(x=>x.trim()).filter(Boolean):['Something New'],availability:availability.length?availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()};await db.ref('users/'+cred.user.uid).set(profile);window.ssFirebaseProfile=profile;if(window.ssMemoryStorage)window.ssMemoryStorage.setItem('skillswapUser',JSON.stringify(profile));if(typeof setAppState==='function')setAppState(true);if(typeof closeModal==='function')closeModal('authModal');if(typeof updateUserUI==='function')updateUserUI();if(typeof renderEverything==='function')await renderEverything();t('🎉 Welcome to SkillSwap India, '+name+'!')}catch(e){console.error(e);const c=e?.code||'',m=c==='auth/email-already-in-use'?'This email is already registered. Please sign in.':c==='auth/invalid-email'?'Please enter a valid email address.':c==='auth/weak-password'?'Password must be at least 6 characters.':c==='auth/network-request-failed'?'Network error. Check your internet connection.':e?.message||'Account creation failed.';t('❌ '+m)}finally{if(btn){btn.disabled=false;btn.textContent='Create my profile'}}};})();
 </script>
 
 
@@ -11781,12 +11507,12 @@ input::placeholder,textarea::placeholder{
     const password=document.getElementById('signinPassword')?.value||'';
     const btn=document.querySelector('#signinForm .modal-submit');
     if(!email||!password){toast('Please enter your email and password.');return;}
-    const auth=window.ssSupabaseAuth||window.ssSupabase?.auth;
-    const db=window.ssSupabase?.db;
-    if(!auth||!db){toast('Supabase is not ready. Please refresh the page.');return;}
+    const auth=window.ssFirebaseAuth||window.ssFirebase?.auth;
+    const db=window.ssFirebase?.db;
+    if(!auth||!db){toast('Firebase is not ready. Please refresh the page.');return;}
     if(btn){btn.disabled=true;btn.dataset.oldText=btn.textContent;btn.textContent='Signing in…';}
     try{
-      
+      if(window.firebase?.auth?.Auth?.Persistence) await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
       const cred=await auth.signInWithEmailAndPassword(email,password);
       let snap=await db.ref('users/'+cred.user.uid).get();
       if(!snap.exists()){
@@ -11794,7 +11520,7 @@ input::placeholder,textarea::placeholder{
         await db.ref('users/'+cred.user.uid).set(profile); snap=await db.ref('users/'+cred.user.uid).get();
       }
       const profile=snap.val();
-      window.ssSupabaseProfile=profile;
+      window.ssFirebaseProfile=profile;
       try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
       document.body.classList.add('ss-authenticated');
       if(typeof setAppState==='function')setAppState(true);
@@ -11803,7 +11529,7 @@ input::placeholder,textarea::placeholder{
       if(typeof renderEverything==='function')await renderEverything();
       toast('👋 Welcome back, '+(profile.name||'')+'!');
     }catch(e){
-      console.error('SkillSwap Supabase sign-in error:',e);
+      console.error('SkillSwap Firebase sign-in error:',e);
       const c=String(e?.code||'');
       let m=e?.message||'Sign in failed.';
       if(c==='auth/user-not-found')m='No SkillSwap account was found with this email.';
@@ -11811,7 +11537,7 @@ input::placeholder,textarea::placeholder{
       else if(c==='auth/invalid-email')m='Please enter a valid email address.';
       else if(c==='auth/too-many-requests')m='Too many attempts. Please wait a few minutes and try again.';
       else if(c==='auth/network-request-failed')m='Network error. Check your internet connection.';
-      toast('❌ '+m.replace(/^Supabase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
+      toast('❌ '+m.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
     }finally{if(btn){btn.disabled=false;btn.textContent=btn.dataset.oldText||'Sign in';}}
   };
 
@@ -11820,23 +11546,23 @@ input::placeholder,textarea::placeholder{
     const type=val('signupType')||'College Student',location=val('signupLocation')||'Online',languages=val('signupLanguages'),bio=val('signupBio')||'Learning and sharing skills.',teach=val('signupSkill'),want=val('signupWanted');
     const availability=[...document.querySelectorAll('#signupForm input[name="availability"]:checked')].map(x=>x.value);
     if(!name){toast('Please enter your name.');return;} if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('Please enter a valid email address.');return;} if(password.length<6){toast('Password must be at least 6 characters.');return;}
-    const auth=window.ssSupabaseAuth||window.ssSupabase?.auth,db=window.ssSupabase?.db;
-    if(!auth||!db){toast('Supabase is not ready. Please refresh the page.');return;}
+    const auth=window.ssFirebaseAuth||window.ssFirebase?.auth,db=window.ssFirebase?.db;
+    if(!auth||!db){toast('Firebase is not ready. Please refresh the page.');return;}
     const btn=document.querySelector('#signupForm .modal-submit'); if(btn){btn.disabled=true;btn.dataset.oldText=btn.textContent;btn.textContent='Creating your account…';}
     try{
-      
+      if(window.firebase?.auth?.Auth?.Persistence) await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
       const cred=await auth.createUserWithEmailAndPassword(email,password);
       try{await cred.user.updateProfile({displayName:name});}catch(e){}
       const id=Date.now()+Math.floor(Math.random()*1000);
       const profile={uid:cred.user.uid,id,legacyId:id,name,email:cred.user.email||email,type,location,languages:languages?languages.split(',').map(x=>x.trim()).filter(Boolean):['English'],bio,teach:teach?teach.split(',').map(x=>x.trim()).filter(Boolean):['Knowledge Sharing'],want:want?want.split(',').map(x=>x.trim()).filter(Boolean):['Something New'],availability:availability.length?availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()};
       await db.ref('users/'+cred.user.uid).set(profile);
-      window.ssSupabaseProfile=profile; try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
+      window.ssFirebaseProfile=profile; try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
       document.body.classList.add('ss-authenticated'); if(typeof setAppState==='function')setAppState(true); if(typeof updateUserUI==='function')updateUserUI(); if(typeof closeModal==='function')closeModal('authModal'); if(typeof renderEverything==='function')await renderEverything();
       toast('🎉 Welcome to SkillSwap India, '+name+'!');
     }catch(e){
-      console.error('SkillSwap Supabase sign-up error:',e); const c=String(e?.code||''); let m=e?.message||'Account creation failed.';
-      if(c==='auth/email-already-in-use')m='This email is already registered. Please sign in instead.'; else if(c==='auth/invalid-email')m='Please enter a valid email address.'; else if(c==='auth/weak-password')m='Password must be at least 6 characters.'; else if(c==='auth/operation-not-allowed')m='Email/password sign-up is not enabled in Supabase Authentication.'; else if(c==='auth/network-request-failed')m='Network error. Check your internet connection.'; else if(String(m).toLowerCase().includes('permission_denied'))m='Supabase Database permission was denied. Please publish your Realtime Database rules.';
-      toast('❌ '+String(m).replace(/^Supabase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
+      console.error('SkillSwap Firebase sign-up error:',e); const c=String(e?.code||''); let m=e?.message||'Account creation failed.';
+      if(c==='auth/email-already-in-use')m='This email is already registered. Please sign in instead.'; else if(c==='auth/invalid-email')m='Please enter a valid email address.'; else if(c==='auth/weak-password')m='Password must be at least 6 characters.'; else if(c==='auth/operation-not-allowed')m='Email/password sign-up is not enabled in Firebase Authentication.'; else if(c==='auth/network-request-failed')m='Network error. Check your internet connection.'; else if(String(m).toLowerCase().includes('permission_denied'))m='Firebase Database permission was denied. Please publish your Realtime Database rules.';
+      toast('❌ '+String(m).replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
     }finally{if(btn){btn.disabled=false;btn.textContent=btn.dataset.oldText||'Create my profile';}}
   };
 })();
@@ -11856,8 +11582,8 @@ input::placeholder,textarea::placeholder{
   const $=id=>document.getElementById(id);
   const val=id=>String($(id)?.value||'').trim();
   const toast=m=>{if(typeof window.showToast==='function')window.showToast(m);else alert(m)};
-  const auth=()=>window.ssSupabaseAuth||window.ssSupabase?.auth||null;
-  const db=()=>window.ssSupabase?.db||null;
+  const auth=()=>window.ssFirebaseAuth||window.ssFirebase?.auth||null;
+  const db=()=>window.ssFirebase?.db||null;
 
   window.ssOpenAuth=function(type){
     const modal=$('authModal');
@@ -11879,10 +11605,10 @@ input::placeholder,textarea::placeholder{
     if(!email){toast('Please enter your email address.');return;}
     if(!password){toast('Please enter your password.');return;}
     const a=auth(),d=db();
-    if(!a||!d){toast('Supabase is not ready. Make sure Supabase settings is beside this HTML file, then refresh.');return;}
+    if(!a||!d){toast('Firebase is not ready. Make sure firebase-config.js is beside this HTML file, then refresh.');return;}
     if(btn){btn.disabled=true;btn.textContent='Signing in…';}
     try{
-      
+      if(window.firebase?.auth?.Auth?.Persistence)await a.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);
       const cred=await a.signInWithEmailAndPassword(email,password);
       let snap=await d.ref('users/'+cred.user.uid).once('value');
       if(!snap.exists()){
@@ -11891,7 +11617,7 @@ input::placeholder,textarea::placeholder{
         snap=await d.ref('users/'+cred.user.uid).once('value');
       }
       const profile=snap.val()||{uid:cred.user.uid,name:cred.user.displayName||email.split('@')[0],email};
-      window.ssSupabaseProfile=profile;
+      window.ssFirebaseProfile=profile;
       try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
       document.body.classList.add('ss-authenticated');
       if(typeof window.setAppState==='function')window.setAppState(true);
@@ -11908,8 +11634,8 @@ input::placeholder,textarea::placeholder{
       else if(c==='auth/invalid-email')m='Please enter a valid email address.';
       else if(c==='auth/too-many-requests')m='Too many attempts. Please wait a few minutes and try again.';
       else if(c==='auth/network-request-failed')m='Network error. Check your internet connection.';
-      else if(raw.toLowerCase().includes('permission_denied'))m='Supabase Database permission was denied. Please publish your Realtime Database rules.';
-      toast('❌ '+m.replace(/^Supabase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
+      else if(raw.toLowerCase().includes('permission_denied'))m='Firebase Database permission was denied. Please publish your Realtime Database rules.';
+      toast('❌ '+m.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
     }finally{if(btn){btn.disabled=false;btn.textContent='Sign in';}}
   };
 
@@ -11921,17 +11647,17 @@ input::placeholder,textarea::placeholder{
     if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('Please enter a valid email address.');return;}
     if(password.length<6){toast('Your password must be at least 6 characters.');return;}
     const a=auth(),d=db();
-    if(!a||!d){toast('Supabase is not ready. Make sure Supabase settings is beside this HTML file, then refresh.');return;}
+    if(!a||!d){toast('Firebase is not ready. Make sure firebase-config.js is beside this HTML file, then refresh.');return;}
     const btn=document.querySelector('#signupForm .modal-submit');
     if(btn){btn.disabled=true;btn.textContent='Creating your account…';}
     try{
-      
+      if(window.firebase?.auth?.Auth?.Persistence)await a.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);
       const cred=await a.createUserWithEmailAndPassword(email,password);
       try{await cred.user.updateProfile({displayName:name});}catch(e){console.warn(e);}
       const id=Date.now();
       const profile={uid:cred.user.uid,id,legacyId:id,name,email:cred.user.email||email,type,location,languages:languages?languages.split(',').map(x=>x.trim()).filter(Boolean):['English'],bio,teach:teach?teach.split(',').map(x=>x.trim()).filter(Boolean):['Knowledge Sharing'],want:want?want.split(',').map(x=>x.trim()).filter(Boolean):['Something New'],availability:availability.length?availability:['Flexible'],avatar:'🧑🏻',rating:0,reviews:0,created_at:new Date().toISOString()};
       await d.ref('users/'+cred.user.uid).set(profile);
-      window.ssSupabaseProfile=profile;
+      window.ssFirebaseProfile=profile;
       try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(profile));}catch(e){}
       document.body.classList.add('ss-authenticated');
       if(typeof window.setAppState==='function')window.setAppState(true);
@@ -11946,10 +11672,10 @@ input::placeholder,textarea::placeholder{
       if(c==='auth/email-already-in-use')m='This email is already registered. Please use Sign in.';
       else if(c==='auth/invalid-email')m='Please enter a valid email address.';
       else if(c==='auth/weak-password')m='Your password must be at least 6 characters.';
-      else if(c==='auth/operation-not-allowed')m='Email/password sign-up is not enabled in Supabase Authentication.';
+      else if(c==='auth/operation-not-allowed')m='Email/password sign-up is not enabled in Firebase Authentication.';
       else if(c==='auth/network-request-failed')m='Network error. Check your internet connection.';
-      else if(raw.toLowerCase().includes('permission_denied'))m='The account was created, but Supabase Database rules blocked profile creation. Please publish the Realtime Database rules.';
-      toast('❌ '+m.replace(/^Supabase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
+      else if(raw.toLowerCase().includes('permission_denied'))m='The account was created, but Firebase Database rules blocked profile creation. Please publish the Realtime Database rules.';
+      toast('❌ '+m.replace(/^Firebase:\s*/,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,''));
     }finally{if(btn){btn.disabled=false;btn.textContent='Create my profile';}}
   };
 
@@ -12164,7 +11890,7 @@ h1 span{color:#6b7280!important;background:none!important;-webkit-background-cli
   window.ssAwardOpen=function(type){
     const m=document.getElementById('ssAwardModal'), c=document.getElementById('ssAwardModalContent'); if(!m||!c)return;
     if(type==='passport'){
-      const u=window.ssSupabaseProfile||get('skillswapUser',{})||{};
+      const u=window.ssFirebaseProfile||get('skillswapUser',{})||{};
       c.innerHTML='<h2>🎓 My Skill Passport</h2><p>Create a concise record of what you teach, what you learn and what you have achieved.</p>'+
       '<label>Name</label><input class="ss-award-input" id="sapName" value="'+esc(u.name||'')+'" placeholder="Your name">'+
       '<label>Skills I can teach</label><input class="ss-award-input" id="sapTeach" value="'+esc((u.teach||[]).join(', '))+'" placeholder="e.g. Python, Telugu, Design">'+
@@ -12191,7 +11917,7 @@ h1 span{color:#6b7280!important;background:none!important;-webkit-background-cli
   };
   async function update(){
     let people=0, connections=0, sessions=0, skills=new Set();
-    const db=window.ssSupabase?.db;
+    const db=window.ssFirebase?.db;
     try{if(db){const snap=await db.ref('users').once('value');const v=snap.val()||{};people=Object.keys(v).length;Object.values(v).forEach(u=>{[...(u.teach||[]),...(u.want||[])].forEach(x=>skills.add(String(x).trim().toLowerCase()))});}}catch(e){console.warn('Impact stats unavailable',e)}
     const p=Object.keys(get('skillswapRequests',{} )||{}).length;
     const req=get('skillswapRequests',[]); if(Array.isArray(req)){connections=req.filter(x=>x.status==='accepted').length;sessions=get('ssSessions',[]).length||0;}
@@ -12585,153 +12311,22 @@ textarea::placeholder {
 </style>
 
 
-
-<!-- SKILLSWAP MOBILE-FIRST RESPONSIVE FINAL PATCH -->
-<style id="ssMobileReadyFinal">
-/* Prevent horizontal overflow on phones */
-html,body{width:100%;max-width:100%;overflow-x:hidden}
-img,video,canvas,svg{max-width:100%;height:auto}
-button,a,input,select,textarea{touch-action:manipulation}
-
-/* Tablet */
-@media (max-width: 900px){
-  .container,.wrap,.section-inner,.section,.ss-ultimate-shell,.ss5-wrap,.ss4-shell{max-width:100%}
-  .ss-ultimate-actions,.ss-pro-actions,.quick-actions{flex-wrap:wrap}
-  .ss-ultimate-actions button,.ss-pro-actions button{min-height:44px}
-  .modal-overlay{padding:12px!important}
-}
-
-/* Phone */
-@media (max-width: 680px){
-  body{font-size:15px;line-height:1.5}
-
-  /* Main page spacing */
-  .section,.how{padding:42px 14px!important}
-  .hero{padding:46px 14px!important}
-  .hero h1{font-size:clamp(32px,10vw,44px)!important;line-height:1.08!important}
-  .hero p,.hero-subtitle{font-size:15px!important}
-
-  /* Public landing */
-  .ss-land-wrap{padding-left:14px!important;padding-right:14px!important}
-  .ss-land-nav{padding:14px 0!important;gap:10px!important;flex-wrap:wrap}
-  .ss-land-brand{font-size:18px!important}
-  .ss-land-actions{width:100%;display:grid!important;grid-template-columns:1fr 1fr;gap:8px!important}
-  .ss-land-actions button{width:100%;min-height:44px}
-  .ss-land-hero{padding:36px 0!important;grid-template-columns:1fr!important}
-  .ss-land-hero h1{font-size:clamp(34px,11vw,48px)!important;line-height:1.08!important}
-  .ss-land-hero p{font-size:15px!important}
-  .ss-land-features,.ss-land-steps{grid-template-columns:1fr!important}
-  .ss-land-card{padding:16px!important}
-
-  /* Ultimate platform */
-  .ss-ultimate-shell{padding-left:0!important;padding-right:0!important}
-  .ss-ultimate-hero{padding:24px 16px!important;border-radius:18px!important}
-  .ss-ultimate-hero h2{font-size:clamp(27px,8vw,38px)!important;line-height:1.12!important}
-  .ss-ultimate-actions{display:grid!important;grid-template-columns:1fr!important;gap:9px!important}
-  .ss-ultimate-actions button{width:100%;min-height:46px}
-  .ss-ultimate-grid,.ss-feature-grid,.ss-mini-grid,.ss-ultimate-form{grid-template-columns:1fr!important}
-  .ss-ultimate-row{gap:12px!important}
-  .ss-searchbar{width:100%!important}
-  .ss-searchbar input{min-width:0!important;width:100%!important}
-
-  /* Dashboard / analytics */
-  .ss-pro{margin:20px 0!important;padding:14px!important;border-radius:18px!important}
-  .ss-pro-head,.ss5-head,.ss4-top,.ss4-hero-inner{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:12px!important}
-  .ss-pro-actions,.ss4-actions{display:grid!important;grid-template-columns:1fr!important;width:100%!important}
-  .ss-pro-actions button,.ss4-actions .ss4-btn{width:100%!important;min-height:44px}
-  .ss-pro-grid,.ss4-grid{grid-template-columns:1fr!important}
-  .ss-span-2,.ss-span-3{grid-column:auto!important}
-  .ss-journey{grid-template-columns:1fr 1fr!important;gap:8px!important}
-  .ss-listings{grid-template-columns:1fr!important}
-  .ss-metrics,.ss-statgrid,.ss5-stats{grid-template-columns:1fr 1fr!important;gap:8px!important}
-  .ss5-wrap{padding:0 12px 105px!important;margin-top:16px!important}
-  .ss5-card{padding:16px!important;border-radius:18px!important}
-  .ss5-title{font-size:22px!important}
-  .ss5-chart{height:125px!important;gap:5px!important}
-  .ss5-item{align-items:flex-start!important;padding:10px!important}
-  .ss5-btn{padding:9px 10px!important;min-height:42px}
-
-  /* Community / hub / discovery */
-  .ss-community-grid,.ss-hub-grid,.ss-hub-results,.ss-hub-form,.ss-enhanced-grid,.ss-other-grid{grid-template-columns:1fr!important}
-  .ss-community-composer-row{flex-direction:column!important;align-items:stretch!important}
-  .ss-community-composer-row button{width:100%;min-height:44px}
-  .ss-hub-form .full{grid-column:auto!important}
-  .ss-enhanced-profile{grid-template-columns:1fr!important;text-align:center}
-  .ss-static-member-grid{grid-template-columns:1fr!important}
-
-  /* Forms */
-  .ss-form-grid{grid-template-columns:1fr!important}
-  input,select,textarea{font-size:16px!important;max-width:100%}
-  textarea{min-height:100px}
-  .quick-actions{display:grid!important;grid-template-columns:1fr 1fr!important}
-  .quick-action{min-height:44px}
-
-  /* Modals fit the phone screen */
-  .modal-overlay{align-items:flex-start!important;padding:10px!important;overflow-y:auto!important}
-  .modal,.modal-content,#authModal .modal{width:100%!important;max-width:100%!important;max-height:calc(100vh - 20px)!important;margin:0!important;border-radius:18px!important;overflow-y:auto!important}
-  #authModal .modal{padding:18px!important}
-  .modal-header{padding-right:4px!important}
-  .modal-submit{width:100%!important;min-height:46px!important}
-
-  /* Touch-friendly navigation */
-  .nav-links{display:none!important}
-  .ss5-bottomnav{left:8px!important;right:8px!important;bottom:8px!important;padding:6px!important;border-radius:17px!important}
-  .ss5-bottomnav button{flex:1;min-width:0;min-height:48px!important;padding:6px 2px!important;font-size:11px!important}
-  .ss4-nav{position:sticky!important;bottom:8px!important;z-index:1000!important;overflow-x:auto!important}
-  .ss4-nav button{min-width:72px!important;min-height:44px!important}
-
-  /* Fixed join CTA must not cover mobile navigation */
-  .ss-mobile-cta{left:10px!important;right:10px!important;bottom:76px!important}
-  .ss-mobile-cta button{min-height:48px!important}
-
-  /* Toasts stay inside the phone viewport */
-  .ss-toast{left:12px!important;right:12px!important;bottom:14px!important;max-width:none!important;width:auto!important}
-
-  /* Avoid oversized desktop typography */
-  h1{font-size:clamp(30px,9vw,44px)!important}
-  h2{font-size:clamp(24px,7vw,34px)!important}
-  h3{font-size:clamp(19px,5.5vw,25px)!important}
-
-  /* Cards and controls should never force page width */
-  .card,.panel,.feature-card,.profile-card,.dashboard-card,.community-card,
-  .ss-hub-card,.ss-other-community,.ss-land-card,.quick-panel,.progress-panel{min-width:0!important;max-width:100%!important}
-  .section-header{gap:10px!important}
-  .section-header p{max-width:100%!important}
-
-  /* Horizontal data/table areas remain usable */
-  table{display:block!important;width:100%!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch}
-  pre,.code-block{max-width:100%!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch}
-}
-
-/* Very small phones */
-@media (max-width: 380px){
-  .ss5-stats,.ss-metrics,.ss-statgrid{grid-template-columns:1fr!important}
-  .quick-actions{grid-template-columns:1fr!important}
-  .ss-journey{grid-template-columns:1fr!important}
-  .ss-land-actions{grid-template-columns:1fr!important}
-  .ss5-bottomnav button{font-size:10px!important}
-  .ss5-bottomnav{border-radius:15px!important}
-}
-
-/* Landscape phones */
-@media (max-height: 520px) and (orientation:landscape){
-  .modal,.modal-content,#authModal .modal{max-height:calc(100vh - 12px)!important}
-  .ss-mobile-cta{bottom:62px!important}
-}
-</style>
-
-<style id="ss-demo-chat-buttons">
-.ss-other-card .ss-demo-chat-btn{margin-left:7px!important}
-@media(max-width:650px){.ss-other-card .ss-demo-chat-btn{margin:8px 0 0!important;width:100%}}
-</style>
-<script id="ss-demo-chat-bind">
+<script id="skillswapFirebaseFinalGuard">
 (function(){
-  const map={
-    'Ananya Reddy':'ananya','Aarav Sharma':'aarav','Meera Krishnan':'meera','Rohan Patel':'rohan','Saanvi Gupta':'saanvi','Vikram Rao':'vikram','Ishita Singh':'ishita','Aditya Nair':'aditya','Kavya Das':'kavya','Dev Malhotra':'dev','Priya Sharma':'priya','Arjun Mehta':'arjun'
-  };
-  function bind(){document.querySelectorAll('#ssOtherGrid .ss-other-card').forEach(card=>{const name=card.querySelector('h3')?.textContent?.trim();const id=map[name];if(!id||card.querySelector('.ss-demo-chat-btn'))return;const b=document.createElement('button');b.type='button';b.className='ss-other-btn ss-demo-chat-btn';b.textContent='💬 Chat';b.onclick=()=>openChat(id);const view=card.querySelector('.ss-other-btn');view?.parentNode?.appendChild(b);});}
-  document.addEventListener('DOMContentLoaded',()=>setTimeout(bind,100));
-  setTimeout(bind,500);setTimeout(bind,1500);
+  if(!window.firebase) return;
+  try{
+    if(!firebase.apps.length){
+      firebase.initializeApp(window.SKILLSWAP_FIREBASE_CONFIG);
+    }
+    window.ssFirebaseAuth = window.ssFirebaseAuth || firebase.auth();
+    window.ssFirebase = window.ssFirebase || {auth: window.ssFirebaseAuth, db: firebase.database()};
+    window.ssFirebase.db = window.ssFirebase.db || firebase.database();
+    window.ssFirebaseReady = true;
+  }catch(e){
+    console.error('SkillSwap Firebase initialization failed:', e);
+    window.ssFirebaseReady = false;
+    window.ssFirebaseError = e && e.message ? e.message : String(e);
+  }
 })();
 </script>
 </body>
@@ -12930,320 +12525,3 @@ button,a,input,select,textarea{touch-action:manipulation}
   -webkit-text-fill-color:#fff !important;
 }
 </style>
-<style id="ss-voice-call-css">
-.ss-voice-btn{background:#0f766e!important;color:#fff!important;border:1px solid rgba(255,255,255,.22)!important;border-radius:10px!important;padding:9px 12px!important;cursor:pointer!important;font-weight:700!important;margin-right:8px}.ss-voice-btn:hover{filter:brightness(1.12)}
-#ssVoiceCallModal{position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:20px}#ssVoiceCallModal.show{display:flex}.ss-voice-card{width:min(420px,96vw);background:#0b1f2a;color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:22px;padding:24px;text-align:center;box-shadow:0 25px 80px rgba(0,0,0,.45)}.ss-voice-avatar{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:#123746;font-size:38px;margin:0 auto 12px}.ss-voice-status{color:#dbeafe;margin:8px 0 18px}.ss-voice-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.ss-voice-actions button{border:0;border-radius:12px;padding:11px 16px;font-weight:700;cursor:pointer}.ss-call-answer{background:#16a34a;color:#fff}.ss-call-end{background:#dc2626;color:#fff}.ss-call-mute{background:#334155;color:#fff}.ss-voice-note{font-size:12px;color:#a9c0ca;margin-top:14px;line-height:1.45}.ss-voice-timer{font-variant-numeric:tabular-nums;font-size:18px;margin:5px 0 10px}
-</style>
-
-<div id="ssVoiceCallModal" aria-hidden="true">
-  <div class="ss-voice-card">
-    <div class="ss-voice-avatar" id="ssVoiceAvatar">📞</div>
-    <h3 id="ssVoiceTitle">Voice call</h3>
-    <div class="ss-voice-status" id="ssVoiceStatus">Ready</div>
-    <div class="ss-voice-timer" id="ssVoiceTimer">00:00</div>
-    <div class="ss-voice-actions" id="ssVoiceActions"></div>
-    <div class="ss-voice-note" id="ssVoiceNote">Microphone access is required for real member calls.</div>
-  </div>
-</div>
-<script id="ss-voice-call-js">
-(function(){
-  'use strict';
-  const state={pc:null,stream:null,callRef:null,candidateRef:null,listener:null,remoteId:null,remoteName:'Member',muted:false,timer:null,started:0,incoming:false,connected:false};
-  const ice={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]};
-  function el(id){return document.getElementById(id)}
-  function db(){return window.ssSupabase&&window.ssSupabase.db?window.ssSupabase.db:null}
-  function uid(){const u=window.ssSupabaseProfile||window.ssSupabaseAuth?.currentUser||window.ssSupabase?.auth?.currentUser||window.currentUser;return u&&(u.uid||u.id)||null}
-  function meName(){const u=window.ssSupabaseProfile||window.ssSupabaseAuth?.currentUser||window.ssSupabase?.auth?.currentUser||{};return u.displayName||u.name||u.email||'SkillSwap member'}
-  function personId(p){return String(p?.uid||p?.id||p?.userId||'')}
-  function show(title,status,name,avatar){el('ssVoiceTitle').textContent=title;el('ssVoiceStatus').textContent=status;el('ssVoiceAvatar').textContent=avatar||'📞';el('ssVoiceNote').textContent='Microphone access is required for real member calls.';el('ssVoiceCallModal').classList.add('show')}
-  function hide(){el('ssVoiceCallModal').classList.remove('show');el('ssVoiceActions').innerHTML=''}
-  function actions(html){el('ssVoiceActions').innerHTML=html}
-  function stopTimer(){if(state.timer){clearInterval(state.timer);state.timer=null}}
-  function timerStart(){stopTimer();state.started=Date.now();state.timer=setInterval(()=>{let n=Math.floor((Date.now()-state.started)/1000),m=String(Math.floor(n/60)).padStart(2,'0'),s=String(n%60).padStart(2,'0');el('ssVoiceTimer').textContent=m+':'+s},1000)}
-  function clean(){stopTimer();if(state.pc){try{state.pc.onicecandidate=null;state.pc.ontrack=null;state.pc.close()}catch(e){}}if(state.stream)state.stream.getTracks().forEach(t=>t.stop());state.pc=null;state.stream=null;state.callRef=null;state.candidateRef=null;state.listener=null;state.remoteId=null;state.incoming=false;state.connected=false;state.muted=false;el('ssVoiceTimer').textContent='00:00'}
-  function endCall(remove){const ref=state.callRef;if(ref&&remove){try{ref.remove()}catch(e){}}clean();hide()}
-  async function mic(){if(!navigator.mediaDevices?.getUserMedia)throw new Error('Your browser does not support microphone calls.');return navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false})}
-  async function startPC(){const pc=new RTCPeerConnection(ice);state.pc=pc;state.stream=await mic();state.stream.getTracks().forEach(t=>pc.addTrack(t,state.stream));pc.ontrack=e=>{let a=el('ssVoiceAudio');if(!a){a=document.createElement('audio');a.id='ssVoiceAudio';a.autoplay=true;a.playsInline=true;document.body.appendChild(a)}a.srcObject=e.streams[0];a.play().catch(()=>{})};pc.onconnectionstatechange=()=>{const c=pc.connectionState;if(c==='connected'){state.connected=true;el('ssVoiceStatus').textContent='Connected';timerStart()}if(['failed','disconnected','closed'].includes(c)&&state.connected)endCall(true)};return pc}
-  async function addCandidates(ref,pc){const snap=await ref.once('value');snap.forEach(x=>{const c=x.val();if(c)pc.addIceCandidate(new RTCIceCandidate(c)).catch(()=>{})});ref.on('child_added',x=>{const c=x.val();if(c)pc.addIceCandidate(new RTCIceCandidate(c)).catch(()=>{})});state.candidateRef=ref}
-  async function callReal(person){const my=uid(),other=personId(person);if(!my||!other)return alert('Please sign in before making a voice call.');if(location.protocol!=='https:'&&location.hostname!=='localhost')return alert('Voice calls require HTTPS (or localhost) so the browser can use your microphone.');clean();state.remoteId=other;state.remoteName=person.name||person.displayName||'Member';show('Calling '+state.remoteName,'Requesting microphone…',state.remoteName,person.avatar||'👤');actions('<button class="ss-call-end" id="ssEndBtn">Cancel call</button>');el('ssEndBtn').onclick=()=>endCall(true);
-    try{const d=db();if(!d)throw new Error('Supabase Database is not available.');const ref=d.ref('voiceCalls').push();state.callRef=ref;const pc=await startPC();const cand=ref.child('callerCandidates');pc.onicecandidate=e=>{if(e.candidate)cand.push(e.candidate.toJSON())};const offer=await pc.createOffer({offerToReceiveAudio:true});await pc.setLocalDescription(offer);await ref.set({callerId:my,calleeId:other,callerName:meName(),calleeName:state.remoteName,offer:{type:offer.type,sdp:offer.sdp},status:'ringing',createdAt:Date.now()});ref.child('status').on('value',snap=>{const v=snap.val();if(v==='accepted'&&pc.signalingState!=='stable'&&ref){}});ref.child('answer').on('value',async snap=>{const a=snap.val();if(a&&pc.signalingState==='have-local-offer')await pc.setRemoteDescription(new RTCSessionDescription(a))});ref.child('status').on('value',snap=>{if(snap.val()==='rejected'||snap.val()==='ended')endCall(false)});await new Promise(r=>setTimeout(r,1));addCandidates(ref.child('calleeCandidates'),pc);
-    }catch(e){console.error(e);clean();hide();alert('Could not start the voice call: '+e.message)}}
-  async function acceptReal(ref,data){try{clean();state.callRef=ref;state.remoteId=data.callerId;state.remoteName=data.callerName||'Member';state.incoming=true;show(state.remoteName,'Incoming voice call',state.remoteName,'📞');actions('<button class="ss-call-answer">Answer</button><button class="ss-call-end">Decline</button>');const btns=el('ssVoiceActions').querySelectorAll('button');btns[0].onclick=async()=>{try{actions('<button class="ss-call-mute">Mute</button><button class="ss-call-end">End call</button>');const mb=el('ssVoiceActions').querySelector('.ss-call-mute');mb.onclick=()=>toggleMute(mb);const eb=el('ssVoiceActions').querySelector('.ss-call-end');eb.onclick=()=>endCall(true);const pc=await startPC();const cand=ref.child('calleeCandidates');pc.onicecandidate=e=>{if(e.candidate)cand.push(e.candidate.toJSON())};await pc.setRemoteDescription(new RTCSessionDescription(data.offer));const answer=await pc.createAnswer();await pc.setLocalDescription(answer);await ref.update({answer:{type:answer.type,sdp:answer.sdp},status:'accepted'});addCandidates(ref.child('callerCandidates'),pc)}catch(e){console.error(e);endCall(true)}};btns[1].onclick=()=>{ref.update({status:'rejected'}).catch(()=>{});endCall(false)}}catch(e){console.error(e);endCall(false)}}
-  function toggleMute(btn){if(!state.stream)return;state.muted=!state.muted;state.stream.getAudioTracks().forEach(t=>t.enabled=!state.muted);btn.textContent=state.muted?'Unmute':'Mute'}
-  function listenIncoming(){const my=uid(),d=db();if(!my||!d)return;if(state.incomingQuery&&state.incomingUid===String(my))return;try{if(state.incomingQuery&&state.listener){state.incomingQuery.off('child_added',state.listener)}const q=d.ref('voiceCalls').orderByChild('calleeId').equalTo(String(my));state.incomingUid=String(my);state.incomingQuery=q;state.listener=snap=>{const data=snap.val();if(data&&data.status==='ringing'&&!state.callRef)acceptReal(snap.ref,data)};q.on('child_added',state.listener)}catch(e){console.warn('Voice call listener:',e)}}
-  function demoCall(person){clean();state.remoteName=person.name||'Demo member';show('Calling '+state.remoteName,'Demo member — simulated voice call','',person.avatar||'👤');actions('<button class="ss-call-mute">Mute</button><button class="ss-call-end">End call</button>');const mb=el('ssVoiceActions').querySelector('.ss-call-mute');mb.onclick=()=>toggleDemo(mb);el('ssVoiceActions').querySelector('.ss-call-end').onclick=()=>endCall(false);timerStart();const AC=window.AudioContext||window.webkitAudioContext;if(AC){try{const ac=new AC();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=520;g.gain.value=.015;o.connect(g);g.connect(ac.destination);o.start();setTimeout(()=>{o.stop();ac.close()},500)}catch(e){}}el('ssVoiceNote').textContent='This demo member is virtual, so the call is simulated locally. Real members use a live browser-to-browser voice connection.'}
-  function toggleDemo(btn){state.muted=!state.muted;btn.textContent=state.muted?'Unmute':'Mute'}
-  window.startVoiceCall=async function(id){const all=(window.skillswapPeople||[]).concat(window.demoPeople||[]);let p=all.find(x=>String(x.id)===String(id));if(!p){try{const u=JSON.parse(ssMemoryStorage.getItem('skillswapUsers')||'{}');p=Object.values(u).find(x=>String(x.id)===String(id)||String(x.uid)===String(id))}catch(e){}}if(!p){showToast?.('Member not found.');return}if(p.virtual===true||['ananya','aarav','meera','rohan','saanvi','vikram','ishita','aditya','kavya','dev','priya','arjun'].includes(String(p.id)))demoCall(p);else await callReal(p)};
-  window.endVoiceCall=()=>endCall(true);
-  function addButtons(){document.querySelectorAll('.chat-header').forEach(h=>{if(h.querySelector('.ss-voice-btn'))return;const b=document.createElement('button');b.className='ss-voice-btn';b.type='button';b.textContent='📞 Call';b.onclick=()=>{const cp=(typeof currentChatPerson!=='undefined'?currentChatPerson:null);const id=cp?.id||cp?.uid||window.currentChatPerson?.id||window.currentChatPerson?.uid||window.__currentChatPerson?.id;if(id)startVoiceCall(id);else showToast?.('Open a member chat first.');};const close=h.querySelector('.chat-close');if(close)h.insertBefore(b,close);else h.appendChild(b)})}
-  const oldOpen=window.openChat;const wrap=function(id){return oldOpen.apply(this,arguments).then?oldOpen.apply(this,arguments):oldOpen.apply(this,arguments)};
-  setTimeout(()=>{addButtons();listenIncoming();},500);setInterval(()=>{addButtons();if(uid())listenIncoming()},3000);
-})();
-</script>
-
-<style id="ss-demo-dialogues-css">
-  #chatMessages .message{max-width:82%;line-height:1.5;white-space:pre-wrap}
-  #chatMessages .message.them{background:#f1f7f4;border:1px solid #dbeae4}
-  .ss-demo-typing{font-size:12px;color:#71817c;padding:4px 12px 8px;font-style:italic}
-</style>
-<script id="ss-demo-dialogues-js">
-(function(){
-  const dialogues={
-    ananya:{
-      intro:"Hi! 👋 I’m Ananya. I can help you practise Telugu or Hindi. I’m also learning Python and AI. What would you like to learn?",
-      replies:[
-        [/telugu|hindi|language|speak|conversation/i,"Of course! 😊 We can practise simple everyday sentences first. If you want, I can also correct your pronunciation and wording."],
-        [/python|coding|program|ai/i,"Yes! That’s actually one of my learning goals too. 💻 I’m still improving, but we can learn together and try a small Python exercise."],
-        [/time|when|available|weekend|schedule/i,"I’m usually free after school and on weekends. 📅 A short 30–45 minute session would work well for me."],
-        [/hello|hi|hey/i,"Hello! 😊 Nice to meet you. Tell me one skill you want to learn, and I’ll see how I can help."],
-        [/.*/,"That sounds interesting! 😊 Tell me what you’re hoping to learn, and we can make a simple plan together."]
-      ]
-    },
-    aarav:{
-      intro:"Hey! 👋 I’m Aarav. I teach Python and robotics, and I’m trying to improve my guitar and public speaking. What are you interested in?",
-      replies:[
-        [/python|coding|program/i,"Great choice! 🐍 We can start with variables and loops, then build a tiny project together. What’s your current level?"],
-        [/robot|arduino|electronics/i,"Robotics is really fun! 🤖 I can explain the basics of sensors, motors and simple projects. Have you built anything before?"],
-        [/guitar|music/i,"Nice! 🎸 I’m learning guitar myself, so a skill swap sounds perfect. We could practise beginner chords together."],
-        [/speak|presentation|public/i,"I’m working on public speaking too! 😄 We could practise a short introduction and give each other feedback."],
-        [/hello|hi|hey/i,"Hey! 😊 Glad you dropped by. What would you like to learn or practise today?"],
-        [/.*/,"Sounds good! 👍 Tell me a little about your goal and I’ll suggest a small activity we can do together."]
-      ]
-    },
-    meera:{
-      intro:"Vanakkam! 👋 I’m Meera. I teach Bharatanatyam and Carnatic music, and I’m learning graphic design and photography. What would you like to explore?",
-      replies:[
-        [/dance|bharatanatyam/i,"I’d love to help! 💃 We can begin with basic posture, hand gestures and rhythm. Have you learned any Indian classical dance before?"],
-        [/music|carnatic|sing/i,"Wonderful! 🎶 We can start with basic swaras and simple rhythm exercises. Tell me if you’re a beginner."],
-        [/design|graphic/i,"That’s one of the skills I’m trying to learn too! 🎨 We could exchange ideas and practise by making a simple poster."],
-        [/photo|photography|camera/i,"Photography sounds fun! 📷 I’d like to improve at it too. We can discuss composition, lighting and simple phone-camera techniques."],
-        [/hello|hi|hey/i,"Hi! 😊 Nice to meet you. Are you interested in dance, music, or a creative skill?"],
-        [/.*/,"I’m interested! 😊 Tell me more about what you want to learn and we can plan a friendly skill exchange."]
-      ]
-    },
-    rohan:{
-      intro:"Hi! I’m Rohan 👋 I work with Python, AI and ML. I’m also interested in web design and editing. What are you building or learning?",
-      replies:[
-        [/python|coding|program/i,"Absolutely. 💻 We can work through a Python problem together. If you share your level, I’ll keep it beginner-friendly or make it more challenging."],
-        [/ai|machine|ml|artificial/i,"AI is a big topic! 🤖 We can start with a simple explanation of machine learning and then build a tiny example."],
-        [/web|html|css|design/i,"Web design sounds good! 🌐 We can improve a page together and talk about layout, responsiveness and user experience."],
-        [/edit|video/i,"I’m interested in editing too. 🎬 We could exchange tips on pacing, transitions and making short videos more engaging."],
-        [/hello|hi|hey/i,"Hey! 👋 What project are you working on? I’d be happy to talk through it."],
-        [/.*/,"Interesting! Tell me your goal and what you already know. We can turn it into a small practice session. 🚀"]
-      ]
-    },
-    saanvi:{
-      intro:"Hi! 👋 I’m Saanvi. I can help with Maths and study planning. I’m learning Spanish and guitar. What can I help you with?",
-      replies:[
-        [/math|algebra|geometry|calculus/i,"Sure! 📚 Send me the topic or type of problem you’re practising, and we can solve one step at a time."],
-        [/study|exam|plan|school/i,"Let’s make it manageable. 📝 We can choose one goal, split it into short tasks and leave time for revision."],
-        [/spanish|language/i,"¡Genial! 🇪🇸 I’m learning Spanish too. We could practise greetings, everyday phrases and a little vocabulary."],
-        [/guitar|music/i,"I’m still learning guitar, but I’d love to practise together! 🎸 Beginner chords would be a good place to start."],
-        [/hello|hi|hey/i,"Hi! 😊 What are you working on today?"],
-        [/.*/,"No problem! 😊 Tell me what you’re trying to improve and we’ll take it one step at a time."]
-      ]
-    },
-    vikram:{
-      intro:"Hey! 👋 I’m Vikram. I teach cricket and chess, and I’m learning Python and photography. Which one interests you?",
-      replies:[
-        [/cricket|bat|bowling|sport/i,"Cricket it is! 🏏 We can talk about batting basics, bowling practice or match strategy. What do you play?"],
-        [/chess|checkmate|opening/i,"I’d be happy to play through a chess position with you. ♟️ We can start with openings or basic tactics."],
-        [/python|coding/i,"I’m learning Python myself! 💻 A skill swap would be great—we can practise a small coding problem together."],
-        [/photo|photography|camera/i,"I’m trying to improve my photography too. 📷 We can compare ideas for composition and taking better outdoor shots."],
-        [/hello|hi|hey/i,"Hey! 😄 Good to meet you. What would you like to practise?"],
-        [/.*/,"Sounds good! Tell me which skill you’re interested in and we’ll figure out a simple activity."]
-      ]
-    },
-    ishita:{
-      intro:"Namaste! 👋 I’m Ishita. I teach Rangoli and Mehendi, and I’m learning coding and photography. What would you like to learn?",
-      replies:[
-        [/rangoli|kolam|art/i,"I’d love to show you! 🎨 We can start with simple geometric patterns and then make a more detailed design."],
-        [/mehendi|henna/i,"Sure! 🌿 We can practise basic lines, flowers and simple patterns before trying a full design."],
-        [/coding|python|program/i,"Coding is one of my goals too! 💻 We could start with a beginner exercise and learn together."],
-        [/photo|photography|camera/i,"Photography would be a great exchange. 📷 We can practise framing and natural-light photos."],
-        [/hello|hi|hey/i,"Namaste! 😊 Nice to meet you. What skill caught your attention?"],
-        [/.*/,"That sounds nice! 😊 Tell me what you want to learn and I’ll suggest a beginner-friendly activity."]
-      ]
-    },
-    aditya:{
-      intro:"Hi! I’m Aditya 👋 I teach Physics and Science, and I’m interested in learning web development. What are you studying?",
-      replies:[
-        [/physics|science|force|motion|electric/i,"Sure! 🔬 Tell me the topic you’re stuck on. I’ll explain the idea first and then we can work through an example."],
-        [/web|html|css|javascript|coding/i,"Web development is what I want to learn! 🌐 If you know HTML or CSS, maybe you can teach me while I help you with science."],
-        [/study|exam|school/i,"Let’s break it down into smaller concepts. 📚 Which chapter are you preparing for?"],
-        [/hello|hi|hey/i,"Hi! 😊 What subject or skill are you interested in today?"],
-        [/.*/,"Happy to help! Tell me the topic you’re working on and we can take it step by step."]
-      ]
-    },
-    kavya:{
-      intro:"Hello! 👋 I’m Kavya. I teach music and guitar, and I’m learning photography and Python. What would you like to practise?",
-      replies:[
-        [/guitar|chord|music/i,"Great! 🎸 We can start with a few beginner chords and a simple rhythm. What songs do you like?"],
-        [/photo|photography|camera/i,"I’m learning photography too! 📷 We could practise composition together and share feedback on our pictures."],
-        [/python|coding/i,"Python sounds good. 💻 I’m learning it as well, so we can solve a beginner problem together."],
-        [/hello|hi|hey/i,"Hello! 😊 Nice to meet you. Are you here for music, guitar or another skill?"],
-        [/.*/,"Nice! 😊 Tell me a little more and we can turn it into a fun skill-swap session."]
-      ]
-    },
-    dev:{
-      intro:"Hey! 👋 I’m Dev. I can help with presentations and interviews, and I’m learning coding and design. What are you preparing for?",
-      replies:[
-        [/interview|job|resume|cv/i,"Definitely. 💼 We can do a mock interview and I can give you feedback on your answers and confidence."],
-        [/presentation|speak|public/i,"Let’s practise! 🎤 Give me your topic and I’ll help you structure a clear opening, main points and closing."],
-        [/coding|python|program/i,"I’m learning coding too. 💻 If you teach me something small, I can help you practise explaining it clearly."],
-        [/design|ui|graphic/i,"Design is on my learning list! 🎨 We can discuss simple layouts and how to make a presentation look cleaner."],
-        [/hello|hi|hey/i,"Hey! 😊 What are you preparing for?"],
-        [/.*/,"Sounds useful! Tell me your goal and we can practise it together."]
-      ]
-    },
-    priya:{
-      intro:"Hi! 👋 I’m Priya. I teach Hindi and English, and I’m learning digital marketing. What would you like to practise?",
-      replies:[
-        [/hindi|english|language|grammar|speaking/i,"Of course! 🗣️ We can practise conversation and I can gently correct grammar or vocabulary as we go."],
-        [/marketing|digital|social media|seo/i,"Digital marketing is what I’m learning! 📈 If you know something about it, I’d love to exchange ideas and learn together."],
-        [/practice|practise/i,"Absolutely. 😊 Give me a topic and we can have a short conversation around it."],
-        [/hello|hi|hey/i,"Hi! 😊 Nice to meet you. What language or skill are you working on?"],
-        [/.*/,"I’d be happy to chat! Tell me what you want to improve and we’ll make a simple practice plan."]
-      ]
-    },
-    arjun:{
-      intro:"Hello! 👋 I’m Arjun. I teach Chemistry and research skills, and I’m learning programming and guitar. What are you interested in?",
-      replies:[
-        [/chem|chemistry|organic|reaction/i,"Sure! 🧪 Tell me the chemistry topic. We can go from the concept to an example and then a practice question."],
-        [/research|project|science/i,"Research can feel much easier when it’s structured. 🔎 We can work on the question, sources, notes and a clear conclusion."],
-        [/program|python|coding/i,"Programming is something I’m learning too. 💻 Maybe we can trade skills—coding practice for chemistry help!"],
-        [/guitar|music/i,"Guitar sounds fun! 🎸 I’m a learner too, so beginner chords and rhythm practice would be great."],
-        [/hello|hi|hey/i,"Hello! 😊 What would you like to learn or teach?"],
-        [/.*/,"Interesting! Tell me a little more about your goal and we can plan a useful skill exchange."]
-      ]
-    }
-  };
-
-  function demoPerson(){
-    const id=String(window.currentChatPerson?.id||'');
-    return dialogues[id]||null;
-  }
-  function replyFor(id,text){
-    const d=dialogues[id];
-    if(!d)return "Thanks for your message! 😊 Tell me more about what you’d like to learn.";
-    for(const pair of d.replies) if(pair[0].test(text)) return pair[1];
-    return d.replies[d.replies.length-1][1];
-  }
-  function getStore(){try{return JSON.parse(ssMemoryStorage.getItem('skillswapMessages')||'{}')}catch(e){return {}}}
-  function putStore(x){ssMemoryStorage.setItem('skillswapMessages',JSON.stringify(x))}
-  function render(){
-    const c=document.getElementById('chatMessages'); if(!c)return;
-    const user=typeof getCurrentUser==='function'?getCurrentUser():null, p=window.currentChatPerson;
-    if(!user||!p)return;
-    const key=chatKey(user.id,p.id), store=getStore();
-    c.innerHTML=''; (store[key]||[]).forEach(m=>{const el=document.createElement('div');el.className='message '+(m.type==='me'?'sent':'them');el.textContent=m.text;c.appendChild(el)});
-    c.scrollTop=c.scrollHeight;
-  }
-  window.openChat=async function(id){
-    const user=getCurrentUser(); if(!user){openAuth('signin');return}
-    let person=(window.skillswapPeople||[]).find(p=>String(p.id)===String(id));
-    if(!person && Array.isArray(window.demoPeople)) person=window.demoPeople.find(p=>String(p.id)===String(id));
-    if(!person){try{const local=JSON.parse(ssMemoryStorage.getItem('skillswapUsers')||'{}');person=Object.values(local).find(p=>String(p.id)===String(id)||String(p.uid)===String(id))}catch(e){}}
-    if(!person){try{const d=await safeJSON('/api/profile/'+encodeURIComponent(String(id)));if(!d.__error)person=d.user}catch(e){}}
-    if(!person){showToast('Profile not found.');return}
-    const isDemo=person.virtual===true || !!dialogues[String(person.id)];
-    window.currentChatPerson={id:person.id||person.uid,name:person.name||'SkillSwap Member',avatar:person.avatar||'🧑',demo:isDemo};
-    const n=document.getElementById('chatName'),a=document.getElementById('chatAvatar'),m=document.getElementById('chatModal');
-    if(n)n.textContent=window.currentChatPerson.name+(isDemo?' · Demo member':''); if(a)a.textContent=window.currentChatPerson.avatar; if(m)m.classList.add('show');
-    window.__ssBackendChat=!isDemo;
-    if(isDemo){
-      const store=getStore(),key=chatKey(user.id,person.id),d=dialogues[String(person.id)];
-      if(!store[key]){store[key]=[{type:'them',text:d?d.intro:'Hi! 👋 What would you like to learn or teach?'}];putStore(store)}
-      render();
-    }else{
-      const data=await safeJSON('/api/messages/'+encodeURIComponent(String(person.id))); if(data.__error){showToast(data.__error.message);return}
-      window.__ssChatMessages=Array.isArray(data)?data:[]; if(typeof renderBackendChat==='function')renderBackendChat();
-    }
-  };
-  window.sendMessage=async function(){
-    const p=window.currentChatPerson,input=document.getElementById('chatInput'); if(!p||!input)return;
-    const text=input.value.trim(); if(!text)return;
-    if(p.demo){
-      const user=getCurrentUser(); if(!user)return;
-      const store=getStore(),key=chatKey(user.id,p.id); if(!store[key])store[key]=[];
-      store[key].push({type:'me',text}); putStore(store); input.value=''; render();
-      const c=document.getElementById('chatMessages'); if(c){const t=document.createElement('div');t.className='ss-demo-typing';t.textContent=p.name+' is typing…';c.appendChild(t);c.scrollTop=c.scrollHeight}
-      setTimeout(()=>{
-        const latest=getStore(); if(!latest[key])latest[key]=[];
-        latest[key]=latest[key].filter(x=>x.type!=='typing');
-        latest[key].push({type:'them',text:replyFor(String(p.id),text)}); putStore(latest);
-        if(window.currentChatPerson&&String(window.currentChatPerson.id)===String(p.id)&&window.currentChatPerson.demo)render();
-      },850);
-      return;
-    }
-    input.disabled=true;
-    try{const d=await safeJSON('/api/messages/'+encodeURIComponent(String(p.id)),{method:'POST',body:JSON.stringify({message:text})});if(d.__error){showToast(d.__error.message);return}input.value='';const latest=await safeJSON('/api/messages/'+encodeURIComponent(String(p.id)));window.__ssChatMessages=Array.isArray(latest)?latest:[];renderBackendChat()}finally{input.disabled=false}
-  };
-  window.loadMessages=function(){if(window.currentChatPerson?.demo)render()};
-  window.__ssDemoDialogues=dialogues;
-})();
-</script>
-
-<script id="ssSupabaseSignupFinalFix">
-(function(){
-  const $=id=>document.getElementById(id);
-  const val=id=>String($(id)?.value||'').trim();
-  const toast=m=>{if(typeof window.showToast==='function')window.showToast(m);else alert(m)};
-  const client=()=>window.ssSupabaseClient||window.ssSupabaseRawClient||null;
-  async function saveProfile(user){
-    const c=client(); if(!c||!user) throw new Error('Supabase client is not ready.');
-    const name=val('signupName')||user.user_metadata?.name||user.email?.split('@')[0]||'SkillSwap Member';
-    const location=val('signupLocation')||'Online';
-    const bio=val('signupBio')||'Learning and sharing skills.';
-    const teach=val('signupSkill')||'Knowledge Sharing';
-    const want=val('signupWanted')||'Something New';
-    const {data,error}=await c.from('profiles').upsert({
-      id:user.id,
-      name,
-      email:user.email||val('signupEmail'),
-      location,
-      bio,
-      skills_teach:teach,
-      skills_want:want,
-      avatar_url:null,
-      created_at:new Date().toISOString()
-    },{onConflict:'id'}).select().single();
-    if(error) throw error;
-    window.ssSupabaseProfile=data;
-    try{window.ssMemoryStorage?.setItem('skillswapUser',JSON.stringify(data));}catch(e){}
-    return data;
-  }
-  window.signUp=async function(){
-    const c=client();
-    const email=val('signupEmail').toLowerCase();
-    const password=$('signupPassword')?.value||'';
-    const name=val('signupName');
-    if(!name)return toast('Please enter your name.');
-    if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return toast('Please enter a valid email address.');
-    if(password.length<6)return toast('Your password must be at least 6 characters.');
-    if(!c)return toast('Supabase is not ready. Please refresh the page.');
-    const btn=document.querySelector('#signupForm .modal-submit');
-    if(btn){btn.disabled=true;btn.textContent='Creating your account…';}
-    try{
-      const {data,error}=await c.auth.signUp({email,password,options:{data:{name}}});
-      if(error)throw error;
-      if(!data.user)throw new Error('Supabase did not return a user.');
-      if(!data.session)throw new Error('Account created, but no active session was returned. Confirm Email must be OFF in Supabase Authentication.');
-      const profile=await saveProfile(data.user);
-      window.ssSupabaseProfile=profile;
-      document.body.classList.add('ss-authenticated');
-      if(typeof window.setAppState==='function')window.setAppState(true);
-      if(typeof window.updateUserUI==='function')window.updateUserUI();
-      if(typeof window.closeModal==='function')window.closeModal('authModal');
-      if(typeof window.renderEverything==='function'){try{await window.renderEverything();}catch(e){console.warn('renderEverything:',e);}}
-      toast('🎉 Welcome to SkillSwap India, '+profile.name+'!');
-    }catch(e){
-      console.error('SkillSwap Supabase signup error:',e);
-      let m=e?.message||'Account creation failed.';
-      if(e?.code==='user_already_exists'||/already registered|already exists/i.test(m))m='This email is already registered. Please use Sign in.';
-      else if(/password/i.test(m)&&/6|characters|length|weak/i.test(m))m='Your password must be at least 6 characters.';
-      toast('❌ '+m);
-    }finally{if(btn){btn.disabled=false;btn.textContent='Create my profile';}}
-  };
-})();
-</script>
