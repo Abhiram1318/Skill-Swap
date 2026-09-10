@@ -13029,3 +13029,32 @@ input.chat-input{
   };
 })();
 </script>
+<style id="ss-final-hub-text-visibility-fix">
+/* Fix text visibility in the Schedule / Review / Reputation panels. */
+#ssMajorHub .ss-hub-panel h3,
+#ssMajorHub .ss-hub-panel h3 *,
+#ssMajorHub .ss-hub-panel .ss-hub-help,
+#ssMajorHub .ss-hub-panel .ss-hub-help *,
+#ssMajorHub .ss-hub-panel label,
+#ssMajorHub .ss-hub-panel .ss-hub-empty,
+#ssMajorHub .ss-hub-panel .ss-xp,
+#ssMajorHub .ss-hub-panel .ss-badge-chip,
+#ssMajorHub .ss-hub-panel p,
+#ssMajorHub .ss-hub-panel strong,
+#ssMajorHub .ss-hub-panel small {
+  color:#102033 !important;
+  -webkit-text-fill-color:#102033 !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+#ssMajorHub .ss-hub-panel .ss-hub-help,
+#ssMajorHub .ss-hub-panel .ss-hub-empty,
+#ssMajorHub .ss-hub-panel small,
+#ssMajorHub .ss-hub-panel p:not(.ss-hub-help) {
+  color:#526477 !important;
+  -webkit-text-fill-color:#526477 !important;
+}
+#ssMajorHub .ss-hub-panel .ss-xp,
+#ssMajorHub .ss-hub-panel .ss-badge-chip { color:#087f5b !important; -webkit-text-fill-color:#087f5b !important; }
+#ssMajorHub .ss-hub-panel button { color:#fff !important; -webkit-text-fill-color:#fff !important; }
+</style>
