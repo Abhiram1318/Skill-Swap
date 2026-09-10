@@ -3692,7 +3692,7 @@ input,textarea,select{background:#fff!important}
      CTA
 ========================= -->
 
-<section class="cta">
+<section class="cta" id="ssGuestCta">
 
 <h2>
     Everyone knows something.
@@ -12794,6 +12794,170 @@ body.ss-guest-mode .guest-only{display:block!important}
 
 
 
+
+<!-- SkillSwap v11: Persist login across page reloads -->
+<script id="skillswap-persist-login-v11">
+(function(){
+  'use strict';
+
+  // Firebase Auth normally persists sessions in localStorage.
+  // Explicitly force LOCAL persistence so a normal page reload does not sign
+  // the user out. This does not keep a user signed in after they explicitly
+  // sign out.
+  function enablePersistentAuth(){
+    try{
+      if(window.ssFirebaseAuth && typeof window.ssFirebaseAuth.setPersistence === 'function'){
+        return window.ssFirebaseAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+      }
+    }catch(e){
+      console.warn('SkillSwap: could not enable persistent Firebase auth:', e);
+    }
+    return Promise.resolve();
+  }
+
+  function watchAuth(){
+    if(!window.ssFirebaseAuth) return false;
+
+    enablePersistentAuth().catch(function(){});
+
+    if(!window.__ssPersistenceAuthObserver){
+      window.__ssPersistenceAuthObserver = window.ssFirebaseAuth.onAuthStateChanged(function(user){
+        // Keep the current user/profile state in sync after reload.
+        window.currentUser = user || null;
+        try{
+          if(user){
+            localStorage.setItem('skillswap_auth_uid', user.uid);
+            localStorage.setItem('skillswap_auth_email', user.email || '');
+          }else{
+            localStorage.removeItem('skillswap_auth_uid');
+            localStorage.removeItem('skillswap_auth_email');
+          }
+        }catch(e){}
+      });
+    }
+    return true;
+  }
+
+  // Firebase may be initialized by an earlier script, so retry briefly if
+  // initialization has not happened yet.
+  if(!watchAuth()){
+    var tries = 0;
+    var timer = setInterval(function(){
+      tries++;
+      if(watchAuth() || tries >= 40) clearInterval(timer);
+    }, 250);
+  }
+})();
+</script>
+
+
+<!-- SkillSwap v12: Working Guest Mode -->
+<script id="skillswap-guest-mode-v12">
+(function(){
+  'use strict';
+
+  window.__ssGuestMode = false;
+
+  function guestStorageKey(){ return 'skillswap_guest_mode'; }
+
+  function setGuestUI(){
+    var guest = !!window.__ssGuestMode;
+    document.documentElement.classList.toggle('ss-guest-mode', guest);
+
+    // Hide sign-in/account-only controls while allowing public browsing.
+    document.querySelectorAll('[data-auth-required], .auth-required').forEach(function(el){
+      el.style.display = guest ? 'none' : '';
+    });
+
+    // Update common guest button labels if present.
+    document.querySelectorAll('[data-guest-action]').forEach(function(el){
+      el.textContent = guest ? 'Guest Mode' : (el.dataset.defaultText || el.textContent);
+    });
+
+    // Hide the signed-out CTA while in guest mode only if it is explicitly
+    // marked as guest-hidden; otherwise public content remains available.
+    if(typeof window.skillswapRefreshAuthUI === 'function'){
+      try{ window.skillswapRefreshAuthUI(); }catch(e){}
+    }
+  }
+
+  window.enterGuestMode = function(){
+    window.__ssGuestMode = true;
+    try{ sessionStorage.setItem(guestStorageKey(), '1'); }catch(e){}
+    try{ localStorage.setItem(guestStorageKey(), '1'); }catch(e){}
+    setGuestUI();
+
+    // Close authentication modal if one is open.
+    ['authModal','loginModal','signinModal'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.style.display = 'none';
+    });
+
+    return true;
+  };
+
+  window.exitGuestMode = function(){
+    window.__ssGuestMode = false;
+    try{ sessionStorage.removeItem(guestStorageKey()); }catch(e){}
+    try{ localStorage.removeItem(guestStorageKey()); }catch(e){}
+    setGuestUI();
+    return true;
+  };
+
+  // Common names used by guest buttons in different versions.
+  window.continueAsGuest = window.enterGuestMode;
+  window.startGuestMode = window.enterGuestMode;
+
+  // Prevent guest mode from accidentally calling Firebase sign-in.
+  var originalSignIn = window.signIn;
+  window.signIn = function(){
+    window.exitGuestMode();
+    return originalSignIn ? originalSignIn.apply(this, arguments) : false;
+  };
+
+  function initGuest(){
+    var saved = false;
+    try{ saved = sessionStorage.getItem(guestStorageKey()) === '1'; }catch(e){}
+    if(!saved){
+      try{ saved = localStorage.getItem(guestStorageKey()) === '1'; }catch(e){}
+    }
+    if(saved) window.__ssGuestMode = true;
+    setGuestUI();
+  }
+
+  // Make a real click handler available even if the original HTML button
+  // only has text such as "Continue as Guest".
+  function wireGuestButtons(){
+    var selectors = [
+      '#guestModeBtn',
+      '#continueGuest',
+      '#guestBtn',
+      '[data-action="guest"]',
+      '[data-guest="true"]'
+    ];
+    document.querySelectorAll(selectors.join(',')).forEach(function(btn){
+      if(btn.dataset.ssGuestWired) return;
+      btn.dataset.ssGuestWired = '1';
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        enterGuestMode();
+      });
+    });
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){
+      initGuest(); wireGuestButtons();
+    });
+  }else{
+    initGuest(); wireGuestButtons();
+  }
+
+  setTimeout(wireGuestButtons, 500);
+  setTimeout(wireGuestButtons, 1500);
+})();
+</script>
+
 </body>
 
 <style id="v7-typed-text-visible">
@@ -14063,5 +14227,61 @@ window.signIn=async function(){
 window.addEventListener('load',function(){
  try{getAuthV7();}catch(e){console.warn('Firebase startup:',e)}
 });
+})();
+</script>
+
+<style id="skillswap-member-text-white-fix">
+/* Demo + real member directory: make all member text white */
+.ss-chat-member{
+  background:#176b57 !important;
+}
+.ss-chat-member-info strong,
+.ss-chat-member-info small{
+  color:#fff !important;
+}
+.ss-chat-member-info strong{
+  font-weight:800 !important;
+}
+.ss-chat-member-info small{
+  opacity:.92;
+}
+.ss-chat-demo{
+  color:#fff !important;
+  background:rgba(255,255,255,.18) !important;
+  border:1px solid rgba(255,255,255,.28);
+}
+.ss-chat-online{
+  background:#8ff0bd !important;
+}
+</style>
+
+<!-- Hide the public CTA after a member signs in -->
+<style id="skillswap-guest-cta-visibility">
+  #ssGuestCta.ss-signed-in-hidden{display:none!important;}
+</style>
+<script id="skillswap-guest-cta-auth-watch">
+(function(){
+  function updateGuestCta(user){
+    var cta=document.getElementById('ssGuestCta');
+    if(cta) cta.classList.toggle('ss-signed-in-hidden', !!user);
+  }
+  function watch(){
+    try{
+      var auth=window.ssFirebaseAuth || (window.ssFirebase && window.ssFirebase.auth);
+      if(auth && typeof auth.onAuthStateChanged==='function'){
+        auth.onAuthStateChanged(updateGuestCta);
+        updateGuestCta(auth.currentUser);
+        return true;
+      }
+    }catch(e){}
+    return false;
+  }
+  if(!watch()) document.addEventListener('DOMContentLoaded',function(){
+    if(!watch()){
+      var tries=0, timer=setInterval(function(){
+        if(watch() || ++tries>40) clearInterval(timer);
+      },250);
+    }
+  });
 })();
 </script>
