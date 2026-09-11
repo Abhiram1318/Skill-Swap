@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">www
+<html lang="en">
 <head>
 
 <style id="skillswap-modern-format">
@@ -15034,5 +15034,124 @@ html.ss-guest-mode .ss-guest-btn{cursor:pointer!important;pointer-events:auto!im
     guestUI();
     return false;
   },true);
+})();
+</script>
+
+
+<!-- SkillSwap v26: secure Firebase chat architecture (no cross-user writes) -->
+<style id="ss-v26-secure-chat-css">
+.ss-v26-note{font-size:12px;opacity:.75;padding:8px 12px;text-align:center}
+</style>
+<script id="ss-v26-secure-chat">
+(function(){
+'use strict';
+const A=()=>window.ssFirebaseAuth||window.ssFirebase?.auth||null;
+const D=()=>window.ssFirebase?.db||null;
+const ME=()=>A()?.currentUser||null;
+const guest=()=>!!(window.__ssGuestMode||window.guestMode||window.isGuestUser||document.body.classList.contains('ss-guest-mode'));
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pair=(a,b)=>[String(a),String(b)].sort().join('_');
+const toast=t=>typeof showToast==='function'?showToast(t):console.log(t);
+const fmtTime=ts=>{const d=new Date(Number(ts||0));return Number.isFinite(d.getTime())?d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):''};
+const fmtListTime=ts=>{const d=new Date(Number(ts||0));if(!Number.isFinite(d.getTime()))return '';const n=new Date();return d.toDateString()===n.toDateString()?fmtTime(ts):d.toLocaleDateString([],{day:'2-digit',month:'short'})};
+let current=null,msgRef=null,msgHandler=null,typingRef=null,typingHandler=null,presRefs=[],convRef=null,convHandler=null;
+let onlineCache={};
+function isDemo(id){return (window.demoPeople||[]).some(p=>String(p.id)===String(id));}
+async function profile(id){
+  let p=(Array.isArray(window.skillswapPeople)?window.skillswapPeople:[]).find(x=>String(x.uid||x.id)===String(id));
+  if(p)return p;
+  const d=D(); if(!d)return null;
+  try{const s=await d.ref('users/'+String(id)).once('value');const v=s.val();if(v)return {...v,uid:String(id),id:String(id)}}catch(e){}
+  return null;
+}
+function ensureLayout(){
+ const modal=document.getElementById('chatModal');if(!modal)return null;const box=modal.querySelector('.chat-modal');if(!box)return null;
+ if(document.getElementById('ssV26Layout'))return document.getElementById('ssV26Layout');
+ const oldMessages=document.getElementById('chatMessages'),oldInput=document.getElementById('chatInput');
+ const oldHeader=box.querySelector('.chat-header');
+ if(oldHeader){let sub=oldHeader.querySelector('.ss-v26-header-status');if(!sub){sub=document.createElement('div');sub.id='ssV26Status';sub.className='ss-v24-header-status';const p=oldHeader.querySelector('.chat-person > div:last-child');if(p)p.appendChild(sub);}}
+ const layout=document.createElement('div');layout.id='ssV26Layout';layout.className='ss-v24-chat-layout';
+ const list=document.createElement('aside');list.className='ss-v24-conversations';list.innerHTML='<div class="ss-v24-conv-title">Chats</div><div id="ssV26ConvList"><div class="ss-v24-conv-empty">No conversations yet.</div></div>';
+ const main=document.createElement('section');main.className='ss-v24-main';
+ const msgs=oldMessages||Object.assign(document.createElement('div'),{id:'chatMessages',className:'chat-messages'});msgs.id='chatMessages';main.appendChild(msgs);
+ const typ=document.createElement('div');typ.id='ssV26Typing';typ.className='ss-v24-typing';main.appendChild(typ);
+ const row=document.createElement('div');row.className='ss-v24-input-row';
+ const inp=oldInput||Object.assign(document.createElement('input'),{id:'chatInput',placeholder:'Type a message…'});inp.id='chatInput';row.appendChild(inp);
+ const send=document.createElement('button');send.type='button';send.className='ss-chat-open';send.textContent='Send';send.onclick=()=>window.sendMessage();row.appendChild(send);main.appendChild(row);
+ layout.appendChild(list);layout.appendChild(main);box.appendChild(layout);return layout;
+}
+function detach(){
+ try{if(msgRef&&msgHandler)msgRef.off('value',msgHandler)}catch(e){}msgRef=null;msgHandler=null;
+ try{if(typingRef&&typingHandler)typingRef.off('value',typingHandler)}catch(e){}typingRef=null;typingHandler=null;
+ presRefs.forEach(x=>{try{x.ref.off('value',x.handler)}catch(e){}});presRefs=[];
+}
+function status(text,online){const x=document.getElementById('ssV26Status');if(x){x.textContent=text||'';x.className='ss-v24-header-status'+(online?' ss-v24-online':'')}}
+function renderMessages(items){
+ const box=document.getElementById('chatMessages'),me=ME();if(!box||!me)return;box.innerHTML='';
+ (items||[]).forEach(m=>{const sent=String(m.senderUid)===String(me.uid),wrap=document.createElement('div');wrap.className='ss-v24-msg-wrap '+(sent?'sent':'them');const b=document.createElement('div');b.className='ss-v24-bubble';
+  if(m.deleted)b.innerHTML='<span class="ss-v24-deleted">This message was deleted</span>';else{b.textContent=m.text||'';if(sent){const del=document.createElement('button');del.className='ss-v24-delete';del.title='Delete message';del.textContent='🗑';del.onclick=()=>deleteMessage(m.id);b.appendChild(del)}}
+  const meta=document.createElement('div');meta.className='ss-v24-meta';meta.textContent=fmtTime(m.created_at);
+  if(sent&&!m.deleted){const read=!!(m.readBy&&Object.keys(m.readBy).some(k=>k!==String(me.uid)));const tick=document.createElement('span');tick.className='ss-v24-ticks '+(read?'read':'');tick.textContent='✓✓';meta.appendChild(tick)}
+  b.appendChild(meta);wrap.appendChild(b);box.appendChild(wrap);});box.scrollTop=box.scrollHeight;
+}
+async function saveOwnIndex(peer,lastText,lastAt,unread){
+ const u=ME(),d=D();if(!u||!d||!peer)return;const cid=peer.chatId||pair(u.uid,peer.uid);
+ const val={uid:String(peer.uid),name:peer.name||'SkillSwap Member',avatar:peer.avatar||'🧑',lastText:lastText||'',lastAt:Number(lastAt||Date.now()),unread:Number(unread||0)};
+ try{await d.ref('userChats/'+u.uid+'/'+cid).set(val)}catch(e){console.warn('own chat index write failed',e)}
+}
+async function computeUnread(cid){
+ const u=ME(),d=D();if(!u||!d)return 0;try{const s=await d.ref('chats/'+cid+'/messages').once('value');let n=0;s.forEach(c=>{const m=c.val()||{};if(String(m.senderUid)!==String(u.uid)&&!m.deleted&&!(m.readBy&&m.readBy[u.uid]))n++});return n}catch(e){return 0}}
+async function markRead(items){
+ const u=ME(),d=D();if(!u||!d||!current)return;const up={};const now=Date.now();
+ (items||[]).forEach(m=>{if(String(m.senderUid)!==String(u.uid)&&m.id&&!m.deleted&&!(m.readBy&&m.readBy[u.uid]))up['chats/'+current.chatId+'/messages/'+m.id+'/readBy/'+u.uid]=now});
+ if(Object.keys(up).length)try{await d.ref().update(up)}catch(e){}
+ try{await d.ref('userChats/'+u.uid+'/'+current.chatId+'/unread').set(0)}catch(e){}
+}
+async function updateOwnPreview(arr){
+ if(!current||!ME())return;const last=arr&&arr[arr.length-1];if(!last)return;const unread=await computeUnread(current.chatId);await saveOwnIndex(current,last.deleted?'This message was deleted':(last.text||''),last.created_at,unread);
+}
+function listenMessages(){
+ const u=ME(),d=D();if(!u||!d||!current)return;msgRef=d.ref('chats/'+current.chatId+'/messages');
+ msgHandler=async snap=>{const arr=[];snap.forEach(c=>arr.push({id:c.key,...(c.val()||{})}));arr.sort((a,b)=>Number(a.created_at||0)-Number(b.created_at||0));renderMessages(arr.slice(-300));await markRead(arr);await updateOwnPreview(arr)};
+ msgRef.on('value',msgHandler,err=>toast('Could not read messages: '+(err?.message||'Firebase permission denied.')));
+}
+function listenTyping(){const d=D();if(!d||!current)return;typingRef=d.ref('chats/'+current.chatId+'/typing');typingHandler=s=>{let active=false;s.forEach(c=>{if(String(c.key)!==String(ME()?.uid)&&c.val()===true)active=true});const el=document.getElementById('ssV26Typing');if(el)el.textContent=active?(current.name+' is typing…'):''};typingRef.on('value',typingHandler)}
+function watchPresence(uid){const d=D();if(!d)return;const r=d.ref('presence/'+uid);const h=s=>{const on=s.val()?.online===true;onlineCache[uid]=on;status(on?'Online':'Offline',on);renderConversations()};r.on('value',h);presRefs.push({ref:r,handler:h})}
+async function ensurePresence(){const u=ME(),d=D();if(!u||!d)return;const r=d.ref('presence/'+u.uid);try{await r.onDisconnect().set({online:false,lastSeen:firebase.database.ServerValue.TIMESTAMP});await r.set({online:true,lastSeen:firebase.database.ServerValue.TIMESTAMP})}catch(e){}}
+async function indexOwnConversation(peer){
+ const u=ME();if(!u||!peer)return;const cid=pair(u.uid,peer.uid);const unread=await computeUnread(cid);await saveOwnIndex({...peer,chatId:cid},'',Date.now(),unread);
+ // Membership is created only by a member. This is a single chat-root write and does not modify another user's private index.
+ const d=D();try{await d.ref('chats/'+cid+'/members').update({[u.uid]:true,[peer.uid]:true})}catch(e){throw e}
+}
+async function openReal(id){
+ const u=ME();if(!u){if(typeof openAuth==='function')openAuth('signin');return false}if(guest()){toast('Please sign in to chat with real members.');return false}if(isDemo(id)){toast('Demo chat is separate from real-member chat.');return false}
+ const p=await profile(id);if(!p){toast('Member profile not found.');return false}const uid=String(p.uid||p.id);if(!uid||uid===String(u.uid)){toast('You cannot chat with yourself.');return false}const d=D();if(!d){toast('Firebase Realtime Database is unavailable.');return false}
+ ensureLayout();detach();current={uid,name:p.name||p.displayName||'SkillSwap Member',avatar:p.avatar||'🧑',chatId:pair(u.uid,uid)};window.currentChatPerson={...current,id:uid};window.__ssBackendChat=true;
+ const n=document.getElementById('chatName'),av=document.getElementById('chatAvatar'),m=document.getElementById('chatModal');if(n)n.innerHTML=esc(current.name);if(av)av.textContent=current.avatar;if(m)m.classList.add('show');
+ try{await indexOwnConversation(current)}catch(e){toast('Could not open secure chat: '+(e?.message||'Firebase permission denied.'));return false}
+ listenMessages();listenTyping();watchPresence(uid);watchInput();return true;
+}
+async function send(){
+ const u=ME(),d=D(),input=document.getElementById('chatInput');if(!u||!d||!current||!input)return;if(guest()){toast('Please sign in to send messages.');return}const text=input.value.trim();if(!text)return;input.disabled=true;
+ try{const msg=d.ref('chats/'+current.chatId+'/messages').push();const now=Date.now();await msg.set({senderUid:u.uid,text:text.slice(0,4000),created_at:now,readBy:{[u.uid]:now}});await saveOwnIndex(current,text.slice(0,200),now,0);input.value='';setTyping(false)}catch(e){console.error(e);toast('Message could not be sent: '+(e?.message||'Firebase permission denied.'))}finally{input.disabled=false;input.focus()}
+}
+async function deleteMessage(id){const u=ME(),d=D();if(!u||!d||!current||!id)return;if(!confirm('Delete this message?'))return;try{await d.ref('chats/'+current.chatId+'/messages/'+id).update({deleted:true,deletedAt:Date.now(),deletedBy:u.uid,text:''})}catch(e){toast('Could not delete this message: '+(e?.message||'permission denied'))}}
+function setTyping(on){const u=ME(),d=D();if(!u||!d||!current)return;const r=d.ref('chats/'+current.chatId+'/typing/'+u.uid);if(on){r.set(true).catch(()=>{});clearTimeout(window.__ssTypingTimer);window.__ssTypingTimer=setTimeout(()=>r.remove().catch(()=>{}),1600)}else r.remove().catch(()=>{})}
+function watchInput(){const i=document.getElementById('chatInput');if(!i||i.dataset.v26)return;i.dataset.v26='1';i.addEventListener('input',()=>setTyping(!!i.value.trim()));i.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}})}
+async function renderConversations(){
+ const u=ME(),d=D(),host=document.getElementById('ssV26ConvList');if(!u||!d||!host)return;try{const snap=await d.ref('userChats/'+u.uid).once('value');const data=snap.val()||{};const entries=Object.entries(data).filter(([cid,x])=>x&&x.uid).sort((a,b)=>Number(b[1].lastAt||0)-Number(a[1].lastAt||0));
+  if(!entries.length){host.innerHTML='<div class="ss-v24-conv-empty">No conversations yet.<br><br>Open a real member and send a message to start chatting.</div>';return}
+  const enriched=[];for(const [cid,x] of entries){let unread=Number(x.unread||0);try{unread=await computeUnread(cid)}catch(e){}enriched.push([cid,{...x,unread}]);}
+  host.innerHTML=enriched.map(([cid,x])=>{const on=onlineCache[x.uid]===true;const unread=Number(x.unread||0);return `<button class="ss-v24-conv ${current?.chatId===cid?'active':''}" data-peer="${esc(x.uid)}"><div class="ss-v24-conv-avatar">${esc(x.avatar||'🧑')}<i class="ss-v24-dot ${on?'online':''}"></i></div><div class="ss-v24-conv-main"><div class="ss-v24-conv-row"><span class="ss-v24-conv-name">${esc(x.name||'SkillSwap Member')}</span><span class="ss-v24-conv-time">${fmtListTime(x.lastAt)}</span></div><div class="ss-v24-conv-row"><span class="ss-v24-conv-last">${esc(x.lastText||'Start a conversation')}</span>${unread?`<span class="ss-v24-unread">${unread>99?'99+':unread}</span>`:''}</div></div></button>`}).join('');
+  host.querySelectorAll('[data-peer]').forEach(b=>b.addEventListener('click',()=>openReal(b.dataset.peer)));
+ }catch(e){host.innerHTML='<div class="ss-v24-conv-empty">Unable to load conversations.</div>';console.warn(e)}
+}
+function renderConversationsLater(){renderConversations().catch(()=>{})}
+function init(){ensureLayout();watchInput();const u=ME();if(u){ensurePresence();renderConversationsLater()}else{const l=document.getElementById('ssV26ConvList');if(l)l.innerHTML='<div class="ss-v24-conv-empty">Sign in to chat with real members.</div>'}}
+function closeChat(){const old=current;detach();if(old)setTyping(false);const m=document.getElementById('chatModal');if(m)m.classList.remove('show');current=null;window.currentChatPerson=null;window.__ssBackendChat=false}
+window.openChat=openReal;window.sendMessage=send;window.ssV26DeleteMessage=deleteMessage;window.closeSkillSwapV24Chat=closeChat;
+const oldClose=window.closeModal;window.closeModal=function(id){if(id==='chatModal')closeChat();if(typeof oldClose==='function')return oldClose(id)};
+document.addEventListener('DOMContentLoaded',()=>{setTimeout(init,600);setTimeout(watchInput,1200)});setTimeout(()=>{if(ME())init()},1800);
+window.addEventListener('beforeunload',()=>{const u=ME(),d=D();if(u&&d)d.ref('presence/'+u.uid).set({online:false,lastSeen:firebase.database.ServerValue.TIMESTAMP}).catch(()=>{})});
 })();
 </script>
