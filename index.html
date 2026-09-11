@@ -13471,7 +13471,7 @@ body.ss-guest-mode .ss-guest-lock-banner{display:block}
 })();
 </script>
 
-</body>
+\n<!-- SkillSwap v23: robust Firebase real-member chat -->\n<script id="ss-v23-real-chat">\n(function(){\n  'use strict';\n  const auth=()=>window.ssFirebaseAuth||window.ssFirebase?.auth||null;\n  const db=()=>window.ssFirebase?.db||null;\n  const me=()=>auth()?.currentUser||null;\n  const pair=(a,b)=>[String(a),String(b)].sort().join('_');\n  const esc=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));\n  let active=null, msgRef=null, msgHandler=null;\n  function toast(t){try{if(typeof showToast==='function')showToast(t);else if(typeof window.showToast==='function')window.showToast(t);else console.log(t)}catch(e){console.log(t)}}\n  function closeListener(){if(msgRef&&msgHandler){try{msgRef.off('value',msgHandler)}catch(e){}} msgRef=null;msgHandler=null}\n  async function profile(id){\n    const d=db(); if(!d)return null;\n    const list=Array.isArray(window.skillswapPeople)?window.skillswapPeople:[];\n    let p=list.find(x=>String(x.uid||x.id)===String(id));\n    if(p)return p;\n    try{const s=await d.ref('users/'+String(id)).once('value');const v=s.val();return v?Object.assign({},v,{uid:String(id),id:String(id)}):null}catch(e){console.error(e);return null}\n  }\n  function render(items){\n    const box=document.getElementById('chatMessages');if(!box)return;box.innerHTML='';\n    const uid=me()?.uid;\n    (items||[]).forEach(m=>{const el=document.createElement('div');el.className='message '+(String(m.senderUid)===String(uid)?'sent':'them');el.textContent=m.text||'';el.style.setProperty('color','#fff','important');box.appendChild(el)});\n    box.scrollTop=box.scrollHeight;\n  }\n  async function ensureMembers(ref,a,b){\n    const snap=await ref.child('members').once('value');\n    const members=snap.val()||{};\n    if(members[a]!==true||members[b]!==true){\n      const up={};up['members/'+a]=true;up['members/'+b]=true;await ref.update(up);\n    }\n  }\n  async function openReal(id){\n    const u=me();\n    if(!u){toast('Please sign in to chat with real members.');try{if(typeof openAuth==='function')openAuth('signin')}catch(e){}return false}\n    if(window.__ssGuestMode||window.guestMode||window.isGuestUser){toast('Please sign in to chat with real members.');return false}\n    const d=db();if(!d){toast('Firebase Realtime Database is not available.');return false}\n    const p=await profile(id);if(!p){toast('This member profile could not be found.');return false}\n    const uid=String(p.uid||p.id||'');if(!uid||uid===String(u.uid)){toast('You cannot chat with your own profile.');return false}\n    const chatId=pair(u.uid,uid), ref=d.ref('chats/'+chatId);\n    active={uid,name:p.name||p.displayName||'SkillSwap Member',avatar:p.avatar||'🧑',chatId,ref};window.currentChatPerson=active;\n    const n=document.getElementById('chatName'),av=document.getElementById('chatAvatar'),modal=document.getElementById('chatModal');\n    if(n)n.innerHTML=esc(active.name)+' <span class="ss-chat-live">LIVE</span>';if(av)av.textContent=active.avatar;if(modal){modal.classList.add('show');modal.setAttribute('aria-hidden','false')}\n    closeListener();\n    try{await ensureMembers(ref,u.uid,uid)}catch(e){console.error('chat membership',e);toast('Chat setup failed: '+(e.message||'Check Firebase Database Rules.'));return false}\n    msgRef=ref.child('messages');\n    msgHandler=snap=>{const arr=[];snap.forEach(c=>{const v=c.val()||{};arr.push(Object.assign({id:c.key},v))});arr.sort((a,b)=>Number(a.created_at||0)-Number(b.created_at||0));render(arr.slice(-200))};\n    msgRef.on('value',msgHandler,err=>{console.error(err);toast('Cannot read messages. Update Firebase Database Rules for chats.');});\n    setTimeout(()=>document.getElementById('chatInput')?.focus(),50);\n    return true;\n  }\n  window.openChat=openReal;\n  window.sendMessage=async function(){\n    const u=me(),input=document.getElementById('chatInput'),text=input?.value.trim();\n    if(!u||!active||!text)return;\n    const d=db();if(!d){toast('Firebase Realtime Database is not available.');return}\n    input.disabled=true;\n    try{\n      await ensureMembers(active.ref,u.uid,active.uid);\n      await active.ref.child('messages').push({senderUid:u.uid,text:text.slice(0,4000),created_at:firebase.database.ServerValue.TIMESTAMP});\n      input.value='';\n    }catch(e){console.error(e);toast('Message could not be sent. Check Firebase Realtime Database Rules.')}\n    finally{input.disabled=false;input.focus()}\n  };\n  window.closeChat=function(){closeListener();active=null;const m=document.getElementById('chatModal');if(m){m.classList.remove('show');m.setAttribute('aria-hidden','true')}};\n})();\n</script>\n<style id="ss-v23-chat-ui">\n#chatModal #chatMessages{color:#fff!important}\n#chatModal #chatMessages .message{color:#fff!important}\n#chatModal #chatInput{color:#fff!important;-webkit-text-fill-color:#fff!important}\n#chatModal #chatInput::placeholder{color:#fff!important;-webkit-text-fill-color:#fff!important}\n</style>\n</body>
 
 <style id="v7-typed-text-visible">
 /* FINAL: signup text-entry boxes use a dark field so typed text is clearly WHITE */
@@ -14800,3 +14800,239 @@ window.addEventListener('load',function(){
 </script>
 <style id="ss-v21-chat-white">#chatModal .message,#chatModal .chat-message,#chatModal .msg,#chatModal .bubble,#chatModal .message-text,#chatModal .chat-bubble,#chatModal .chat-body,#chatModal .chat-body *{color:#fff!important}#chatModal input,#chatModal textarea,#chatModal input::placeholder,#chatModal textarea::placeholder{color:#fff!important;-webkit-text-fill-color:#fff!important}</style>
 <script id="ss-v21-connect-fix">(function(){function g(){return !!(window.__ssGuestMode||window.guestMode||window.isGuestUser||document.documentElement.classList.contains('ss-guest-mode')||document.body.classList.contains('ss-guest-mode')||document.body.classList.contains('ss-emergency-guest'))}function a(){try{return(window.ssFirebaseAuth&&window.ssFirebaseAuth.currentUser)||(window.ssFirebase&&window.ssFirebase.auth&&window.ssFirebase.auth.currentUser)||null}catch(e){return null}}function r(){try{if(typeof window.showToast==='function')window.showToast('Please sign in to connect with members.');else alert('Please sign in to connect with members.');if(typeof window.openAuthModal==='function')window.openAuthModal('signin');else if(typeof window.openLogin==='function')window.openLogin();}catch(e){}}document.addEventListener('click',function(e){var x=e.target&&e.target.closest?e.target.closest('button,a,[role="button"],[data-action],[onclick]'):null;if(!x)return;var t=((x.innerText||x.textContent||'')+' '+(x.getAttribute('data-action')||'')+' '+(x.getAttribute('onclick')||'')).toLowerCase();if(!/\b(connect|send request|request to connect|connection request|connect with)\b/.test(t))return;if(g()||!a()){e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();r();return false}},true);function w(){var m=document.getElementById('chatModal');if(m)m.querySelectorAll('*').forEach(function(x){x.style.setProperty('color','#fff','important')})}w();setInterval(w,2000)})();</script>
+\n<!-- SkillSwap v22: Firebase real-member chat override -->\n<script id="ss-v22-real-member-chat">\n(function(){\n  'use strict';\n  const A=()=>window.ssFirebaseAuth||window.ssFirebase?.auth||null;\n  const D=()=>window.ssFirebase?.db||null;\n  const U=()=>A()?.currentUser||null;\n  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));\n  const pair=(a,b)=>[String(a),String(b)].sort().join('_');\n  let ref=null, handler=null, person=null;\n  function toast(t){if(typeof showToast==='function')showToast(t);else console.log(t)}\n  function render(items){\n    const box=document.getElementById('chatMessages'); if(!box)return; box.innerHTML='';\n    (items||[]).forEach(m=>{const d=document.createElement('div');d.className='message '+(String(m.senderUid)===String(U()?.uid)?'sent':'them');d.textContent=m.text||'';d.style.setProperty('color','#fff','important');box.appendChild(d)});\n    box.scrollTop=box.scrollHeight;\n  }\n  function detach(){if(ref&&handler){try{ref.off('value',handler)}catch(e){}}ref=null;handler=null}\n  async function find(id){\n    const list=Array.isArray(window.skillswapPeople)?window.skillswapPeople:[];\n    let p=list.find(x=>String(x.id??x.uid)===String(id));\n    if(p)return p;\n    const d=D(); if(!d)return null;\n    try{const s=await d.ref('users/'+String(id)).once('value');const v=s.val();if(v)return {...v,id:String(id),uid:String(id)}}catch(e){console.error('profile lookup',e)}\n    return null;\n  }\n  async function openReal(id){\n    const u=U(); if(!u){if(typeof openAuth==='function')openAuth('signin');else if(typeof openSignup==='function')openSignup();return false}\n    if(window.__ssGuestMode||window.guestMode||window.isGuestUser){toast('Please sign in to chat with real members.');return false}\n    const d=D(); if(!d){toast('Firebase Realtime Database is not available.');return false}\n    const p=await find(id); if(!p){toast('This member profile could not be found.');return false}\n    const uid=String(p.uid||p.id);\n    if(!uid||uid===String(u.uid)){toast('You cannot start a chat with your own profile.');return false}\n    person={id:uid,uid,name:p.name||p.displayName||'SkillSwap Member',avatar:p.avatar||'🧑',demo:false};\n    window.currentChatPerson=person; window.__ssBackendChat=true;\n    const n=document.getElementById('chatName'),av=document.getElementById('chatAvatar'),m=document.getElementById('chatModal');\n    if(n)n.innerHTML=esc(person.name)+' <span class="ss-chat-live">LIVE</span>'; if(av)av.textContent=person.avatar; if(m)m.classList.add('show');\n    detach();\n    ref=d.ref('chats/'+pair(u.uid,uid)+'/messages');\n    handler=snap=>{const arr=[];snap.forEach(c=>{const v=c.val()||{};arr.push({id:c.key,...v})});arr.sort((a,b)=>Number(a.created_at||0)-Number(b.created_at||0));render(arr.slice(-200))};\n    ref.on('value',handler,err=>toast('Could not read this chat: '+(err?.message||'Firebase permission denied.')));\n    return true;\n  }\n  window.openChat=async function(id){\n    // Preserve demo chats from the existing system. Real IDs use Firebase directly.\n    const demos=Array.isArray(window.demoPeople)?window.demoPeople:[];\n    if(demos.some(x=>String(x.id)===String(id))){\n      const old=window.__ssV21DemoOpenChat;\n      if(typeof old==='function')return old(id);\n      return false;\n    }\n    return openReal(id);\n  };\n  window.sendMessage=async function(){\n    const u=U(),input=document.getElementById('chatInput'),text=input?.value.trim();\n    if(!u||!person||!text)return;\n    if(person.demo){toast('Demo chat is handled by the demo chat system.');return}\n    const d=D(); if(!d){toast('Firebase Realtime Database is not available.');return}\n    input.disabled=true;\n    try{\n      await d.ref('chats/'+pair(u.uid,person.uid)+'/messages').push({senderUid:u.uid,text:text.slice(0,4000),created_at:Date.now()});\n      input.value='';\n    }catch(e){console.error(e);toast('Message could not be sent: '+(e?.message||'Firebase permission denied.'))}\n    finally{input.disabled=false;input.focus()}\n  };\n  // Save the pre-v22 openChat if it has not already been preserved.\n  if(!window.__ssV21DemoOpenChat){\n    // The v21 function is already overwritten at this point, so demo cards are\n    // handled by the dedicated demo chat button/system elsewhere.\n    window.__ssV21DemoOpenChat=null;\n  }\n})();\n</script>\n<style id="ss-v22-chat-white">\n#chatModal #chatMessages .message,#chatModal #chatMessages .message *{color:#fff!important}\n#chatModal #chatInput,#chatModal #chatInput::placeholder{color:#fff!important;-webkit-text-fill-color:#fff!important}\n</style>\n
+<!-- SkillSwap v24: WhatsApp-style real-member chat -->
+<style id="ss-v24-chat-css">
+#chatModal .chat-modal{width:min(980px,96vw)!important;max-width:980px!important;overflow:hidden}
+#chatModal .chat-header{position:relative}
+.ss-v24-header-status{font-size:.72rem;opacity:.9;margin-top:3px;min-height:16px}
+.ss-v24-chat-layout{display:grid;grid-template-columns:280px minmax(0,1fr);min-height:520px}
+.ss-v24-conversations{border-right:1px solid rgba(0,0,0,.1);background:#f7faf8;overflow:auto}
+.ss-v24-conv-title{padding:15px 16px;font-weight:900;border-bottom:1px solid rgba(0,0,0,.08)}
+.ss-v24-conv-empty{padding:20px;color:#667}
+.ss-v24-conv{display:flex;align-items:center;gap:10px;padding:11px 13px;border:0;width:100%;text-align:left;background:transparent;cursor:pointer;border-bottom:1px solid rgba(0,0,0,.05)}
+.ss-v24-conv:hover,.ss-v24-conv.active{background:#e7f5ed}
+.ss-v24-conv-avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#176b57;color:#fff;flex:0 0 auto;position:relative}
+.ss-v24-dot{position:absolute;right:-1px;bottom:-1px;width:11px;height:11px;border-radius:50%;background:#aab5ae;border:2px solid #f7faf8}
+.ss-v24-dot.online{background:#20bf6b}
+.ss-v24-conv-main{min-width:0;flex:1}
+.ss-v24-conv-row{display:flex;justify-content:space-between;gap:6px}
+.ss-v24-conv-name{font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#17241e}
+.ss-v24-conv-time{font-size:.65rem;color:#738078;white-space:nowrap}
+.ss-v24-conv-last{font-size:.73rem;color:#738078;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.ss-v24-unread{background:#176b57;color:#fff;border-radius:999px;min-width:19px;height:19px;padding:0 5px;display:inline-grid;place-items:center;font-size:.64rem;font-weight:900}
+.ss-v24-main{min-width:0;display:flex;flex-direction:column}
+.ss-v24-main .chat-messages{flex:1;min-height:0}
+.ss-v24-msg-wrap{display:flex;align-items:flex-end;gap:5px;margin:5px 10px}
+.ss-v24-msg-wrap.sent{justify-content:flex-end}
+.ss-v24-bubble{max-width:min(72%,620px);padding:9px 11px;border-radius:15px;background:#245f4e;color:#fff!important;position:relative;word-break:break-word;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.ss-v24-msg-wrap.sent .ss-v24-bubble{border-bottom-right-radius:4px}
+.ss-v24-msg-wrap.them .ss-v24-bubble{background:#26352f;border-bottom-left-radius:4px}
+.ss-v24-meta{font-size:.62rem;opacity:.8;margin-top:4px;display:flex;gap:5px;justify-content:flex-end;align-items:center}
+.ss-v24-ticks{letter-spacing:-2px;font-weight:900}
+.ss-v24-ticks.read{color:#8ff0bd!important}
+.ss-v24-deleted{font-style:italic;opacity:.7}
+.ss-v24-delete{border:0;background:transparent;color:#fff;opacity:.55;cursor:pointer;font-size:.7rem;padding:1px 2px}
+.ss-v24-delete:hover{opacity:1}
+.ss-v24-typing{height:22px;padding:3px 14px;font-size:.72rem;color:#6c786f;font-style:italic}
+.ss-v24-input-row{display:flex;gap:8px;padding:10px;border-top:1px solid rgba(0,0,0,.1);background:#fff}
+.ss-v24-input-row input{flex:1;min-width:0}
+.ss-v24-input-row button{white-space:nowrap}
+.ss-v24-online{color:#20a968!important;font-weight:800}
+@media(max-width:760px){.ss-v24-chat-layout{grid-template-columns:1fr}.ss-v24-conversations{display:none}.ss-v24-bubble{max-width:85%}}
+</style>
+<script id="ss-v24-whatsapp-chat">
+(function(){
+'use strict';
+const A=()=>window.ssFirebaseAuth||window.ssFirebase?.auth||null;
+const D=()=>window.ssFirebase?.db||null;
+const ME=()=>A()?.currentUser||null;
+const guest=()=>!!(window.__ssGuestMode||window.guestMode||window.isGuestUser||document.body.classList.contains('ss-guest-mode'));
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pair=(a,b)=>[String(a),String(b)].sort().join('_');
+const toast=t=>typeof showToast==='function'?showToast(t):console.log(t);
+const fmtTime=ts=>{const d=new Date(Number(ts||0));if(!Number.isFinite(d.getTime()))return '';return d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})};
+const fmtListTime=ts=>{const d=new Date(Number(ts||0));if(!Number.isFinite(d.getTime()))return '';const n=new Date();if(d.toDateString()===n.toDateString())return fmtTime(ts);return d.toLocaleDateString([], {day:'2-digit',month:'short'})};
+let current=null,msgRef=null,msgHandler=null,typingRef=null,typingHandler=null,presRef=null,onlineCache={};
+let convRef=null,convHandler=null;
+
+function isDemo(id){return (window.demoPeople||[]).some(p=>String(p.id)===String(id));}
+async function profile(id){
+ let p=(Array.isArray(window.skillswapPeople)?window.skillswapPeople:[]).find(x=>String(x.uid||x.id)===String(id));
+ if(p)return p;
+ const d=D();if(!d)return null;
+ try{const s=await d.ref('users/'+String(id)).once('value');const v=s.val();if(v)return {...v,uid:String(id),id:String(id)}}catch(e){}
+ return null;
+}
+function ensureLayout(){
+ const modal=document.getElementById('chatModal');if(!modal)return null;
+ const box=modal.querySelector('.chat-modal');if(!box)return null;
+ if(document.getElementById('ssV24Layout'))return document.getElementById('ssV24Layout');
+ const oldMessages=document.getElementById('chatMessages');const oldInput=document.getElementById('chatInput');
+ const oldHeader=box.querySelector('.chat-header');
+ if(oldHeader){let sub=oldHeader.querySelector('.ss-v24-header-status');if(!sub){sub=document.createElement('div');sub.className='ss-v24-header-status';sub.id='ssV24Status';const p=oldHeader.querySelector('.chat-person > div:last-child');if(p)p.appendChild(sub)}}
+ const layout=document.createElement('div');layout.id='ssV24Layout';layout.className='ss-v24-chat-layout';
+ const list=document.createElement('aside');list.className='ss-v24-conversations';list.innerHTML='<div class="ss-v24-conv-title">Chats</div><div id="ssV24ConvList"><div class="ss-v24-conv-empty">Loading conversations…</div></div>';
+ const main=document.createElement('section');main.className='ss-v24-main';
+ if(oldMessages){oldMessages.removeAttribute('id');oldMessages.className='chat-messages';oldMessages.id='chatMessages';main.appendChild(oldMessages)}else{const cm=document.createElement('div');cm.id='chatMessages';cm.className='chat-messages';main.appendChild(cm)}
+ const typ=document.createElement('div');typ.id='ssV24Typing';typ.className='ss-v24-typing';main.appendChild(typ);
+ const row=document.createElement('div');row.className='ss-v24-input-row';
+ const inp=oldInput||document.createElement('input');inp.id='chatInput';inp.placeholder='Type a message…';inp.onkeydown=null;row.appendChild(inp);
+ const send=document.createElement('button');send.type='button';send.className='ss-chat-open';send.textContent='Send';send.onclick=()=>window.sendMessage();row.appendChild(send);main.appendChild(row);
+ layout.appendChild(list);layout.appendChild(main);box.appendChild(layout);
+ // oldMessages/oldInput are moved into the new layout above; do not remove them.
+
+ return layout;
+}
+function detach(){
+ try{if(msgRef&&msgHandler)msgRef.off('value',msgHandler)}catch(e){}msgRef=null;msgHandler=null;
+ try{if(typingRef&&typingHandler)typingRef.off('value',typingHandler)}catch(e){}typingRef=null;typingHandler=null;
+ try{if(presRef)presRef.off()}catch(e){}presRef=null;
+}
+function setStatus(text,online){const x=document.getElementById('ssV24Status');if(x){x.textContent=text||'';x.className='ss-v24-header-status'+(online?' ss-v24-online':'')}}
+function renderMessages(items){
+ const box=document.getElementById('chatMessages');const me=ME();if(!box||!me)return;box.innerHTML='';
+ (items||[]).forEach(m=>{
+   const sent=String(m.senderUid)===String(me.uid);const wrap=document.createElement('div');wrap.className='ss-v24-msg-wrap '+(sent?'sent':'them');
+   const b=document.createElement('div');b.className='ss-v24-bubble';
+   if(m.deleted){b.innerHTML='<span class="ss-v24-deleted">This message was deleted</span>'}
+   else{b.textContent=m.text||'';if(sent){const del=document.createElement('button');del.className='ss-v24-delete';del.title='Delete message';del.textContent='🗑';del.onclick=()=>deleteMessage(m.id);b.appendChild(del)}}
+   const meta=document.createElement('div');meta.className='ss-v24-meta';meta.textContent=fmtTime(m.created_at);
+   if(sent&&!m.deleted){const tick=document.createElement('span');tick.className='ss-v24-ticks '+(m.readBy&&Object.keys(m.readBy).some(k=>k!==String(me.uid))?'read':'');tick.textContent='✓✓';meta.appendChild(tick)}
+   b.appendChild(meta);wrap.appendChild(b);box.appendChild(wrap);
+ });
+ box.scrollTop=box.scrollHeight;
+}
+async function markRead(items){
+ const u=ME(),d=D();if(!u||!d||!current)return;
+ const updates={};const now=Date.now();
+ (items||[]).forEach(m=>{if(String(m.senderUid)!==String(u.uid)&&m.id&&!m.deleted)updates['chats/'+current.chatId+'/messages/'+m.id+'/readBy/'+u.uid]=now});
+ if(Object.keys(updates).length)try{await d.ref().update(updates)}catch(e){}
+ try{await d.ref('userChats/'+u.uid+'/'+current.chatId+'/unread').set(0)}catch(e){}
+}
+function listenMessages(){
+ const u=ME(),d=D();if(!u||!d||!current)return;
+ if(msgRef&&msgHandler)try{msgRef.off('value',msgHandler)}catch(e){}
+ msgRef=d.ref('chats/'+current.chatId+'/messages');
+ msgHandler=snap=>{const arr=[];snap.forEach(c=>arr.push({id:c.key,...(c.val()||{})}));arr.sort((a,b)=>Number(a.created_at||0)-Number(b.created_at||0));renderMessages(arr.slice(-300));markRead(arr);updateConversationPreview(current,arr[arr.length-1]);};
+ msgRef.on('value',msgHandler,err=>toast('Could not read messages: '+(err?.message||'Firebase permission denied.')));
+}
+function listenTyping(){
+ const d=D();if(!d||!current)return;typingRef=d.ref('chats/'+current.chatId+'/typing');
+ typingHandler=s=>{let active=false;s.forEach(c=>{if(String(c.key)!==String(ME()?.uid)&&c.val()===true)active=true});const el=document.getElementById('ssV24Typing');if(el)el.textContent=active?(current.name+' is typing…'):''};
+ typingRef.on('value',typingHandler);
+}
+function presence(uid,cb){const d=D();if(!d)return;const r=d.ref('presence/'+uid);const h=s=>{onlineCache[uid]=s.val()?.online===true;cb?.(onlineCache[uid])};r.on('value',h);presRef=presRef||[];presRef.push?.(r);}
+async function updateConversationPreview(p,last){
+ const u=ME(),d=D();if(!u||!d||!p)return;try{await d.ref('userChats/'+u.uid+'/'+p.chatId).update({uid:p.uid,name:p.name,avatar:p.avatar,lastText:last?.deleted?'This message was deleted':(last?.text||''),lastAt:Number(last?.created_at||Date.now())})}catch(e){}
+}
+async function indexChat(other,lastText,lastAt){
+ const u=ME(),d=D();if(!u||!d)return;const cid=pair(u.uid,other.uid);const base={uid:other.uid,name:other.name||'SkillSwap Member',avatar:other.avatar||'🧑',lastText:lastText||'',lastAt:lastAt||Date.now()};
+ const upd={};upd['userChats/'+u.uid+'/'+cid]={...base,unread:0};upd['userChats/'+other.uid+'/'+cid]={uid:u.uid,name:u.displayName||u.email?.split('@')[0]||'SkillSwap Member',avatar:'🧑🏻',lastText:lastText||'',lastAt:lastAt||Date.now(),unread:0};
+ upd['chats/'+cid+'/members/'+u.uid]=true;upd['chats/'+cid+'/members/'+other.uid]=true;
+ try{await d.ref().update(upd)}catch(e){throw e}
+}
+async function openReal(id){
+ const u=ME();if(!u){if(typeof openAuth==='function')openAuth('signin');return false}
+ if(guest()){toast('Please sign in to chat with real members.');return false}
+ if(isDemo(id)){toast('Demo chat is separate from real-member chat.');return false}
+ const p=await profile(id);if(!p){toast('Member profile not found.');return false}
+ const uid=String(p.uid||p.id);if(!uid||uid===String(u.uid)){toast('You cannot chat with yourself.');return false}
+ const d=D();if(!d){toast('Firebase Realtime Database is unavailable.');return false}
+ ensureLayout();detach();
+ current={uid,name:p.name||p.displayName||'SkillSwap Member',avatar:p.avatar||'🧑',chatId:pair(u.uid,uid)};window.currentChatPerson={...current,id:uid};window.__ssBackendChat=true;
+ const n=document.getElementById('chatName'),av=document.getElementById('chatAvatar'),m=document.getElementById('chatModal');if(n)n.innerHTML=esc(current.name);if(av)av.textContent=current.avatar;if(m)m.classList.add('show');
+ await indexChat(current,'',Date.now()).catch(e=>{console.warn('chat index',e);toast('Chat opened, but conversation list could not be updated.')});
+ listenMessages();listenTyping();presence(uid,on=>setStatus(on?'Online':'Offline',on));
+ renderConversations();return true;
+}
+async function deleteMessage(id){
+ const u=ME(),d=D();if(!u||!d||!current||!id)return;
+ if(!confirm('Delete this message?'))return;
+ try{await d.ref('chats/'+current.chatId+'/messages/'+id).update({deleted:true,deletedAt:Date.now(),deletedBy:u.uid,text:''})}catch(e){toast('Could not delete message: '+(e?.message||'permission denied'))}
+}
+window.ssV24DeleteMessage=deleteMessage;
+window.openChat=openReal;
+window.sendMessage=async function(){
+ const u=ME(),d=D(),input=document.getElementById('chatInput');if(!u||!d||!current||!input)return;const text=input.value.trim();if(!text)return;
+ input.disabled=true;const cid=current.chatId;try{
+   const msg=d.ref('chats/'+cid+'/messages').push();const now=Date.now();
+   await msg.set({senderUid:u.uid,text:text.slice(0,4000),created_at:now,readBy:{[u.uid]:now}});
+   const upd={};upd['userChats/'+u.uid+'/'+cid+'/lastText']=text.slice(0,200);upd['userChats/'+u.uid+'/'+cid+'/lastAt']=now;
+   upd['userChats/'+current.uid+'/'+cid+'/lastText']=text.slice(0,200);upd['userChats/'+current.uid+'/'+cid+'/lastAt']=now;
+   upd['userChats/'+current.uid+'/'+cid+'/unread']=firebase.database.ServerValue.increment(1);
+   await d.ref().update(upd);input.value='';setTyping(false);
+ }catch(e){console.error(e);toast('Message could not be sent: '+(e?.message||'Firebase permission denied.'))}
+ finally{input.disabled=false;input.focus()}
+};
+function setTyping(on){const u=ME(),d=D();if(!u||!d||!current)return;const r=d.ref('chats/'+current.chatId+'/typing/'+u.uid);if(on){r.set(true).catch(()=>{});clearTimeout(window.__ssTypingTimer);window.__ssTypingTimer=setTimeout(()=>r.remove().catch(()=>{}),1600)}else r.remove().catch(()=>{})}
+function watchInput(){const i=document.getElementById('chatInput');if(!i||i.dataset.v24)return;i.dataset.v24='1';i.addEventListener('input',()=>setTyping(!!i.value.trim()));i.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();window.sendMessage()}})}
+function renderConversationData(data){
+ const host=document.getElementById('ssV24ConvList');if(!host)return;const entries=Object.entries(data||{}).filter(([cid,x])=>x&&x.uid).sort((a,b)=>Number(b[1].lastAt||0)-Number(a[1].lastAt||0));
+ if(!entries.length){host.innerHTML='<div class="ss-v24-conv-empty">No conversations yet.<br><br>Open a real member and send a message to start chatting.</div>';return}
+ host.innerHTML=entries.map(([cid,x])=>{const online=onlineCache[x.uid]===true;const unread=Number(x.unread||0);return `<button class="ss-v24-conv ${current?.chatId===cid?'active':''}" onclick="openChat('${esc(x.uid)}')"><div class="ss-v24-conv-avatar">${esc(x.avatar||'🧑')}<i class="ss-v24-dot ${online?'online':''}"></i></div><div class="ss-v24-conv-main"><div class="ss-v24-conv-row"><span class="ss-v24-conv-name">${esc(x.name||'SkillSwap Member')}</span><span class="ss-v24-conv-time">${fmtListTime(x.lastAt)}</span></div><div class="ss-v24-conv-row"><span class="ss-v24-conv-last">${esc(x.lastText||'Start a conversation')}</span>${unread?`<span class="ss-v24-unread">${unread>99?'99+':unread}</span>`:''}</div></div></button>`}).join('');
+ entries.forEach(([cid,x])=>presence(x.uid,()=>renderConversationData(data)));
+}
+function renderConversations(){const u=ME(),d=D();if(!u||!d)return;ensureLayout();if(convRef&&convHandler)try{convRef.off('value',convHandler)}catch(e){}convRef=d.ref('userChats/'+u.uid);convHandler=s=>renderConversationData(s.val()||{});convRef.on('value',convHandler);}
+function closeV24(){detach();const m=document.getElementById('chatModal');if(m)m.classList.remove('show');current=null;window.currentChatPerson=null;window.__ssBackendChat=false;setTyping(false);}
+window.closeSkillSwapV24Chat=closeV24;
+const oldCloseModal=window.closeModal;window.closeModal=function(id){if(id==='chatModal')closeV24();if(typeof oldCloseModal==='function')return oldCloseModal(id)};
+function init(){ensureLayout();watchInput();const u=ME();if(u){setupPresence(u);renderConversations()}else{const l=document.getElementById('ssV24ConvList');if(l)l.innerHTML='<div class="ss-v24-conv-empty">Sign in to chat with real members.</div>'}}
+function setupPresence(u){const d=D();if(!d)return;const ref=d.ref('presence/'+u.uid);ref.onDisconnect().set({online:false,lastSeen:firebase.database.ServerValue.TIMESTAMP}).catch(()=>{});ref.set({online:true,lastSeen:firebase.database.ServerValue.TIMESTAMP}).catch(()=>{});A()?.onAuthStateChanged?.(x=>{if(!x){ref.set({online:false,lastSeen:firebase.database.ServerValue.TIMESTAMP}).catch(()=>{})}})}
+document.addEventListener('DOMContentLoaded',()=>{setTimeout(init,500);setTimeout(watchInput,1200)});
+setTimeout(()=>{if(ME())init()},1800);
+window.addEventListener('beforeunload',()=>{const u=ME(),d=D();if(u&&d)d.ref('presence/'+u.uid).set({online:false,lastSeen:firebase.database.ServerValue.TIMESTAMP}).catch(()=>{})});
+})();
+</script>
+
+
+<!-- SkillSwap v25: FINAL GUEST MODE BUTTON FIX -->
+<style id="skillswap-v25-guest-fix">
+body.ss-guest-mode .ss-guest-btn,
+html.ss-guest-mode .ss-guest-btn{cursor:pointer!important;pointer-events:auto!important}
+#ssGuestLockBanner{z-index:2147483000!important}
+</style>
+<script id="skillswap-v25-guest-fix-script">
+(function(){
+  'use strict';
+  function guestUI(){
+    window.__ssGuestMode=true;
+    window.isGuestUser=true;
+    window.guestMode=true;
+    try{sessionStorage.setItem('skillswap_guest_mode','1')}catch(e){}
+    try{localStorage.setItem('skillswap_guest_mode','1')}catch(e){}
+    document.documentElement.classList.add('ss-guest-mode');
+    document.body.classList.add('ss-guest-mode');
+    document.querySelectorAll('[data-guest-action]').forEach(function(el){el.textContent='Guest Mode'});
+    try{if(typeof window.updateUserUI==='function')window.updateUserUI()}catch(e){}
+    try{if(typeof window.skillswapRefreshAuthUI==='function')window.skillswapRefreshAuthUI()}catch(e){}
+    try{if(typeof window.setAppState==='function')window.setAppState(true)}catch(e){}
+    try{if(typeof window.showToast==='function')window.showToast('👋 Guest Mode enabled. You can browse SkillSwap India.');
+      else if(typeof window.toast==='function')window.toast('👋 Guest Mode enabled. You can browse SkillSwap India.');}catch(e){}
+    return false;
+  }
+  window.enterGuestMode=guestUI;
+  window.startGuestMode=guestUI;
+  window.continueAsGuest=guestUI;
+  window.ssExploreAsGuest=guestUI;
+  window.exploreAsGuest=guestUI;
+
+  // Catch both inline onclick buttons and dynamically-created guest buttons.
+  document.addEventListener('click',function(e){
+    var el=e.target&&e.target.closest?e.target.closest('button,a,[role="button"]'):null;
+    if(!el)return;
+    var id=(el.id||'').toLowerCase();
+    var txt=(el.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
+    var oc=(el.getAttribute('onclick')||'').toLowerCase();
+    var isGuest=id==='guestmodebtn'||id==='continueguest'||id==='guestbtn'||
+      el.matches('[data-action="guest"],[data-guest="true"]')||
+      txt.includes('continue as guest')||txt.includes('explore as guest')||
+      oc.includes('continueasguest')||oc.includes('ssexploreasguest');
+    if(!isGuest)return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    guestUI();
+    return false;
+  },true);
+})();
+</script>
