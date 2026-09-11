@@ -15155,3 +15155,117 @@ document.addEventListener('DOMContentLoaded',()=>{setTimeout(init,600);setTimeou
 window.addEventListener('beforeunload',()=>{const u=ME(),d=D();if(u&&d)d.ref('presence/'+u.uid).set({online:false,lastSeen:firebase.database.ServerValue.TIMESTAMP}).catch(()=>{})});
 })();
 </script>
+
+<!-- SkillSwap v27: Firebase real-member directory fix -->
+<style id="ss-v27-firebase-members-css">
+#ssChatDirectoryCard .ss-v27-real-note{font-size:12px;color:#5d746c;margin:4px 0 12px}
+#ssChatDirectoryCard .ss-v27-empty{padding:18px;border:1px dashed #cbded7;border-radius:14px;text-align:center;color:#647a73}
+#ssChatDirectoryCard .ss-v27-error{padding:14px;border-radius:14px;background:#fff4f2;color:#9a2f24}
+#ssChatDirectoryCard .ss-chat-member{display:flex;align-items:center;gap:10px}
+#ssChatDirectoryCard .ss-chat-member-avatar{flex:0 0 auto}
+#ssChatDirectoryCard .ss-v27-badge{display:inline-block;margin-left:7px;padding:2px 7px;border-radius:999px;font-size:10px;background:#e8f5ef;color:#176b57;font-weight:800}
+</style>
+<script id="ss-v27-firebase-members">
+(function(){
+'use strict';
+const auth=()=>window.ssFirebaseAuth||window.ssFirebase?.auth||null;
+const db=()=>window.ssFirebase?.db||null;
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const current=()=>auth()?.currentUser||null;
+const demoIds=new Set((window.demoPeople||[]).map(p=>String(p.id)));
+
+function clean(v,uid){
+  if(!v||typeof v!=='object')return null;
+  return {
+    uid:String(uid),
+    id:String(uid),
+    name:v.name||v.displayName||v.fullName||'SkillSwap Member',
+    avatar:v.avatar||'🧑🏻',
+    location:v.location||'India',
+    type:v.type||'SkillSwap Member',
+    bio:v.bio||'',
+    teach:Array.isArray(v.teach)?v.teach:[],
+    want:Array.isArray(v.want)?v.want:[],
+    languages:Array.isArray(v.languages)?v.languages:[],
+    availability:Array.isArray(v.availability)?v.availability:[],
+    rating:Number(v.rating||0),
+    reviews:Number(v.reviews||0),
+    email:v.email||''
+  };
+}
+
+async function firebasePeople(){
+  const d=db(); if(!d)throw new Error('Firebase Realtime Database is not available.');
+  const snap=await d.ref('users').once('value');
+  const val=snap.val()||{};
+  return Object.entries(val).map(([uid,v])=>clean(v,uid)).filter(Boolean);
+}
+
+function card(p,meUid){
+  const id=String(p.uid);
+  const skills=p.teach?.length?p.teach.slice(0,3).join(' · '):'Skills available';
+  const wants=p.want?.length?p.want.slice(0,2).join(' · '):'Open to learning';
+  return `<div class="ss-chat-member">
+    <div class="ss-chat-member-avatar">${esc(p.avatar)}</div>
+    <div class="ss-chat-member-info">
+      <strong>${esc(p.name)}<span class="ss-v27-badge">FIREBASE</span></strong>
+      <small>📍 ${esc(p.location)} · Teaches: ${esc(skills)}</small>
+      <small>Wants: ${esc(wants)}</small>
+    </div>
+    <button class="ss-chat-open" type="button" data-firebase-chat="${esc(id)}">💬 Chat</button>
+  </div>`;
+}
+
+async function renderFirebaseMembers(){
+  const host=document.getElementById('ssChatDirectory');
+  if(!host)return;
+  const u=current();
+  if(!u){
+    host.innerHTML='<div class="ss-v27-empty">Sign in to see registered Firebase members.</div>';
+    return;
+  }
+  host.innerHTML='<div class="ss-v27-empty">Loading registered Firebase members…</div>';
+  try{
+    const people=await firebasePeople();
+    const real=people.filter(p=>p.uid!==String(u.uid) && !demoIds.has(p.uid));
+    window.skillswapPeople=real;
+    if(!real.length){
+      host.innerHTML='<div class="ss-v27-empty"><strong>No other Firebase members yet.</strong><br><span style="font-size:12px">Create a second account to test member-to-member chat.</span></div>';
+      return;
+    }
+    host.innerHTML='<div class="ss-v27-real-note">🟢 Showing registered accounts directly from Firebase <b>users/</b> — not the old API.</div>'+
+      real.map(p=>card(p,u.uid)).join('');
+    host.querySelectorAll('[data-firebase-chat]').forEach(b=>{
+      b.addEventListener('click',()=>window.openChat(b.dataset.firebaseChat));
+    });
+  }catch(e){
+    console.error('Firebase member directory',e);
+    host.innerHTML='<div class="ss-v27-error"><strong>Could not load Firebase members.</strong><br><small>'+esc(e?.message||'Permission denied or Firebase is unavailable.')+'</small><br><button type="button" class="small-btn" style="margin-top:10px" onclick="renderFirebaseMembers()">Try again</button></div>';
+  }
+}
+
+window.renderSkillSwapFirebaseMembers=renderFirebaseMembers;
+window.skillswapLoadPeople=async function(q=''){
+  try{
+    const u=current();
+    const all=await firebasePeople();
+    const list=all.filter(p=>!u||p.uid!==String(u.uid));
+    const needle=String(q||'').trim().toLowerCase();
+    const out=needle?list.filter(p=>(p.name+' '+p.location+' '+p.teach.join(' ')+' '+p.want.join(' ')+' '+p.languages.join(' ')).toLowerCase().includes(needle)):list;
+    window.skillswapPeople=out;
+    return out;
+  }catch(e){
+    console.error(e);
+    return [];
+  }
+};
+
+document.addEventListener('DOMContentLoaded',()=>{
+  setTimeout(renderFirebaseMembers,1100);
+  setTimeout(renderFirebaseMembers,2600);
+});
+if(auth()){
+  auth().onAuthStateChanged(()=>setTimeout(renderFirebaseMembers,500));
+}
+})();
+</script>
