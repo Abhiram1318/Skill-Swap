@@ -15634,4 +15634,154 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
+
+<!-- SkillSwap v30: FIX REAL-MEMBER "REQUEST SKILL SWAP" -->
+<script id="ss-v30-real-request-fix">
+(function(){
+  'use strict';
+  const A=()=>window.ssFirebaseAuth||window.ssFirebase?.auth||null;
+  const D=()=>window.ssFirebase?.db||null;
+  const ME=()=>A()?.currentUser||null;
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const demos=()=>Array.isArray(window.demoPeople)?window.demoPeople:[];
+  const toast=t=>{try{if(typeof showToast==='function')showToast(t);else alert(t)}catch(e){}};
+
+  async function findPerson(id){
+    const sid=String(id);
+    const dp=demos().find(p=>String(p.id)===sid);
+    if(dp)return {...dp,id:sid,uid:sid,__demo:true};
+
+    const list=Array.isArray(window.skillswapPeople)?window.skillswapPeople:[];
+    const lp=list.find(p=>String(p.uid??p.id)===sid);
+    if(lp)return {...lp,id:String(lp.id??lp.uid),uid:String(lp.uid??lp.id),__demo:false};
+
+    const db=D(); if(!db)return null;
+    try{
+      const s=await db.ref('users/'+sid).once('value');
+      const v=s.val();
+      return v?{...v,id:sid,uid:sid,__demo:false}:null;
+    }catch(e){
+      console.error('SkillSwap real request profile lookup:',e);
+      return null;
+    }
+  }
+
+  function openModalFor(person,user){
+    window.currentRequestPerson=person;
+    const sub=document.getElementById('requestSubtitle');
+    if(sub)sub.textContent=`Send a skill exchange request to ${person.name||'this member'}.`;
+    const wanted=document.getElementById('requestWanted');
+    const offered=document.getElementById('requestOffered');
+    const message=document.getElementById('requestMessage');
+    if(wanted)wanted.value=Array.isArray(person.teach)?(person.teach[0]||''):((person.teach||person.skills||'').toString().split(',')[0]||'');
+    if(offered)offered.value=Array.isArray(user.teach)?(user.teach[0]||''):((user.teach||'').toString().split(',')[0]||'');
+    if(message)message.value='';
+    document.getElementById('requestModal')?.classList.add('show');
+  }
+
+  // Resolve both DEMO and REAL members instead of only demoPeople.
+  window.openRequest=async function(id){
+    const user=ME() || (typeof getCurrentUser==='function'?getCurrentUser():null);
+    if(!user){toast('Please sign in first.');try{openAuth('signin')}catch(e){}return}
+
+    const person=await findPerson(id);
+    if(!person){
+      toast('Real member not found. Please refresh the member list and try again.');
+      return;
+    }
+    if(String(person.uid||person.id)===String(user.uid||user.id)){
+      toast('You cannot send a request to yourself.');
+      return;
+    }
+    openModalFor(person,user);
+  };
+
+  // Submit directly to Firebase for real members. Demo requests stay local/demo.
+  window.submitSwapRequest=async function(){
+    const user=ME() || (typeof getCurrentUser==='function'?getCurrentUser():null);
+    const person=window.currentRequestPerson;
+    if(!user||!person)return;
+
+    const wanted=(document.getElementById('requestWanted')?.value||'').trim();
+    const offered=(document.getElementById('requestOffered')?.value||'').trim();
+    const message=(document.getElementById('requestMessage')?.value||'').trim();
+    if(!wanted||!offered){toast('Please enter both skills.');return}
+
+    const senderUid=String(user.uid||user.id);
+    const receiverUid=String(person.uid||person.id);
+    if(!receiverUid||receiverUid===senderUid){toast('Invalid member.');return}
+
+    if(person.__demo){
+      try{
+        const key='skillswap_demo_requests_'+senderUid;
+        const arr=JSON.parse(localStorage.getItem(key)||'[]');
+        if(arr.some(r=>String(r.receiverId)===receiverUid&&['pending','accepted'].includes(r.status))){
+          toast('You already have a request with this demo member.');return;
+        }
+        arr.push({id:'demo_'+Date.now(),senderId:senderUid,senderName:user.name||user.displayName||'You',
+          receiverId:receiverUid,receiverName:person.name||'Demo Member',skillWanted:wanted,skillOffered:offered,
+          message:message||"I'd love to exchange skills with you!",status:'pending',createdAt:new Date().toISOString(),demo:true});
+        localStorage.setItem(key,JSON.stringify(arr));
+        document.getElementById('requestModal')?.classList.remove('show');
+        toast('⏳ Demo skill-swap request sent!');
+      }catch(e){toast('Could not save demo request.')}
+      return;
+    }
+
+    const db=D();if(!db){toast('Firebase Realtime Database is not available.');return}
+
+    try{
+      const targetSnap=await db.ref('users/'+receiverUid).once('value');
+      if(!targetSnap.exists()){
+        toast('This real member no longer exists in Firebase.');
+        return;
+      }
+      const target=targetSnap.val()||{};
+
+      const all=(await db.ref('requests').once('value')).val()||{};
+      const duplicate=Object.values(all).find(r=>
+        ((String(r.senderUid)===senderUid&&String(r.receiverUid)===receiverUid)||
+         (String(r.senderUid)===receiverUid&&String(r.receiverUid)===senderUid)) &&
+        ['pending','accepted'].includes(r.status)
+      );
+      if(duplicate){
+        toast(duplicate.status==='accepted'?'You are already connected with this member.':'A request is already pending.');
+        return;
+      }
+
+      const sender={
+        name:user.name||user.displayName||'SkillSwap Member',
+        avatar:user.avatar||'🧑'
+      };
+      const ref=db.ref('requests').push();
+      await ref.set({
+        senderUid,receiverUid,
+        senderId:senderUid,receiverId:receiverUid,
+        senderName:sender.name,senderAvatar:sender.avatar,
+        receiverName:target.name||target.displayName||person.name||'SkillSwap Member',
+        receiverAvatar:target.avatar||'🧑',
+        skillWanted:wanted,skillOffered:offered,
+        message:message||"I'd love to exchange skills with you!",
+        status:'pending',created_at:firebase.database.ServerValue.TIMESTAMP
+      });
+
+      // Notification is optional; request itself is the important operation.
+      try{
+        await db.ref('notifications/'+receiverUid).push().set({
+          uid:receiverUid,title:'New SkillSwap request',
+          body:sender.name+' wants to exchange skills with you.',
+          is_read:false,created_at:firebase.database.ServerValue.TIMESTAMP
+        });
+      }catch(e){console.warn('Request notification failed:',e)}
+
+      document.getElementById('requestModal')?.classList.remove('show');
+      toast('⏳ Your SkillSwap request was sent!');
+    }catch(e){
+      console.error('Real request failed:',e);
+      toast('Could not send the request. Check Firebase Realtime Database Rules.');
+    }
+  };
+})();
+</script>
+
 </body>
