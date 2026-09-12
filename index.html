@@ -7769,12 +7769,64 @@ window.addEventListener("keydown",e=>{
   window.submitReport=async function(){const id=Number(reportPersonId.value);const d=await safeJSON('/api/report/'+id,{method:'POST',body:JSON.stringify({reason:reportReason.value,details:reportDetails.value.trim()})});if(d.__error){showToast(d.__error.message);return}closeModal('safetyReportModal');showToast('🚩 Report submitted safely.');reportDetails.value=''};
   window.blockMember=async function(id){if(!logged()){openAuth('signin');return}if(!confirm('Block this member? They will no longer appear in your discovery results.'))return;const d=await safeJSON('/api/block/'+id,{method:'POST',body:JSON.stringify({})});if(d.__error){showToast(d.__error.message);return}showToast('Member blocked.');if(typeof renderMatches==='function')await renderMatches();};
 
-  // Use the Flask/SQLite directory as the source of truth; demo profiles remain the visual fallback.
-  window.skillswapLoadPeople=async function(q=''){const d=await safeJSON('/api/people'+(q?'?q='+encodeURIComponent(q):''));if(d.__error||!Array.isArray(d))return null;return d};
+  // Firebase-first member directory.
+// The previous v27 block called /api/people (Flask/SQLite), which bypassed
+// Firebase and caused real Firebase members to disappear from discovery.
+  window.skillswapLoadPeople=async function(q=''){
+    try{
+      const d=window.ssFirebase?.db;
+      const u=window.ssFirebase?.auth?.currentUser;
+      if(!d || !u) return null;
+      const snap=await d.ref('users').once('value');
+      const raw=snap.val()||{};
+      const needle=String(q||'').trim().toLowerCase();
+      return Object.entries(raw)
+        .map(([id,v])=>({...v,uid:String(id),id:String(id)}))
+        .filter(p=>p.name && String(p.uid)!==String(u.uid))
+        .filter(p=>{
+          if(!needle) return true;
+          const hay=[
+            p.name,p.location,p.category,p.type,p.bio,p.headline,
+            ...(Array.isArray(p.languages)?p.languages:[]),
+            ...(Array.isArray(p.teach)?p.teach:[]),
+            ...(Array.isArray(p.want)?p.want:[])
+          ].join(' ').toLowerCase();
+          return hay.includes(needle);
+        });
+    }catch(e){
+      console.error('Firebase member directory:',e);
+      return null;
+    }
+  };
+
   const oldRenderMatches=window.renderMatches;
-  window.renderMatches=async function(people){const fallback=Array.isArray(people)&&people.length?people:demoPeople;const q=(document.getElementById('searchInput')?.value||'').trim();let live=await window.skillswapLoadPeople(q);if(!Array.isArray(live)||live.length===0){window.skillswapPeople=fallback;return oldRenderMatches?oldRenderMatches(fallback):undefined}window.skillswapPeople=live;return oldRenderMatches?oldRenderMatches(live):undefined};
+  window.renderMatches=async function(people){
+    const fallback=Array.isArray(people)&&people.length?people:demoPeople;
+    const q=(document.getElementById('searchInput')?.value||'').trim();
+    const live=await window.skillswapLoadPeople(q);
+    if(Array.isArray(live)){
+      window.skillswapPeople=live;
+      return oldRenderMatches?oldRenderMatches(live):undefined;
+    }
+    window.skillswapPeople=fallback;
+    return oldRenderMatches?oldRenderMatches(fallback):undefined;
+  };
+
   const oldSearch=window.searchSkills;
-  window.searchSkills=async function(){const input=document.getElementById('searchInput');if(input&&input.value.includes('@'))input.value='';const q=input?.value.trim()||'';const live=await window.skillswapLoadPeople(q);if(live){window.skillswapPeople=live;if(oldRenderMatches)oldRenderMatches(live);const title=document.getElementById('matchTitle');if(title)title.textContent=q?`Results for “${q}”`:'Popular Indian skill matches';return}if(oldSearch)oldSearch()};
+  window.searchSkills=async function(){
+    const input=document.getElementById('searchInput');
+    if(input&&input.value.includes('@'))input.value='';
+    const q=input?.value.trim()||'';
+    const live=await window.skillswapLoadPeople(q);
+    if(Array.isArray(live)){
+      window.skillswapPeople=live;
+      if(oldRenderMatches)oldRenderMatches(live);
+      const title=document.getElementById('matchTitle');
+      if(title)title.textContent=q?`Results for “${q}”`:'Real SkillSwap members';
+      return;
+    }
+    if(oldSearch)oldSearch();
+  };
 
   document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{refreshProDashboard();},700)});
 })();
@@ -15269,3 +15321,317 @@ if(auth()){
 }
 })();
 </script>
+
+
+<script id="skillswap-v28-firebase-profile-fix">
+(function(){
+  const oldOpenOtherProfile=window.openOtherProfile;
+  window.openOtherProfile=async function(id){
+    try{
+      const d=window.ssFirebase?.db;
+      if(d){
+        let p=null;
+        const snap=await d.ref('users/'+String(id)).once('value');
+        if(snap.exists()) p={...(snap.val()||{}),id:String(id),uid:String(id)};
+        if(!p){
+          const all=await d.ref('users').once('value');
+          const raw=all.val()||{};
+          for(const [uid,v] of Object.entries(raw)){
+            if(String(v?.id)===String(id)||String(v?.legacyId)===String(id)){
+              p={...(v||{}),id:String(uid),uid:String(uid)}; break;
+            }
+          }
+        }
+        if(p){
+          const set=(el,v)=>{const x=document.getElementById(el);if(x)x.textContent=v||''};
+          const esc=window.escapeHTML||window.escapeHtml||(v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])));
+          set('profileAvatar',p.avatar||'👤');
+          set('profileName',p.name||p.displayName||'SkillSwap Member');
+          set('profileType','🧑‍🎓 '+(p.type||'Student'));
+          set('profileLocation','📍 '+(p.location||'Online'));
+          set('profileBio',p.bio||p.headline||'');
+          const teach=document.getElementById('profileTeach');
+          if(teach)teach.innerHTML=(Array.isArray(p.teach)?p.teach:[]).map(x=>`<span class="skill-tag">${esc(x)}</span>`).join('');
+          const want=document.getElementById('profileWant');
+          if(want)want.innerHTML=(Array.isArray(p.want)?p.want:[]).map(x=>`<span class="skill-tag">${esc(x)}</span>`).join('');
+          const modal=document.getElementById('profileModal');
+          if(modal)modal.classList.add('show');
+          return;
+        }
+      }
+    }catch(e){ console.error('Firebase profile viewer:',e); }
+    if(typeof oldOpenOtherProfile==='function') return oldOpenOtherProfile.apply(this,arguments);
+  };
+})();
+</script>
+
+<!-- SkillSwap v29: FINAL REAL-MEMBER CHAT + VOICE CALLING + DEMO CHAT -->
+<style id="ss-v29-final-css">
+.ss-v29-badge{display:inline-block;margin-left:6px;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:800;background:#fff3d8;color:#8a6200}
+.ss-v29-real{background:#e7f6ef;color:#176b57}
+.ss-v29-callbar{display:flex;gap:6px;align-items:center;margin-left:auto}
+.ss-v29-callbar button{border:0;border-radius:9px;padding:7px 10px;font-weight:800;cursor:pointer}
+#ssV29CallModal{position:fixed;inset:0;background:rgba(7,25,21,.72);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px}
+#ssV29CallModal.show{display:flex}
+#ssV29CallCard{width:min(430px,94vw);background:#fff;border-radius:22px;padding:25px;text-align:center;box-shadow:0 30px 90px rgba(0,0,0,.3)}
+#ssV29CallAvatar{font-size:52px;margin:8px}
+#ssV29CallStatus{color:#63736e;margin:8px 0 20px}
+.ss-v29-call-actions{display:flex;gap:10px;justify-content:center}
+.ss-v29-call-actions button{border:0;border-radius:12px;padding:11px 16px;font-weight:800;cursor:pointer}
+#ssV29Accept{background:#176b57;color:white}
+#ssV29End{background:#d9534f;color:white}
+#ssV29Audio{display:none}
+</style>
+<script id="ss-v29-final">
+(function(){
+'use strict';
+
+const A=()=>window.ssFirebaseAuth||window.ssFirebase?.auth||null;
+const D=()=>window.ssFirebase?.db||null;
+const ME=()=>A()?.currentUser||null;
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pair=(a,b)=>[String(a),String(b)].sort().join('_');
+const toast=t=>{try{if(typeof showToast==='function')showToast(t);else console.log(t)}catch(e){}};
+const demoList=()=>Array.isArray(window.demoPeople)?window.demoPeople:[];
+const isDemo=id=>demoList().some(p=>String(p.id)===String(id));
+
+let chat={peer:null,ref:null,msgRef:null,msgHandler:null,typingRef:null,typingHandler:null};
+let call={ref:null,pc:null,local:null,remote:null,role:null,id:null,peer:null,offerCandidates:null,candidateHandler:null,valueHandler:null};
+
+function profileFromList(id){
+  const all=Array.isArray(window.skillswapPeople)?window.skillswapPeople:[];
+  return all.find(p=>String(p.uid??p.id)===String(id))||null;
+}
+async function getRealProfile(id){
+  const p=profileFromList(id); if(p)return {...p,uid:String(p.uid??p.id),id:String(p.id??p.uid)};
+  const d=D(); if(!d)return null;
+  try{const s=await d.ref('users/'+encodeURIComponent(String(id))).once('value');const v=s.val();return v?{...v,uid:String(id),id:String(id)}:null}catch(e){return null}
+}
+function ensureChatLayout(){
+  const m=document.getElementById('chatModal'); if(!m)return;
+  const h=m.querySelector('.chat-header')||m.querySelector('header');
+  if(h&&!document.getElementById('ssV29ChatCallBar')){
+    const b=document.createElement('div');b.id='ssV29ChatCallBar';b.className='ss-v29-callbar';
+    b.innerHTML='<button type="button" onclick="startSkillSwapCall(window.currentChatPerson?.uid||window.currentChatPerson?.id,true)">📞 Call</button>';
+    h.appendChild(b);
+  }
+}
+function detachChat(){
+  try{if(chat.msgRef&&chat.msgHandler)chat.msgRef.off('value',chat.msgHandler)}catch(e){}
+  try{if(chat.typingRef&&chat.typingHandler)chat.typingRef.off('value',chat.typingHandler)}catch(e){}
+  chat={peer:null,ref:null,msgRef:null,msgHandler:null,typingRef:null,typingHandler:null};
+}
+function renderChatMessages(arr){
+  const box=document.getElementById('chatMessages'); if(!box)return;
+  const uid=ME()?.uid;
+  box.innerHTML=(arr||[]).map(m=>{
+    const mine=String(m.senderUid)===String(uid);
+    const text=m.deleted?'This message was deleted':(m.text||'');
+    const time=m.created_at?new Date(Number(m.created_at)).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}):'';
+    return '<div class="message '+(mine?'sent':'them')+'" data-message-id="'+esc(m.id)+'">'+
+      '<div>'+esc(text)+'</div><small style="opacity:.7">'+esc(time)+(mine&&m.readBy&&Object.keys(m.readBy).some(k=>k!==String(uid))?' ✓✓':'')+'</small>'+
+      (mine&&!m.deleted?'<button type="button" style="border:0;background:none;font-size:11px;margin-left:6px" onclick="ssV29DeleteMessage(\''+esc(m.id)+'\')">Delete</button>':'')+
+      '</div>';
+  }).join('');
+  box.scrollTop=box.scrollHeight;
+}
+async function openDemo(id){
+  const p=demoList().find(x=>String(x.id)===String(id)); if(!p)return false;
+  detachChat();
+  chat.peer={...p,id:String(p.id),uid:String(p.id),demo:true};
+  window.currentChatPerson=chat.peer;
+  const n=document.getElementById('chatName'),av=document.getElementById('chatAvatar'),m=document.getElementById('chatModal');
+  if(n)n.innerHTML=esc(p.name||'Demo Member')+' <span class="ss-v29-badge">DEMO</span>';
+  if(av)av.textContent=p.avatar||'🧑';
+  if(m)m.classList.add('show');
+  const key='skillswap_demo_chat_'+String(ME()?.uid||'guest')+'_'+String(p.id);
+  const render=()=>{try{renderChatMessages(JSON.parse(localStorage.getItem(key)||'[]'))}catch(e){renderChatMessages([])}};
+  render();
+  chat.demoKey=key;
+  ensureChatLayout();
+  return true;
+}
+async function openReal(id){
+  const u=ME(); if(!u){toast('Please sign in to chat with real members.');return false}
+  const d=D(); if(!d){toast('Firebase Realtime Database is not available.');return false}
+  const p=await getRealProfile(id); if(!p){toast('Real member profile was not found in Firebase.');return false}
+  const uid=String(p.uid??p.id); if(!uid||uid===String(u.uid)){toast('You cannot chat with yourself.');return false}
+  detachChat();
+  const cid=pair(u.uid,uid);
+  chat.peer={...p,uid,id:uid,demo:false,chatId:cid};
+  window.currentChatPerson=chat.peer;
+  const n=document.getElementById('chatName'),av=document.getElementById('chatAvatar'),m=document.getElementById('chatModal');
+  if(n)n.innerHTML=esc(p.name||'SkillSwap Member')+' <span class="ss-v29-badge ss-v29-real">REAL</span>';
+  if(av)av.textContent=p.avatar||'🧑';
+  if(m)m.classList.add('show');
+  ensureChatLayout();
+  const ref=d.ref('chats/'+cid);
+  try{
+    const members=(await ref.child('members').once('value')).val()||{};
+    if(members[u.uid]!==true||members[uid]!==true){
+      const up={};up['members/'+u.uid]=true;up['members/'+uid]=true;await ref.update(up);
+    }
+  }catch(e){toast('Could not secure this chat. Check the Firebase rules.');return false}
+  chat.ref=ref; chat.msgRef=ref.child('messages');
+  chat.msgHandler=s=>{
+    const arr=[];s.forEach(c=>arr.push({id:c.key,...(c.val()||{})}));
+    arr.sort((a,b)=>Number(a.created_at||0)-Number(b.created_at||0));
+    renderChatMessages(arr.slice(-300));
+    // Mark messages read without modifying messages owned by the other member.
+    const updates={};
+    arr.forEach(x=>{if(String(x.senderUid)!==String(u.uid)&&!(x.readBy&&x.readBy[u.uid]))updates[x.id+'/readBy/'+u.uid]=firebase.database.ServerValue.TIMESTAMP});
+    if(Object.keys(updates).length)chat.msgRef.update(updates).catch(()=>{});
+    ref.child('typing/'+u.uid).remove().catch(()=>{});
+  };
+  chat.msgRef.on('value',chat.msgHandler,e=>toast('Cannot read messages: '+(e?.message||'permission denied')));
+  chat.typingRef=ref.child('typing');
+  chat.typingHandler=s=>{
+    let other=false;s.forEach(c=>{if(String(c.key)!==String(u.uid)&&c.val()===true)other=true});
+    const el=document.getElementById('ssV29Typing')||document.getElementById('ssV24Typing')||document.getElementById('ssV26Typing');
+    if(el)el.textContent=other?(p.name+' is typing…'):'';
+  };
+  chat.typingRef.on('value',chat.typingHandler);
+  const input=document.getElementById('chatInput');
+  if(input&&!input.dataset.ssV29){
+    input.dataset.ssV29='1';
+    input.addEventListener('input',()=>{
+      if(!chat.ref||!ME()||chat.peer?.demo)return;
+      const r=chat.ref.child('typing/'+ME().uid);
+      if(input.value.trim()){r.set(true).catch(()=>{});clearTimeout(window.__ssV29Typing);window.__ssV29Typing=setTimeout(()=>r.remove().catch(()=>{}),1500)}
+      else r.remove().catch(()=>{});
+    });
+  }
+  setTimeout(()=>input?.focus(),80);
+  return true;
+}
+window.openChat=async function(id){return isDemo(id)?openDemo(id):openReal(id)};
+window.sendMessage=async function(){
+  const input=document.getElementById('chatInput'),text=input?.value.trim(),u=ME();
+  if(!chat.peer||!text)return;
+  if(chat.peer.demo){
+    const key=chat.demoKey,arr=JSON.parse(localStorage.getItem(key)||'[]');
+    arr.push({id:'d_'+Date.now(),senderUid:u?.uid||'guest',text,created_at:Date.now()});
+    localStorage.setItem(key,JSON.stringify(arr));input.value='';renderChatMessages(arr);return;
+  }
+  const d=D();if(!u||!d){toast('Please sign in to send a real-member message.');return}
+  try{
+    const r=chat.ref.child('messages').push();
+    await r.set({senderUid:u.uid,text:text.slice(0,4000),created_at:firebase.database.ServerValue.TIMESTAMP,readBy:{[u.uid]:firebase.database.ServerValue.TIMESTAMP}});
+    input.value='';chat.ref.child('typing/'+u.uid).remove().catch(()=>{});
+  }catch(e){toast('Message could not be sent: '+(e?.message||'permission denied'))}
+};
+window.ssV29DeleteMessage=async function(id){
+  const u=ME();if(!u||!chat.ref||chat.peer?.demo)return;
+  try{await chat.ref.child('messages/'+id).update({deleted:true,text:'',deletedBy:u.uid,deletedAt:firebase.database.ServerValue.TIMESTAMP})}
+  catch(e){toast('Message could not be deleted: '+(e?.message||'permission denied'))}
+};
+
+function callUI(name,avatar,statusText,accept){
+  let m=document.getElementById('ssV29CallModal');
+  if(!m){
+    m=document.createElement('div');m.id='ssV29CallModal';
+    m.innerHTML='<div id="ssV29CallCard"><div id="ssV29CallAvatar">📞</div><h3 id="ssV29CallName"></h3><div id="ssV29CallStatus"></div><div class="ss-v29-call-actions"><button id="ssV29Accept">Accept</button><button id="ssV29End">End</button></div><audio id="ssV29Audio" autoplay></audio></div>';
+    document.body.appendChild(m);
+    document.getElementById('ssV29End').onclick=()=>window.ssV29EndCall();
+    document.getElementById('ssV29Accept').onclick=()=>window.ssV29AcceptCall();
+  }
+  document.getElementById('ssV29CallAvatar').textContent=avatar||'📞';
+  document.getElementById('ssV29CallName').textContent=name||'SkillSwap Member';
+  document.getElementById('ssV29CallStatus').textContent=statusText||'';
+  document.getElementById('ssV29Accept').style.display=accept?'inline-block':'none';
+  m.classList.add('show');
+}
+function closeCallUI(){document.getElementById('ssV29CallModal')?.classList.remove('show')}
+function cleanupCall(){
+  try{if(call.valueHandler&&call.ref)call.ref.off('value',call.valueHandler)}catch(e){}
+  try{if(call.candidateHandler&&call.ref)call.ref.child(call.role==='caller'?'calleeCandidates':'callerCandidates').off('child_added',call.candidateHandler)}catch(e){}
+  try{call.local?.getTracks().forEach(t=>t.stop())}catch(e){}
+  try{call.pc?.close()}catch(e){}
+  call={ref:null,pc:null,local:null,remote:null,role:null,id:null,peer:null,offerCandidates:null,candidateHandler:null,valueHandler:null};
+}
+async function setupPC(){
+  const pc=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]});
+  pc.ontrack=e=>{const a=document.getElementById('ssV29Audio');if(a)a.srcObject=e.streams[0]};
+  return pc;
+}
+async function addCandidateWatcher(ref,side,pc){
+  const cr=ref.child(side);
+  const h=s=>{const v=s.val();if(v)pc.addIceCandidate(new RTCIceCandidate(v)).catch(()=>{})};
+  cr.on('child_added',h);call.candidateHandler=h;
+}
+window.startSkillSwapCall=async function(id,video=false){
+  const u=ME();if(!u){toast('Please sign in to call a member.');return}
+  if(isDemo(id)){const p=demoList().find(x=>String(x.id)===String(id));callUI(p?.name,'📞','Demo call — no real person is connected.',false);return}
+  const p=await getRealProfile(id);if(!p){toast('Real member profile not found.');return}
+  if(String(p.uid??p.id)===String(u.uid)){toast('You cannot call yourself.');return}
+  const d=D();if(!d){toast('Firebase Realtime Database is not available.');return}
+  cleanupCall();
+  const cid=pair(u.uid,p.uid);call.id=cid;call.role='caller';call.peer=p;call.ref=d.ref('calls/'+cid);
+  try{
+    call.local=await navigator.mediaDevices.getUserMedia({audio:true,video:!!video});
+    call.pc=await setupPC();call.local.getTracks().forEach(t=>call.pc.addTrack(t,call.local));
+    call.pc.onicecandidate=e=>{if(e.candidate)call.ref.child('callerCandidates').push(e.candidate.toJSON()).catch(()=>{})};
+    await call.ref.set({callerUid:u.uid,receiverUid:String(p.uid),callerName:u.displayName||p.name||'SkillSwap Member',receiverName:p.name||'SkillSwap Member',status:'ringing',video:!!video,createdAt:firebase.database.ServerValue.TIMESTAMP});
+    await call.ref.update({offer:{type:(await call.pc.createOffer({offerToReceiveAudio:true})).type,sdp:''}});
+    const offer=await call.pc.createOffer({offerToReceiveAudio:true});
+    await call.pc.setLocalDescription(offer);
+    await call.ref.update({offer:{type:offer.type,sdp:offer.sdp}});
+    // Private receiver index makes incoming calls discoverable without exposing all calls.
+    await d.ref('incomingCalls/'+p.uid+'/'+cid).set({callId:cid,callerUid:u.uid,callerName:u.displayName||'SkillSwap Member',video:!!video,createdAt:firebase.database.ServerValue.TIMESTAMP});
+    callUI(p.name,p.avatar||'📞','Calling '+p.name+'…',false);
+    call.valueHandler=s=>{
+      const x=s.val()||{};
+      if(x.status==='accepted'&&x.answer&&!call.pc.currentRemoteDescription)
+        call.pc.setRemoteDescription(new RTCSessionDescription(x.answer)).then(()=>document.getElementById('ssV29CallStatus').textContent='Connected').catch(()=>{});
+      if(x.status==='ended'||x.status==='declined'){closeCallUI();cleanupCall()}
+    };
+    call.ref.on('value',call.valueHandler);
+    await addCandidateWatcher(call.ref,'calleeCandidates',call.pc);
+  }catch(e){console.error(e);toast('Could not start call: '+(e?.message||'Check microphone/camera permissions and Firebase rules.'));cleanupCall();closeCallUI()}
+};
+window.ssV29AcceptCall=async function(){
+  if(!call.ref||call.role!=='receiver')return;
+  const u=ME();if(!u)return;
+  try{
+    call.local=await navigator.mediaDevices.getUserMedia({audio:true,video:!!call.video});
+    call.pc=await setupPC();call.local.getTracks().forEach(t=>call.pc.addTrack(t,call.local));
+    call.pc.onicecandidate=e=>{if(e.candidate)call.ref.child('calleeCandidates').push(e.candidate.toJSON()).catch(()=>{})};
+    const x=(await call.ref.once('value')).val()||{};
+    if(!x.offer)throw Error('Call offer missing');
+    await call.pc.setRemoteDescription(new RTCSessionDescription(x.offer));
+    const ans=await call.pc.createAnswer();await call.pc.setLocalDescription(ans);
+    await call.ref.update({answer:{type:ans.type,sdp:ans.sdp},status:'accepted'});
+    document.getElementById('ssV29CallStatus').textContent='Connected';
+    await D().ref('incomingCalls/'+u.uid+'/'+call.id).remove().catch(()=>{});
+    await addCandidateWatcher(call.ref,'callerCandidates',call.pc);
+  }catch(e){toast('Could not accept call: '+(e?.message||'permission denied'));cleanupCall();closeCallUI()}
+};
+window.ssV29EndCall=async function(){
+  const r=call.ref,id=call.id,u=ME();cleanupCall();closeCallUI();
+  if(r)r.update({status:'ended'}).catch(()=>{});
+  if(u&&id)D()?.ref('incomingCalls/'+u.uid+'/'+id).remove().catch(()=>{});
+};
+
+// Incoming-call watcher.
+function watchIncoming(){
+  const u=ME(),d=D();if(!u||!d)return;
+  const r=d.ref('incomingCalls/'+u.uid);
+  r.on('child_added',async s=>{
+    const x=s.val();if(!x?.callId)return;
+    const ref=d.ref('calls/'+x.callId);
+    const data=(await ref.once('value')).val()||{};
+    if(data.status!=='ringing')return;
+    if(call.ref)return;
+    call={...call,ref,role:'receiver',id:x.callId,peer:{uid:data.callerUid,name:data.callerName||'SkillSwap Member'},video:data.video!==false};
+    callUI(data.callerName||'SkillSwap Member','📞','Incoming '+(data.video?'video ':'voice ')+'call…',true);
+  });
+}
+function init(){
+  const u=ME();if(u)watchIncoming();
+  if(A()?.onAuthStateChanged)A().onAuthStateChanged(x=>{if(x){setTimeout(watchIncoming,300);}});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else setTimeout(init,300);
+})();
+</script>
+
+</body>
